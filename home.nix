@@ -109,6 +109,19 @@ in
     userName = "hasundue";
   };
 
+  programs.gitui = {
+    enable = true;
+    keyConfig = builtins.readFile ./conf/gitui.ron;
+  };
+
+  programs.chromium = {
+    enable = true;
+    commandLineArgs = [
+      "--force-dark-mode"
+      "--enable-features=WebUIDarkMode"
+    ];
+  };
+
   home.packages = with pkgs; [ 
     dmenu
     steam
