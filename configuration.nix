@@ -179,5 +179,10 @@
     };
   };
 
+  security.sudo = {
+    enable = true;
+    wheelNeedsPassword = false;
+  };
+
   system.stateVersion = "22.11";
 }
