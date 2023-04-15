@@ -17,7 +17,7 @@ in
   programs.neovim.enable = true;
 
   home.keyboard = {
-    options = [ "ctrl:swapcaps" ];
+    options = [ "ctrl:nocaps" ];
   };
 
   xsession = {
@@ -46,7 +46,7 @@ in
     };
     shellAliases = {
       ll = "ls -l";
-      update = "sudo nixos-rebuild switch --flake .";
+      nbuild = "nixos-rebuild switch --flake .";
     };
   };
 
@@ -75,12 +75,21 @@ in
     };
   };
 
+  programs.gh = {
+    enable = true;
+    enableGitCredentialHelper = false;
+    settings = {
+      prompt = "disabled";
+    };
+  };
+
   programs.git = {
     enable = true;
     aliases = {
       co = "checkout";
     };
     extraConfig = {
+      credential."https://github.com".helper = "!gh auth git-credential";
       init = {
         defaultBranch = "main";
       };
@@ -88,8 +97,6 @@ in
     userEmail = "hasundue@gmail.com";
     userName = "hasundue";
   };
-
-  programs.gh.enable = true;
 
   home.packages = with pkgs; [ 
     dmenu
