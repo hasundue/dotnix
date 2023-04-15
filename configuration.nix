@@ -172,7 +172,7 @@
   users.users = {
     shun = {
       isNormalUser = true;
-      extraGroups = [ "wheel" "nixbld" "input" "video" "sound" ];
+      extraGroups = [ "wheel" "nixbld" "input" "video" "audio" ];
       initialPassword = "password";
     };
   };

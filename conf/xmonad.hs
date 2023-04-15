@@ -8,6 +8,10 @@ main = xmonad =<< xmobar (docks def
   , modMask           = mod4Mask
   , focusFollowsMouse = False
   } `additionalKeysP`
-  [ ("<XF86MonBrightnessDown>", spawn "brightnessctl s 10%-")
-  , ("<XF86MonBrightnessUp>", spawn "brightnessctl s +10%")
+  [ ("<XF86AudioMute>", spawn "pactl set-sink-mute 0 toggle")
+  , ("<XF86AudioLowerVolume>", spawn "pactl set-sink-volume 0 -5%")
+  , ("<XF86AudioRaiseVolume>", spawn "pactl set-sink-volume 0 +5%")
+  , ("<XF86AudioMicMute>", spawn "pactl set-source-mute 1 toggle")
+  , ("<XF86MonBrightnessDown>", spawn "brightnessctl s 5%-")
+  , ("<XF86MonBrightnessUp>", spawn "brightnessctl s +5%")
   ])
