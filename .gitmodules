@@ -1,0 +1,3 @@
+[submodule "nixos-config-private"]
+	path = nixos-config-private
+	url = git:github.com/hasundue/nixos-config-private
