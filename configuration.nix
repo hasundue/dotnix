@@ -127,13 +127,25 @@
     };
   };
 
-  # Enable sound.
-  sound.enable = true;
-
   # Hardwares
   hardware = {
     pulseaudio.enable = true;
     bluetooth.enable = true;
+  };
+
+  # Enable sound
+  sound = {
+    enable = true;
+    mediaKeys.enable = true;
+  };
+
+  # Display backlight
+  services.actkbd = {
+    enable = true;
+    bindings = [
+      { keys = [ 232 ]; events = [ "key" ]; command = "brightnessctl s 10%-"; }
+      { keys = [ 233 ]; events = [ "key" ]; command = "brightnessctl s +10%"; }
+    ];
   };
 
   # System-wide packages
@@ -142,6 +154,7 @@
       git
       vim
       zsh
+      brightnessctl
     ];
     variables = {
       EDITOR = "vim";
@@ -152,11 +165,14 @@
     ];
   };
 
+  users.groups.video = {};
+  users.groups.input = {};
+
   # Users
   users.users = {
     shun = {
       isNormalUser = true;
-      extraGroups = [ "wheel" "nixbld" ];
+      extraGroups = [ "wheel" "nixbld" "input" "video" "sound" ];
       initialPassword = "password";
     };
   };
