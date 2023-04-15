@@ -40,6 +40,9 @@ in
     enable = true;
     extraConfig = ''
       set noswapfile
+      set expandtab
+      set softtabstop=2
+      set shiftwidth=2
     '';
   };
 
