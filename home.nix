@@ -122,6 +122,7 @@ in
     commandLineArgs = [
       "--force-dark-mode"
       "--enable-features=WebUIDarkMode"
+      "--enable-features=VaapiVideoDecoder"
     ];
   };
 
