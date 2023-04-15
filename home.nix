@@ -17,6 +17,13 @@ in
     options = [ "ctrl:nocaps" ];
   };
 
+  services.xsettingsd.settings = {
+    "Xft/Hinting" = true;
+    "Xft/HintStyle" = "hintslight";
+    "Xft/Antialias" = true;
+    "Xft/RGBA" = "rgb";
+  };
+
   xresources = {
     extraConfig = "Xft.dpi:96";
   };
@@ -117,12 +124,16 @@ in
     keyConfig = builtins.readFile ./conf/gitui.ron;
   };
 
+  home.sessionVariables = {
+    GDK_SCALE=1;
+    GDK_DPI_SCALE=1.25;
+  };
+
   programs.chromium = {
     enable = true;
     commandLineArgs = [
       "--force-dark-mode"
-      "--enable-features=WebUIDarkMode"
-      "--enable-features=VaapiVideoDecoder"
+      "--enable-features=WebUIDarkMode,VaapiVideoDecoder"
     ];
   };
 

@@ -127,6 +127,9 @@
     };
   };
 
+  # Required by gtk
+  programs.dconf.enable = true;
+
   # Hardwares
   hardware = {
     pulseaudio.enable = true;
