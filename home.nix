@@ -4,20 +4,21 @@ let
   font = "FiraCode Nerd Font";
 in
 {
-  home.username = "shun";
-  home.homeDirectory = "/home/shun";
+  programs.home-manager.enable = true;
 
   home.stateVersion = "22.11";
 
-  programs.home-manager.enable = true;
+  home.username = "shun";
+  home.homeDirectory = "/home/shun";
 
   fonts.fontconfig.enable = true;
 
-  programs.vim.enable = true;
-  programs.neovim.enable = true;
-
   home.keyboard = {
     options = [ "ctrl:nocaps" ];
+  };
+
+  xresources = {
+    extraConfig = "Xft.dpi:96";
   };
 
   xsession = {
@@ -30,9 +31,19 @@ in
     };
   };
 
-  xresources = {
-    extraConfig = "Xft.dpi:96";
+  programs.xmobar = {
+    enable = true;
+    extraConfig = builtins.readFile ./conf/xmobar.hs;
   };
+
+  programs.vim = {
+    enable = true;
+    extraConfig = ''
+      set noswapfile
+    '';
+  };
+
+  programs.neovim.enable = true;
 
   programs.zsh = {
     enable = true;
@@ -46,7 +57,7 @@ in
     };
     shellAliases = {
       ll = "ls -l";
-      nbuild = "nixos-rebuild switch --flake .";
+      nbuild = "sudo nixos-rebuild switch --flake .";
     };
   };
 
