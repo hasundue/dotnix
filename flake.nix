@@ -2,7 +2,7 @@
   description = "NixOS configuration";
 
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-22.11";
     nixos-hardware.url = "github:NixOS/nixos-hardware";
 
     nix-colors.url = "github:misterio77/nix-colors";

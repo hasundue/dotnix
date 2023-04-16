@@ -7,7 +7,7 @@ in
 {
   programs.home-manager.enable = true;
 
-  home.stateVersion = "23.05";
+  home.stateVersion = "22.11";
 
   home.username = "shun";
   home.homeDirectory = "/home/shun";
