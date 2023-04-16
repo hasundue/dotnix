@@ -1,12 +1,13 @@
-{ config, lib, pkgs, ... }: 
+{ config, lib, pkgs, nix-colors, ... }: 
 
 let
   font = "FiraCode Nerd Font";
+  colors = nix-colors.colorSchemes.nord.colors;
 in
 {
   programs.home-manager.enable = true;
 
-  home.stateVersion = "22.11";
+  home.stateVersion = "23.05";
 
   home.username = "shun";
   home.homeDirectory = "/home/shun";
@@ -22,15 +23,6 @@ in
       fcitx5-gtk
     ];
   };
-
-  home.file.".config/fcitx5/profile".text = ''
-    [Groups/0]
-    Name=Default
-    Default Layout=us
-    DefaultIM=mozc
-    [GroupOrder]
-    0=Default
-  '';
 
   xsession = {
     enable = true;
@@ -80,11 +72,13 @@ in
 
   programs.vim = {
     enable = true;
+    settings = {
+      expandtab = true;
+      number = true;
+      shiftwidth = 2;
+    };
     extraConfig = ''
       set noswapfile
-      set expandtab
-      set softtabstop=2
-      set shiftwidth=2
     '';
   };
 
@@ -111,8 +105,9 @@ in
     settings = {
       env = {
         SHELL = "zsh";
-        TERM = "xterm-256color";
       };
+      decorations = "none";
+      opacity = 0.9;
       font = {
         normal = {
           family = font;
@@ -127,6 +122,10 @@ in
           style = "Oblique";
         };
         size = 12.0;
+      };
+      colors = {
+        background = "#${colors.base00}";
+        foreground = "#${colors.base04}";
       };
     };
   };
