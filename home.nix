@@ -11,22 +11,26 @@ in
   home.username = "shun";
   home.homeDirectory = "/home/shun";
 
-  fonts.fontconfig.enable = true;
-
   home.keyboard = {
     options = [ "ctrl:nocaps" ];
   };
 
-  services.xsettingsd.settings = {
-    "Xft/Hinting" = true;
-    "Xft/HintStyle" = "hintslight";
-    "Xft/Antialias" = true;
-    "Xft/RGBA" = "rgb";
+  i18n.inputMethod = {
+    enabled = "fcitx5";
+    fcitx5.addons = with pkgs; [
+      fcitx5-mozc
+      fcitx5-gtk
+    ];
   };
 
-  xresources = {
-    extraConfig = "Xft.dpi:96";
-  };
+  home.file.".config/fcitx5/profile".text = ''
+    [Groups/0]
+    Name=Default
+    Default Layout=us
+    DefaultIM=mozc
+    [GroupOrder]
+    0=Default
+  '';
 
   xsession = {
     enable = true;
@@ -36,6 +40,37 @@ in
       enableContribAndExtras = true;
       config = ./conf/xmonad.hs;
     };
+  };
+
+  xresources = {
+    extraConfig = "Xft.dpi:96";
+  };
+
+  home.sessionVariables = {
+    GDK_SCALE=1;
+    GDK_DPI_SCALE=1.20;
+  };
+
+  fonts.fontconfig.enable = true;
+
+  services.xsettingsd.settings = {
+    "Xft/Hinting" = true;
+    "Xft/HintStyle" = "hintslight";
+    "Xft/Antialias" = true;
+    "Xft/RGBA" = "rgb";
+  };
+
+  gtk = {
+    enable = true;
+    theme = {
+      name = "Nordic";
+      package = pkgs.nordic;
+    };
+  };
+
+  qt = {
+    enable = true;
+    platformTheme = "gtk";
   };
 
   programs.xmobar = {
@@ -122,11 +157,6 @@ in
   programs.gitui = {
     enable = true;
     keyConfig = builtins.readFile ./conf/gitui.ron;
-  };
-
-  home.sessionVariables = {
-    GDK_SCALE=1;
-    GDK_DPI_SCALE=1.25;
   };
 
   programs.chromium = {
