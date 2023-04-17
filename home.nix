@@ -168,6 +168,10 @@ in
 
   home.packages = with pkgs; [ 
     dmenu
+    google-chrome
+    slack
+    zoom-us
+    spotify
     steam
   ];
 }
