@@ -3,12 +3,14 @@
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-22.11";
-    nixos-hardware.url = "github:NixOS/nixos-hardware";
+    nixpkgs-unstable.url = "github:nixos/nixpkgs/nixos-unstable";
+    nixpkgs-master.url = "github:nixos/nixpkgs/master";
 
+    nixos-hardware.url = "github:nixos/nixos-hardware";
     nix-colors.url = "github:misterio77/nix-colors";
 
     home-manager = {
-      url = "github:nix-community/home-manager";
+      url = "github:nix-community/home-manager/release-22.11";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
@@ -20,15 +22,27 @@
 
   outputs = inputs@{ 
     nixpkgs,
+    nixpkgs-unstable,
+    nixpkgs-master,
     nixos-hardware,
     nix-colors,
     home-manager,
     private,
     ...
-  }: {
+  }: let
+    system = "x86_64-linux";
+    pkgs-unstable = import nixpkgs-unstable {
+      inherit system;
+      config.allowUnfree = true;
+    };
+    pkgs-master = import nixpkgs-master {
+      inherit system;
+      config.allowUnfree = true;
+    };
+  in {
     nixosConfigurations = {
       x1carbon = nixpkgs.lib.nixosSystem {
-        system = "x86_64-linux";
+        inherit system;
         modules = [ 
           ./configuration.nix
           private.nixosModules.default
@@ -37,8 +51,12 @@
           {
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
+            home-manager.extraSpecialArgs = { 
+              inherit pkgs-unstable;
+              inherit pkgs-master;
+              inherit nix-colors;
+            };
             home-manager.users.shun = import ./home.nix;
-            home-manager.extraSpecialArgs = { inherit nix-colors; };
           }
         ];
       };

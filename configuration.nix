@@ -133,6 +133,13 @@
   hardware = {
     pulseaudio.enable = true;
     bluetooth.enable = true;
+
+    # Required for steam
+    opengl = {
+      enable = true;
+      driSupport32Bit = true;
+      extraPackages32 = with pkgs.pkgsi686Linux; [ libva ];
+    };
   };
 
   # Enable sound
@@ -153,10 +160,12 @@
   # System-wide packages
   environment = {
     systemPackages = with pkgs; [
+      brightnessctl
+      usbutils
+      gcc
       git
       vim
       zsh
-      brightnessctl
     ];
     variables = {
       EDITOR = "vim";
@@ -165,6 +174,14 @@
     pathsToLink = [
       "/share/zsh"
     ];
+  };
+
+  services.fprintd = {
+    enable = true;
+    tod = {
+      enable = true;
+      driver = pkgs.libfprint-2-tod1-vfs0090;
+    };
   };
 
   users.groups.video = {};
@@ -179,9 +196,16 @@
     };
   };
 
-  security.sudo = {
-    enable = true;
-    wheelNeedsPassword = false;
+  security = {
+    sudo = {
+      enable = true;
+      wheelNeedsPassword = false;
+    };
+    pam = {
+      services = {
+        login.fprintAuth = true;
+      };
+    };
   };
 
   system.stateVersion = "22.11";

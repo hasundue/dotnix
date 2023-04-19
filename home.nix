@@ -1,4 +1,4 @@
-{ config, lib, pkgs, nix-colors, ... }: 
+{ config, lib, pkgs, pkgs-unstable, pkgs-master, nix-colors, ... }: 
 
 let
   font = "FiraCode Nerd Font";
@@ -55,7 +55,7 @@ in
   gtk = {
     enable = true;
     theme = {
-      name = "Nordic";
+      name = "Nordic-darker";
       package = pkgs.nordic;
     };
   };
@@ -82,8 +82,6 @@ in
     '';
   };
 
-  programs.neovim.enable = true;
-
   programs.zsh = {
     enable = true;
     enableAutosuggestions = true;
@@ -97,6 +95,7 @@ in
     shellAliases = {
       ll = "ls -l";
       nbuild = "sudo nixos-rebuild switch --flake .";
+      nv = "nvim";
     };
   };
 
@@ -153,6 +152,10 @@ in
     userName = "hasundue";
   };
 
+  programs.autorandr = {
+    enable = true;
+  };
+
   programs.gitui = {
     enable = true;
     keyConfig = builtins.readFile ./conf/gitui.ron;
@@ -166,12 +169,25 @@ in
     ];
   };
 
-  home.packages = with pkgs; [ 
+  home.packages = (with pkgs; [ 
+    unzip
+    nodejs
+    ghc
+    haskell-language-server
+    nil # a language server for Nix
     dmenu
     google-chrome
     slack
     zoom-us
     spotify
     steam
-  ];
+  ]) ++ (with pkgs-unstable; [
+    (vivaldi.override {
+      proprietaryCodecs = true;
+    })
+  ]) ++ (with pkgs-master; [
+    neovim
+    deno
+    zig
+  ]);
 }
