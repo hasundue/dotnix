@@ -1,7 +1,7 @@
 
 # Global System Configuration 
 
-{ inputs, lib, config, pkgs, ... }:
+{ pkgs, ... }:
 
 {
   imports = [
@@ -94,50 +94,15 @@
     wireless.enable = true;  # Enables wireless support via wpa_supplicant.
   };
 
-  services.xserver = {
-    enable = true;
-    autorun = true;
-
-    xkbOptions = "ctrl:nocaps";
-
-    libinput = {
-      enable = true;
-      mouse = {
-        #naturalScrolling = true;
-      };
-      touchpad = {
-        tapping = true;
-        naturalScrolling = true;
-      };
-    };
-
-    displayManager = {
-      lightdm = {
-        enable = true;
-      };
-      session = [
-        {
-          manage = "window";
-          name = "xsession";
-          start = ''${pkgs.runtimeShell} $HOME/.xsession'';
-        }
-      ];
-      defaultSession = "none+xsession";
-    };
-  };
-
-  # Required by gtk
-  programs.dconf.enable = true;
-
   # Hardwares
   hardware = {
     pulseaudio.enable = true;
     bluetooth.enable = true;
 
-    # Required for steam
     opengl = {
       enable = true;
-      driSupport32Bit = true;
+      # driSupport32Bit = true;
+      # Required for steam
       extraPackages32 = with pkgs.pkgsi686Linux; [ libva ];
     };
   };
@@ -168,6 +133,7 @@
       zsh
     ];
     variables = {
+      SHELL = "zsh";
       EDITOR = "vim";
       VISUAL = "vim";
     };
@@ -206,7 +172,8 @@
         login.fprintAuth = true;
       };
     };
+    polkit.enable = true;
   };
 
-  system.stateVersion = "22.11";
+  system.stateVersion = "23.05";
 }

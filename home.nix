@@ -1,4 +1,4 @@
-{ config, lib, pkgs, pkgs-unstable, pkgs-master, nix-colors, ... }: 
+{ pkgs, nix-colors, ... }: 
 
 let
   font = "FiraCode Nerd Font";
@@ -7,14 +7,10 @@ in
 {
   programs.home-manager.enable = true;
 
-  home.stateVersion = "22.11";
+  home.stateVersion = "23.05";
 
   home.username = "shun";
   home.homeDirectory = "/home/shun";
-
-  home.keyboard = {
-    options = [ "ctrl:nocaps" ];
-  };
 
   i18n.inputMethod = {
     enabled = "fcitx5";
@@ -24,50 +20,73 @@ in
     ];
   };
 
-  xsession = {
+  wayland.windowManager.sway = {
     enable = true;
-
-    windowManager.xmonad = {
-      enable = true;
-      enableContribAndExtras = true;
-      config = ./conf/xmonad.hs;
+    config = {
+      gaps = {
+        smartBorders = "on";
+        smartGaps = true;
+        inner = 10;
+      };
+      input = {
+        "*" = {
+          xkb_options = "ctrl:nocaps";
+        };
+      };
+      menu = "NIXOS_OZONE_WL=1 wofi --show run";
+      output = {
+        eDP-1 = {
+          scale = "1.2";
+          scale_filter = "nearest";
+          subpixel = "rgb";
+        };
+      };
+      fonts = {
+        names = [ "Source Han Sans" ];
+        style = "Heavy";
+        size = 10.0;
+      };
+      modifier = "Mod4";
+      terminal = "alacritty";
     };
+    wrapperFeatures.gtk = true;
   };
 
-  xresources = {
-    extraConfig = "Xft.dpi:96";
-  };
-
-  home.sessionVariables = {
-    GDK_SCALE=1;
-    GDK_DPI_SCALE=1.20;
+  home.pointerCursor = {
+    name = "Nordzy-cursors";
+    package = pkgs.nordzy-cursor-theme;
+    size = 16;
+    gtk.enable = true;
   };
 
   fonts.fontconfig.enable = true;
 
-  services.xsettingsd.settings = {
-    "Xft/Hinting" = true;
-    "Xft/HintStyle" = "hintslight";
-    "Xft/Antialias" = true;
-    "Xft/RGBA" = "rgb";
-  };
-
   gtk = {
     enable = true;
+    font = {
+      name = "Source Han Sans";
+      size = 11;
+    };
+    gtk3.extraConfig = {
+      gtk-application-prefer-dark-theme = 1;
+      gtk-xft-antialias = 1;
+      gtk-xft-hinting = 1;
+      gtk-xft-hintstyle = "slight";
+      gtk-xft-rgba = "rgb";
+    };
     theme = {
       name = "Nordic-darker";
       package = pkgs.nordic;
+    };
+    cursorTheme = {
+      name = "Nordzy-cursors";
+      size = 26;
     };
   };
 
   qt = {
     enable = true;
     platformTheme = "gtk";
-  };
-
-  programs.xmobar = {
-    enable = true;
-    extraConfig = builtins.readFile ./conf/xmobar.hs;
   };
 
   programs.vim = {
@@ -108,23 +127,18 @@ in
       decorations = "none";
       opacity = 0.9;
       font = {
-        normal = {
-          family = font;
-          style = "Regular";
-        };
-        bold = {
-          family = font;
-          style = "Bold";
-        };
-        italic = {
-          family = font;
-          style = "Oblique";
-        };
-        size = 12.0;
+        normal = { family = font; style = "Regular"; };
+        bold = { family = font; style = "Bold"; };
+        italic = { family = font; style = "Oblique"; };
+        size = 10.0;
       };
       colors = {
         background = "#${colors.base00}";
         foreground = "#${colors.base04}";
+      };
+      window = {
+        padding = { x = 10; y = 10; };
+        dynamic_padding = true;
       };
     };
   };
@@ -152,42 +166,29 @@ in
     userName = "hasundue";
   };
 
-  programs.autorandr = {
-    enable = true;
-  };
-
   programs.gitui = {
     enable = true;
     keyConfig = builtins.readFile ./conf/gitui.ron;
   };
 
-  programs.chromium = {
-    enable = true;
-    commandLineArgs = [
-      "--force-dark-mode"
-      "--enable-features=WebUIDarkMode,VaapiVideoDecoder"
-    ];
-  };
-
   home.packages = (with pkgs; [ 
+    neovim
     unzip
     nodejs
+    deno
+    zig
     ghc
-    haskell-language-server
     nil # a language server for Nix
-    dmenu
+    haskell-language-server
+    wofi
+    (vivaldi.override {
+      proprietaryCodecs = true;
+    })
     google-chrome
     slack
     zoom-us
     spotify
     steam
-  ]) ++ (with pkgs-unstable; [
-    (vivaldi.override {
-      proprietaryCodecs = true;
-    })
-  ]) ++ (with pkgs-master; [
-    neovim
-    deno
-    zig
+    steamcmd
   ]);
 }
