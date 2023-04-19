@@ -6,7 +6,7 @@ import XMonad.Hooks.ManageDocks
 main = xmonad =<< xmobar (docks def
   { terminal          = "alacritty"
   , modMask           = mod4Mask
-  , focusFollowsMouse = False
+  , focusFollowsMouse = True
   } `additionalKeysP`
   [ ("<XF86AudioMute>", spawn "pactl set-sink-mute 0 toggle")
   , ("<XF86AudioLowerVolume>", spawn "pactl set-sink-volume 0 -5%")
