@@ -3,6 +3,10 @@
 let
   font = "FiraCode Nerd Font";
   colors = nix-colors.colorSchemes.nord.colors;
+
+  python-packages = ps: with ps; [
+    spacy
+  ];
 in
 {
   programs.home-manager.enable = true;
@@ -194,12 +198,13 @@ in
   home.packages = (with pkgs; [ 
     neovim
     unzip
+    ripgrep
     nodejs
     deno
+    (python3.withPackages python-packages)
+    cargo
     zig
-    ghc
     nil # a language server for Nix
-    haskell-language-server
     wofi
     (vivaldi.override {
       proprietaryCodecs = true;
