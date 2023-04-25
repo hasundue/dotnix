@@ -89,6 +89,10 @@
     };
   };
 
+  programs = {
+    dconf.enable = true;
+  };
+
   system = {
     inherit stateVersion;
   };
