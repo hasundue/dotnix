@@ -36,6 +36,11 @@
         steam-tui
     ]);
 
+    sessionPath = [
+      "$HOME/.local/bin"
+      "$HOME/.deno/bin"
+    ];
+
     sessionVariables = {
       EDITOR = "nvim";
       NIXOS_OZONE_WL = 1;
