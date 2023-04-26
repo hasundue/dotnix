@@ -2,7 +2,7 @@
 
 let
   font = "FiraCode Nerd Font";
-  colors = nix-colors.colorSchemes.nord.colors;
+  colors = nix-colors.colorSchemes.gruvbox-material-dark-hard.colors;
 in
 {
   programs.alacritty = {
