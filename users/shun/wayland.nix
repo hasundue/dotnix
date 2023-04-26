@@ -38,6 +38,7 @@
       modifier = "Mod4";
       startup = [
         { command = "fcitx5"; }
+        { command = "wl-paste -t text --watch clipman store"; }
       ];
       terminal = "alacritty";
       window = {
@@ -95,4 +96,6 @@
     enable = true;
     platformTheme = "gtk";
   };
+
+  services.clipman.enable = true;
 }

@@ -20,7 +20,9 @@
         nil
         nodejs
         deno
+        bun
         zig
+        wl-clipboard
         wofi
         (vivaldi.override {
           proprietaryCodecs = true;
