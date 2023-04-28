@@ -17,12 +17,17 @@
     packages = (with pkgs; [ 
         neovim
         unzip
+        ripgrep
         nil
         nodejs
+        nodePackages.wrangler
+        nodePackages.yarn
         deno
         bun
         zig
         wl-clipboard
+        grim
+        slurp
         wofi
         (vivaldi.override {
           proprietaryCodecs = true;
