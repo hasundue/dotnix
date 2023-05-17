@@ -36,8 +36,8 @@
         };
       };
       fonts = {
-        names = [ "Source Han Sans" ];
-        style = "Heavy";
+        names = [ "FiraCode Nerd Font" ];
+        style = "Bold";
         size = 10.0;
       };
       modifier = "Mod4";
