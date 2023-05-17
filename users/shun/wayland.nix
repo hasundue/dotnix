@@ -7,6 +7,13 @@
       bars = [{
         statusCommand = "i3status";
       }];
+      floating = {
+        criteria = [
+          { title = "1Password"; }
+          { title = "Alby"; }
+          { title = "Steam"; }
+        ];
+      };
       gaps = {
         smartBorders = "on";
         smartGaps = false;
