@@ -95,14 +95,18 @@
     enable = true;
     enableAutosuggestions = true;
     enableSyntaxHighlighting = true;
-    defaultKeymap = "vicmd";
     dotDir = ".config/zsh";
-    initExtra = ''
-      bindkey -L
-    '';
     prezto = {
       enable = true;
+      editor = {
+        dotExpansion = true;
+        keymap = "vi";
+        promptContext = false;
+      };
       prompt.theme = "pure";
+      utility = {
+        safeOps = true;
+      };
     };
     shellAliases = {
       ll = "ls -l";
