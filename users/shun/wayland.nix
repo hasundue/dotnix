@@ -9,7 +9,7 @@
       }];
       gaps = {
         smartBorders = "on";
-        smartGaps = true;
+        smartGaps = false;
         inner = 10;
       };
       input = {
