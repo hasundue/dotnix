@@ -21,14 +21,19 @@
           natural_scroll = "enabled";
         };
       };
-      menu = "NIXOS_OZONE_WL=1 wofi --show run";
+      menu = "tofi-run | xargs swaymsg exec env NIXOS_OZONE_WL=1 --";
       output = {
-        eDP-1 = {
+        "AU Optronics 0x313D Unknown" = {
           scale = "1.2";
           scale_filter = "nearest";
-          subpixel = "rgb";
         };
-        DP-1.subpixel = "rgb";
+        "Microstep MSI G271 0x30303146" = {
+          mode = "1920x1080@120Hz";
+        };
+        "*" = {
+          subpixel = "rgb";
+          background = "#3c3836 solid_color";
+        };
       };
       fonts = {
         names = [ "Source Han Sans" ];
@@ -37,7 +42,6 @@
       };
       modifier = "Mod4";
       startup = [
-        { command = "fcitx5"; }
         { command = "wl-paste -t text --watch clipman store"; }
       ];
       terminal = "alacritty";
@@ -81,7 +85,7 @@
     };
     cursorTheme = {
       name = "Nordzy-cursors";
-      size = 26;
+      size = 16;
     };
   };
 

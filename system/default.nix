@@ -7,7 +7,8 @@
     '';
     gc = {
       automatic = true;
-      options = "--delete-older-than 10";
+      dates = "daily";
+      options = "--delete-older-than 7d";
     };
     package = pkgs.nixFlakes;
     settings = {
@@ -74,10 +75,18 @@
     ];
   };
 
+  virtualisation.docker = {
+    enable = true;
+    rootless = {
+      enable = true;
+      setSocketVariable = true;
+    };
+  };
+
   users.users = {
     shun = {
       isNormalUser = true;
-      extraGroups = [ "wheel" "nixbld" "input" "video" "audio" ];
+      extraGroups = [ "wheel" "nixbld" "input" "video" "audio" "docker" ];
       initialPassword = "password";
     };
   };

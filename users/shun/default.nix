@@ -15,26 +15,43 @@
     homeDirectory = "/home/shun";
 
     packages = (with pkgs; [ 
+        # essensials
         neovim
         unzip
+        wget
         ripgrep
         nil
+        xdg-utils
+
+        # development
+        deno
+        zig
+        bun
         nodejs
         nodePackages.wrangler
         nodePackages.yarn
-        deno
-        bun
-        zig
+        buildkit # required by cicada
+
+        # wayland
         wl-clipboard
         grim
         slurp
-        wofi
+        tofi
+
+        # apps
         (vivaldi.override {
           proprietaryCodecs = true;
         })
-        google-chrome
+        vieb
+        _1password-gui
+
+        # communication
         slack
+        slack-term
         zoom-us
+        discord
+
+        # entertainment
         spotify
         steam
         steamcmd
@@ -48,19 +65,19 @@
 
     sessionVariables = {
       EDITOR = "nvim";
+      BROWSER = "vivaldi";
       NIXOS_OZONE_WL = 1;
+    };
+
+    file = {
+      ".config/slack-term/config".text = builtins.toJSON {
+        slack_token = "xoxe.xoxp-1-Mi0yLTMyMjg4MjE1Nzc4MS0yMzkxNTM4MTY5NDU2LTQxMzQwNzE4MTA4MzctNTE4MjM2NzYwMTQ0My02OThiZDhjOGQ3MTFhMWIzYmMzZWVkNmZjMmY1N2M1N2Y0YThlNjhiZTg2OWU2NGI1OTk3NjI2YTRjYzc0MTE2";
+        slack_loglevel = "info";
+      };
     };
   };
 
   fonts.fontconfig.enable = true;
-
-  i18n.inputMethod = {
-    enabled = "fcitx5";
-    fcitx5.addons = with pkgs; [
-      fcitx5-mozc
-      fcitx5-gtk
-    ];
-  };
 
   programs.vim = {
     enable = true;
@@ -80,6 +97,9 @@
     enableSyntaxHighlighting = true;
     defaultKeymap = "vicmd";
     dotDir = ".config/zsh";
+    initExtra = ''
+      bindkey -L
+    '';
     prezto = {
       enable = true;
       prompt.theme = "pure";
@@ -87,7 +107,11 @@
     shellAliases = {
       ll = "ls -l";
       nbuild = "sudo nixos-rebuild switch --flake .";
+      nupdate = "nix flake update . && sudo nixos-rebuild switch --flake .";
       nv = "nvim";
+    };
+    shellGlobalAliases = {
+      vieb = "vieb --enable-features=UseOzonePlatform --ozone-platform=wayland";
     };
   };
 
@@ -101,6 +125,9 @@
 
   programs.git = {
     enable = true;
+    userEmail = "hasundue@gmail.com";
+    userName = "hasundue";
+    ignores = [ ".env" ];
     aliases = {
       co = "checkout";
     };
@@ -109,9 +136,8 @@
       init = {
         defaultBranch = "main";
       };
+      push.autoSetupRemote = true;
     };
-    userEmail = "hasundue@gmail.com";
-    userName = "hasundue";
   };
 
   programs.gitui = {
