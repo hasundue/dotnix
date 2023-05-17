@@ -95,12 +95,12 @@
     enable = true;
     enableAutosuggestions = true;
     enableSyntaxHighlighting = true;
+    defaultKeymap = "vicmd";
     dotDir = ".config/zsh";
     prezto = {
       enable = true;
       editor = {
         dotExpansion = true;
-        keymap = "vi";
         promptContext = false;
       };
       prompt.theme = "pure";
