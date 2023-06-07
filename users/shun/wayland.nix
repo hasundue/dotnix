@@ -92,14 +92,12 @@
     };
     cursorTheme = {
       name = "Nordzy-cursors";
-      size = 16;
     };
   };
 
   home.pointerCursor = {
     name = "Nordzy-cursors";
     package = pkgs.nordzy-cursor-theme;
-    size = 16;
     gtk.enable = true;
   };
 
