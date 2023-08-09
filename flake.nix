@@ -81,7 +81,7 @@
       }
     ];
 
-    defaultModules = [ caches wayland ] ++ home;
+    defaultModules = [ caches ] ++ home;
 
     networks = inputs.config-private.nixosModules.networks;
 

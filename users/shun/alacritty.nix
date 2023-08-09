@@ -12,7 +12,6 @@ in
         SHELL = "zsh";
       };
       decorations = "none";
-      opacity = 0.9;
       font = {
         normal = { family = font; style = "Regular"; };
         bold = { family = font; style = "Bold"; };

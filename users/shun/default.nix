@@ -17,20 +17,25 @@
     packages = (with pkgs; [ 
         # essensials
         neovim
+        fd
         unzip
         wget
         ripgrep
         nil
         xdg-utils
+        fcitx5
+        fcitx5-configtool
 
         # development
         deno
         zig
+        julia
         bun
         nodejs
         nodePackages.wrangler
         nodePackages.yarn
         buildkit # required by cicada
+        act
 
         # wayland
         wl-clipboard
@@ -43,19 +48,22 @@
           proprietaryCodecs = true;
         })
         vieb
+        chromium
         _1password-gui
 
         # communication
         slack
-        slack-term
         zoom-us
         discord
 
         # entertainment
         spotify
-        steam
-        steamcmd
-        steam-tui
+        (lutris.override {
+          extraPkgs = pkgs: [
+            wine
+            steam
+          ];
+        })
     ]);
 
     sessionPath = [
@@ -67,13 +75,9 @@
       EDITOR = "nvim";
       BROWSER = "vivaldi";
       NIXOS_OZONE_WL = 1;
-    };
-
-    file = {
-      ".config/slack-term/config".text = builtins.toJSON {
-        slack_token = "xoxe.xoxp-1-Mi0yLTMyMjg4MjE1Nzc4MS0yMzkxNTM4MTY5NDU2LTQxMzQwNzE4MTA4MzctNTE4MjM2NzYwMTQ0My02OThiZDhjOGQ3MTFhMWIzYmMzZWVkNmZjMmY1N2M1N2Y0YThlNjhiZTg2OWU2NGI1OTk3NjI2YTRjYzc0MTE2";
-        slack_loglevel = "info";
-      };
+      GTK_IM_MODULE = "fcitx";
+      QT_IM_MODULE = "fcitx";
+      XMODIFIERS = "@im=fcitx";
     };
   };
 
@@ -94,7 +98,6 @@
   programs.zsh = {
     enable = true;
     enableAutosuggestions = true;
-    enableSyntaxHighlighting = true;
     defaultKeymap = "vicmd";
     dotDir = ".config/zsh";
     prezto = {
@@ -110,28 +113,32 @@
     };
     shellAliases = {
       ll = "ls -l";
-      nbuild = "sudo nixos-rebuild switch --flake .";
-      nupdate = "nix flake update . && sudo nixos-rebuild switch --flake .";
       nv = "nvim";
+      nbuild = "sudo nixos-rebuild switch --flake .";
+      nupdate = "nix flake update . && nbuild";
     };
     shellGlobalAliases = {
+      suspend = "systemctl suspend";
       vieb = "vieb --enable-features=UseOzonePlatform --ozone-platform=wayland";
+    };
+    syntaxHighlighting = {
+      enable = true;
     };
   };
 
   programs.gh = {
     enable = true;
-    enableGitCredentialHelper = false;
     settings = {
       prompt = "disabled";
     };
+    gitCredentialHelper.enable = false;
   };
 
   programs.git = {
     enable = true;
     userEmail = "hasundue@gmail.com";
     userName = "hasundue";
-    ignores = [ ".env" ];
+    ignores = [ ".env" "dist/" "node_modules" ];
     aliases = {
       co = "checkout";
     };

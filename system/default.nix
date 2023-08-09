@@ -43,7 +43,7 @@
         emoji = [ "Noto Color Emoji" ];
       };
     };
-    fonts = with pkgs; [
+    packages = with pkgs; [
       noto-fonts-emoji
 
       source-han-serif

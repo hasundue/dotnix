@@ -21,29 +21,32 @@
       };
       input = {
         "type:keyboard" = {
+          repeat_delay = "250";
           xkb_options = "ctrl:nocaps";
         };
         "type:touchpad" = {
           tap = "enabled";
           natural_scroll = "enabled";
         };
+        "type:mouse" = {
+          accel_profile = "adaptive";
+          pointer_accel = "0.2";
+        };
       };
       menu = "tofi-run | xargs swaymsg exec env NIXOS_OZONE_WL=1 --";
       output = {
         "AU Optronics 0x313D Unknown" = {
           scale = "1.2";
-          scale_filter = "nearest";
         };
-        "Microstep MSI G271 0x30303146" = {
+        "Microstep MSI G271 0x00003146" = {
           mode = "1920x1080@120Hz";
         };
         "*" = {
-          subpixel = "rgb";
           background = "#3c3836 solid_color";
         };
       };
       fonts = {
-        names = [ "FiraCode Nerd Font" ];
+        names = [ "Source Han Sans" ];
         style = "Bold";
         size = 10.0;
       };
