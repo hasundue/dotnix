@@ -11,10 +11,6 @@
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    nixpkgs-wayland = {
-      url = "github:nix-community/nixpkgs-wayland";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
     config-private = {
       url = "git+https://github.com/hasundue/nixos-config-private.git";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -44,23 +40,6 @@
             "https://nix-community.cachix.org"
           ];
         };
-      };
-    };
-
-    wayland = { pkgs, config, ... }: {
-      config = {
-        nix = {
-          settings = {
-            # Add binary caches for wayland
-            trusted-public-keys = [
-              "nixpkgs-wayland.cachix.org-1:3lwxaILxMRkVhehr5StQprHdEo4IrE8sRho9R9HOLYA="
-            ];
-            substituters = [ 
-              "https://nixpkgs-wayland.cachix.org" 
-            ];
-          };
-        };
-        nixpkgs.overlays = [ inputs.nixpkgs-wayland.overlay ];
       };
     };
 
