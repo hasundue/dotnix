@@ -41,7 +41,7 @@
 
   networking = {
     hostName = "x1carbon";
-    wireless.enable = true;  # Enables wireless support via wpa_supplicant.
+    networkmanager.enable = true;
   };
 
   sound.enable = true;

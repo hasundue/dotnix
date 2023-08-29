@@ -86,8 +86,8 @@
   users.users = {
     shun = {
       isNormalUser = true;
-      extraGroups = [ "wheel" "nixbld" "input" "video" "audio" "docker" ];
       initialPassword = "password";
+      extraGroups = [ "wheel" "nixbld" "input" "video" "audio" "docker" "networkmanager" ];
     };
   };
 
