@@ -1,7 +1,7 @@
 { nix-colors, ... }: 
 
 let
-  font = "FiraCode Nerd Font";
+  font = "Noto Sans Mono";
   colors = nix-colors.colorSchemes.gruvbox-material-dark-hard.colors;
 in
 {
@@ -17,6 +17,7 @@ in
         bold = { family = font; style = "Bold"; };
         italic = { family = font; style = "Oblique"; };
         size = 10.0;
+        offset = { x = 1; y = 1; };
       };
       colors = {
         background = "#${colors.base00}";

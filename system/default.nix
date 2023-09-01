@@ -37,21 +37,19 @@
   fonts = {
     fontconfig = {
       defaultFonts = {
-        serif = [ "Source Han Serif" ];
-        sansSerif = [ "Source Han Sans" ];
-        monospace = [ "Source Han Mono" ];
+        serif = [ "Noto Serif" ];
+        sansSerif = [ "Noto Sans" ];
+        monospace = [ "Noto Sans Mono" ];
         emoji = [ "Noto Color Emoji" ];
       };
     };
     packages = with pkgs; [
+      noto-fonts
+      noto-fonts-cjk
       noto-fonts-emoji
 
-      source-han-serif
-      source-han-sans
-      source-han-mono
-
       (nerdfonts.override {
-        fonts = [ "FiraCode" ];
+        fonts = [ "Noto" ];
       })
     ];
   };
