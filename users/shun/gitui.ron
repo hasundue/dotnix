@@ -13,6 +13,10 @@
 // find `KeysList` type in src/keys/key_list.rs for all possible keys.
 // every key not overwritten via the config file will use the default specified there
 (
+    exit: Some(( code: Char('c'), modifiers: ( bits: 2,),)),
+    quit: Some(( code: Char('d'), modifiers: ( bits: 2,),)),
+    exit_popup: Some(( code: Char('o'), modifiers: ( bits: 2,),)),
+
     open_help: Some(( code: F(1), modifiers: ( bits: 0,),)),
 
     move_left: Some(( code: Char('h'), modifiers: ( bits: 0,),)),
@@ -38,7 +42,6 @@
 
     stashing_save: Some(( code: Char('w'), modifiers: ( bits: 0,),)),
     stashing_toggle_index: Some(( code: Char('m'), modifiers: ( bits: 0,),)),
-
     stash_open: Some(( code: Char('l'), modifiers: ( bits: 0,),)),
 
     abort_merge: Some(( code: Char('M'), modifiers: ( bits: 1,),)),
