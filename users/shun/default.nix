@@ -47,9 +47,9 @@
         (vivaldi.override {
           proprietaryCodecs = true;
         })
-        vieb
-        chromium
         _1password-gui
+        marp-cli
+        google-chrome
 
         # communication
         slack
