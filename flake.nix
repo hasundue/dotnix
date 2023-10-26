@@ -3,17 +3,14 @@
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
-
     nixos-hardware.url = "github:nixos/nixos-hardware";
     nix-colors.url = "github:misterio77/nix-colors";
-
     home-manager = {
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    config-private = {
-      url = "git+https://github.com/hasundue/nixos-config-private.git";
-      inputs.nixpkgs.follows = "nixpkgs";
+    neovim-nightly = {
+      url = "github:nix-community/neovim-nightly-overlay";
     };
   };
 
@@ -27,25 +24,12 @@
     stateVersion = "23.05";
     system = "x86_64-linux";
 
-    caches = { pkgs, config, ... }: {
-      nix = {
-        settings = {
-          # add binary caches for nixpkgs and home-manager
-          trusted-public-keys = [
-            "cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="
-            "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
-          ];
-          substituters = [
-            "https://cache.nixos.org"
-            "https://nix-community.cachix.org"
-          ];
-        };
-      };
-    };
-
     home = [
       home-manager.nixosModules.home-manager
       {
+        nixpkgs.overlays = [
+          inputs.neovim-nightly.overlay
+        ];
         home-manager = {
           extraSpecialArgs = { 
             inherit stateVersion;
@@ -59,10 +43,6 @@
         };
       }
     ];
-
-    defaultModules = [ caches ] ++ home;
-
-    networks = inputs.config-private.nixosModules.networks;
 
     defaultSpecialArgs = {
       inherit inputs;
@@ -78,8 +58,7 @@
         modules = [
           ./hosts/x1carbon.nix
           ./system/default.nix
-          networks.default
-        ] ++ defaultModules;
+        ] ++ home;
         specialArgs = defaultSpecialArgs;
       };
     };

@@ -23,18 +23,21 @@
         ripgrep
         nil
         xdg-utils
-        fcitx5
-        fcitx5-configtool
 
         # development
+        nix-init
+        cmake
+        emscripten
         deno
         zig
+        zls
         julia
         bun
         nodejs
         nodePackages.wrangler
         nodePackages.yarn
-        buildkit # required by cicada
+        lua-language-server
+        tree-sitter
         act
 
         # wayland
@@ -58,12 +61,6 @@
 
         # entertainment
         spotify
-        (lutris.override {
-          extraPkgs = pkgs: [
-            wine
-            steam
-          ];
-        })
     ]);
 
     sessionPath = [
@@ -74,10 +71,8 @@
     sessionVariables = {
       EDITOR = "nvim";
       BROWSER = "vivaldi";
+      LD_LIBRARY_PATH = "${pkgs.stdenv.cc.cc.lib}/lib";
       NIXOS_OZONE_WL = 1;
-      GTK_IM_MODULE = "fcitx";
-      QT_IM_MODULE = "fcitx";
-      XMODIFIERS = "@im=fcitx";
     };
   };
 
@@ -114,12 +109,12 @@
     shellAliases = {
       ll = "ls -l";
       nv = "nvim";
+      g = "git";
       nbuild = "sudo nixos-rebuild switch --flake .";
       nupdate = "nix flake update . && nbuild";
     };
     shellGlobalAliases = {
       suspend = "systemctl suspend";
-      vieb = "vieb --enable-features=UseOzonePlatform --ozone-platform=wayland";
     };
     syntaxHighlighting = {
       enable = true;
@@ -138,9 +133,15 @@
     enable = true;
     userEmail = "hasundue@gmail.com";
     userName = "hasundue";
-    ignores = [ ".env" "dist/" "node_modules" ];
+    ignores = [ ".env" "dist/" "vendor/" "node_modules" ];
     aliases = {
       co = "checkout";
+      ci = "commit";
+      st = "status";
+      br = "branch";
+      pl = "pull";
+      ps = "push";
+      df = "diff";
     };
     extraConfig = {
       credential."https://github.com".helper = "!gh auth git-credential";
