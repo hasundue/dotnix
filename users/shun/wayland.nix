@@ -10,8 +10,6 @@
       floating = {
         criteria = [
           { title = "1Password"; }
-          { title = "Alby"; }
-          { title = "Steam"; }
         ];
       };
       gaps = {
@@ -70,11 +68,21 @@
     wrapperFeatures.gtk = true;
   };
 
+  programs.swaylock = {
+    enable = true;
+  };
+
   programs.waybar = {
     enable = true;
   };
 
   programs.i3status.enable = true;
+
+  services.swayidle = {
+    enable = true;
+  };
+
+  services.clipman.enable = true;
 
   gtk = {
     enable = true;
@@ -108,6 +116,4 @@
     enable = true;
     platformTheme = "gtk";
   };
-
-  services.clipman.enable = true;
 }

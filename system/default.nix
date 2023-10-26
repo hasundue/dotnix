@@ -94,6 +94,9 @@
       enable = true;
       wheelNeedsPassword = false;
     };
+    pam.services.swaylock.text = ''
+      auth include login
+    '';
   };
 
   services = {
