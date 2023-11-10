@@ -1,7 +1,9 @@
-{ pkgs, nixos-hardware, ... }:
+{ pkgs, modulesPath, nixos-hardware, ... }:
 
 {
   imports = [ 
+    (modulesPath + "/installer/scan/not-detected.nix")
+
     nixos-hardware.nixosModules.lenovo-thinkpad-x1-extreme
 
     ../../core
@@ -90,10 +92,10 @@
   sound.enable = true;
 
   stylix.fonts.sizes = {
-    desktop = 16;
-    applications = 14;
+    desktop = 12;
+    applications = 12;
     terminal = 12;
-    popups = 16;
+    popups = 12;
   };
 
   swapDevices = [ 

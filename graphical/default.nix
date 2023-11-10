@@ -22,15 +22,14 @@
 
   stylix = {
     cursor = {
-      name = "Adwaita";
-      package = pkgs.gnome.adwaita-icon-theme;
+      name = "Nordzy-cursors";
+      package = pkgs.nordzy-cursor-theme;
     };
     image = pkgs.fetchurl {
       url = "https://upload.wikimedia.org/wikipedia/commons/a/a5/Tsunami_by_hokusai_19th_century.jpg";
       hash = "sha256-MMFwJg3jk/Ub1ZKtrMbwcUtg8VfAl0TpxbbUbmphNxg=";
     };
     targets = {
-      gnome.enable = true;
       gtk.enable = true;
       plymouth.enable = true;
     };

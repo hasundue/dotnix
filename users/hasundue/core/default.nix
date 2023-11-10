@@ -6,7 +6,7 @@
 
     ./fish.nix
     ./git.nix
-    ./neovim.nix
+    ./neovim
     ./xdg.nix
   ];
 

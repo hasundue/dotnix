@@ -4,4 +4,6 @@
       ./sway.nix
     ];
   };
+
+  programs.sway.enable = true;
 }

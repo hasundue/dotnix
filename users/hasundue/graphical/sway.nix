@@ -12,7 +12,7 @@
         inner = 10;
       };
       menu = "tofi-run | xargs swaymsg exec env NIXOS_OZONE_WL=1 --";
-      terminal = lib.getExe pkgs.foot;
+      terminal = lib.getExe pkgs.alacritty;
       window = {
         titlebar = false;
       };

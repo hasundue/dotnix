@@ -29,7 +29,9 @@ with lib;
     home.username = config.users.users.hasundue.name;
   };
 
-  nixpkgs.overlays = [
-    neovim-nightly.overlay
-  ];
+  nixpkgs = {
+    overlays = [
+      neovim-nightly.overlay
+    ];
+  };
 }
