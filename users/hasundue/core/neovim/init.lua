@@ -1,4 +1,6 @@
 local opt = vim.opt
+local cmd = vim.cmd
+local g = vim.g
 
 opt.termguicolors = true
 
@@ -11,8 +13,24 @@ require('kanagawa').setup({
     statementStyle = { bold = true },
     typeStyle = {},
     transparent = true,          -- do not set background color
-    dimInactive = false,         -- dim inactive window `:h hl-NormalNC`
+    dimInactive = true,          -- dim inactive window `:h hl-NormalNC`
     terminalColors = true,       -- define vim.g.terminal_color_{0,17}
 })
 
-vim.cmd("colorscheme kanagawa")
+cmd("colorscheme kanagawa")
+
+g.clipboard = {
+  name = 'OSC 52',
+  copy = {
+    ['+'] = require('vim.clipboard.osc52').copy,
+    ['*'] = require('vim.clipboard.osc52').copy,
+  },
+  paste = {
+    ['+'] = require('vim.clipboard.osc52').paste,
+    ['*'] = require('vim.clipboard.osc52').paste,
+  },
+}
+
+opt.clipboard = "unnamedplus"
+
+opt.smartindent = true

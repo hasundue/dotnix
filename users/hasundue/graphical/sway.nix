@@ -1,17 +1,19 @@
-{ lib, pkgs, ... }: 
+{ config, lib, pkgs, ... }: 
 
 {
+  imports = [
+    ./waybar.nix
+  ];
+
   wayland.windowManager.sway = {
     config = {
-      bars = [{
-        statusCommand = "i3status";
-      }];
+      bars = [];
       gaps = {
         smartBorders = "on";
         smartGaps = false;
         inner = 10;
       };
-      menu = "tofi-run | xargs swaymsg exec env NIXOS_OZONE_WL=1 --";
+      menu = "rofi -show run";
       terminal = lib.getExe pkgs.alacritty;
       window = {
         titlebar = false;
@@ -21,17 +23,12 @@
     wrapperFeatures.gtk = true;
   };
 
-  home = {
-    packages = (with pkgs; [ 
-      grim
-      slurp
-      tofi
-    ]);
-  };
-
   programs = {
     i3status.enable = true;
     swaylock = {
+      enable = true;
+    };
+    rofi = {
       enable = true;
     };
   };

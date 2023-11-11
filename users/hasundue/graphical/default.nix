@@ -11,7 +11,6 @@
       (vivaldi.override {
         proprietaryCodecs = true;
       })
-      google-chrome
 
       # communication
       slack
@@ -26,6 +25,11 @@
       hicolor-icon-theme
       qt5.qtwayland
       qt6.qtwayland
+
+      # tools
+      grim
+      slurp
+      wl-clipboard
     ];
 
     sessionVariables = {
@@ -51,7 +55,7 @@
       tray = true;
       settings.general = {
         brightness-day = 1.0;
-        brightness-night = 0.4;
+        brightness-night = 0.6;
       };
     };
   };

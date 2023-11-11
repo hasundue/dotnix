@@ -44,13 +44,13 @@
 
   hardware = {
     bluetooth.enable = true;
-    pulseaudio.enable = true;
-
+    brillo.enable = true;
     opengl = {
       enable = true;
       driSupport = true;
       extraPackages = with pkgs; [ libva ];
     };
+    pulseaudio.enable = true;
   };
 
   networking = {
@@ -66,8 +66,8 @@
     actkbd = {
       enable = true;
       bindings = [
-        { keys = [ 232 ]; events = [ "key" ]; command = "brightnessctl s 5%-"; }
-        { keys = [ 233 ]; events = [ "key" ]; command = "brightnessctl s +5%"; }
+        { keys = [ 232 ]; events = [ "key" ]; command = "brightnessctl set 5%-"; }
+        { keys = [ 233 ]; events = [ "key" ]; command = "brightnessctl set +5%"; }
       ];
     };
     automatic-timezoned.enable = true;

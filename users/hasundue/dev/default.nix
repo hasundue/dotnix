@@ -1,13 +1,16 @@
 { pkgs, ... }:
 
 {
+  imports = [
+    ./deno.nix
+  ];
+
   home = {
     packages = with pkgs; [
       act
       bun
       cmake
       emscripten
-      deno
       lua-language-server
       nodejs
       tree-sitter
