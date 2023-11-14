@@ -3,6 +3,7 @@
 {
   imports = [
     ./alacritty.nix
+    ./chromium.nix
   ];
 
   home = {
@@ -53,8 +54,8 @@
       enable = true;
       provider = "geoclue2";
       temperature = {
-	day = 5500;
-	night = 3700;
+        day = 5500;
+        night = 4500;
       };
       tray = true;
     };

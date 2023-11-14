@@ -27,6 +27,10 @@
       url = "github:nix-community/neovim-nightly-overlay";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    neovim-plugins = {
+      url = "./nix/flakes/neovim-plugins";
+    };
   };
 
   outputs = { self, nixpkgs, ... } @ inputs: {

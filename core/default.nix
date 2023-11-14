@@ -1,4 +1,4 @@
-{ pkgs, base16-schemes, neovim-nightly, stylix, ... }:
+{ pkgs, base16-schemes, neovim-nightly, neovim-plugins, stylix, ... }:
 
 {
   imports = [
@@ -25,6 +25,7 @@
       inherit
         base16-schemes
         neovim-nightly
+	      neovim-plugins
         stylix;
     };
   };

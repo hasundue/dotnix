@@ -1,0 +1,20 @@
+[[plugins]]
+repo = 'dpp'
+rtp = ''
+
+[[plugins]]
+repo = 'dpp-ext-lazy'
+on_source = 'dpp'
+rtp = ''
+
+[[plugins]]
+repo = 'dpp-ext-local'
+on_source = 'dpp'
+
+[[plugins]]
+repo = 'dpp-ext-toml'
+on_source = 'dpp'
+hook_add = '''
+" Enable dpp toml syntax.
+autocmd MyAutoCmd CursorHold */rc/*.toml call dpp#ext#toml#syntax()
+'''
