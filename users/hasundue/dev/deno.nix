@@ -9,9 +9,11 @@
     shellAliases = rec {
       # use deno for gnumake
       dt = "deno task";
-      dtm = "${dt} make";
+      dtc = "${dt} check";
       dts = "${dt} switch";
       dtt = "${dt} test";
+      dtr = "${dt} rebuild";
+      dtu = "${dt} update";
     };
   };
 }

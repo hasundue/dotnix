@@ -3,7 +3,8 @@
     "check": "deno check ./**/*.ts",
     "rebuild": "deno task check && git add --all && sudo nixos-rebuild",
     "test": "deno task rebuild test --flake .",
-    "switch": "deno task rebuild switch --flake ."
+    "switch": "deno task rebuild switch --flake .",
+    "update": "nix flake update ."
   },
   "lock": false
 }
