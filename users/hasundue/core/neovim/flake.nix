@@ -5,10 +5,13 @@
     # denops.vim
     denops = { url = "github:vim-denops/denops.vim"; flake = false; };
 
-    # plugin manager
+    # dpp.vim (plugin manager)
     dpp = { url = "github:Shougo/dpp.vim"; flake = false; };
     dpp-ext-lazy = { url = "github:Shougo/dpp-ext-lazy"; flake = false; };
     dpp-ext-local = { url = "github:Shougo/dpp-ext-local"; flake = false; };
+
+    # ddu.vim (UI framework)
+    ddu = { url = "github:Shougo/ddu.vim"; flake = false; };
 
     # UI
     kanagawa = { url = "github:rebelot/kanagawa.nvim"; flake = false; };
@@ -28,7 +31,7 @@
   };
 
   outputs = { nixpkgs, ... } @ inputs: {
-    repos = nixpkgs.lib.filterAttrs
+    plugins = nixpkgs.lib.filterAttrs
       (name: value: name != "nixpkgs" && name != "_type" && name != "self")
       inputs;
   };

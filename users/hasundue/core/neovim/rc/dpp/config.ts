@@ -8,20 +8,12 @@ import {
   Plugin,
 } from "https://deno.land/x/dpp_vim@v0.0.7/types.ts";
 import { Denops } from "https://deno.land/x/dpp_vim@v0.0.7/deps.ts";
+import { HOOK_FILE_ENTRIES } from "./hooks.ts";
 
 type LazyMakeStateResult = {
   plugins: Plugin[];
   stateLines: string[];
 };
-
-const HOOK_FILE_MAP = {
-  hook_add: "hook_add.vim",
-  hook_source: "hook_source.vim",
-  lua_add: "hook_add.lua",
-  lua_source: "hook_source.lua",
-} as const;
-
-const HOOK_FILE_ENTRIES = Object.entries(HOOK_FILE_MAP);
 
 const FILETYPES_LSP_ENABLED = [
   "lua",

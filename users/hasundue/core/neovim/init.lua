@@ -5,7 +5,7 @@ vim.loader.enable()
 require("base")
 
 -- load plugins with dpp.vim
-vim.cmd("source ~/.config/nvim/rc/dpp.vim")
+vim.cmd("source ~/.config/nvim/rc/dpp/init.vim")
 
 -- configure colorscheme
 require("colorscheme")

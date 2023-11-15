@@ -1,4 +1,4 @@
-{ pkgs, base16-schemes, neovim-nightly, neovim-plugins, stylix, ... }:
+{ pkgs, base16-schemes, ... }:
 
 {
   imports = [
@@ -21,13 +21,6 @@
   home-manager = {
     useGlobalPkgs = true;
     useUserPackages = true;
-    extraSpecialArgs = { 
-      inherit
-        base16-schemes
-        neovim-nightly
-	      neovim-plugins
-        stylix;
-    };
   };
 
   nixpkgs = {

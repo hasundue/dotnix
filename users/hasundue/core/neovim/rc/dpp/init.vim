@@ -30,7 +30,7 @@ if dpp#min#load_state(s:dpp_base)
   runtime! plugin/denops
 
   autocmd dpprc User DenopsReady
-    \ call dpp#make_state(s:dpp_base, stdpath('config') .. '/rc/dpp.ts')
+    \ call dpp#make_state(s:dpp_base, stdpath('config') .. '/rc/dpp/config.ts')
 
   autocmd dpprc User Dpp:makeStatePost
     \ echo '[dpp] Created ' .. s:dpp_state

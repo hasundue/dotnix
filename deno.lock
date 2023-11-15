@@ -2,10 +2,15 @@
   "version": "3",
   "packages": {
     "specifiers": {
+      "npm:type-fest@4.7.1": "npm:type-fest@4.7.1",
       "npm:vscode-languageserver-protocol@3.17.5": "npm:vscode-languageserver-protocol@3.17.5",
       "npm:vscode-languageserver-types@3.17.5": "npm:vscode-languageserver-types@3.17.5"
     },
     "npm": {
+      "type-fest@4.7.1": {
+        "integrity": "sha512-iWr8RUmzAJRfhZugX9O7nZE6pCxDU8CZ3QxsLuTnGcBLJpCaP2ll3s4eMTBoFnU/CeXY/5rfQSuAEsTGJO4y8A==",
+        "dependencies": {}
+      },
       "vscode-jsonrpc@8.2.0": {
         "integrity": "sha512-C+r0eKJUIfiDIfwJhria30+TYWPtuHJXHtI7J0YlOmKAo7ogxP20T0zxB7HZQIFhIyvoBPwWskjxrvAtfjyZfA==",
         "dependencies": {}

@@ -82,5 +82,5 @@
       ("nvim/plugins/" + name)
       { source = value; }
     )
-    neovim-plugins.repos;
+    neovim-plugins;
 }

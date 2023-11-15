@@ -28,8 +28,8 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    neovim-plugins = {
-      url = "./nix/flakes/neovim-plugins";
+    user-hasundue = {
+      url = "./users/hasundue";
     };
   };
 
