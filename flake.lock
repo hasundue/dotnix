@@ -226,22 +226,6 @@
         "type": "github"
       }
     },
-    "dpp-ext-toml": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1699053876,
-        "narHash": "sha256-xsKLzNHaJFXQHGpmnyW2Cl0zRok+AtCsANVcHyEgDVo=",
-        "owner": "Shougo",
-        "repo": "dpp-ext-toml",
-        "rev": "d5d9054bd712b5e0d94fd9e029ad0b8843525840",
-        "type": "github"
-      },
-      "original": {
-        "owner": "Shougo",
-        "repo": "dpp-ext-toml",
-        "type": "github"
-      }
-    },
     "flake-compat": {
       "flake": false,
       "locked": {
@@ -495,7 +479,6 @@
         "dpp": "dpp",
         "dpp-ext-lazy": "dpp-ext-lazy",
         "dpp-ext-local": "dpp-ext-local",
-        "dpp-ext-toml": "dpp-ext-toml",
         "kanagawa": "kanagawa",
         "lspoints": "lspoints",
         "lspoints-hover": "lspoints-hover",
@@ -505,12 +488,12 @@
       },
       "locked": {
         "lastModified": 1,
-        "narHash": "sha256-3moNoR92wu/5IPUvIz3IjstE1JsoT98CmWEfUt7YTAo=",
-        "path": "/nix/store/8xcxly4mg7gp2djvaa6rqlwyz0cd3dzq-source/nix/flakes/neovim-plugins",
+        "narHash": "sha256-yvk035Te4EARa6AGuVfpaq+Jy2huDgfSIh9nd6CELrk=",
+        "path": "/nix/store/jsx30wv1prf1lr0g71kspadsmgngva60-source/nix/flakes/neovim-plugins",
         "type": "path"
       },
       "original": {
-        "path": "/nix/store/8xcxly4mg7gp2djvaa6rqlwyz0cd3dzq-source/nix/flakes/neovim-plugins",
+        "path": "/nix/store/jsx30wv1prf1lr0g71kspadsmgngva60-source/nix/flakes/neovim-plugins",
         "type": "path"
       }
     },

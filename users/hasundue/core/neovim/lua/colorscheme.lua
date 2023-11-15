@@ -1,6 +1,6 @@
 vim.opt.termguicolors = true
 
-require('kanagawa').setup({
+require("kanagawa").setup({
     colors = {
       theme = { all = { ui = { bg_gutter = 'none' } } },
     },

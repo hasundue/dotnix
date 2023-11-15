@@ -15,7 +15,6 @@ if dpp#min#load_state(s:dpp_base)
   " Add denops and other dpp plugins to runtimepath (required)
   call s:add('denops')
   call s:add('dpp-ext-local')
-  call s:add('dpp-ext-toml')
 
   " Need to load denops manually
   runtime! plugin/denops
@@ -23,6 +22,6 @@ if dpp#min#load_state(s:dpp_base)
   autocmd User DenopsReady
     \ call dpp#make_state(s:dpp_base, '~/.config/nvim/rc/dpp.ts'->expand())
 else
-  autocmd BufWritePost *.lua,*.vim,*.toml,*.ts
+  autocmd BufWritePost */nvim/rc/*
     \ call dpp#check_files()
 endif

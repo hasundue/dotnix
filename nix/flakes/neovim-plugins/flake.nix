@@ -9,7 +9,6 @@
     dpp = { url = "github:Shougo/dpp.vim"; flake = false; };
     dpp-ext-lazy = { url = "github:Shougo/dpp-ext-lazy"; flake = false; };
     dpp-ext-local = { url = "github:Shougo/dpp-ext-local"; flake = false; };
-    dpp-ext-toml = { url = "github:Shougo/dpp-ext-toml"; flake = false; };
 
     # UI
     kanagawa = { url = "github:rebelot/kanagawa.nvim"; flake = false; };

@@ -1,1 +1,1 @@
-/home/hasundue/nixos-config/nix/flakes/neovim-plugins/flake.nix
+../../../../nix/flakes/neovim-plugins/flake.nix
