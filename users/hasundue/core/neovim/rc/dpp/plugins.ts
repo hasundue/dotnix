@@ -1,7 +1,6 @@
 import { basename } from "https://deno.land/std@0.206.0/path/basename.ts";
-import { deepMerge } from "https://deno.land/std@0.206.0/collections/deep_merge.ts";
-import { Plugin } from "https://deno.land/x/dpp_vim@v0.0.7/types.ts";
 import type { AutocmdEvent } from "https://deno.land/x/denops_std@v5.0.2/autocmd/mod.ts";
+import type { Plugin } from "https://deno.land/x/dpp_vim@v0.0.7/types.ts";
 
 export type RepoSpec<
   Owner extends string = string,
@@ -9,18 +8,14 @@ export type RepoSpec<
 > = `${Owner}/${Name}`;
 
 export type RepoName<R = RepoSpec> = R extends
-  RepoSpec<infer _Owner, infer Name> ? Name
-  : never;
+  RepoSpec<infer _Owner, infer Name> ? Name : never;
 
 export type Config<
   RepoRef extends RepoName = RepoName,
-> = {
+> = Partial<Omit<Plugin, "repo">> & {
   depends?: RepoRef[];
-  lazy?: boolean;
-  merged?: boolean;
   on_source?: RepoRef[];
   on_event?: AutocmdEvent[];
-  rtp?: string;
 };
 
 export type Init<
@@ -38,9 +33,8 @@ export function Group<
   list: Init<Repo, RepoRef>[],
 ): Init<Repo, RepoRef>[] {
   return list.map(
-    (it) => deepMerge(it, config, { arrays: "merge" }),
-    // FIXME: deepMerge argues that `repo` is missing
-  ) as Init<Repo, RepoRef>[];
+    (it) => ({ ...it, ...config }),
+  );
 }
 
 export type Spec<
@@ -56,18 +50,22 @@ export type List<
   [R in Repo]: Spec<R, RepoName<Repo>>;
 }[Repo][];
 
-export function createList<
+export function List<
   Repo extends RepoSpec,
->(init: Init<Repo, RepoName<Repo>>[]): List<Repo> {
+>(
+  init: Init<Repo, RepoName<Repo>>[],
+  config?: Config<RepoName<Repo>>,
+): List<Repo> {
   return init.map(
     (it) => ({
       ...it,
+      ...config,
       name: basename(it.repo),
     }),
   ) as List<Repo>;
 }
 
-export const PLUGINS = createList([
+export const PLUGINS = List([
   // Bootstrap
   ...Group(
     { lazy: false, rtp: "" },
@@ -115,7 +113,7 @@ export const PLUGINS = createList([
     { on_event: ["BufRead"] },
     [
       { repo: "nvim-treesitter/nvim-treesitter" },
-      { repo: "kuuote/lspoints.nvim" },
+      { repo: "kuuote/lspoints" },
     ],
   ),
 
@@ -134,4 +132,4 @@ export const PLUGINS = createList([
       { repo: "github/copilot.vim" },
     ],
   ),
-]) satisfies Plugin[];
+], { frozen: true }) satisfies Plugin[];
