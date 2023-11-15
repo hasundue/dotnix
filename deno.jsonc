@@ -1,7 +1,8 @@
 {
   "tasks": {
     "check": "deno check ./**/*.ts",
-    "test": "deno task check && git add --all && nixos-rebuild test --flake .",
-    "switch": "nixos-rebuild switch --use-previous-result --flake ."
+    "rebuild": "deno task check && git add --all && sudo nixos-rebuild",
+    "test": "deno task rebuild test --flake .",
+    "switch": "deno task rebuild switch --flake ."
   }
 }

@@ -31,6 +31,9 @@ const PLUGIN_CONFIG_MAP = {
   "dpp-ext-lazy": {
     rtp: "",
   },
+  kanagawa: {
+    lazy: false,
+  },
   lspoints: {
     depends: "denops",
     on_ft: FILETYPES_LSP_ENABLED,
