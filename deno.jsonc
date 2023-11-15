@@ -4,5 +4,6 @@
     "rebuild": "deno task check && git add --all && sudo nixos-rebuild",
     "test": "deno task rebuild test --flake .",
     "switch": "deno task rebuild switch --flake ."
-  }
+  },
+  "lock": false
 }
