@@ -11,6 +11,7 @@
       bun
       cmake
       emscripten
+      stylua
       lua-language-server
       nodejs
       tree-sitter

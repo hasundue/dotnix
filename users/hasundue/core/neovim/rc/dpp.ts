@@ -6,21 +6,46 @@ import {
   Dpp,
   Plugin,
 } from "https://deno.land/x/dpp_vim@v0.0.7/types.ts";
-import { Denops, fn } from "https://deno.land/x/dpp_vim@v0.0.7/deps.ts";
+import { Denops } from "https://deno.land/x/dpp_vim@v0.0.7/deps.ts";
 
 type LazyMakeStateResult = {
   plugins: Plugin[];
   stateLines: string[];
 };
 
-const HOOK_FILE_NAMES = {
+const HOOK_FILE_MAP = {
   hook_add: "hook_add.vim",
   hook_source: "hook_source.vim",
   lua_add: "hook_add.lua",
   lua_source: "hook_source.lua",
 } as const;
 
-const HOOK_FILE_ENTRIES = Object.entries(HOOK_FILE_NAMES);
+const HOOK_FILE_ENTRIES = Object.entries(HOOK_FILE_MAP);
+
+const FILETYPES_LSP_ENABLED = [
+  "lua",
+  "nix",
+  "typescript",
+] as const;
+
+const PLUGIN_CONFIG_MAP = {
+  copilot: {
+    on_event: "InsertEnter",
+  },
+  dpp: {
+    rtp: "",
+  },
+  "dpp-ext-lazy": {
+    rtp: "",
+  },
+  lspoints: {
+    depends: "denops",
+    on_ft: FILETYPES_LSP_ENABLED,
+  },
+  "lspoints-hover": {
+    on_source: "lspoints",
+  },
+} as const;
 
 export class Config extends BaseConfig {
   override async config(args: {
@@ -56,7 +81,7 @@ export class Config extends BaseConfig {
     for (const plugin of plugins) {
       // dpp-exts to be loaded when dpp is sourced
       if (plugin.name.startsWith("dpp-ext-")) {
-        Object.assign(plugin, { on_source: "dpp" });
+        Object.assign(plugin, { depends: "dpp", on_source: "dpp" });
       }
       // plugin-specific hooks
       for (const [key, file] of HOOK_FILE_ENTRIES) {
@@ -68,6 +93,11 @@ export class Config extends BaseConfig {
         } catch (e) {
           assertInstanceOf(e, Deno.errors.NotFound);
         }
+      }
+      // plugin-specific config
+      if (plugin.name in PLUGIN_CONFIG_MAP) {
+        // @ts-ignore: TS7053
+        Object.assign(plugin, PLUGIN_CONFIG_MAP[plugin.name]);
       }
     }
 

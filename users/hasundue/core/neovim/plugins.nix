@@ -1,1 +1,0 @@
-../../../../nix/flakes/neovim-plugins/flake.nix

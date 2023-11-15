@@ -1,31 +1,14 @@
 -- Lua wrapper for lspoints' excuteCommand
-local function create_execute(command, option)
-  function()
+local function create_execute(command, options)
+  return function()
     vim.call(
       "denops#request",
       "lspoints",
       "executeCommand",
-      { command, "execute", option },
+      { command, "execute", options }
     )
   end
 end
-
--- initialize lspoints when denops loads the plugin
-vim.api.nvim_create_autocmd("User", {
-  pattern = "DenopsPluginPost:lspoints",
-  callback = function()
-    vim.call(
-      "lspoints#load_extensions",
-      {
-        "config",
-        "format",
-        "nvim_diagnostics",
-        "hover",
-        "rename",
-      },
-    )
-  end,
-})
 
 -- a map of lsp servers to lspoints extensions
 local servers = {
@@ -37,9 +20,9 @@ local servers = {
 -- attach lsp servers
 vim.api.nvim_create_autocmd("FileType", {
   pattern = vim.tbl_keys(servers),
-  group = vim.api.nvim_create_augroup("lspoints-attach", {}),
-  callback = function(ev)
-    vim.call("lspoints#attach", servers[ev.match])
+  group = vim.api.nvim_create_augroup("lspoints-filetype", {}),
+  callback = function(args)
+    vim.call("lspoints#attach", servers[args.match])
   end,
 })
 
@@ -48,9 +31,9 @@ vim.api.nvim_create_autocmd("User", {
   group = vim.api.nvim_create_augroup("lspoints-attach", {}),
 
   callback = function(ev)
-
+    --
     -- keymappings ------------------------------------------------
-    
+    --
     local function map(mode, from, to)
       vim.keymap.set(mode, from, to, { buffer = ev.buf, noremap = true })
     end
@@ -64,11 +47,12 @@ vim.api.nvim_create_autocmd("User", {
     map('n', 'K', create_execute("hover", { border = "none" }))
     map('n', "<M-r>", create_execute("rename"))
     
+    --
     -- autocmds ---------------------------------------------------
-    
+    --
     vim.api.nvim_create_autocmd("BufWritePre", {
       buffer = ev.buf,
-      group = vim.api.nvim_create_augroup("lspoints-format", {}),
+      group = vim.api.nvim_create_augroup("lspoints-write", {}),
       callback = create_execute("format", ev.buf),
     })
   end,
