@@ -1,6 +1,6 @@
 import { assertEquals } from "https://deno.land/std@0.206.0/assert/assert_equals.ts";
 import { assertObjectMatch } from "https://deno.land/std@0.206.0/assert/assert_object_match.ts";
-import { Group } from "./plugins.ts";
+import { Group, List } from "./plugins.ts";
 
 Deno.test("Group", () => {
   const group = Group(
@@ -11,7 +11,7 @@ Deno.test("Group", () => {
       },
       {
         repo: "Shougo/dpp-ext-lazy",
-        depends: ["dpp"],
+        depends: ["dpp.vim"],
       },
     ],
   );
@@ -28,9 +28,37 @@ Deno.test("Group", () => {
     group[1],
     {
       repo: "Shougo/dpp-ext-lazy",
-      depends: ["dpp"],
+      depends: ["dpp.vim"],
       lazy: false,
       rtp: "",
+    },
+  );
+});
+
+Deno.test("List", () => {
+  const list = List([
+    {
+      repo: "Shougo/dpp.vim",
+    },
+    {
+      repo: "Shougo/dpp-ext-lazy",
+      depends: ["dpp.vim"],
+    },
+  ]);
+  assertEquals(list.length, 2);
+  assertObjectMatch(
+    list[0],
+    {
+      repo: "Shougo/dpp.vim",
+      name: "dpp.vim",
+    },
+  );
+  assertObjectMatch(
+    list[1],
+    {
+      repo: "Shougo/dpp-ext-lazy",
+      depends: ["dpp.vim"],
+      name: "dpp-ext-lazy",
     },
   );
 });
