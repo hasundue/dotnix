@@ -7,16 +7,21 @@
 
   home = {
     packages = with pkgs; [
-      act
+      # runtimes
       bun
+      nodejs
+      zig
+
+      # language servers
+      lua-language-server
+      nil
+      zls
+
+      # tools
+      act
       cmake
       emscripten
-      stylua
-      lua-language-server
-      nodejs
       tree-sitter
-      zig
-      zls
     ];
   };
 

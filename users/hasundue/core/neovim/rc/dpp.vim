@@ -6,12 +6,22 @@ function s:add(plugin_name)
 endfunction
 
 const s:dpp_base = '~/.cache/dpp'->expand()
+const s:dpp_state = s:dpp_base .. '/nvim/state.vim'
 
 " Add dpp and ext-lazy to runtimepath (required)
 call s:add('dpp')
 call s:add('dpp-ext-lazy')
 
+" Define augroup for dpp
+augroup dpprc
+  autocmd!
+augroup END
+
+" Try loading the latest state
 if dpp#min#load_state(s:dpp_base)
+  " The state file doesn't exist. Create one from scratch.
+  echo '[dpp] Creating ' .. s:dpp_state .. ' ...'
+
   " Add denops and other dpp plugins to runtimepath (required)
   call s:add('denops')
   call s:add('dpp-ext-local')
@@ -19,9 +29,15 @@ if dpp#min#load_state(s:dpp_base)
   " Need to load denops manually
   runtime! plugin/denops
 
-  autocmd User DenopsReady
-    \ call dpp#make_state(s:dpp_base, '~/.config/nvim/rc/dpp.ts'->expand())
+  autocmd dpprc User DenopsReady
+    \ call dpp#make_state(s:dpp_base, stdpath('config') .. '/rc/dpp.ts')
+
+  autocmd dpprc User Dpp:makeStatePost
+    \ echo '[dpp] Created ' .. s:dpp_state
 else
-  autocmd BufWritePost */nvim/rc/*
-    \ call dpp#check_files()
+  " Found an existing state. Check if it is up-to-date.
+  call dpp#check_files()
+
+  autocmd dpprc User Dpp:makeStatePost
+    \ echo '[dpp] Updated ' .. s:dpp_state
 endif

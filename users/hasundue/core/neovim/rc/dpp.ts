@@ -1,4 +1,5 @@
 import { assertInstanceOf } from "https://deno.land/std@0.206.0/assert/assert_instance_of.ts";
+import { walk } from "https://deno.land/std@0.206.0/fs/walk.ts";
 import {
   BaseConfig,
   ConfigReturn,
@@ -30,7 +31,7 @@ const FILETYPES_LSP_ENABLED = [
 
 const PLUGIN_CONFIG_MAP = {
   copilot: {
-    on_event: "InsertEnter",
+    on_event: "CursorHold",
   },
   dpp: {
     rtp: "",
@@ -58,8 +59,8 @@ export class Config extends BaseConfig {
 
     const [context, options] = await args.contextBuilder.get(denops);
 
-    const $CONFIG = await denops.call("stdpath", "config");
-    const $DATA = await denops.call("stdpath", "data");
+    const $CONFIG = await denops.call("stdpath", "config") as string;
+    const $DATA = await denops.call("stdpath", "data") as string;
 
     // Load all plugins installed by Nix
     const plugins = await dpp.extAction(
@@ -101,7 +102,8 @@ export class Config extends BaseConfig {
       }
     }
 
-    const result = await dpp.extAction(
+    // Create a state with dpp-ext-lazy
+    const makeStateResult = await dpp.extAction(
       denops,
       context,
       options,
@@ -110,9 +112,19 @@ export class Config extends BaseConfig {
       { plugins },
     ) as LazyMakeStateResult;
 
+    // Create a list of files to check
+    // TODO: use Array.fromAsync when it's available
+    const checkFiles: string[] = [];
+    for await (const entry of walk($CONFIG + "/rc")) {
+      if (entry.isFile) {
+        checkFiles.push(entry.path);
+      }
+    }
+
     return {
-      plugins: result.plugins,
-      stateLines: result.stateLines,
+      checkFiles,
+      plugins: makeStateResult.plugins,
+      stateLines: makeStateResult.stateLines,
     } satisfies ConfigReturn;
   }
 }
