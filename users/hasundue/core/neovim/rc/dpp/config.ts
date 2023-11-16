@@ -50,12 +50,10 @@ export class Config extends BaseConfig {
     basePath: string;
     dpp: Dpp;
   }) {
-    const { denops, dpp } = args;
-
-    const [context, options] = await args.contextBuilder.get(denops);
-
-    const $CONFIG = await denops.call("stdpath", "config") as string;
-    const $DATA = await denops.call("stdpath", "data") as string;
+    const { denops, dpp } = args,
+      [context, options] = await args.contextBuilder.get(denops),
+      $CONFIG = await denops.call("stdpath", "config") as string,
+      $DATA = await denops.call("stdpath", "data") as string;
 
     // Load all plugins installed by Nix
     const plugins = await dpp.extAction(
@@ -108,13 +106,8 @@ export class Config extends BaseConfig {
     ) as LazyMakeStateResult;
 
     // Create a list of files to check
-    // TODO: use Array.fromAsync when it's available
-    const checkFiles: string[] = [];
-    for await (const entry of walk($CONFIG + "/rc")) {
-      if (entry.isFile) {
-        checkFiles.push(entry.path);
-      }
-    }
+    const checkFiles = await Array.fromAsync(walk($CONFIG + "/rc"))
+      .then((entries) => entries.map((entry) => entry.path));
 
     return {
       checkFiles,
