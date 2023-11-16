@@ -1,7 +1,7 @@
 import type { Plugin } from "./lib/x/dpp_vim.ts";
-import { List, Group } from "./lib/loader.ts";
+import { ClosedSet, Group } from "./lib/loader.ts";
 
-export const PLUGINS = List(
+export const PLUGINS = ClosedSet(...Group({ frozen: true }, [
   // Bootstrap
   ...Group({ lazy: false, rtp: "" }, [
     {
@@ -61,4 +61,4 @@ export const PLUGINS = List(
       repo: "github/copilot.vim",
     },
   ]),
-) satisfies Plugin[];
+])) satisfies Plugin[];

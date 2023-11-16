@@ -10,9 +10,14 @@ export type RepoSpec<
 export type RepoName<R = RepoSpec> = R extends
   RepoSpec<infer _Owner, infer Name> ? Name : never;
 
+type InheritedConfig = Omit<
+  Plugin,
+  "name" | "repo" | "depends" | "on_source" | "on_event"
+>;
+
 export type Config<
   RepoRef extends RepoName = RepoName,
-> = Partial<Omit<Plugin, "repo">> & {
+> = Partial<InheritedConfig> & {
   depends?: RepoRef[];
   on_source?: RepoRef[];
   on_event?: AutocmdEvent[];
@@ -44,21 +49,21 @@ export type Spec<
   name: RepoName<Repo>;
 };
 
-export type List<
-  Repo extends RepoSpec = RepoSpec,
+export type ClosedSet<
+  Repo extends RepoSpec,
 > = {
   [R in Repo]: Spec<R, RepoName<Repo>>;
 }[Repo][];
 
-export function List<
+export function ClosedSet<
   Repo extends RepoSpec,
 >(
   ...plugins: Init<Repo, RepoName<Repo>>[]
-): List<Repo> {
+): ClosedSet<Repo> {
   return plugins.map(
     (it) => ({
       ...it,
       name: basename(it.repo),
     }),
-  ) as List<Repo>;
+  ) as ClosedSet<Repo>; // we need to cast here for `name`
 }
