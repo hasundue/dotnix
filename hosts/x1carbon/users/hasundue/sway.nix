@@ -20,6 +20,7 @@
         "AU Optronics 0x313D Unknown" = {
           mode = "1920x1080@60Hz";
           scale = "1.3";
+          subpixel = "rgb";
         };
         "Microstep MSI G271 0x00003146" = {
           mode = "1920x1080@120Hz";
