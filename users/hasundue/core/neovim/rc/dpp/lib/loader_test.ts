@@ -15,7 +15,7 @@ const expectedGroup = [
   },
   {
     repo: "Shougo/dpp-ext-lazy",
-    depends: ["dpp.vim"],
+    depends: ["dpp"],
     lazy: false,
     rtp: "",
   },
@@ -25,11 +25,11 @@ Deno.test("Group", () => {
   assert(
     Group({ lazy: false, rtp: "" }, [
       {
-        repo: "Shougo/dpp.vim",
+        repo: "Shougo/dpp",
       },
       {
         repo: "Shougo/dpp-ext-lazy",
-        depends: ["dpp.vim"],
+        depends: ["dpp"],
       },
     ]),
     expectedGroup,
@@ -42,7 +42,7 @@ Deno.test("Group - nested", () => {
       {
         repo: "Shougo/dpp.vim",
       },
-      ...Group({ depends: ["dpp.vim"] }, [
+      ...Group({ depends: ["dpp"] }, [
         {
           repo: "Shougo/dpp-ext-lazy",
         },
@@ -54,13 +54,13 @@ Deno.test("Group - nested", () => {
 
 const expectedClosedSet = [
   {
-    name: "dpp.vim",
+    name: "dpp",
     repo: "Shougo/dpp.vim",
   },
   {
     name: "dpp-ext-lazy",
     repo: "Shougo/dpp-ext-lazy",
-    depends: ["dpp.vim"],
+    depends: ["dpp"],
   },
 ] satisfies ClosedSet<"Shougo/dpp.vim" | "Shougo/dpp-ext-lazy">;
 
@@ -72,7 +72,7 @@ Deno.test("ClosedSet", () => {
       },
       {
         repo: "Shougo/dpp-ext-lazy",
-        depends: ["dpp.vim"],
+        depends: ["dpp"],
       },
     ),
     expectedClosedSet,
@@ -85,7 +85,7 @@ Deno.test("ClosedSet - with nested Groups", () => {
       {
         repo: "Shougo/dpp.vim",
       },
-      ...Group({ depends: ["dpp.vim"] }, [
+      ...Group({ depends: ["dpp"] }, [
         { repo: "Shougo/dpp-ext-lazy" },
       ]),
     ),
@@ -101,7 +101,7 @@ Deno.test("ClosedSet - with top-level Group", () => {
       },
       {
         repo: "Shougo/dpp-ext-lazy",
-        depends: ["dpp.vim"],
+        depends: ["dpp"],
       },
     ])),
     expectedClosedSet,

@@ -9,11 +9,11 @@ export const PLUGINS = ClosedSet(...Group({ frozen: true }, [
     },
     {
       repo: "Shougo/dpp-ext-lazy",
-      depends: ["dpp.vim"],
+      depends: ["dpp"],
     },
   ]),
   // Extensions for dpp
-  ...Group({ depends: ["dpp.vim"], on_source: ["dpp.vim"] }, [
+  ...Group({ depends: ["dpp"], on_source: ["dpp"] }, [
     {
       repo: "Shougo/dpp-ext-local",
     },
@@ -31,7 +31,7 @@ export const PLUGINS = ClosedSet(...Group({ frozen: true }, [
     },
     {
       repo: "Shougo/ddu.vim",
-      depends: ["denops.vim"],
+      depends: ["denops"],
     },
   ]),
   // Loaded after reading any file

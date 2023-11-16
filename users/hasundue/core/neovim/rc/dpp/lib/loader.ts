@@ -5,10 +5,13 @@ import type { Plugin } from "./x/dpp_vim.ts";
 export type RepoSpec<
   Owner extends string = string,
   Name extends string = string,
-> = `${Owner}/${Name}`;
+  Extension extends string = never,
+> = `${Owner}/${Name}` | `${Owner}/${Name}.${Extension}`;
 
 export type RepoName<R = RepoSpec> = R extends
-  RepoSpec<infer _Owner, infer Name> ? Name : never;
+  `${infer _Owner}/${infer Name}.${infer _Extension}` ? Name
+  : R extends `${infer _Owner}/${infer Name}` ? Name
+  : never;
 
 type InheritedConfig = Omit<
   Plugin,
@@ -63,7 +66,11 @@ export function ClosedSet<
   return plugins.map(
     (it) => ({
       ...it,
-      name: basename(it.repo),
+      name: toName(it.repo),
     }),
   ) as ClosedSet<Repo>; // we need to cast here for `name`
+}
+
+function toName(from: RepoSpec): RepoName {
+  return basename(from).split(".")[0];
 }
