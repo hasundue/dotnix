@@ -1,3 +1,7 @@
+--
+-- lua_source {{{
+--
+
 -- initialize lspoints
 vim.call(
   "lspoints#load_extensions",
@@ -71,3 +75,5 @@ vim.api.nvim_create_autocmd("User", {
     })
   end,
 })
+
+--- }}}

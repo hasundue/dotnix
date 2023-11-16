@@ -13,6 +13,7 @@ export type RepoName<R = RepoSpec> = R extends
   : R extends `${infer _Owner}/${infer Name}` ? Name
   : never;
 
+// TODO: Do not hardcode this
 type InheritedConfig = Omit<
   Plugin,
   "name" | "repo" | "depends" | "on_source" | "on_event"
@@ -22,6 +23,7 @@ export type Config<
   RepoRef extends RepoName = RepoName,
 > = Partial<InheritedConfig> & {
   depends?: RepoRef[];
+  directory?: string;
   on_source?: RepoRef[];
   on_event?: AutocmdEvent[];
 };
@@ -41,6 +43,7 @@ export function Group<
   plugins: Init<Repo, RepoRef>[],
 ): Init<Repo, RepoRef>[] {
   return plugins.map(
+    // TODO: Do not override but merge
     (it) => ({ ...it, ...descriptor }),
   );
 }
@@ -64,11 +67,8 @@ export function ClosedSet<
   ...plugins: Init<Repo, RepoName<Repo>>[]
 ): ClosedSet<Repo> {
   return plugins.map(
-    (it) => ({
-      ...it,
-      name: toName(it.repo),
-    }),
-  ) as ClosedSet<Repo>; // we need to cast here for `name`
+    (it) => ({ ...it, name: toName(it.repo) }),
+  ) satisfies Plugin[] as ClosedSet<Repo>; // we need to cast here for `name`
 }
 
 function toName(from: RepoSpec): RepoName {

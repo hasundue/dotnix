@@ -1,3 +1,6 @@
+--
+-- lua_add {{{
+--
 vim.opt.termguicolors = true
 
 require("kanagawa").setup({
@@ -17,3 +20,5 @@ require("kanagawa").setup({
 })
 
 vim.cmd("colorscheme kanagawa")
+
+--- }}}
