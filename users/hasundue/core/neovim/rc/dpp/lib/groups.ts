@@ -56,13 +56,13 @@ export type Spec<
 };
 
 export type ClosedGroup<
-  Repo extends RepoSpec,
+  Repo extends RepoSpec = RepoSpec,
 > = {
   [R in Repo]: Spec<R, RepoName<Repo>>;
 }[Repo][];
 
 export function ClosedGroup<
-  Repo extends RepoSpec,
+  Repo extends RepoSpec = RepoSpec,
 >(
   ...plugins: Init<Repo, RepoName<Repo>>[]
 ): ClosedGroup<Repo> {

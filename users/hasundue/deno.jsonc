@@ -1,0 +1,5 @@
+{
+  "tasks": {
+    "rebuild": "deno run -A ./**/*.task.ts"
+  }
+}

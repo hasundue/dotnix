@@ -1,7 +1,8 @@
 {
   "tasks": {
     "check": "deno check ./**/*.ts",
-    "rebuild": "sudo nixos-rebuild",
+    "rebuild": "deno task rebuild:hasundue && sudo nixos-rebuild",
+    "rebuild:hasundue": "deno task --config users/hasundue/deno.jsonc rebuild",
     "test": "deno task check && deno task rebuild test --flake .",
     "switch": "deno task rebuild switch --flake .",
     "update": "nix flake update ."

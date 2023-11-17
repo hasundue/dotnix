@@ -1,32 +1,16 @@
 {
-  description = "hasundue's Neovim plugins";
+  description = "hasundue's Neovim plugins (auto-generated)";
 
   inputs = {
-    # denops.vim
-    denops = { url = "github:vim-denops/denops.vim"; flake = false; };
-
-    # dpp.vim (plugin manager)
     dpp = { url = "github:Shougo/dpp.vim"; flake = false; };
     dpp-ext-lazy = { url = "github:Shougo/dpp-ext-lazy"; flake = false; };
-    dpp-ext-local = { url = "github:Shougo/dpp-ext-local"; flake = false; };
-
-    # ddu.vim (UI framework)
-    ddu = { url = "github:Shougo/ddu.vim"; flake = false; };
-
-    # UI
     kanagawa = { url = "github:rebelot/kanagawa.nvim"; flake = false; };
-
-    # basic
-    vim-sandwich = { url = "github:machakann/vim-sandwich"; flake = false; };
-
-    # LSP
+    denops = { url = "github:vim-denops/denops.vim"; flake = false; };
+    ddu = { url = "github:Shougo/ddu.vim"; flake = false; };
+    nvim-treesitter = { url = "github:nvim-treesitter/nvim-treesitter"; flake = false; };
     lspoints = { url = "github:kuuote/lspoints"; flake = false; };
     lspoints-hover = { url = "github:Warashi/lspoints-hover"; flake = false; };
-
-    # Treesitter
-    nvim-treesitter = { url = "github:nvim-treesitter/nvim-treesitter"; flake = false; };
-
-    # AI
+    vim-sandwich = { url = "github:machakann/vim-sandwich"; flake = false; };
     copilot = { url = "github:github/copilot.vim"; flake = false; };
   };
 
