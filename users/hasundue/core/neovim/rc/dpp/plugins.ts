@@ -5,7 +5,7 @@ import { $CONFIG } from "./lib/env.ts";
 const rc = $CONFIG + "/rc";
 
 export const PLUGINS = ClosedGroup(
-  ...Group({ frozen: true, local: true, merged: false }, [
+  ...Group({ frozen: true, local: true }, [
     // Bootstrap
     ...Group({ lazy: false, rtp: "" }, [
       {
@@ -33,7 +33,7 @@ export const PLUGINS = ClosedGroup(
         depends: ["denops"],
       },
     ]),
-    // Loaded after reading any file
+    // Loaded when reading any file
     ...Group({ on_event: ["BufRead"] }, [
       {
         repo: "nvim-treesitter/nvim-treesitter",
@@ -56,10 +56,22 @@ export const PLUGINS = ClosedGroup(
       },
     ]),
     // loaded when entreing insert mode
-    ...Group({ on_event: ["InsertEnter"] }, [
+    ...Group({ on_event: ["CmdLineEnter", "InsertEnter"] }, [
       {
         repo: "github/copilot.vim",
       },
+      {
+        repo: "Shougo/ddc.vim",
+        depends: ["denops", "pum"],
+        hooks_file: `${rc}/ddc.vim`,
+      },
+    ]),
+    // ddc dependencies and extensions
+    ...Group({ on_source: ["ddc"] }, [
+      { repo: "Shougo/ddc-nvim-lsp" },
+      { repo: "Shougo/ddc-ui-pum" },
+      { repo: "Shougo/pum.vim" },
+      { repo: "tani/ddc-fuzzy" },
     ]),
   ]),
 ) satisfies Plugin[];

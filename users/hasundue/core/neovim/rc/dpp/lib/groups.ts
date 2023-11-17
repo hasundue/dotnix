@@ -23,7 +23,6 @@ export type Config<
   RepoRef extends RepoName = RepoName,
 > = Partial<InheritedConfig> & {
   depends?: RepoRef[];
-  directory?: string;
   on_source?: RepoRef[];
   on_event?: AutocmdEvent[];
 };

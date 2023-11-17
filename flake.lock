@@ -162,6 +162,70 @@
         "type": "github"
       }
     },
+    "ddc": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1699600511,
+        "narHash": "sha256-kCPVCFtbZICs2Atkpx4myFCK9m2zZwmhVwWmOs5UD+E=",
+        "owner": "Shougo",
+        "repo": "ddc.vim",
+        "rev": "8131c76d8a34fff83011ac7ad9ca1398ae4616eb",
+        "type": "github"
+      },
+      "original": {
+        "owner": "Shougo",
+        "repo": "ddc.vim",
+        "type": "github"
+      }
+    },
+    "ddc-fuzzy": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1688560961,
+        "narHash": "sha256-teHYu9S/9dOJVxJMTUiDhvPwJt3WVESIvmoJHnt0f0o=",
+        "owner": "tani",
+        "repo": "ddc-fuzzy",
+        "rev": "ee205bba8011a941380412a34e47ca67bb5fa41f",
+        "type": "github"
+      },
+      "original": {
+        "owner": "tani",
+        "repo": "ddc-fuzzy",
+        "type": "github"
+      }
+    },
+    "ddc-nvim-lsp": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1699713119,
+        "narHash": "sha256-aUA6d1vJEW6dpZcfgr7EAihGp3HDM7eT3JHaiZJbf1g=",
+        "owner": "Shougo",
+        "repo": "ddc-nvim-lsp",
+        "rev": "fd07983cdab2e871d0f3956b4bc8977c433cebbb",
+        "type": "github"
+      },
+      "original": {
+        "owner": "Shougo",
+        "repo": "ddc-nvim-lsp",
+        "type": "github"
+      }
+    },
+    "ddc-ui-pum": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1696653740,
+        "narHash": "sha256-J/do0P45FV+Nus6FpgH2xYtby6ZGtdnpLwqKY6I4xfs=",
+        "owner": "Shougo",
+        "repo": "ddc-ui-pum",
+        "rev": "6fd98ba227889883bbf75405506c451feaae6ef8",
+        "type": "github"
+      },
+      "original": {
+        "owner": "Shougo",
+        "repo": "ddc-ui-pum",
+        "type": "github"
+      }
+    },
     "ddu": {
       "flake": false,
       "locked": {
@@ -427,6 +491,10 @@
     "neovim": {
       "inputs": {
         "copilot": "copilot",
+        "ddc": "ddc",
+        "ddc-fuzzy": "ddc-fuzzy",
+        "ddc-nvim-lsp": "ddc-nvim-lsp",
+        "ddc-ui-pum": "ddc-ui-pum",
         "ddu": "ddu",
         "denops": "denops",
         "dpp": "dpp",
@@ -436,16 +504,17 @@
         "lspoints-hover": "lspoints-hover",
         "nixpkgs": "nixpkgs_2",
         "nvim-treesitter": "nvim-treesitter",
+        "pum": "pum",
         "vim-sandwich": "vim-sandwich"
       },
       "locked": {
         "lastModified": 1,
-        "narHash": "sha256-dZ0QULhWb/5nJkEYL5y3cOh6wH7g4CWXHsbkAtfXwf0=",
-        "path": "/nix/store/cqxq9l2ylxyyxfzaxxphjqip22yrsbzv-source/core/neovim",
+        "narHash": "sha256-o9WoMcu9vaNddhjHIl3BN3P1n8ihP7+l3eSBf//EM4k=",
+        "path": "/nix/store/aay91kmk1bsd9qjl3xak9bdypyjrn6mr-source/core/neovim",
         "type": "path"
       },
       "original": {
-        "path": "/nix/store/cqxq9l2ylxyyxfzaxxphjqip22yrsbzv-source/core/neovim",
+        "path": "/nix/store/aay91kmk1bsd9qjl3xak9bdypyjrn6mr-source/core/neovim",
         "type": "path"
       }
     },
@@ -558,6 +627,22 @@
         "type": "github"
       }
     },
+    "pum": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1699145731,
+        "narHash": "sha256-lQK87nSAULYl088Mxc+Wtugo2r6h5lDdrpqeCctq900=",
+        "owner": "Shougo",
+        "repo": "pum.vim",
+        "rev": "ce4f2dae183fe564ae75689db3a512da2fb7adcb",
+        "type": "github"
+      },
+      "original": {
+        "owner": "Shougo",
+        "repo": "pum.vim",
+        "type": "github"
+      }
+    },
     "root": {
       "inputs": {
         "base16-schemes": "base16-schemes",
@@ -622,12 +707,12 @@
       },
       "locked": {
         "lastModified": 1,
-        "narHash": "sha256-pyrBUFHRNpFWXoeK4O7IeE/tep4pWi3HF3XiQ4DI2VU=",
-        "path": "/nix/store/1j8zlzxdnl57yf03ad4yb6kv4wfx5nd1-source/users/hasundue",
+        "narHash": "sha256-5GJ98QfS569+Tir8QojXnB80tQcoRJqxQxp2SAj+Bzo=",
+        "path": "/nix/store/nlm2paiv2ciam83pyri8v5nir0nxraa0-source/users/hasundue",
         "type": "path"
       },
       "original": {
-        "path": "/nix/store/1j8zlzxdnl57yf03ad4yb6kv4wfx5nd1-source/users/hasundue",
+        "path": "/nix/store/nlm2paiv2ciam83pyri8v5nir0nxraa0-source/users/hasundue",
         "type": "path"
       }
     },
