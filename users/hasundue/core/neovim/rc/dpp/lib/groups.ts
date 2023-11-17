@@ -55,20 +55,20 @@ export type Spec<
   name: RepoName<Repo>;
 };
 
-export type ClosedSet<
+export type ClosedGroup<
   Repo extends RepoSpec,
 > = {
   [R in Repo]: Spec<R, RepoName<Repo>>;
 }[Repo][];
 
-export function ClosedSet<
+export function ClosedGroup<
   Repo extends RepoSpec,
 >(
   ...plugins: Init<Repo, RepoName<Repo>>[]
-): ClosedSet<Repo> {
+): ClosedGroup<Repo> {
   return plugins.map(
     (it) => ({ ...it, name: toName(it.repo) }),
-  ) satisfies Plugin[] as ClosedSet<Repo>; // we need to cast here for `name`
+  ) satisfies Plugin[] as ClosedGroup<Repo>; // we need a cast to type `name`
 }
 
 function toName(from: RepoSpec): RepoName {

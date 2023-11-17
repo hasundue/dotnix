@@ -1,10 +1,10 @@
 import type { Plugin } from "./lib/x/dpp_vim.ts";
-import { ClosedSet, Group } from "./lib/loader.ts";
+import { ClosedGroup, Group } from "./lib/groups.ts";
 import { $CONFIG } from "./lib/env.ts";
 
 const rc = $CONFIG + "/rc";
 
-export const PLUGINS = ClosedSet(
+export const PLUGINS = ClosedGroup(
   ...Group({ frozen: true, local: true, merged: false }, [
     // Bootstrap
     ...Group({ lazy: false, rtp: "" }, [

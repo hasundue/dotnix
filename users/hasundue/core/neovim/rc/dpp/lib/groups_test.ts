@@ -1,5 +1,5 @@
 import { assertEquals, assertObjectMatch } from "./std/assert.ts";
-import { Group, Init, ClosedSet } from "./loader.ts";
+import { ClosedGroup, Group, Init } from "./groups.ts";
 
 const assert = (actual: Init[], expected: Init[]) => {
   assertEquals(actual.length, 2);
@@ -52,7 +52,7 @@ Deno.test("Group - nested", () => {
   );
 });
 
-const expectedClosedSet = [
+const expectedClosedGroup = [
   {
     name: "dpp",
     repo: "Shougo/dpp.vim",
@@ -62,11 +62,11 @@ const expectedClosedSet = [
     repo: "Shougo/dpp-ext-lazy",
     depends: ["dpp"],
   },
-] satisfies ClosedSet<"Shougo/dpp.vim" | "Shougo/dpp-ext-lazy">;
+] satisfies ClosedGroup<"Shougo/dpp.vim" | "Shougo/dpp-ext-lazy">;
 
-Deno.test("ClosedSet", () => {
+Deno.test("ClosedGroup", () => {
   assert(
-    ClosedSet(
+    ClosedGroup(
       {
         repo: "Shougo/dpp.vim",
       },
@@ -75,13 +75,13 @@ Deno.test("ClosedSet", () => {
         depends: ["dpp"],
       },
     ),
-    expectedClosedSet,
+    expectedClosedGroup,
   );
 });
 
-Deno.test("ClosedSet - with nested Groups", () => {
+Deno.test("ClosedGroup - with nested Groups", () => {
   assert(
-    ClosedSet(
+    ClosedGroup(
       {
         repo: "Shougo/dpp.vim",
       },
@@ -89,13 +89,13 @@ Deno.test("ClosedSet - with nested Groups", () => {
         { repo: "Shougo/dpp-ext-lazy" },
       ]),
     ),
-    expectedClosedSet,
+    expectedClosedGroup,
   );
 });
 
-Deno.test("ClosedSet - with top-level Group", () => {
+Deno.test("ClosedGroup - with top-level Group", () => {
   assert(
-    ClosedSet(...Group({ lazy: false, rtp: "" }, [
+    ClosedGroup(...Group({ lazy: false, rtp: "" }, [
       {
         repo: "Shougo/dpp.vim",
       },
@@ -104,6 +104,6 @@ Deno.test("ClosedSet - with top-level Group", () => {
         depends: ["dpp"],
       },
     ])),
-    expectedClosedSet,
+    expectedClosedGroup,
   );
 });
