@@ -29,9 +29,7 @@
     mr = { url = "github:lambdalisue/mr.vim"; flake = false; };
   };
 
-  outputs = { nixpkgs, ... } @ inputs: {
-    plugins = nixpkgs.lib.filterAttrs
-      (name: value: name != "nixpkgs" && name != "_type" && name != "self")
-      inputs;
+  outputs = inputs: {
+    plugins = inputs;
   };
 }

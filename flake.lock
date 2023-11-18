@@ -229,11 +229,11 @@
     "ddu": {
       "flake": false,
       "locked": {
-        "lastModified": 1700042737,
-        "narHash": "sha256-Jh8Qlwzd5OHfgEMKrViKrpgz5P9IKLI3rTERpvFuB94=",
+        "lastModified": 1700095037,
+        "narHash": "sha256-oyDj7JzL7WkMnm/Qpi4ZniEa+c9H3pGoKwjuJC1NlEY=",
         "owner": "Shougo",
         "repo": "ddu.vim",
-        "rev": "61d0a571938a8e543dfb466fe7576ed4b9270989",
+        "rev": "0322cb409927f7e8dcffdf96769d18645382628e",
         "type": "github"
       },
       "original": {
@@ -672,19 +672,18 @@
         "lspoints": "lspoints",
         "lspoints-hover": "lspoints-hover",
         "mr": "mr",
-        "nixpkgs": "nixpkgs_2",
         "nvim-treesitter": "nvim-treesitter",
         "pum": "pum",
         "vim-sandwich": "vim-sandwich"
       },
       "locked": {
         "lastModified": 1,
-        "narHash": "sha256-DOsU7a7oxFgVxoBvxEPNl2JPaAbkn7UrRv3gMf5qj4g=",
-        "path": "/nix/store/q3m98sghkjs58knpwq49rc4acgpfyhjn-source/core/neovim",
+        "narHash": "sha256-CTPUfUckXv3ee2c8vtjqxUuyCf0jPKv8umWA0GRd7Yo=",
+        "path": "/nix/store/fc0fisryf6yl04ffvrwrg0a0nxmnd6m7-source/core/neovim",
         "type": "path"
       },
       "original": {
-        "path": "/nix/store/q3m98sghkjs58knpwq49rc4acgpfyhjn-source/core/neovim",
+        "path": "/nix/store/fc0fisryf6yl04ffvrwrg0a0nxmnd6m7-source/core/neovim",
         "type": "path"
       }
     },
@@ -767,28 +766,14 @@
         "type": "github"
       }
     },
-    "nixpkgs_2": {
-      "locked": {
-        "lastModified": 1700014976,
-        "narHash": "sha256-dSGpS2YeJrXW5aH9y7Abd235gGufY3RuZFth6vuyVtU=",
-        "owner": "NixOS",
-        "repo": "nixpkgs",
-        "rev": "592047fc9e4f7b74a4dc85d1b9f5243dfe4899e3",
-        "type": "github"
-      },
-      "original": {
-        "id": "nixpkgs",
-        "type": "indirect"
-      }
-    },
     "nvim-treesitter": {
       "flake": false,
       "locked": {
-        "lastModified": 1700035561,
-        "narHash": "sha256-534eevOdRZ51aNastCd2QmlX0xUjst1QAEKkm+OcsyY=",
+        "lastModified": 1700224329,
+        "narHash": "sha256-VMUv5tBjsU+00RjVP5JcdBTEoGpsAYN46XB8/SSwDy4=",
         "owner": "nvim-treesitter",
         "repo": "nvim-treesitter",
-        "rev": "8b9f99660294dcd11d42572c84ee33a1e284f70d",
+        "rev": "557561fbc17269cdd4e9e88ef0ca1a9ff0bbf7e6",
         "type": "github"
       },
       "original": {
@@ -877,12 +862,12 @@
       },
       "locked": {
         "lastModified": 1,
-        "narHash": "sha256-aScDYd17zl+gchPOss8RgksnnDCO/u/KPsTZFzRr+is=",
-        "path": "/nix/store/n2n12x9bh5dmzf5nd0z10kjxrqkwv51m-source/users/hasundue",
+        "narHash": "sha256-EbE0Ktcby8oQa/pDwN/03jg/8XGR4a2hmmMhiV//DM4=",
+        "path": "/nix/store/2jb4j9bqh0i81amar4n72ddwzmchb4cq-source/users/hasundue",
         "type": "path"
       },
       "original": {
-        "path": "/nix/store/n2n12x9bh5dmzf5nd0z10kjxrqkwv51m-source/users/hasundue",
+        "path": "/nix/store/2jb4j9bqh0i81amar4n72ddwzmchb4cq-source/users/hasundue",
         "type": "path"
       }
     },
