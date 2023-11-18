@@ -15,25 +15,11 @@
 
     plugins = with pkgs.vimPlugins.nvim-treesitter-parsers; [
       bash
-      c
-      cmake
-      comment
-      cpp
-      css
-      csv
       diff
-      fish
-      git_config
-      git_rebase
-      gitattributes
       gitcommit
       go
       graphql
-      haskell
-      html
-      ini
       javascript
-      jq
       jsdoc
       json
       jsonc
@@ -47,18 +33,12 @@
       python
       regex
       ron
-      ruby
       rust
       scheme
-      scss
-      ssh_config
-      svelte
-      toml
       tsx
       typescript
       vim
       vimdoc
-      xml
       yaml
       zig
     ];
