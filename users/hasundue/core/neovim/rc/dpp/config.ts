@@ -7,7 +7,7 @@ import {
   Dpp,
   Plugin,
 } from "./lib/x/dpp_vim.ts";
-import { $CONFIG, $DATA } from "./lib/env.ts";
+import { $CACHE, $CONFIG, $DATA, $HOME } from "./lib/env.ts";
 import { PLUGINS } from "./plugins.ts";
 
 type LazyMakeStateResult = {
@@ -24,10 +24,35 @@ export class Config extends BaseConfig {
   }) {
     const [context, options] = await args.contextBuilder.get(args.denops);
 
-    const plugins = PLUGINS.map((it) => ({
-      ...it,
-      path: `${$DATA}/plugins/${it.name}`,
-    }));
+    const plugins = PLUGINS.map((it) => {
+      const cache = `${$CACHE}/${it.name}`;
+      const data = it.repo.startsWith("~")
+        ? it.repo.replace("~", $HOME)
+        : `${$DATA}/plugins/${it.name}`;
+      /*
+      if (it.build) {
+        try {
+          Deno.mkdirSync(cache);
+        } catch (e) {
+          console.log(e);
+        }
+        new Deno.Command("cp", {
+          args: ["-rf", `${data}/*`, cache],
+        }).outputSync();
+        const [command, ...args] = it.build.split(" ");
+        new Deno.Command(command, {
+          args,
+          cwd: cache,
+          stdout: "inherit",
+          stderr: "inherit",
+        }).outputSync();
+      }
+      */
+      return {
+        ...it,
+        path: it.build ? cache : data,
+      };
+    });
 
     // Create a state with dpp-ext-lazy
     const makeStateResult = await args.dpp.extAction(

@@ -2,7 +2,6 @@
   description = "hasundue's Neovim plugins (auto-generated)";
 
   inputs = {
-    dpp = { url = "github:Shougo/dpp.vim"; flake = false; };
     dpp-ext-lazy = { url = "github:Shougo/dpp-ext-lazy"; flake = false; };
     kanagawa = { url = "github:rebelot/kanagawa.nvim"; flake = false; };
     denops = { url = "github:vim-denops/denops.vim"; flake = false; };

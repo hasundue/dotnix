@@ -8,10 +8,14 @@ async function generateFlake(
   const template = await Deno.readTextFile(
     new URL("./flake_template.nix", import.meta.url),
   );
-  const lines = plugins.map((it) => {
-    const { name, repo } = it;
-    return `    ${name} = { url = "github:${repo}"; flake = false; };`;
-  });
+
+  const lines = plugins
+    .filter((it) => !it.repo.startsWith("~"))
+    .map((it) => {
+      const { name, repo } = it;
+      return `    ${name} = { url = "github:${repo}"; flake = false; };`;
+    });
+
   await Deno.writeTextFile(
     new URL("../../flake.nix", import.meta.url),
     template.replace(PLACEHOLDER, lines.join("\n")),

@@ -5,11 +5,11 @@ import { $CONFIG } from "./lib/env.ts";
 const rc = $CONFIG + "/rc";
 
 export const PLUGINS = ClosedGroup(
-  ...Group({ frozen: true, local: true, merged: false }, [
+  ...Group({ frozen: true, local: true }, [
     // Bootstrap
     ...Group({ lazy: false, rtp: "" }, [
       {
-        repo: "Shougo/dpp.vim",
+        repo: "~/dpp.vim",
       },
       {
         repo: "Shougo/dpp-ext-lazy",
