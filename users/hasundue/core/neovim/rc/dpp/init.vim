@@ -22,12 +22,8 @@ if dpp#min#load_state(s:dpp_base)
   " The state file doesn't exist. Create one from scratch.
   echo '[dpp] Creating ' .. s:dpp_state .. ' ...'
 
-  " Add denops and other dpp plugins to runtimepath (required)
+  " Add denops and to runtimepath (required)
   call s:add('denops')
-  call s:add('dpp-ext-local')
-
-  " Need to load denops manually
-  runtime! plugin/denops
 
   autocmd dpprc User DenopsReady
     \ call dpp#make_state(s:dpp_base, stdpath('config') .. '/rc/dpp/config.ts')
