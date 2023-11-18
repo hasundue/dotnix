@@ -4,9 +4,9 @@ local keymap = vim.keymap
 local opt = vim.opt
 local wo = vim.wo
 
--- 
+--
 -- clipboard -------------------------------------
--- 
+--
 g.clipboard = {
   name = 'OSC 52',
   copy = {
@@ -38,8 +38,8 @@ opt.pumheight = 10
 --
 -- commands -------------------------------------
 --
+g.mapleader = " "
 opt.splitright = true
-
 opt.updatetime = 100
 
 --

@@ -25,7 +25,7 @@ Deno.test("Group", () => {
   assert(
     Group({ lazy: false, rtp: "" }, [
       {
-        repo: "Shougo/dpp",
+        repo: "Shougo/dpp.vim",
       },
       {
         repo: "Shougo/dpp-ext-lazy",
@@ -79,7 +79,7 @@ Deno.test("ClosedGroup", () => {
   );
 });
 
-Deno.test("ClosedGroup - with nested Groups", () => {
+Deno.test("ClosedGroup - nested Groups", () => {
   assert(
     ClosedGroup(
       {
@@ -93,7 +93,7 @@ Deno.test("ClosedGroup - with nested Groups", () => {
   );
 });
 
-Deno.test("ClosedGroup - with top-level Group", () => {
+Deno.test("ClosedGroup - top-level Group", () => {
   assert(
     ClosedGroup(...Group({ lazy: false, rtp: "" }, [
       {

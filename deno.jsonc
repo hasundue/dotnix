@@ -1,10 +1,11 @@
 {
   "tasks": {
+    "build": "deno task build:hasundue && sudo nixos-rebuild",
+    "build:hasundue": "deno run -A users/hasundue/**/*.build.ts",
     "check": "deno check ./**/*.ts",
-    "rebuild": "deno task rebuild:hasundue && sudo nixos-rebuild",
-    "rebuild:hasundue": "deno run -A users/hasundue/**/*.task.ts",
-    "test": "deno task check && deno task rebuild test --flake .",
-    "switch": "deno task rebuild switch --flake .",
+    "switch": "deno task build switch --flake .",
+    "test": "deno task test:deno && deno task build test --flake .",
+    "test:deno": "deno test -A",
     "update": "nix flake update ."
   },
   "lock": false

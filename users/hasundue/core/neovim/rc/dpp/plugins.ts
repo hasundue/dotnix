@@ -5,7 +5,7 @@ import { $CONFIG } from "./lib/env.ts";
 const rc = $CONFIG + "/rc";
 
 export const PLUGINS = ClosedGroup(
-  ...Group({ frozen: true, local: true }, [
+  ...Group({ frozen: true, local: true, merged: false }, [
     // Bootstrap
     ...Group({ lazy: false, rtp: "" }, [
       {
@@ -28,10 +28,6 @@ export const PLUGINS = ClosedGroup(
       {
         repo: "vim-denops/denops.vim",
       },
-      {
-        repo: "Shougo/ddu.vim",
-        depends: ["denops"],
-      },
     ]),
     // Loaded when reading any file
     ...Group({ on_event: ["BufRead"] }, [
@@ -44,7 +40,7 @@ export const PLUGINS = ClosedGroup(
       },
     ]),
     // Extensions for lspoints
-    ...Group({ depends: ["lspoints"], on_source: ["lspoints"] }, [
+    ...Group({ on_source: ["lspoints"] }, [
       {
         repo: "Warashi/lspoints-hover",
       },
@@ -73,5 +69,40 @@ export const PLUGINS = ClosedGroup(
       { repo: "Shougo/pum.vim" },
       { repo: "tani/ddc-fuzzy" },
     ]),
+    // ddu and ddu-commands
+    {
+      repo: "Shougo/ddu.vim",
+      on_source: ["ddu-commands"],
+      hooks_file: `${rc}/ddu.vim`,
+    },
+    {
+      repo: "Shougo/ddu-commands.vim",
+      on_cmd: ["Ddu"],
+    },
+    // ddu extensions
+    ...Group({ on_source: ["ddu"] }, [
+      {
+        repo: "hasundue/ddu-filter-zf",
+        build: "deno task build",
+      },
+      {
+        repo: "kuuote/ddu-source-mr",
+        depends: ["mr"],
+      },
+      { repo: "matsui54/ddu-source-file_external" },
+      { repo: "matsui54/ddu-source-help" },
+      {
+        repo: "Shougo/ddu-ui-ff",
+        hooks_file: `${rc}/ddu/ui-ff.vim`,
+      },
+      { repo: "Shougo/ddu-kind-file" },
+      { repo: "shun/ddu-source-rg" },
+      { repo: "shun/ddu-source-buffer" },
+    ]),
+    // miscelaneous
+    {
+      repo: "lambdalisue/mr.vim",
+      on_source: ["ddu-source-mr"],
+    },
   ]),
 ) satisfies Plugin[];
