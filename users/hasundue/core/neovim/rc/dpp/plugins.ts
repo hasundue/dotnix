@@ -55,6 +55,7 @@ export const PLUGINS = ClosedGroup(
   ...Group({ on_event: ["CmdLineEnter", "InsertEnter"] }, [
     {
       repo: "github/copilot.vim",
+      hooks_file: `${rc}/copilot.vim`,
     },
     {
       repo: "Shougo/ddc.vim",
