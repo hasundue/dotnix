@@ -20,12 +20,6 @@ nnoremap <silent> <leader>r <Cmd>Ddu rg
 nnoremap <silent> <leader>d <Cmd>Ddu help
   \ -name=help -ui=ff -resume<CR>
 
-nnoremap <silent> <leader>i <Cmd>Ddu github_repo_issue
-  \ -name=gh-issue -ui=ff -resume<CR>
-
-nnoremap <silent> <leader>p <Cmd>Ddu github_repo_pull
-  \ -name=gh-pr -ui=ff -resume<CR>
-
 " }}}
 
 "
