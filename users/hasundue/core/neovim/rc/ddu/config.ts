@@ -12,19 +12,17 @@ export class Config extends BaseConfig {
           autoAction: {
             name: "preview",
           },
-          floatingBorder: "rounded",
-          highlights: {
-            floating: "Normal",
-            floatingBorder: "WinSeparator",
-          },
+          floatingBorder: "single",
           previewCol: "(&columns - eval(uiParams.winWidth)) / 2",
           previewRow: "&lines / 2 + &lines / 2",
           previewFloating: true,
           previewWidth: "min([&columns, 80])",
           previewHeight: "&lines / 2 - 2",
-          previewFloatingBorder: "rounded",
+          previewFloatingBorder: "single",
           previewWindowOptions: [
+            ["&cursorline", 0],
             ["&number", 1],
+            ["&ruler", 0],
           ],
           startAutoAction: true,
           split: "floating",
