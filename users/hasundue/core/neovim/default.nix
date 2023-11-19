@@ -46,9 +46,9 @@
 
   programs.git.extraConfig.core.editor = "nvim";
 
-  home.shellAliases = {
+  home.shellAliases = rec {
     nvim = "nvim --noplugin";
-    nv = "nvim";
+    nv = "${nvim}";
   };
 
   xdg.configFile = {
