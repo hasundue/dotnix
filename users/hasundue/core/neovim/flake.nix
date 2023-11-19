@@ -26,7 +26,7 @@
     ddu-kind-file = { url = "github:Shougo/ddu-kind-file"; flake = false; };
     ddu-source-rg = { url = "github:shun/ddu-source-rg"; flake = false; };
     ddu-source-buffer = { url = "github:shun/ddu-source-buffer"; flake = false; };
-    vim-floaterm = { url = "git+file:/home/hasundue/vim-floaterm"; flake = false; };
+    vim-floaterm = { url = "github:voldikss/vim-floaterm"; flake = false; };
     mr = { url = "github:lambdalisue/mr.vim"; flake = false; };
   };
 

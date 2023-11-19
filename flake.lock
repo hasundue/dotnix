@@ -571,11 +571,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1700385020,
-        "narHash": "sha256-E3RtELmk61reccqPDYFr6RhkKw92T4bSj8ZlXozMdcE=",
+        "lastModified": 1700419052,
+        "narHash": "sha256-U6a5f9ynbzcp8PMIHULbHPkbwp7YfPKOYmTcLqlalD4=",
         "owner": "nix-community",
         "repo": "home-manager",
-        "rev": "7af969886b0792be6d1d2c13404052e6393a8eb3",
+        "rev": "993fb02d20760067b8ee19c713d94cee07037759",
         "type": "github"
       },
       "original": {
@@ -679,12 +679,12 @@
       },
       "locked": {
         "lastModified": 1,
-        "narHash": "sha256-2n72kw2JzxXgmiqsq/Sp0ilEOYwta0WPL9vDKB1zuxI=",
-        "path": "/nix/store/h76fi7lj230f0gplp07ga30bnx5c9vps-source/core/neovim",
+        "narHash": "sha256-7xlLWEZn2cHW6f0q0btymuipvjcyEofqmoryR/vgeGY=",
+        "path": "/nix/store/4ps4f3vvqp2vxggf0k4gn9jg8qc1v6fj-source/core/neovim",
         "type": "path"
       },
       "original": {
-        "path": "/nix/store/h76fi7lj230f0gplp07ga30bnx5c9vps-source/core/neovim",
+        "path": "/nix/store/4ps4f3vvqp2vxggf0k4gn9jg8qc1v6fj-source/core/neovim",
         "type": "path"
       }
     },
@@ -698,11 +698,11 @@
       },
       "locked": {
         "dir": "contrib",
-        "lastModified": 1700351913,
-        "narHash": "sha256-HfGmH8T+HsHXAbLwDjIWEFEYvIVBIQWXdeZU/YqbE6w=",
+        "lastModified": 1700415469,
+        "narHash": "sha256-uRdcRPnOkaL/rk3c/u2zUV6hPDoaplWAbJ6ajlhHdaw=",
         "owner": "neovim",
         "repo": "neovim",
-        "rev": "a84b454ebe661981f292ee8fc73be4f9cd3a5884",
+        "rev": "7ca2d64e8bbfb73f33cf82a2f9c03808bfea3d95",
         "type": "github"
       },
       "original": {
@@ -723,11 +723,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1700352350,
-        "narHash": "sha256-qe9jFx4xxVFyOkQHaFWwLNRMl9JXweZqJsdTK+adU98=",
+        "lastModified": 1700418829,
+        "narHash": "sha256-eoft9h/YaCnpBynTmsy8TlooT4+lErvB3iXHNXCIGUY=",
         "owner": "nix-community",
         "repo": "neovim-nightly-overlay",
-        "rev": "dceb55381308fab5261273b4a8f6e33184c43b00",
+        "rev": "4eeb386379c59132cf10c18df9d76cb1d0a6bd92",
         "type": "github"
       },
       "original": {
@@ -738,11 +738,11 @@
     },
     "nixos-hardware": {
       "locked": {
-        "lastModified": 1700315735,
-        "narHash": "sha256-zlSLW6dX5XwBEwN87CIVtMr8zDSKvTRFmWmIQ9FfWgo=",
+        "lastModified": 1700392353,
+        "narHash": "sha256-KARn8aVJu5fdW0jdJYoOQ1SPqWlNdz4l7r90NbArWSY=",
         "owner": "nixos",
         "repo": "nixos-hardware",
-        "rev": "1721da31f9b30cbf4460c4ec5068b3b6174a4694",
+        "rev": "2b00bc76dc893cd996a3d76a2f059d657a5ef37a",
         "type": "github"
       },
       "original": {
@@ -863,29 +863,29 @@
       },
       "locked": {
         "lastModified": 1,
-        "narHash": "sha256-u9W2wVGTsfIEIRlV7wxseZerCqYyROPbeAr2I/0hE6o=",
-        "path": "/nix/store/1ic70xm807dpk89fsdcrbk2qgia056nn-source/users/hasundue",
+        "narHash": "sha256-v7k0qkooOvDYztQQTwzD5sUX/1agsAY1HvlcY4iVnHU=",
+        "path": "/nix/store/k6wl91xrvapj83rjz4fsq4hc4sppgjsr-source/users/hasundue",
         "type": "path"
       },
       "original": {
-        "path": "/nix/store/1ic70xm807dpk89fsdcrbk2qgia056nn-source/users/hasundue",
+        "path": "/nix/store/k6wl91xrvapj83rjz4fsq4hc4sppgjsr-source/users/hasundue",
         "type": "path"
       }
     },
     "vim-floaterm": {
       "flake": false,
       "locked": {
-        "lastModified": 1698216217,
-        "narHash": "sha256-rUqki4+TSXW+jPKNotc91d14QN4zA/77cTuhKR/r12M=",
-        "ref": "refs/heads/feat-buffer-root",
-        "rev": "91d43c1e0c99e202f56d1b0a53991d27c171a3b4",
-        "revCount": 652,
-        "type": "git",
-        "url": "file:/home/hasundue/vim-floaterm"
+        "lastModified": 1700403249,
+        "narHash": "sha256-rJXxXu6QpMd6Q3YiTvHlKXVt+8ZPEZ2WMSQPlR4WX5k=",
+        "owner": "voldikss",
+        "repo": "vim-floaterm",
+        "rev": "3f01a623376957437f9376327637491b74719e38",
+        "type": "github"
       },
       "original": {
-        "type": "git",
-        "url": "file:/home/hasundue/vim-floaterm"
+        "owner": "voldikss",
+        "repo": "vim-floaterm",
+        "type": "github"
       }
     },
     "vim-sandwich": {
