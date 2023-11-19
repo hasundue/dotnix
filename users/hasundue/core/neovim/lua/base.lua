@@ -35,6 +35,9 @@ opt.breakindent = true
 
 opt.pumheight = 10
 
+opt.pumblend = 15
+opt.winblend = 15
+
 --
 -- commands -------------------------------------
 --
