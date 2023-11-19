@@ -37,6 +37,8 @@ nnoremap <buffer><silent> <CR>
 nnoremap <buffer><silent> i
   \ <Cmd>call ddu#ui#do_action('openFilterWindow')<CR>
 
+" }}}
+
 "
 " ddu-ff-filter {{{
 "
