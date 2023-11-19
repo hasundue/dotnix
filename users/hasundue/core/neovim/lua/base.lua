@@ -1,6 +1,5 @@
 local g = vim.g
 local opt = vim.opt
-local wo = vim.wo
 
 --
 -- clipboard -------------------------------------
@@ -22,8 +21,6 @@ opt.clipboard = "unnamedplus"
 -- UI -------------------------------------------
 --
 opt.number = true
-opt.numberwidth = 2
-wo.signcolumn = "yes"
 
 opt.cursorline = true
 opt.ruler = true

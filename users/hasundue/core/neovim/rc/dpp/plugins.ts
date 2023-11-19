@@ -8,7 +8,7 @@ export const PLUGINS = ClosedGroup(
   // Bootstrap
   ...Group({ lazy: false, rtp: "" }, [
     {
-      repo: "~/dpp.vim",
+      repo: "Shougo/dpp.vim",
     },
     {
       repo: "Shougo/dpp-ext-lazy",
@@ -19,7 +19,6 @@ export const PLUGINS = ClosedGroup(
   ...Group({ lazy: false }, [
     {
       repo: "rebelot/kanagawa.nvim",
-      lua_add: "require('rc.kanagawa')",
     },
   ]),
   // Loaded immediately after startup
@@ -100,6 +99,13 @@ export const PLUGINS = ClosedGroup(
     { repo: "shun/ddu-source-rg" },
     { repo: "shun/ddu-source-buffer" },
   ]),
+  // floaterm
+  {
+    repo: "~/vim-floaterm",
+    on_cmd: ["FloatermNew", "FloatermToggle"],
+    lua_add: "require('rc.floaterm')",
+    lua_source: "require('rc.terminal')",
+  },
   // miscelaneous
   {
     repo: "lambdalisue/mr.vim",

@@ -1,6 +1,6 @@
 vim.opt.termguicolors = true
 
-require("kanagawa").setup({
+require('kanagawa').setup({
   colors = {
     theme = { all = { ui = { bg_gutter = 'none' } } },
   },
@@ -16,4 +16,4 @@ require("kanagawa").setup({
   terminalColors = true, -- define vim.g.terminal_color_{0,17}
 })
 
-vim.cmd("colorscheme kanagawa")
+vim.cmd('colorscheme kanagawa')

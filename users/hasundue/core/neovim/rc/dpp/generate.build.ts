@@ -13,7 +13,7 @@ async function generateFlake(
   const lines = plugins.map((it) => {
     const { name, repo } = it;
     const url = repo.startsWith("~")
-      ? `path:${repo.replace("~", $HOME)}`
+      ? `git+file:${repo.replace("~", $HOME)}`
       : `github:${repo}`;
     return `    ${name} = { url = "${url}"; flake = false; };`;
   });

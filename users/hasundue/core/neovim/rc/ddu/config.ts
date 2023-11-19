@@ -13,6 +13,10 @@ export class Config extends BaseConfig {
             name: "preview",
           },
           floatingBorder: "single",
+          highlights: {
+            floating: "NormalFloat",
+            floatingBorder: "FloatBorder",
+          },
           previewCol: "(&columns - eval(uiParams.winWidth)) / 2",
           previewRow: "&lines / 2 + &lines / 2",
           previewFloating: true,

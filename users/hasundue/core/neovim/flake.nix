@@ -2,7 +2,7 @@
   description = "hasundue's Neovim plugins (auto-generated)";
 
   inputs = {
-    dpp = { url = "path:/home/hasundue/dpp.vim"; flake = false; };
+    dpp = { url = "github:Shougo/dpp.vim"; flake = false; };
     dpp-ext-lazy = { url = "github:Shougo/dpp-ext-lazy"; flake = false; };
     kanagawa = { url = "github:rebelot/kanagawa.nvim"; flake = false; };
     denops = { url = "github:vim-denops/denops.vim"; flake = false; };
@@ -26,6 +26,7 @@
     ddu-kind-file = { url = "github:Shougo/ddu-kind-file"; flake = false; };
     ddu-source-rg = { url = "github:shun/ddu-source-rg"; flake = false; };
     ddu-source-buffer = { url = "github:shun/ddu-source-buffer"; flake = false; };
+    vim-floaterm = { url = "git+file:/home/hasundue/vim-floaterm"; flake = false; };
     mr = { url = "github:lambdalisue/mr.vim"; flake = false; };
   };
 

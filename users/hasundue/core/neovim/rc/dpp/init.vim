@@ -26,7 +26,7 @@ if dpp#min#load_state(s:dpp_base)
   call s:add('denops')
 
   " Need to load denops manually since we pass `--noplugin` to nvim
-  runtime! plugin/denops
+  runtime! plugin/denops.vim
 
   autocmd dpprc User DenopsReady
     \ call dpp#make_state(s:dpp_base, stdpath('config') .. '/rc/dpp/config.ts')
