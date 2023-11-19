@@ -20,7 +20,7 @@ export const PLUGINS = ClosedGroup(
     ...Group({ lazy: false }, [
       {
         repo: "rebelot/kanagawa.nvim",
-        lua_source: "require('colorscheme')",
+        lua_add: "require('rc.kanagawa')",
       },
     ]),
     // Loaded immediately after startup
@@ -36,7 +36,7 @@ export const PLUGINS = ClosedGroup(
       },
       {
         repo: "kuuote/lspoints",
-        lua_source: "require('lspoints')",
+        lua_source: "require('rc.lspoints')",
       },
     ]),
     // Extensions for lspoints

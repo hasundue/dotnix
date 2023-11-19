@@ -1,6 +1,4 @@
-local cmd = vim.cmd
 local g = vim.g
-local keymap = vim.keymap
 local opt = vim.opt
 local wo = vim.wo
 
