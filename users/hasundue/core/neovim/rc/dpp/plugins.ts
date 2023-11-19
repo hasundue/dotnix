@@ -31,6 +31,7 @@ export const PLUGINS = ClosedGroup(
   ...Group({ on_event: ["BufRead"] }, [
     {
       repo: "nvim-treesitter/nvim-treesitter",
+      lua_source: "require('rc.treesitter')",
     },
     {
       repo: "kuuote/lspoints",
