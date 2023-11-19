@@ -7,7 +7,7 @@ import {
   Dpp,
   Plugin,
 } from "./lib/x/dpp_vim.ts";
-import { $CACHE, $CONFIG, $DATA, $HOME } from "./lib/env.ts";
+import { $CACHE, $CONFIG, $DATA } from "./lib/env.ts";
 import { PLUGINS } from "./plugins.ts";
 
 type LazyMakeStateResult = {
