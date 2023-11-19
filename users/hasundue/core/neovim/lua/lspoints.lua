@@ -1,7 +1,3 @@
---
--- lua_source {{{
---
-
 -- initialize lspoints
 vim.call(
   "lspoints#load_extensions",
@@ -44,6 +40,7 @@ vim.api.nvim_create_autocmd("FileType", {
   end,
 })
 
+-- configure lspoints for an attached buffer
 vim.api.nvim_create_autocmd("User", {
   pattern = "LspointsAttach:*",
   group = vim.api.nvim_create_augroup("lspoints-attach", {}),
@@ -75,5 +72,3 @@ vim.api.nvim_create_autocmd("User", {
     })
   end,
 })
-
---- }}}
