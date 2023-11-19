@@ -1,9 +1,6 @@
 -- enable experimental lua loader
 vim.loader.enable()
 
--- disable default plugins
-require("rc.builtin")
-
 -- base configuration, independent of plugins (keymaps, etc)
 require("base")
 

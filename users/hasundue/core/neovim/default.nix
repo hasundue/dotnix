@@ -9,9 +9,9 @@
     withPython3 = false;
     withRuby = false;
 
-    vimdiffAlias = true;
-    vimAlias = true;
-    viAlias = true;
+    # vimdiffAlias = true;
+    # vimAlias = true;
+    # viAlias = true;
 
     plugins = with pkgs.vimPlugins.nvim-treesitter-parsers; [
       bash
@@ -47,6 +47,7 @@
   programs.git.extraConfig.core.editor = "nvim";
 
   home.shellAliases = {
+    nvim = "nvim --noplugin";
     nv = "nvim";
   };
 
