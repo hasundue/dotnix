@@ -402,6 +402,19 @@
         "type": "github"
       }
     },
+    "dpp": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1700317487,
+        "narHash": "sha256-txsFEgFUzPa9+xsJQKOM69Jgxa86/RCvE7XbX100Yxg=",
+        "path": "/home/hasundue/dpp.vim",
+        "type": "path"
+      },
+      "original": {
+        "path": "/home/hasundue/dpp.vim",
+        "type": "path"
+      }
+    },
     "dpp-ext-lazy": {
       "flake": false,
       "locked": {
@@ -650,6 +663,7 @@
         "ddu-source-rg": "ddu-source-rg",
         "ddu-ui-ff": "ddu-ui-ff",
         "denops": "denops",
+        "dpp": "dpp",
         "dpp-ext-lazy": "dpp-ext-lazy",
         "kanagawa": "kanagawa",
         "lspoints": "lspoints",
@@ -661,12 +675,12 @@
       },
       "locked": {
         "lastModified": 1,
-        "narHash": "sha256-Mw6mLyY0iaxT94okiH2o/m1JG1Cu17w6aAP4JTcRjZo=",
-        "path": "/nix/store/972jksjw3r9k1fpm4k9aj5f1nadck085-source/core/neovim",
+        "narHash": "sha256-mh+4du0kEiPdqWPgXptfqWqTN9+izggPub0ybON8YpE=",
+        "path": "/nix/store/4qf7axq29b72x9r1yrk151c5q029dr45-source/core/neovim",
         "type": "path"
       },
       "original": {
-        "path": "/nix/store/972jksjw3r9k1fpm4k9aj5f1nadck085-source/core/neovim",
+        "path": "/nix/store/4qf7axq29b72x9r1yrk151c5q029dr45-source/core/neovim",
         "type": "path"
       }
     },
@@ -845,12 +859,12 @@
       },
       "locked": {
         "lastModified": 1,
-        "narHash": "sha256-nwk5Y3IeR5IrDCpHSnyNIeV8eA2/W0mbOumki8gQxVo=",
-        "path": "/nix/store/qij49383qyghglq2k3j7xx7azlf5w856-source/users/hasundue",
+        "narHash": "sha256-DvwPq+aZo/zyjNWsnMy8bxXIolfTZmhexVBk6VSfICc=",
+        "path": "/nix/store/s5fh9wsvkmnlbx3j5r9h2dfi0d08lk7k-source/users/hasundue",
         "type": "path"
       },
       "original": {
-        "path": "/nix/store/qij49383qyghglq2k3j7xx7azlf5w856-source/users/hasundue",
+        "path": "/nix/store/s5fh9wsvkmnlbx3j5r9h2dfi0d08lk7k-source/users/hasundue",
         "type": "path"
       }
     },

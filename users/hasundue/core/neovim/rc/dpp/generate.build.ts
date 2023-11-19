@@ -1,4 +1,5 @@
 import type { ClosedGroup } from "./lib/groups.ts";
+import { $HOME } from "./lib/env.ts";
 
 const PLACEHOLDER = "    /* PLACEHOLDER */";
 
@@ -9,12 +10,13 @@ async function generateFlake(
     new URL("./flake_template.nix", import.meta.url),
   );
 
-  const lines = plugins
-    .filter((it) => !it.repo.startsWith("~"))
-    .map((it) => {
-      const { name, repo } = it;
-      return `    ${name} = { url = "github:${repo}"; flake = false; };`;
-    });
+  const lines = plugins.map((it) => {
+    const { name, repo } = it;
+    const url = repo.startsWith("~")
+      ? `path:${repo.replace("~", $HOME)}`
+      : `github:${repo}`;
+    return `    ${name} = { url = "${url}"; flake = false; };`;
+  });
 
   await Deno.writeTextFile(
     new URL("../../flake.nix", import.meta.url),

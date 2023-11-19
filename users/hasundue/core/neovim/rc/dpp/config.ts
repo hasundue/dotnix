@@ -25,10 +25,8 @@ export class Config extends BaseConfig {
     const [context, options] = await args.contextBuilder.get(args.denops);
 
     const plugins = PLUGINS.map((it) => {
+      const data = `${$DATA}/plugins/${it.name}`;
       const cache = `${$CACHE}/${it.name}`;
-      const data = it.repo.startsWith("~")
-        ? it.repo.replace("~", $HOME)
-        : `${$DATA}/plugins/${it.name}`;
       /*
       if (it.build) {
         try {
