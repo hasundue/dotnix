@@ -23,7 +23,7 @@ export const PLUGINS = ClosedGroup(
     },
   ]),
   // Loaded immediately after startup
-  ...Group({ on_event: ["VimEnter"] }, [
+  ...Group({ on_event: ["CursorHold"] }, [
     {
       repo: "vim-denops/denops.vim",
     },
@@ -35,6 +35,7 @@ export const PLUGINS = ClosedGroup(
     },
     {
       repo: "kuuote/lspoints",
+      depends: ["denops"],
       lua_source: "require('rc.lspoints')",
     },
   ]),
@@ -71,6 +72,7 @@ export const PLUGINS = ClosedGroup(
   // ddu and ddu-commands
   {
     repo: "Shougo/ddu.vim",
+    depends: ["denops"],
     on_source: ["ddu-commands"],
     hooks_file: `${rc}/ddu.vim`,
   },
