@@ -108,8 +108,8 @@ export const PLUGINS = ClosedGroup(
   {
     repo: "voldikss/vim-floaterm",
     on_cmd: ["FloatermNew", "FloatermToggle"],
-    lua_add: "require('rc.floaterm')",
-    lua_source: "require('rc.terminal')",
+    lua_add: "require('rc.floaterm.keymap')",
+    lua_source: "require('rc.terminal')\nrequire('rc.floaterm.config')",
   },
   // miscelaneous
   {

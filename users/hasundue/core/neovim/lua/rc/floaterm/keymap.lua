@@ -1,7 +1,3 @@
--- set highlights for floaterm
-vim.api.nvim_set_hl(0, 'Floaterm', { link = 'NormalFloat' })
-vim.api.nvim_set_hl(0, 'FloatermBorder', { link = 'FloatBorder' })
-
 ---@param mode string
 ---@param keys string
 ---@param func function
