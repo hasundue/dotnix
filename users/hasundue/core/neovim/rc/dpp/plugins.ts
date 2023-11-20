@@ -65,6 +65,9 @@ export const PLUGINS = ClosedGroup(
   ]),
   // ddc dependencies and extensions
   ...Group({ on_source: ["ddc"] }, [
+    { repo: "LumaKernel/ddc-file" },
+    { repo: "Shougo/ddc-cmdline" },
+    { repo: "Shougo/ddc-cmdline-history" },
     { repo: "Shougo/ddc-nvim-lsp" },
     { repo: "Shougo/ddc-ui-pum" },
     { repo: "Shougo/pum.vim" },
