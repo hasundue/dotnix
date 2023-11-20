@@ -1,7 +1,7 @@
 import {
   $HOME,
   ClosedGroup,
-} from "https://esm.sh/gh/hasundue/dpp-helper/mod.ts";
+} from "https://pax.deno.dev/hasundue/dpp-helper/mod.ts";
 
 const PLACEHOLDER = "    /* PLACEHOLDER */";
 
