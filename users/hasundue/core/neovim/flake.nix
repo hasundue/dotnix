@@ -12,6 +12,9 @@
     vim-sandwich = { url = "github:machakann/vim-sandwich"; flake = false; };
     copilot = { url = "github:github/copilot.vim"; flake = false; };
     ddc = { url = "github:Shougo/ddc.vim"; flake = false; };
+    ddc-file = { url = "github:LumaKernel/ddc-file"; flake = false; };
+    ddc-cmdline = { url = "github:Shougo/ddc-cmdline"; flake = false; };
+    ddc-cmdline-history = { url = "github:Shougo/ddc-cmdline-history"; flake = false; };
     ddc-nvim-lsp = { url = "github:Shougo/ddc-nvim-lsp"; flake = false; };
     ddc-ui-pum = { url = "github:Shougo/ddc-ui-pum"; flake = false; };
     pum = { url = "github:Shougo/pum.vim"; flake = false; };

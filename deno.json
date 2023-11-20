@@ -1,0 +1,15 @@
+{
+  "imports": {
+    "std/": "https://deno.land/std@0.207.0/"
+  },
+  "lock": false,
+  "tasks": {
+    "build": "deno task build:hasundue && git add --all && sudo nixos-rebuild",
+    "build:hasundue": "deno run -A users/hasundue/**/*.build.ts",
+    "check": "deno task check:deno",
+    "check:deno": "deno fmt --check && deno lint && deno check -q ./**/*.ts && deno test -A",
+    "switch": "deno task build switch --flake .",
+    "test": "deno task -q check && deno task build test --flake .",
+    "update": "nix flake update ."
+  }
+}
