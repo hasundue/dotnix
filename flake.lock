@@ -590,6 +590,22 @@
         "type": "github"
       }
     },
+    "gitsigns.nvim": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1700257354,
+        "narHash": "sha256-jrhd4SVfs5g/XiragaulhlLdmwpSWkvJonyMxc0F/HU=",
+        "owner": "lewis6991",
+        "repo": "gitsigns.nvim",
+        "rev": "0ccd5fb2316b3f8d8b2f775bc31cae7bc6a77a55",
+        "type": "github"
+      },
+      "original": {
+        "owner": "lewis6991",
+        "repo": "gitsigns.nvim",
+        "type": "github"
+      }
+    },
     "hercules-ci-effects": {
       "inputs": {
         "flake-parts": "flake-parts_2",
@@ -719,6 +735,7 @@
         "denops.vim": "denops.vim",
         "dpp-ext-lazy": "dpp-ext-lazy",
         "dpp.vim": "dpp.vim",
+        "gitsigns.nvim": "gitsigns.nvim",
         "kanagawa.nvim": "kanagawa.nvim",
         "lspoints": "lspoints",
         "lspoints-hover": "lspoints-hover",
@@ -730,12 +747,12 @@
       },
       "locked": {
         "lastModified": 1,
-        "narHash": "sha256-S8qk/4p8i/yEuGWmlTxPX7PqVrzZR2hp6FOHEMgNrEk=",
-        "path": "/nix/store/j2yfd8pzmj8r8gcfmz3d7v8nfvqv6q9d-source/core/neovim",
+        "narHash": "sha256-CrGJq2Xtrd+dp+bU8Ac+ynxY9mdb1obJtBzewokWDFE=",
+        "path": "/nix/store/p5cmwa284pvr00q238dd0mmkk1w2wmcc-source/core/neovim",
         "type": "path"
       },
       "original": {
-        "path": "/nix/store/j2yfd8pzmj8r8gcfmz3d7v8nfvqv6q9d-source/core/neovim",
+        "path": "/nix/store/p5cmwa284pvr00q238dd0mmkk1w2wmcc-source/core/neovim",
         "type": "path"
       }
     },
@@ -914,12 +931,12 @@
       },
       "locked": {
         "lastModified": 1,
-        "narHash": "sha256-QH90vZgynWyNq7VrxsQh4OOXvNzs5RdkvSh8btOj3Ak=",
-        "path": "/nix/store/lxfkv7g4cx6dfnza3iy34nvjaa993v9n-source/users/hasundue",
+        "narHash": "sha256-xlbkP6g6BJSLqEJhCuVHd8dLYLxDzEavCmjPgoF/GQw=",
+        "path": "/nix/store/427d1rdq24jg55h03nslw7zz2d5l1zjj-source/users/hasundue",
         "type": "path"
       },
       "original": {
-        "path": "/nix/store/lxfkv7g4cx6dfnza3iy34nvjaa993v9n-source/users/hasundue",
+        "path": "/nix/store/427d1rdq24jg55h03nslw7zz2d5l1zjj-source/users/hasundue",
         "type": "path"
       }
     },

@@ -33,6 +33,10 @@ export const PLUGINS = ClosedGroup(
   // Loaded when reading any file
   ...Group({ on_event: ["BufRead"] }, [
     {
+      repo: "lewis6991/gitsigns.nvim",
+      lua_source: "require('gitsigns').setup()",
+    },
+    {
       repo: "nvim-treesitter/nvim-treesitter",
       lua_source: "require('rc.treesitter')",
     },

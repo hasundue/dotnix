@@ -6,6 +6,7 @@
     "dpp-ext-lazy" = { url = "github:Shougo/dpp-ext-lazy"; flake = false; };
     "kanagawa.nvim" = { url = "github:rebelot/kanagawa.nvim"; flake = false; };
     "denops.vim" = { url = "github:vim-denops/denops.vim"; flake = false; };
+    "gitsigns.nvim" = { url = "github:lewis6991/gitsigns.nvim"; flake = false; };
     "nvim-treesitter" = { url = "github:nvim-treesitter/nvim-treesitter"; flake = false; };
     "lspoints" = { url = "github:kuuote/lspoints"; flake = false; };
     "lspoints-hover" = { url = "github:Warashi/lspoints-hover"; flake = false; };
