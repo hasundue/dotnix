@@ -11,7 +11,7 @@ import {
   $XDG_CACHE_HOME,
   $XDG_CONFIG_HOME,
   $XDG_DATA_HOME,
-} from "./lib/dpp_helper.ts";
+} from "./helper/lib/env.ts";
 import { PLUGINS } from "./plugins.ts";
 
 type LazyMakeStateResult = {

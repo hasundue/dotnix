@@ -1,5 +1,5 @@
 import type { Plugin } from "./lib/dpp_vim.ts";
-import { $XDG_CONFIG_HOME, ClosedGroup, Group } from "./lib/dpp_helper.ts";
+import { $XDG_CONFIG_HOME, ClosedGroup, Group } from "./helper/mod.ts";
 
 const rc = $XDG_CONFIG_HOME + "/nvim/rc";
 

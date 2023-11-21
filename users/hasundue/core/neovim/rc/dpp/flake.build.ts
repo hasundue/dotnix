@@ -1,4 +1,4 @@
-import { $HOME, type ClosedGroup } from "./lib/dpp_helper.ts";
+import { $HOME, type ClosedGroup } from "./helper/mod.ts";
 
 const PLACEHOLDER = "    /* PLACEHOLDER */";
 
