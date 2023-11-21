@@ -469,11 +469,11 @@
     "dpp.vim": {
       "flake": false,
       "locked": {
-        "lastModified": 1700474431,
-        "narHash": "sha256-Viiri/FWHF/a0uQKVcb2E8MUIqBHTZ37zlZsEzmbTFQ=",
+        "lastModified": 1700559725,
+        "narHash": "sha256-uqryZm+nPOjsPTGJe//Sb6UYc21HWqcKXbFVkCmU0SY=",
         "owner": "Shougo",
         "repo": "dpp.vim",
-        "rev": "94897b625d1d2bffb38d7daea49ee32853cf9433",
+        "rev": "6407952f027811009dc6a7c2db43a4f286ba37a2",
         "type": "github"
       },
       "original": {
@@ -635,11 +635,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1700419052,
-        "narHash": "sha256-U6a5f9ynbzcp8PMIHULbHPkbwp7YfPKOYmTcLqlalD4=",
+        "lastModified": 1700553346,
+        "narHash": "sha256-kW7uWsCv/lxuA824Ng6EYD9hlVYRyjuFn0xBbYltAeQ=",
         "owner": "nix-community",
         "repo": "home-manager",
-        "rev": "993fb02d20760067b8ee19c713d94cee07037759",
+        "rev": "1aabb0a31b25ad83cfaa37c3fe29053417cd9a0f",
         "type": "github"
       },
       "original": {
@@ -747,12 +747,12 @@
       },
       "locked": {
         "lastModified": 1,
-        "narHash": "sha256-bzwywSfhPhqxnDBQMZq3Pd4QoVgnGDIuy9Ccyv31wGY=",
-        "path": "/nix/store/rcjgcq03ydnfvv6d5876pl1ipiwmshcm-source/core/neovim",
+        "narHash": "sha256-9/Xj2O0Hv4+zjoQ4nSHJkoVxzfFz8o0gCDdg4iVdy7Y=",
+        "path": "/nix/store/xgp6j66hbdypmz3c73g6jml8kvlc1d29-source/core/neovim",
         "type": "path"
       },
       "original": {
-        "path": "/nix/store/rcjgcq03ydnfvv6d5876pl1ipiwmshcm-source/core/neovim",
+        "path": "/nix/store/xgp6j66hbdypmz3c73g6jml8kvlc1d29-source/core/neovim",
         "type": "path"
       }
     },
@@ -806,11 +806,11 @@
     },
     "nixos-hardware": {
       "locked": {
-        "lastModified": 1700392353,
-        "narHash": "sha256-KARn8aVJu5fdW0jdJYoOQ1SPqWlNdz4l7r90NbArWSY=",
+        "lastModified": 1700559156,
+        "narHash": "sha256-gL4epO/qf+wo30JjC3g+b5Bs8UrpxzkhNBBsUYxpw2g=",
         "owner": "nixos",
         "repo": "nixos-hardware",
-        "rev": "2b00bc76dc893cd996a3d76a2f059d657a5ef37a",
+        "rev": "c3abafb01cd7045dba522af29b625bd1e170c2fb",
         "type": "github"
       },
       "original": {
@@ -931,12 +931,12 @@
       },
       "locked": {
         "lastModified": 1,
-        "narHash": "sha256-CuKtVVIju51cI4pMnCXLafjZnc3f5EpdCgXBb26VQew=",
-        "path": "/nix/store/niv5d57jqn1mcazpkf1j3mg9hns1idx4-source/users/hasundue",
+        "narHash": "sha256-n82F95BRAL1wKpYJCVt31CfRs0T6+mV6NfPe/iHttZs=",
+        "path": "/nix/store/62bvnl21dfcxxsbndsk7d6xlhmymj3c9-source/users/hasundue",
         "type": "path"
       },
       "original": {
-        "path": "/nix/store/niv5d57jqn1mcazpkf1j3mg9hns1idx4-source/users/hasundue",
+        "path": "/nix/store/62bvnl21dfcxxsbndsk7d6xlhmymj3c9-source/users/hasundue",
         "type": "path"
       }
     },
