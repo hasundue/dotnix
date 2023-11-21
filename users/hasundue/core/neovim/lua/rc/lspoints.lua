@@ -6,7 +6,7 @@ vim.call(
     "format",
     "nvim_diagnostics",
     "hover",
-    -- "rename",
+    "rename",
   }
 )
 
