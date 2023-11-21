@@ -36,7 +36,9 @@ vim.api.nvim_create_autocmd("FileType", {
   pattern = vim.tbl_keys(servers),
   group = vim.api.nvim_create_augroup("lspoints_filetype", {}),
   callback = function(args)
-    vim.call("lspoints#attach", servers[args.match])
+    if (not vim.startswith(args.file, "ddu-")) then
+      vim.call("lspoints#attach", servers[args.match])
+    end
   end,
 })
 
@@ -45,12 +47,12 @@ vim.api.nvim_create_autocmd("User", {
   pattern = "LspointsAttach:*",
   group = vim.api.nvim_create_augroup("lspoints_attach", {}),
 
-  callback = function(ev)
+  callback = function(args)
     --
     -- keymappings ------------------------------------------------
     --
     local function map(mode, from, to)
-      vim.keymap.set(mode, from, to, { buffer = ev.buf, noremap = true })
+      vim.keymap.set(mode, from, to, { buffer = args.buf, noremap = true })
     end
 
     -- neovim built-in
@@ -66,9 +68,9 @@ vim.api.nvim_create_autocmd("User", {
     -- autocmds ---------------------------------------------------
     --
     vim.api.nvim_create_autocmd("BufWritePre", {
-      buffer = ev.buf,
+      buffer = args.buf,
       group = vim.api.nvim_create_augroup("lspoints_write", {}),
-      callback = callback_execute("format", ev.buf),
+      callback = callback_execute("format", args.buf),
     })
   end,
 })
