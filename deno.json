@@ -4,12 +4,12 @@
   },
   "lock": false,
   "tasks": {
-    "build": "deno task build:hasundue && sudo nixos-rebuild",
+    "build": "deno task build:hasundue && sudo nixos-rebuild --flake '.?submodules=1'",
     "build:hasundue": "deno run -A users/hasundue/**/*.build.ts",
     "check": "deno task check:deno",
     "check:deno": "deno fmt --check && deno lint && deno check -q ./**/*.ts",
-    "switch": "deno task build switch --flake .",
-    "test": "deno task -q check && deno task build test --flake .",
+    "switch": "deno task build switch",
+    "test": "deno task -q check && deno task build test",
     "update": "deno task update:deno --write && nix flake update .",
     "update:deno": "deno run -A https://deno.land/x/molt@0.11.2/cli.ts ./**/*.ts"
   }
