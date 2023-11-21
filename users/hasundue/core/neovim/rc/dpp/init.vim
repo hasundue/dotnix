@@ -13,7 +13,7 @@ call s:add('dpp.vim')
 call s:add('dpp-ext-lazy')
 
 " Define augroup for dpp
-augroup dpprc
+augroup dpp_init
   autocmd!
 augroup END
 
@@ -28,14 +28,14 @@ if dpp#min#load_state(s:dpp_base)
   " Need to load denops manually since we pass `--noplugin` to nvim
   runtime! plugin/denops.vim
 
-  autocmd dpprc User DenopsReady
+  autocmd dpp_init User DenopsReady
     \ call dpp#make_state(s:dpp_base, stdpath('config') .. '/rc/dpp/config.ts')
 
-  autocmd dpprc User Dpp:makeStatePost
+  autocmd dpp_init User Dpp:makeStatePost
     \ echo '[dpp] Created ' .. s:dpp_state
 else
   " Found an existing state. Check if it is up-to-date.
-  autocmd dpprc User Dpp:makeStatePost
+  autocmd dpp_init User Dpp:makeStatePost
     \ echo '[dpp] Updated ' .. s:dpp_state
   call dpp#check_files()
 endif

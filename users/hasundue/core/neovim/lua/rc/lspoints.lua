@@ -34,7 +34,7 @@ local servers = {
 -- attach lsp servers
 vim.api.nvim_create_autocmd("FileType", {
   pattern = vim.tbl_keys(servers),
-  group = vim.api.nvim_create_augroup("lspoints-filetype", {}),
+  group = vim.api.nvim_create_augroup("lspoints_filetype", {}),
   callback = function(args)
     vim.call("lspoints#attach", servers[args.match])
   end,
@@ -43,7 +43,7 @@ vim.api.nvim_create_autocmd("FileType", {
 -- configure lspoints for an attached buffer
 vim.api.nvim_create_autocmd("User", {
   pattern = "LspointsAttach:*",
-  group = vim.api.nvim_create_augroup("lspoints-attach", {}),
+  group = vim.api.nvim_create_augroup("lspoints_attach", {}),
 
   callback = function(ev)
     --
@@ -67,7 +67,7 @@ vim.api.nvim_create_autocmd("User", {
     --
     vim.api.nvim_create_autocmd("BufWritePre", {
       buffer = ev.buf,
-      group = vim.api.nvim_create_augroup("lspoints-write", {}),
+      group = vim.api.nvim_create_augroup("lspoints_write", {}),
       callback = callback_execute("format", ev.buf),
     })
   end,
