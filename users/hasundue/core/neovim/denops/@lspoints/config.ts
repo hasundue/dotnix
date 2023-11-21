@@ -1,8 +1,5 @@
-import { Denops } from "https://deno.land/x/lspoints@v0.0.4/deps/denops.ts";
-import {
-  BaseExtension,
-  Lspoints,
-} from "https://deno.land/x/lspoints@v0.0.4/interface.ts";
+import { Denops } from "../lib/denops.ts";
+import { BaseExtension, Lspoints } from "../lib/lspoints.ts";
 
 export class Extension extends BaseExtension {
   override initialize(_denops: Denops, lspoints: Lspoints) {

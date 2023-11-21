@@ -1,8 +1,5 @@
 // Ref: https://github.com/uga-rosa/dotfiles/blob/main/nvim/denops/%40lspoints/rename.ts
-import {
-  BaseExtension,
-  Lspoints,
-} from "https://deno.land/x/lspoints@v0.0.3/interface.ts";
+import { BaseExtension, Lspoints } from "../lib/lspoints.ts";
 import { Denops, lambda, vim } from "../lib/denops.ts";
 import {
   applyWorkspaceEdit,
