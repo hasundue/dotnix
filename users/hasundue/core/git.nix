@@ -39,5 +39,6 @@
     grba = "${grb} --abort";
     grbc = "${grb} --continue";
     gst = "git status";
+    gsw = "git switch";
   };
 }
