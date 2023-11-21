@@ -13,7 +13,7 @@ vim.call(
 ---@param command string
 ---@param options (string | table)?
 ---@return function
-local function create_execute(command, options)
+local function callback_execute(command, options)
   return function()
     vim.call(
       "denops#request",
@@ -59,8 +59,8 @@ vim.api.nvim_create_autocmd("User", {
     map('n', "<M-p>", vim.diagnostic.goto_prev)
 
     -- lspoints
-    map('n', 'K', create_execute("hover", { border = "none" }))
-    map('n', "<M-r>", create_execute("rename"))
+    map('n', 'K', callback_execute("hover", { border = "none" }))
+    map('n', "<M-r>", callback_execute("rename"))
 
     --
     -- autocmds ---------------------------------------------------
@@ -68,7 +68,7 @@ vim.api.nvim_create_autocmd("User", {
     vim.api.nvim_create_autocmd("BufWritePre", {
       buffer = ev.buf,
       group = vim.api.nvim_create_augroup("lspoints-write", {}),
-      callback = create_execute("format", ev.buf),
+      callback = callback_execute("format", ev.buf),
     })
   end,
 })
