@@ -9,7 +9,7 @@ const s:dpp_base = '~/.cache/dpp'->expand()
 const s:dpp_state = s:dpp_base .. '/nvim/state.vim'
 
 " Add dpp and ext-lazy to runtimepath (required)
-call s:add('dpp')
+call s:add('dpp.vim')
 call s:add('dpp-ext-lazy')
 
 " Define augroup for dpp
@@ -23,7 +23,7 @@ if dpp#min#load_state(s:dpp_base)
   echo '[dpp] Creating ' .. s:dpp_state .. ' ...'
 
   " Add denops and to runtimepath (required)
-  call s:add('denops')
+  call s:add('denops.vim')
 
   " Need to load denops manually since we pass `--noplugin` to nvim
   runtime! plugin/denops.vim

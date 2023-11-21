@@ -1,8 +1,10 @@
-import type { Plugin } from "./lib/x/dpp_vim.ts";
-import { ClosedGroup, Group } from "./lib/groups.ts";
-import { $CONFIG } from "./lib/env.ts";
+import type { Plugin } from "./lib/dpp_vim.ts";
+import { $XDG_CONFIG_HOME, ClosedGroup, Group } from "./lib/dpp_helper.ts";
 
-const rc = $CONFIG + "/rc";
+const rc = $XDG_CONFIG_HOME + "/nvim/rc";
+
+const readTextFile = (path: string) =>
+  Deno.readTextFile(new URL(path, import.meta.url));
 
 export const PLUGINS = ClosedGroup(
   // Bootstrap
@@ -12,13 +14,14 @@ export const PLUGINS = ClosedGroup(
     },
     {
       repo: "Shougo/dpp-ext-lazy",
-      depends: ["dpp"],
+      depends: ["dpp.vim"],
     },
   ]),
   // Merged into bootstrap
   ...Group({ lazy: false }, [
     {
       repo: "rebelot/kanagawa.nvim",
+      lua_add: "require('rc.kanagawa')",
     },
   ]),
   // Loaded immediately after startup
@@ -35,7 +38,7 @@ export const PLUGINS = ClosedGroup(
     },
     {
       repo: "kuuote/lspoints",
-      depends: ["denops"],
+      depends: ["denops.vim"],
       lua_source: "require('rc.lspoints')",
     },
   ]),
@@ -55,16 +58,16 @@ export const PLUGINS = ClosedGroup(
   ...Group({ on_event: ["CmdLineEnter", "InsertEnter"] }, [
     {
       repo: "github/copilot.vim",
-      hooks_file: `${rc}/copilot.vim`,
+      hook_add: await readTextFile("../copilot.vim"),
     },
     {
       repo: "Shougo/ddc.vim",
-      depends: ["denops", "pum"],
+      depends: ["denops.vim", "pum.vim"],
       hooks_file: `${rc}/ddc.vim`,
     },
   ]),
   // ddc dependencies and extensions
-  ...Group({ on_source: ["ddc"] }, [
+  ...Group({ on_source: ["ddc.vim"] }, [
     { repo: "LumaKernel/ddc-file" },
     { repo: "Shougo/ddc-cmdline" },
     { repo: "Shougo/ddc-cmdline-history" },
@@ -76,8 +79,8 @@ export const PLUGINS = ClosedGroup(
   // ddu and ddu-commands
   {
     repo: "Shougo/ddu.vim",
-    depends: ["denops"],
-    on_source: ["ddu-commands"],
+    depends: ["denops.vim"],
+    on_source: ["ddu-commands.vim"],
     hooks_file: `${rc}/ddu.vim`,
   },
   {
@@ -85,14 +88,14 @@ export const PLUGINS = ClosedGroup(
     on_cmd: ["Ddu"],
   },
   // ddu extensions
-  ...Group({ on_source: ["ddu"] }, [
+  ...Group({ on_source: ["ddu.vim"] }, [
     {
       repo: "hasundue/ddu-filter-zf",
       build: "deno task build",
     },
     {
       repo: "kuuote/ddu-source-mr",
-      depends: ["mr"],
+      depends: ["mr.vim"],
     },
     { repo: "matsui54/ddu-source-file_external" },
     { repo: "matsui54/ddu-source-help" },

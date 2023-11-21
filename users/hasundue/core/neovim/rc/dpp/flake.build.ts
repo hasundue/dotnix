@@ -1,5 +1,4 @@
-import type { ClosedGroup } from "./lib/groups.ts";
-import { $HOME } from "./lib/env.ts";
+import { $HOME, type ClosedGroup } from "./lib/dpp_helper.ts";
 
 const PLACEHOLDER = "    /* PLACEHOLDER */";
 
@@ -15,7 +14,7 @@ async function generateFlake(
     const url = repo.startsWith("~")
       ? `git+file:${repo.replace("~", $HOME)}`
       : `github:${repo}`;
-    return `    ${name} = { url = "${url}"; flake = false; };`;
+    return `    "${name}" = { url = "${url}"; flake = false; };`;
   });
 
   await Deno.writeTextFile(

@@ -1,4 +1,4 @@
-import { walk } from "./lib/std/fs.ts";
+import { walk } from "./lib/std.ts";
 import {
   BaseConfig,
   ConfigReturn,
@@ -6,14 +6,22 @@ import {
   Denops,
   Dpp,
   Plugin,
-} from "./lib/x/dpp_vim.ts";
-import { $CACHE, $CONFIG, $DATA } from "./lib/env.ts";
+} from "./lib/dpp_vim.ts";
+import {
+  $XDG_CACHE_HOME,
+  $XDG_CONFIG_HOME,
+  $XDG_DATA_HOME,
+} from "./lib/dpp_helper.ts";
 import { PLUGINS } from "./plugins.ts";
 
 type LazyMakeStateResult = {
   plugins: Plugin[];
   stateLines: string[];
 };
+
+const $CACHE = $XDG_CACHE_HOME + "/dpp/repos/github.com";
+const $CONFIG = $XDG_CONFIG_HOME + "/nvim";
+const $DATA = $XDG_DATA_HOME + "/nvim";
 
 export class Config extends BaseConfig {
   override async config(args: {
@@ -26,7 +34,7 @@ export class Config extends BaseConfig {
 
     const plugins = PLUGINS.map((it) => {
       const data = `${$DATA}/plugins/${it.name}`;
-      const cache = `${$CACHE}/${it.name}`;
+      const cache = `${$CACHE}/${it.repo}`;
       /*
       if (it.build) {
         try {

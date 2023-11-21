@@ -4,7 +4,7 @@
   },
   "lock": false,
   "tasks": {
-    "build": "deno task build:hasundue && git add --all && sudo nixos-rebuild",
+    "build": "deno task build:hasundue && sudo nixos-rebuild",
     "build:hasundue": "deno run -A users/hasundue/**/*.build.ts",
     "check": "deno task check:deno",
     "check:deno": "deno fmt --check && deno lint && deno check -q ./**/*.ts && deno test -A",
