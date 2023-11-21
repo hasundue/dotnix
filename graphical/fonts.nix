@@ -49,8 +49,8 @@
       name = "Noto Serif CJK JP";
     };
     monospace = {
-      package = pkgs.nerdfonts.override { fonts = [ "Hack" ]; };
-      name = "Hack Nerd Font";
+      package = pkgs.nerdfonts.override { fonts = [ "RobotoMono" ]; };
+      name = "RobotoMono Nerd Font";
     };
     emoji = {
       package = pkgs.noto-fonts-emoji;
