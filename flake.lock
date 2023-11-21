@@ -450,22 +450,6 @@
         "type": "github"
       }
     },
-    "denops.vim": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1699453626,
-        "narHash": "sha256-0fUtBZlw+d2en/kORS1REY93ofD6KdQrmD7kczWjimM=",
-        "owner": "vim-denops",
-        "repo": "denops.vim",
-        "rev": "8b53173370d3c2285abb34569b8d00b73d06eaa3",
-        "type": "github"
-      },
-      "original": {
-        "owner": "vim-denops",
-        "repo": "denops.vim",
-        "type": "github"
-      }
-    },
     "dpp": {
       "flake": false,
       "locked": {
@@ -495,38 +479,6 @@
       "original": {
         "owner": "Shougo",
         "repo": "dpp-ext-lazy",
-        "type": "github"
-      }
-    },
-    "dpp-ext-lazy_2": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1700452572,
-        "narHash": "sha256-ZPl2J15v+0uBg/wLFqr1oVgTQGgfj5zuXlAaMOkb3Hk=",
-        "owner": "Shougo",
-        "repo": "dpp-ext-lazy",
-        "rev": "b19a52bbb6e35dec2c681423b0709cd41f38eb2b",
-        "type": "github"
-      },
-      "original": {
-        "owner": "Shougo",
-        "repo": "dpp-ext-lazy",
-        "type": "github"
-      }
-    },
-    "dpp.vim": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1700452605,
-        "narHash": "sha256-Uz6uTYTCngHL7SgbFkA6GronTi0OFq4ZWRazjrUHFw0=",
-        "owner": "Shougo",
-        "repo": "dpp.vim",
-        "rev": "c5e6c2d1dc0827f0e5b68e870632b20e85550305",
-        "type": "github"
-      },
-      "original": {
-        "owner": "Shougo",
-        "repo": "dpp.vim",
         "type": "github"
       }
     },
@@ -779,11 +731,11 @@
       "locked": {
         "lastModified": 1,
         "narHash": "sha256-fw6UiRbAcGkpwi5gcrFFOEZRKJhtPLI7dThLvZUguaY=",
-        "path": "/nix/store/qvxnwmnjz0awwvxlm1a3r5vygp2x6jn7-source/core/neovim",
+        "path": "/nix/store/zazdm2laa324gkhgffgg5vr5n966lls4-source/core/neovim",
         "type": "path"
       },
       "original": {
-        "path": "/nix/store/qvxnwmnjz0awwvxlm1a3r5vygp2x6jn7-source/core/neovim",
+        "path": "/nix/store/zazdm2laa324gkhgffgg5vr5n966lls4-source/core/neovim",
         "type": "path"
       }
     },
@@ -958,55 +910,20 @@
     },
     "user-hasundue": {
       "inputs": {
-        "neovim": "neovim",
-        "vim": "vim"
+        "neovim": "neovim"
       },
       "locked": {
         "lastModified": 1,
-        "narHash": "sha256-QctYSUfeaCdSRu4vGb+kJ6DskI+cUqIqkoHKU9f2kT8=",
-        "path": "/nix/store/nr4nc1v6sb4jfxjsy5zx8shnaff28j9z-source/users/hasundue",
+        "narHash": "sha256-moIp9Dz65aMyryMJCZccj/nDZgZR/pVwhRJUcrlIFuA=",
+        "path": "/nix/store/llli1x5lbjv5n7b7a368prqwh74n4clb-source/users/hasundue",
         "type": "path"
       },
       "original": {
-        "path": "/nix/store/nr4nc1v6sb4jfxjsy5zx8shnaff28j9z-source/users/hasundue",
-        "type": "path"
-      }
-    },
-    "vim": {
-      "inputs": {
-        "denops.vim": "denops.vim",
-        "dpp-ext-lazy": "dpp-ext-lazy_2",
-        "dpp.vim": "dpp.vim",
-        "vim-floaterm": "vim-floaterm_2"
-      },
-      "locked": {
-        "lastModified": 1,
-        "narHash": "sha256-jW6PKl4rCDsW2sURojotBRJamYAARLzkIKDqRHBX3K4=",
-        "path": "/nix/store/qvxnwmnjz0awwvxlm1a3r5vygp2x6jn7-source/core/vim",
-        "type": "path"
-      },
-      "original": {
-        "path": "/nix/store/qvxnwmnjz0awwvxlm1a3r5vygp2x6jn7-source/core/vim",
+        "path": "/nix/store/llli1x5lbjv5n7b7a368prqwh74n4clb-source/users/hasundue",
         "type": "path"
       }
     },
     "vim-floaterm": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1700403249,
-        "narHash": "sha256-rJXxXu6QpMd6Q3YiTvHlKXVt+8ZPEZ2WMSQPlR4WX5k=",
-        "owner": "voldikss",
-        "repo": "vim-floaterm",
-        "rev": "3f01a623376957437f9376327637491b74719e38",
-        "type": "github"
-      },
-      "original": {
-        "owner": "voldikss",
-        "repo": "vim-floaterm",
-        "type": "github"
-      }
-    },
-    "vim-floaterm_2": {
       "flake": false,
       "locked": {
         "lastModified": 1700403249,

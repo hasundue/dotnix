@@ -25,8 +25,7 @@ with lib;
         neovim-nightly
         stylix;
       inherit (user-hasundue)
-        neovim-plugins
-        vim-plugins;
+        neovim-plugins;
     };
     users.hasundue = {
       imports = [

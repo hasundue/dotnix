@@ -8,7 +8,6 @@
     ./git.nix
     ./neovim
     ./xdg.nix
-    ./vim
   ];
 
   home = {

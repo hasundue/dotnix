@@ -1,17 +1,13 @@
 {
-  description = "hasundue's Nix flake";
+  description = "hasundue's subflake";
 
   inputs = {
     neovim = {
       url = "./core/neovim";
     };
-    vim = {
-      url = "./core/vim";
-    };
   };
 
-  outputs = { neovim, vim, ... }: {
+  outputs = { neovim, ... }: {
     neovim-plugins = neovim.plugins;
-    vim-plugins = vim.plugins;
   };
 }
