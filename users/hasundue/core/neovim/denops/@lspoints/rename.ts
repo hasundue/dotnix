@@ -1,6 +1,6 @@
 // Ref: https://github.com/uga-rosa/dotfiles/blob/main/nvim/denops/%40lspoints/rename.ts
 import { BaseExtension, Lspoints } from "../lib/lspoints.ts";
-import { Denops, lambda, vim } from "../lib/denops.ts";
+import { Denops, fn, lambda } from "../lib/denops.ts";
 import {
   applyWorkspaceEdit,
   LSP,
@@ -13,7 +13,7 @@ export class Extension extends BaseExtension {
   initialize(denops: Denops, lspoints: Lspoints) {
     lspoints.defineCommands("rename", {
       execute: async () => {
-        const clients = lspoints.getClients(await vim.bufnr(denops))
+        const clients = lspoints.getClients(await fn.bufnr(denops))
           .filter((c) => c.serverCapabilities.hoverProvider !== undefined);
         if (clients.length !== 1) {
           return;
