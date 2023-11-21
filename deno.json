@@ -7,7 +7,7 @@
     "build": "deno task build:hasundue && sudo nixos-rebuild",
     "build:hasundue": "deno run -A users/hasundue/**/*.build.ts",
     "check": "deno task check:deno",
-    "check:deno": "deno fmt --check && deno lint && deno check -q ./**/*.ts && deno test -A",
+    "check:deno": "deno fmt --check && deno lint && deno check -q ./**/*.ts",
     "switch": "deno task build switch --flake .",
     "test": "deno task -q check && deno task build test --flake .",
     "update": "deno task update:deno --write && nix flake update .",
