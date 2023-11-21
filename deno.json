@@ -11,6 +11,6 @@
     "switch": "deno task build switch",
     "test": "deno task -q check && deno task build test",
     "update": "deno task update:deno --write && nix flake update .",
-    "update:deno": "deno run -A https://deno.land/x/molt@0.11.2/cli.ts ./**/*.ts"
+    "update:deno": "deno run -A https://deno.land/x/molt@0.12.0/cli.ts ./**/*.ts"
   }
 }
