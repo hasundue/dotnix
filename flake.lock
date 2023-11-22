@@ -762,6 +762,7 @@
         "ddu-source-buffer": "ddu-source-buffer",
         "ddu-source-file_external": "ddu-source-file_external",
         "ddu-source-help": "ddu-source-help",
+        "ddu-source-lsp": "ddu-source-lsp",
         "ddu-source-mr": "ddu-source-mr",
         "ddu-source-rg": "ddu-source-rg",
         "ddu-ui-ff": "ddu-ui-ff",
@@ -781,18 +782,18 @@
       },
       "locked": {
         "lastModified": 1,
-        "narHash": "sha256-5ROQnbLCPotjMLXM5NmPKr8+thVHAax3f4MqiEvh7V4=",
-        "path": "/nix/store/f7f3j77j2rss4wm3a6p70xwid6qar1r8-source/core/neovim",
+        "narHash": "sha256-IOZiwXWmLtJviZugQEnrSHJ2KDQym8Uz1o+ipGpYl7w=",
+        "path": "/nix/store/n2wyg01fmrjccj63fdgsak1lzfscl7zg-source/core/neovim",
         "type": "path"
       },
       "original": {
-        "path": "/nix/store/f7f3j77j2rss4wm3a6p70xwid6qar1r8-source/core/neovim",
+        "path": "/nix/store/n2wyg01fmrjccj63fdgsak1lzfscl7zg-source/core/neovim",
         "type": "path"
       }
     },
     "neovim-flake": {
       "inputs": {
-        "flake-utils": "flake-utils",
+        "flake-utils": "flake-utils_2",
         "nixpkgs": [
           "neovim-nightly",
           "nixpkgs"
@@ -904,6 +905,7 @@
     "root": {
       "inputs": {
         "base16-schemes": "base16-schemes",
+        "flake-utils": "flake-utils",
         "home-manager": "home-manager",
         "neovim-nightly": "neovim-nightly",
         "nixos-hardware": "nixos-hardware",
@@ -959,18 +961,33 @@
         "type": "github"
       }
     },
+    "systems_2": {
+      "locked": {
+        "lastModified": 1681028828,
+        "narHash": "sha256-Vy1rq5AaRuLzOxct8nz4T6wlgyUR7zLU309k9mBC768=",
+        "owner": "nix-systems",
+        "repo": "default",
+        "rev": "da67096a3b9bf56a91d16901293e51ba5b49a27e",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nix-systems",
+        "repo": "default",
+        "type": "github"
+      }
+    },
     "user-hasundue": {
       "inputs": {
         "neovim": "neovim"
       },
       "locked": {
         "lastModified": 1,
-        "narHash": "sha256-+BpQrLF1TVwpbnR+bwwKlzOM+vRcKEXFZoOwHpw1Rkk=",
-        "path": "/nix/store/ac5fb4g7dkqkiwzz6rr3f6l1ycg5a3qk-source/users/hasundue",
+        "narHash": "sha256-JnLKpm4yE5VlTb8eCNTSMglehlxq2+ox8xsFSdZqFfs=",
+        "path": "/nix/store/ibs7l8dn1n54p9q9vdpazsh23ky5221a-source/users/hasundue",
         "type": "path"
       },
       "original": {
-        "path": "/nix/store/ac5fb4g7dkqkiwzz6rr3f6l1ycg5a3qk-source/users/hasundue",
+        "path": "/nix/store/ibs7l8dn1n54p9q9vdpazsh23ky5221a-source/users/hasundue",
         "type": "path"
       }
     },
