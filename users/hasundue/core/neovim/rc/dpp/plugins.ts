@@ -110,6 +110,7 @@ export const PLUGINS = ClosedGroup(
     { repo: "Shougo/ddu-kind-file" },
     { repo: "shun/ddu-source-rg" },
     { repo: "shun/ddu-source-buffer" },
+    { repo: "uga-rosa/ddu-source-lsp" },
   ]),
   // floaterm
   {

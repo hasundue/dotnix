@@ -30,6 +30,7 @@
     "ddu-kind-file" = { url = "github:Shougo/ddu-kind-file"; flake = false; };
     "ddu-source-rg" = { url = "github:shun/ddu-source-rg"; flake = false; };
     "ddu-source-buffer" = { url = "github:shun/ddu-source-buffer"; flake = false; };
+    "ddu-source-lsp" = { url = "github:uga-rosa/ddu-source-lsp"; flake = false; };
     "vim-floaterm" = { url = "github:voldikss/vim-floaterm"; flake = false; };
     "mr.vim" = { url = "github:lambdalisue/mr.vim"; flake = false; };
   };

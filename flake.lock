@@ -370,6 +370,22 @@
         "type": "github"
       }
     },
+    "ddu-source-lsp": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1697990944,
+        "narHash": "sha256-62D00XiMiV1aC5KAdoQ247cC+8ouJpzYiuSlkWjp5ns=",
+        "owner": "uga-rosa",
+        "repo": "ddu-source-lsp",
+        "rev": "6791c0ad7226b92da4f4e17977a0bf53b1ae3241",
+        "type": "github"
+      },
+      "original": {
+        "owner": "uga-rosa",
+        "repo": "ddu-source-lsp",
+        "type": "github"
+      }
+    },
     "ddu-source-mr": {
       "flake": false,
       "locked": {
