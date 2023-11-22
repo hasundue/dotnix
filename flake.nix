@@ -15,6 +15,11 @@
       flake = false;
     };
 
+    flake-utils = {
+      url = "github:numtide/flake-utils";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     stylix = {
       url = "github:danth/stylix";
       inputs = {
@@ -33,14 +38,21 @@
     };
   };
 
-  outputs = { self, nixpkgs, ... } @ inputs: {
-    nixosConfigurations = {
-      # Thinkpad X1 Carbon 5th Gen
-      x1carbon = nixpkgs.lib.nixosSystem {
-        system = "x86_64-linux";
-        modules = [ ./hosts/x1carbon ];
-        specialArgs = inputs;
+  outputs = { self, nixpkgs, flake-utils, ... } @ inputs:
+    flake-utils.lib.eachDefaultSystem (system:
+      let pkgs = nixpkgs.legacyPackages.${system}; in
+      {
+        devShells.default = import ./nix/shell.nix { inherit pkgs; };
+      }
+    ) //
+    {
+      nixosConfigurations = {
+        # Thinkpad X1 Carbon 5th Gen
+        x1carbon = nixpkgs.lib.nixosSystem {
+          system = "x86_64-linux";
+          modules = [ ./hosts/x1carbon ];
+          specialArgs = inputs;
+        };
       };
     };
-  };
 }
