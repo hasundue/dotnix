@@ -42,6 +42,10 @@
     enable = true;
     gtk2.extraConfig = "gtk-application-prefer-dark-theme = true";
     gtk3.extraConfig.gtk-application-prefer-dark-theme = true;
+    gtk4.extraConfig = {
+      # Remedy GTK4 to respect the font hinting settings
+      gtk-hint-font-metrics = true;
+    };
   };
 
   qt = {
