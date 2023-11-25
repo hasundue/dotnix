@@ -7,10 +7,10 @@
     "build": "deno task build:hasundue && sudo nixos-rebuild --flake '.?submodules=1'",
     "build:hasundue": "deno run -A users/hasundue/**/*.build.ts",
     "check": "deno task check:deno",
-    "check:deno": "deno fmt --check && deno lint && deno check -q ./**/*.ts",
+    "check:deno": "deno fmt --check && deno lint && deno check -q ./**/lib/*.ts",
     "switch": "deno task build switch",
     "test": "deno task -q check && deno task build test",
     "update": "deno task update:deno --write && nix flake update .",
-    "update:deno": "deno run -A https://deno.land/x/molt@0.12.0/cli.ts ./**/*.ts"
+    "update:deno": "deno run -A https://deno.land/x/molt@0.13.0/cli.ts ./**/lib/*.ts"
   }
 }
