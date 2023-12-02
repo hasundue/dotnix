@@ -10,7 +10,7 @@
     "check:deno": "deno fmt --check && deno lint && deno check -q ./**/lib/*.ts",
     "switch": "deno task build switch",
     "test": "deno task -q check && deno task build test",
-    "update": "deno task update:deno --write && nix flake update .",
+    "update": "deno task update:deno --commit --prefix 'build(deps):' && nix flake update .",
     "update:deno": "deno run -A https://deno.land/x/molt@0.13.0/cli.ts ./**/lib/*.ts"
   }
 }
