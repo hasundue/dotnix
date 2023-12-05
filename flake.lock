@@ -730,6 +730,22 @@
         "type": "github"
       }
     },
+    "markdown-preview.nvim": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1697511247,
+        "narHash": "sha256-TBXdG/Ih5DusAYZJyn37zVqHcMD85VkjrCoLyTo/KBg=",
+        "owner": "iamcco",
+        "repo": "markdown-preview.nvim",
+        "rev": "a923f5fc5ba36a3b17e289dc35dc17f66d0548ee",
+        "type": "github"
+      },
+      "original": {
+        "owner": "iamcco",
+        "repo": "markdown-preview.nvim",
+        "type": "github"
+      }
+    },
     "mr.vim": {
       "flake": false,
       "locked": {
@@ -774,6 +790,7 @@
         "kanagawa.nvim": "kanagawa.nvim",
         "lspoints": "lspoints",
         "lspoints-hover": "lspoints-hover",
+        "markdown-preview.nvim": "markdown-preview.nvim",
         "mr.vim": "mr.vim",
         "nvim-treesitter": "nvim-treesitter",
         "pum.vim": "pum.vim",

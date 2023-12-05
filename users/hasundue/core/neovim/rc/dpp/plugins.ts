@@ -124,4 +124,10 @@ export const PLUGINS = ClosedGroup(
     repo: "lambdalisue/mr.vim",
     on_source: ["ddu-source-mr"],
   },
+  // Markdown
+  {
+    repo: "iamcco/markdown-preview.nvim",
+    on_cmd: ["MarkdownPreview"],
+    build: 'sh -c "cd app && yarn install"',
+  },
 ) satisfies Plugin[];

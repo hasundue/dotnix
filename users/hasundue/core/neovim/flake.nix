@@ -33,6 +33,7 @@
     "ddu-source-lsp" = { url = "github:uga-rosa/ddu-source-lsp"; flake = false; };
     "vim-floaterm" = { url = "github:voldikss/vim-floaterm"; flake = false; };
     "mr.vim" = { url = "github:lambdalisue/mr.vim"; flake = false; };
+    "markdown-preview.nvim" = { url = "github:iamcco/markdown-preview.nvim"; flake = false; };
   };
 
   outputs = inputs: {
