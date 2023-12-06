@@ -10,6 +10,7 @@
       # runtimes
       bun
       nodejs
+      nodePackages.yarn
       zig
 
       # language servers
