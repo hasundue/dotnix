@@ -41,8 +41,7 @@
       {
         devShells.default = import ./nix/shell.nix { inherit pkgs; };
       }
-    ) //
-    {
+    ) // {
       nixosConfigurations = {
         # Thinkpad X1 Carbon 5th Gen
         x1carbon = nixpkgs.lib.nixosSystem {
