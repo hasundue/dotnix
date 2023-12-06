@@ -31,6 +31,7 @@
       grim
       slurp
       wl-clipboard
+      xdg-utils
     ];
 
     sessionVariables = {
