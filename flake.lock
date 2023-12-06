@@ -640,6 +640,52 @@
         "type": "github"
       }
     },
+    "hasundue-neovim": {
+      "inputs": {
+        "copilot.vim": "copilot.vim",
+        "ddc-cmdline": "ddc-cmdline",
+        "ddc-cmdline-history": "ddc-cmdline-history",
+        "ddc-file": "ddc-file",
+        "ddc-fuzzy": "ddc-fuzzy",
+        "ddc-nvim-lsp": "ddc-nvim-lsp",
+        "ddc-ui-pum": "ddc-ui-pum",
+        "ddc.vim": "ddc.vim",
+        "ddu-commands.vim": "ddu-commands.vim",
+        "ddu-filter-zf": "ddu-filter-zf",
+        "ddu-kind-file": "ddu-kind-file",
+        "ddu-source-buffer": "ddu-source-buffer",
+        "ddu-source-file_external": "ddu-source-file_external",
+        "ddu-source-help": "ddu-source-help",
+        "ddu-source-lsp": "ddu-source-lsp",
+        "ddu-source-mr": "ddu-source-mr",
+        "ddu-source-rg": "ddu-source-rg",
+        "ddu-ui-ff": "ddu-ui-ff",
+        "ddu.vim": "ddu.vim",
+        "denops.vim": "denops.vim",
+        "dpp-ext-lazy": "dpp-ext-lazy",
+        "dpp.vim": "dpp.vim",
+        "gitsigns.nvim": "gitsigns.nvim",
+        "kanagawa.nvim": "kanagawa.nvim",
+        "lsp_signature.nvim": "lsp_signature.nvim",
+        "markdown-preview.nvim": "markdown-preview.nvim",
+        "mr.vim": "mr.vim",
+        "nvim-lspconfig": "nvim-lspconfig",
+        "nvim-treesitter": "nvim-treesitter",
+        "pum.vim": "pum.vim",
+        "vim-floaterm": "vim-floaterm",
+        "vim-sandwich": "vim-sandwich"
+      },
+      "locked": {
+        "lastModified": 1,
+        "narHash": "sha256-CQK8yvlSfSKmJFysJnzMt7yxrVt6baYYFQmm3qbpbQc=",
+        "path": "/nix/store/ffh0b76snxwigwbh146z07i2x47gvh92-source/users/hasundue/core/neovim",
+        "type": "path"
+      },
+      "original": {
+        "path": "/nix/store/ffh0b76snxwigwbh146z07i2x47gvh92-source/users/hasundue/core/neovim",
+        "type": "path"
+      }
+    },
     "hercules-ci-effects": {
       "inputs": {
         "flake-parts": "flake-parts_2",
@@ -744,52 +790,6 @@
         "owner": "lambdalisue",
         "repo": "mr.vim",
         "type": "github"
-      }
-    },
-    "neovim": {
-      "inputs": {
-        "copilot.vim": "copilot.vim",
-        "ddc-cmdline": "ddc-cmdline",
-        "ddc-cmdline-history": "ddc-cmdline-history",
-        "ddc-file": "ddc-file",
-        "ddc-fuzzy": "ddc-fuzzy",
-        "ddc-nvim-lsp": "ddc-nvim-lsp",
-        "ddc-ui-pum": "ddc-ui-pum",
-        "ddc.vim": "ddc.vim",
-        "ddu-commands.vim": "ddu-commands.vim",
-        "ddu-filter-zf": "ddu-filter-zf",
-        "ddu-kind-file": "ddu-kind-file",
-        "ddu-source-buffer": "ddu-source-buffer",
-        "ddu-source-file_external": "ddu-source-file_external",
-        "ddu-source-help": "ddu-source-help",
-        "ddu-source-lsp": "ddu-source-lsp",
-        "ddu-source-mr": "ddu-source-mr",
-        "ddu-source-rg": "ddu-source-rg",
-        "ddu-ui-ff": "ddu-ui-ff",
-        "ddu.vim": "ddu.vim",
-        "denops.vim": "denops.vim",
-        "dpp-ext-lazy": "dpp-ext-lazy",
-        "dpp.vim": "dpp.vim",
-        "gitsigns.nvim": "gitsigns.nvim",
-        "kanagawa.nvim": "kanagawa.nvim",
-        "lsp_signature.nvim": "lsp_signature.nvim",
-        "markdown-preview.nvim": "markdown-preview.nvim",
-        "mr.vim": "mr.vim",
-        "nvim-lspconfig": "nvim-lspconfig",
-        "nvim-treesitter": "nvim-treesitter",
-        "pum.vim": "pum.vim",
-        "vim-floaterm": "vim-floaterm",
-        "vim-sandwich": "vim-sandwich"
-      },
-      "locked": {
-        "lastModified": 1,
-        "narHash": "sha256-kQ5wGII3//N9Q5bILSpQe9Hk3jMUkJC3PW5fIdLCBtA=",
-        "path": "/nix/store/v2m5pa108zsyyzi47fyljlsrq772gphn-source/core/neovim",
-        "type": "path"
-      },
-      "original": {
-        "path": "/nix/store/v2m5pa108zsyyzi47fyljlsrq772gphn-source/core/neovim",
-        "type": "path"
       }
     },
     "neovim-flake": {
@@ -923,12 +923,12 @@
       "inputs": {
         "base16-schemes": "base16-schemes",
         "flake-utils": "flake-utils",
+        "hasundue-neovim": "hasundue-neovim",
         "home-manager": "home-manager",
         "neovim-nightly": "neovim-nightly",
         "nixos-hardware": "nixos-hardware",
         "nixpkgs": "nixpkgs",
-        "stylix": "stylix",
-        "user-hasundue": "user-hasundue"
+        "stylix": "stylix"
       }
     },
     "stylix": {
@@ -991,21 +991,6 @@
         "owner": "nix-systems",
         "repo": "default",
         "type": "github"
-      }
-    },
-    "user-hasundue": {
-      "inputs": {
-        "neovim": "neovim"
-      },
-      "locked": {
-        "lastModified": 1,
-        "narHash": "sha256-+6gFNKtJrLlt4aZr1AZjd+b4eOooFHt1pDeEUPew9Vk=",
-        "path": "/nix/store/5m1xvplc6i1dkdasqrb09sywhgb9602h-source/users/hasundue",
-        "type": "path"
-      },
-      "original": {
-        "path": "/nix/store/5m1xvplc6i1dkdasqrb09sywhgb9602h-source/users/hasundue",
-        "type": "path"
       }
     },
     "vim-floaterm": {

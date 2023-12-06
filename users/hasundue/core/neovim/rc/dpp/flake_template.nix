@@ -1,11 +1,11 @@
 {
-  description = "hasundue's Neovim plugins (auto-generated)";
+  description = "hasundue's Neovim configuration";
 
   inputs = {
     /* PLACEHOLDER */
   };
 
   outputs = inputs: {
-    plugins = inputs;
+    neovim-plugins = inputs;
   };
 }

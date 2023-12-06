@@ -1,4 +1,4 @@
-{ config, lib, pkgs, base16-schemes, neovim-nightly, stylix, user-hasundue, ... }: 
+{ config, lib, pkgs, base16-schemes, neovim-nightly, stylix, hasundue-neovim, ... }: 
 
 with lib;
 
@@ -24,7 +24,7 @@ with lib;
         base16-schemes
         neovim-nightly
         stylix;
-      inherit (user-hasundue)
+      inherit (hasundue-neovim)
         neovim-plugins;
     };
     users.hasundue = {

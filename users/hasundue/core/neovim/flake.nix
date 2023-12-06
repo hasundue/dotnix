@@ -1,5 +1,5 @@
 {
-  description = "hasundue's Neovim plugins (auto-generated)";
+  description = "hasundue's Neovim configuration";
 
   inputs = {
     "dpp.vim" = { url = "github:Shougo/dpp.vim"; flake = false; };
@@ -37,6 +37,6 @@
   };
 
   outputs = inputs: {
-    plugins = inputs;
+    neovim-plugins = inputs;
   };
 }

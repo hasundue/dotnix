@@ -30,8 +30,8 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    user-hasundue = {
-      url = "./users/hasundue";
+    hasundue-neovim = {
+      url = "./users/hasundue/core/neovim";
     };
   };
 
