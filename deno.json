@@ -4,7 +4,7 @@
   },
   "lock": false,
   "tasks": {
-    "build": "deno task build:hasundue && sudo nixos-rebuild --flake '.?submodules=2'",
+    "build": "deno task build:hasundue && sudo nixos-rebuild --flake '.?submodules=1'",
     "build:hasundue": "deno run -A users/hasundue/**/*.build.ts",
     "check": "deno task check:deno",
     "check:deno": "deno fmt --check && deno lint && deno check -q ./**/lib/*.ts",

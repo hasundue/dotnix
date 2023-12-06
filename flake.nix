@@ -31,7 +31,7 @@
     };
 
     hasundue-neovim = {
-      url = "./users/hasundue/core/neovim";
+      url = "git+file:./users/hasundue/core/neovim";
     };
   };
 

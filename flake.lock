@@ -676,14 +676,17 @@
         "vim-sandwich": "vim-sandwich"
       },
       "locked": {
-        "lastModified": 1,
-        "narHash": "sha256-CQK8yvlSfSKmJFysJnzMt7yxrVt6baYYFQmm3qbpbQc=",
-        "path": "/nix/store/ffh0b76snxwigwbh146z07i2x47gvh92-source/users/hasundue/core/neovim",
-        "type": "path"
+        "lastModified": 1701863632,
+        "narHash": "sha256-kOBJdWJHRPJmYhPwZQWfduVtKyBb5ojP24+QiQ8lzAM=",
+        "ref": "refs/heads/main",
+        "rev": "f27ea2c01155ca21953411f6bbfbd1ed10c2f368",
+        "revCount": 1,
+        "type": "git",
+        "url": "file:./users/hasundue/core/neovim"
       },
       "original": {
-        "path": "/nix/store/ffh0b76snxwigwbh146z07i2x47gvh92-source/users/hasundue/core/neovim",
-        "type": "path"
+        "type": "git",
+        "url": "file:./users/hasundue/core/neovim"
       }
     },
     "hercules-ci-effects": {
