@@ -20,6 +20,7 @@
 
       # tools
       act
+      bump
       cmake
       emscripten
       tree-sitter

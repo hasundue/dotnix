@@ -784,11 +784,11 @@
       "locked": {
         "lastModified": 1,
         "narHash": "sha256-bUmswwPDf49p8n/x6S0r0IFn7m6/N7okQkzgz0eu9OU=",
-        "path": "/nix/store/fh3sbyf78166wx7gmvs6dp7cdihpbyc6-source/core/neovim",
+        "path": "/nix/store/akhwpk27a29q08v7l9xys7h3vdv1xpww-source/core/neovim",
         "type": "path"
       },
       "original": {
-        "path": "/nix/store/fh3sbyf78166wx7gmvs6dp7cdihpbyc6-source/core/neovim",
+        "path": "/nix/store/akhwpk27a29q08v7l9xys7h3vdv1xpww-source/core/neovim",
         "type": "path"
       }
     },
@@ -999,12 +999,12 @@
       },
       "locked": {
         "lastModified": 1,
-        "narHash": "sha256-K4LKTL6VylTiEPfK4G9syti3UASqV0Ui+QzArndNE9c=",
-        "path": "/nix/store/2mbm4inzg1l9swvb929rw0997lzdnm7f-source/users/hasundue",
+        "narHash": "sha256-AoARTtNFRTaLrveuYqesm+lMB0ZmVAo7nhLElwrzWwE=",
+        "path": "/nix/store/jza4y61mlx8q8lr2czw4bpq7gph2d6cb-source/users/hasundue",
         "type": "path"
       },
       "original": {
-        "path": "/nix/store/2mbm4inzg1l9swvb929rw0997lzdnm7f-source/users/hasundue",
+        "path": "/nix/store/jza4y61mlx8q8lr2czw4bpq7gph2d6cb-source/users/hasundue",
         "type": "path"
       }
     },
