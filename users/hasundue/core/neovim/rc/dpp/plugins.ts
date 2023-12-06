@@ -41,15 +41,14 @@ export const PLUGINS = ClosedGroup(
       lua_source: "require('rc.treesitter')",
     },
     {
-      repo: "kuuote/lspoints",
-      depends: ["denops.vim"],
-      lua_source: "require('rc.lspoints')",
+      repo: "neovim/nvim-lspconfig",
+      lua_source: "require('rc.lsp')",
     },
   ]),
-  // Extensions for lspoints
-  ...Group({ on_source: ["lspoints"] }, [
+  // Lsp
+  ...Group({ on_source: ["nvim-lspconfig"] }, [
     {
-      repo: "Warashi/lspoints-hover",
+      repo: "ray-x/lsp_signature.nvim",
     },
   ]),
   // Loaded when cursor moved or hold for a while

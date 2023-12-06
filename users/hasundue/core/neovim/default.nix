@@ -52,7 +52,6 @@
   };
 
   xdg.configFile = {
-    "nvim/denops".source = ./denops;
     "nvim/init.lua".source = ./init.lua;
     "nvim/lua".source = ./lua;
     "nvim/rc".source = ./rc;

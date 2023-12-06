@@ -8,8 +8,8 @@
     "denops.vim" = { url = "github:vim-denops/denops.vim"; flake = false; };
     "gitsigns.nvim" = { url = "github:lewis6991/gitsigns.nvim"; flake = false; };
     "nvim-treesitter" = { url = "github:nvim-treesitter/nvim-treesitter"; flake = false; };
-    "lspoints" = { url = "github:kuuote/lspoints"; flake = false; };
-    "lspoints-hover" = { url = "github:Warashi/lspoints-hover"; flake = false; };
+    "nvim-lspconfig" = { url = "github:neovim/nvim-lspconfig"; flake = false; };
+    "lsp_signature.nvim" = { url = "github:ray-x/lsp_signature.nvim"; flake = false; };
     "vim-sandwich" = { url = "github:machakann/vim-sandwich"; flake = false; };
     "copilot.vim" = { url = "github:github/copilot.vim"; flake = false; };
     "ddc.vim" = { url = "github:Shougo/ddc.vim"; flake = false; };
