@@ -13,11 +13,6 @@
       nodePackages.yarn
       zig
 
-      # language servers
-      lua-language-server
-      nil
-      zls
-
       # tools
       act
       bump
