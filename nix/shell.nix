@@ -2,6 +2,7 @@
 
 devshell.mkShell {
   commands = [
+    { package = pkgs.deno; }
     {
       name = "rebuild";
       command = "sudo nixos-rebuild --flake '.?submodules=1' test";
