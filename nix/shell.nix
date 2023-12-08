@@ -1,15 +1,17 @@
 { pkgs ? import <nixpkgs> { } }: with pkgs; 
 
 devshell.mkShell {
-  commands = [
+  commands = let
+    rebuild = "sudo nixos-rebuild --flake '.?submodules=1'";
+  in [
     { package = pkgs.deno; }
     {
       name = "rebuild";
-      command = "sudo nixos-rebuild --flake '.?submodules=1' test";
+      command = "${rebuild} test";
     }
     {
       name = "switch";
-      command = "sudo nixos-rebuild --flake '.?submodules=1' switch";
+      command = "${rebuild} switch";
     }
     {
       name = "update";
