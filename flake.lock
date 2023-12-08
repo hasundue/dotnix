@@ -428,10 +428,11 @@
         "plugin:vim-sandwich": "plugin:vim-sandwich"
       },
       "locked": {
-        "dirtyRev": "860e64666121f1b4d6409c0f6019a911b8a8ed0c-dirty",
-        "dirtyShortRev": "860e646-dirty",
-        "lastModified": 1702002872,
-        "narHash": "sha256-Bkz+WV2sjCQlZ109bYdloF68JcB/aJAnao03UHHQho0=",
+        "lastModified": 1702020373,
+        "narHash": "sha256-bBzRoS3e4aec2YkEqJNxbWgfzmz5QdHLxrasH2XyLlI=",
+        "ref": "refs/heads/main",
+        "rev": "b71997ef0714e2fb9db5ebf157b174faaa5949bb",
+        "revCount": 13,
         "type": "git",
         "url": "file:./users/hasundue/core/neovim"
       },
@@ -1085,11 +1086,11 @@
     "plugin:nvim-lspconfig": {
       "flake": false,
       "locked": {
-        "lastModified": 1701857305,
-        "narHash": "sha256-nKoRfCuBdyn9CxWgCBZGCmRAKkd5RHr1Ig2ArIhfBjM=",
+        "lastModified": 1702007833,
+        "narHash": "sha256-4Ogx+58962qoph8iMyHBGEqoRARK5KQAYEaa1wsgdsw=",
         "owner": "neovim",
         "repo": "nvim-lspconfig",
-        "rev": "6c797ff9324094e333e2ace9526ca4a62ad9d1ca",
+        "rev": "511609ae0311abfcfaed3c398429a147e895ce2c",
         "type": "github"
       },
       "original": {
