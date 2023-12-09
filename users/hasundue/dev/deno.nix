@@ -6,6 +6,10 @@
       deno
     ];
 
+    sessionPath = [
+      "$HOME/.deno/bin"
+    ];
+
     shellAliases = rec {
       # use deno for gnumake
       dt = "deno task";
