@@ -1,4 +1,4 @@
-{ config, lib, pkgs, ... }: 
+{ lib, pkgs, ... }: 
 
 {
   imports = [
@@ -11,7 +11,7 @@
       gaps = {
         smartBorders = "on";
         smartGaps = false;
-        inner = 10;
+        inner = 5;
       };
       menu = "rofi -show run";
       terminal = lib.getExe pkgs.alacritty;
