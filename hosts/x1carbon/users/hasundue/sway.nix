@@ -17,15 +17,20 @@
         };
       };
       output = {
-        "AU Optronics 0x313D Unknown" = {
+        "eDP-1" = {
           mode = "1920x1080@60Hz";
           scale = "1.2";
         };
-        "Microstep MSI G271 0x00003146" = {
+        "DP-2" = {
           mode = "1920x1080@120Hz";
         };
       };
       modifier = "Mod4";
+      workspaceOutputAssign = [
+        { workspace = "1"; output = "eDP-1"; }
+      ] ++ map 
+        (i: { workspace = toString (i); output = "DP-2"; })
+        (builtins.genList (i: i + 2) 8);
     };
     extraConfig = ''
       bindsym XF86AudioRaiseVolume exec pactl set-sink-volume @DEFAULT_SINK@ +5%
