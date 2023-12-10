@@ -10,12 +10,12 @@
       spacing = 4;
 
       modules-left = [
-      	"sway/workspaces"
-	"sway/mode"
+        "sway/workspaces"
+        "sway/mode"
       ];
 
       modules-center = [ 
-	"clock"
+        "clock"
       ];
 
       modules-right = [
@@ -26,7 +26,7 @@
         "backlight"
         "battery"
         "tray"
-	"custom/space"
+        "custom/space"
       ];
 
       "sway/workspaces" = {
@@ -112,7 +112,7 @@
       };
 
       "custom/space" = {
-	format = " ";
+        format = " ";
       };
     };
 
