@@ -1,16 +1,19 @@
+{ pkgs, ... }:
+
 {
   programs.git = {
     enable = true;
     ignores = [ 
       ".env"
       "dist/"
+      "node_modules/"
       "vendor/"
-      "node_modules"
+      "result/"
     ];
     userEmail = "hasundue@gmail.com";
     userName = "hasundue";
     extraConfig = {
-      credential."https://github.com".helper = "!gh auth git-credential";
+      credential."https://github.com".helper = "${pkgs.gh}/bin/gh auth git-credential";
       init = {
         defaultBranch = "main";
       };

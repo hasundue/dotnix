@@ -15,23 +15,12 @@
 
       # tools
       act
-      bump
-      cmake
-      emscripten
-      tree-sitter
+      gh
     ];
   };
 
   programs.gitui = {
     enable = true;
     keyConfig = builtins.readFile ./gitui.ron;
-  };
-
-  programs.gh = {
-    enable = true;
-    settings = {
-      prompt = "disabled";
-    };
-    gitCredentialHelper.enable = false;
   };
 }
