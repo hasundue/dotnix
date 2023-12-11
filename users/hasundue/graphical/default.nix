@@ -8,11 +8,6 @@
 
   home = {
     packages = with pkgs; [
-      # browsers 
-      (vivaldi.override {
-        proprietaryCodecs = true;
-      })
-
       # communication
       slack
       zoom-us
