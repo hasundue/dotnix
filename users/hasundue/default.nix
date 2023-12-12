@@ -1,4 +1,4 @@
-{ config, lib, pkgs, base16-schemes, neovim-nightly, stylix, hasundue-neovim, ... }: 
+{ config, lib, pkgs, system, base16-schemes, neovim-nightly, stylix, hasundue-neovim, ... }: 
 
 with lib;
 
@@ -24,7 +24,7 @@ with lib;
         base16-schemes
         neovim-nightly
         stylix;
-      neovim-plugins = hasundue-neovim.plugins;
+      neovim-plugins = hasundue-neovim.packages.${system};
     };
     users.hasundue = {
       imports = [

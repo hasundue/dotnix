@@ -49,10 +49,10 @@
     {
       nixosConfigurations = {
         # Thinkpad X1 Carbon 5th Gen
-        x1carbon = nixpkgs.lib.nixosSystem {
+        x1carbon = nixpkgs.lib.nixosSystem rec {
           system = "x86_64-linux";
           modules = [ ./hosts/x1carbon ];
-          specialArgs = inputs;
+          specialArgs = inputs // { inherit system; };
         };
       };
     };
