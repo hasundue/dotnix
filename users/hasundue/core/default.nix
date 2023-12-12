@@ -15,6 +15,7 @@
     stateVersion = "23.11";
     packages = (with pkgs; [ 
       fd
+      jq
       openssl
       ripgrep
       unzip
