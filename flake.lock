@@ -394,46 +394,46 @@
         "flake-utils": "flake-utils_2",
         "neovim-nightly": "neovim-nightly",
         "nixpkgs": "nixpkgs",
-        "plugin:copilot.vim": "plugin:copilot.vim",
-        "plugin:ddc-cmdline": "plugin:ddc-cmdline",
-        "plugin:ddc-cmdline-history": "plugin:ddc-cmdline-history",
-        "plugin:ddc-file": "plugin:ddc-file",
-        "plugin:ddc-fuzzy": "plugin:ddc-fuzzy",
-        "plugin:ddc-source-lsp": "plugin:ddc-source-lsp",
-        "plugin:ddc-ui-pum": "plugin:ddc-ui-pum",
-        "plugin:ddc.vim": "plugin:ddc.vim",
-        "plugin:ddu-commands.vim": "plugin:ddu-commands.vim",
-        "plugin:ddu-filter-zf": "plugin:ddu-filter-zf",
-        "plugin:ddu-kind-file": "plugin:ddu-kind-file",
-        "plugin:ddu-source-buffer": "plugin:ddu-source-buffer",
-        "plugin:ddu-source-file_external": "plugin:ddu-source-file_external",
-        "plugin:ddu-source-help": "plugin:ddu-source-help",
-        "plugin:ddu-source-lsp": "plugin:ddu-source-lsp",
-        "plugin:ddu-source-mr": "plugin:ddu-source-mr",
-        "plugin:ddu-source-rg": "plugin:ddu-source-rg",
-        "plugin:ddu-ui-ff": "plugin:ddu-ui-ff",
-        "plugin:ddu.vim": "plugin:ddu.vim",
-        "plugin:denops.vim": "plugin:denops.vim",
-        "plugin:dpp-ext-lazy": "plugin:dpp-ext-lazy",
-        "plugin:dpp.vim": "plugin:dpp.vim",
-        "plugin:gitsigns.nvim": "plugin:gitsigns.nvim",
-        "plugin:kanagawa.nvim": "plugin:kanagawa.nvim",
-        "plugin:lsp_signature.nvim": "plugin:lsp_signature.nvim",
-        "plugin:markdown-preview.nvim": "plugin:markdown-preview.nvim",
-        "plugin:mr.vim": "plugin:mr.vim",
-        "plugin:nvim-lspconfig": "plugin:nvim-lspconfig",
-        "plugin:nvim-treesitter": "plugin:nvim-treesitter",
-        "plugin:pum.vim": "plugin:pum.vim",
-        "plugin:vim-floaterm": "plugin:vim-floaterm",
-        "plugin:vim-sandwich": "plugin:vim-sandwich"
+        "plugins/copilot.vim": "plugins/copilot.vim",
+        "plugins/ddc-cmdline": "plugins/ddc-cmdline",
+        "plugins/ddc-cmdline-history": "plugins/ddc-cmdline-history",
+        "plugins/ddc-file": "plugins/ddc-file",
+        "plugins/ddc-fuzzy": "plugins/ddc-fuzzy",
+        "plugins/ddc-source-lsp": "plugins/ddc-source-lsp",
+        "plugins/ddc-ui-pum": "plugins/ddc-ui-pum",
+        "plugins/ddc.vim": "plugins/ddc.vim",
+        "plugins/ddu-commands.vim": "plugins/ddu-commands.vim",
+        "plugins/ddu-filter-zf": "plugins/ddu-filter-zf",
+        "plugins/ddu-kind-file": "plugins/ddu-kind-file",
+        "plugins/ddu-source-buffer": "plugins/ddu-source-buffer",
+        "plugins/ddu-source-file_external": "plugins/ddu-source-file_external",
+        "plugins/ddu-source-help": "plugins/ddu-source-help",
+        "plugins/ddu-source-lsp": "plugins/ddu-source-lsp",
+        "plugins/ddu-source-mr": "plugins/ddu-source-mr",
+        "plugins/ddu-source-rg": "plugins/ddu-source-rg",
+        "plugins/ddu-ui-ff": "plugins/ddu-ui-ff",
+        "plugins/ddu.vim": "plugins/ddu.vim",
+        "plugins/denops.vim": "plugins/denops.vim",
+        "plugins/dpp-ext-lazy": "plugins/dpp-ext-lazy",
+        "plugins/dpp.vim": "plugins/dpp.vim",
+        "plugins/gitsigns.nvim": "plugins/gitsigns.nvim",
+        "plugins/kanagawa.nvim": "plugins/kanagawa.nvim",
+        "plugins/lsp_signature.nvim": "plugins/lsp_signature.nvim",
+        "plugins/markdown-preview.nvim": "plugins/markdown-preview.nvim",
+        "plugins/mr.vim": "plugins/mr.vim",
+        "plugins/nvim-lspconfig": "plugins/nvim-lspconfig",
+        "plugins/nvim-treesitter": "plugins/nvim-treesitter",
+        "plugins/pum.vim": "plugins/pum.vim",
+        "plugins/vim-floaterm": "plugins/vim-floaterm",
+        "plugins/vim-sandwich": "plugins/vim-sandwich"
       },
       "locked": {
         "dir": "nix",
-        "lastModified": 1702350309,
-        "narHash": "sha256-5QwT907bw1iqt0RVs0RKTuztXD4FSfDE4OUMBKpAaNo=",
+        "lastModified": 1702359314,
+        "narHash": "sha256-5qMS2KmIwH59KTQA09xTUCmfJ9HVTN6B4nvu28LxT0A=",
         "ref": "main",
-        "rev": "2cba123d30aa6db01b851127847a3df18e5600db",
-        "revCount": 30,
+        "rev": "00770ed199462ea3f8633f0edf07d371fe98c9f9",
+        "revCount": 31,
         "type": "git",
         "url": "file:./users/hasundue/core/neovim?dir=nix"
       },
@@ -654,7 +654,7 @@
         "type": "github"
       }
     },
-    "plugin:copilot.vim": {
+    "plugins/copilot.vim": {
       "flake": false,
       "locked": {
         "lastModified": 1702343967,
@@ -670,7 +670,7 @@
         "type": "github"
       }
     },
-    "plugin:ddc-cmdline": {
+    "plugins/ddc-cmdline": {
       "flake": false,
       "locked": {
         "lastModified": 1696412567,
@@ -686,7 +686,7 @@
         "type": "github"
       }
     },
-    "plugin:ddc-cmdline-history": {
+    "plugins/ddc-cmdline-history": {
       "flake": false,
       "locked": {
         "lastModified": 1691126093,
@@ -702,7 +702,7 @@
         "type": "github"
       }
     },
-    "plugin:ddc-file": {
+    "plugins/ddc-file": {
       "flake": false,
       "locked": {
         "lastModified": 1699600569,
@@ -718,7 +718,7 @@
         "type": "github"
       }
     },
-    "plugin:ddc-fuzzy": {
+    "plugins/ddc-fuzzy": {
       "flake": false,
       "locked": {
         "lastModified": 1688560961,
@@ -734,7 +734,7 @@
         "type": "github"
       }
     },
-    "plugin:ddc-source-lsp": {
+    "plugins/ddc-source-lsp": {
       "flake": false,
       "locked": {
         "lastModified": 1701665258,
@@ -750,7 +750,7 @@
         "type": "github"
       }
     },
-    "plugin:ddc-ui-pum": {
+    "plugins/ddc-ui-pum": {
       "flake": false,
       "locked": {
         "lastModified": 1696653740,
@@ -766,7 +766,7 @@
         "type": "github"
       }
     },
-    "plugin:ddc.vim": {
+    "plugins/ddc.vim": {
       "flake": false,
       "locked": {
         "lastModified": 1702091067,
@@ -782,7 +782,7 @@
         "type": "github"
       }
     },
-    "plugin:ddu-commands.vim": {
+    "plugins/ddu-commands.vim": {
       "flake": false,
       "locked": {
         "lastModified": 1702091344,
@@ -798,7 +798,7 @@
         "type": "github"
       }
     },
-    "plugin:ddu-filter-zf": {
+    "plugins/ddu-filter-zf": {
       "flake": false,
       "locked": {
         "lastModified": 1701908050,
@@ -814,7 +814,7 @@
         "type": "github"
       }
     },
-    "plugin:ddu-kind-file": {
+    "plugins/ddu-kind-file": {
       "flake": false,
       "locked": {
         "lastModified": 1702078602,
@@ -830,7 +830,7 @@
         "type": "github"
       }
     },
-    "plugin:ddu-source-buffer": {
+    "plugins/ddu-source-buffer": {
       "flake": false,
       "locked": {
         "lastModified": 1683801554,
@@ -846,7 +846,7 @@
         "type": "github"
       }
     },
-    "plugin:ddu-source-file_external": {
+    "plugins/ddu-source-file_external": {
       "flake": false,
       "locked": {
         "lastModified": 1687759397,
@@ -862,7 +862,7 @@
         "type": "github"
       }
     },
-    "plugin:ddu-source-help": {
+    "plugins/ddu-source-help": {
       "flake": false,
       "locked": {
         "lastModified": 1700294180,
@@ -878,7 +878,7 @@
         "type": "github"
       }
     },
-    "plugin:ddu-source-lsp": {
+    "plugins/ddu-source-lsp": {
       "flake": false,
       "locked": {
         "lastModified": 1702255660,
@@ -894,7 +894,7 @@
         "type": "github"
       }
     },
-    "plugin:ddu-source-mr": {
+    "plugins/ddu-source-mr": {
       "flake": false,
       "locked": {
         "lastModified": 1693634640,
@@ -910,7 +910,7 @@
         "type": "github"
       }
     },
-    "plugin:ddu-source-rg": {
+    "plugins/ddu-source-rg": {
       "flake": false,
       "locked": {
         "lastModified": 1701833783,
@@ -926,7 +926,7 @@
         "type": "github"
       }
     },
-    "plugin:ddu-ui-ff": {
+    "plugins/ddu-ui-ff": {
       "flake": false,
       "locked": {
         "lastModified": 1702266214,
@@ -942,7 +942,7 @@
         "type": "github"
       }
     },
-    "plugin:ddu.vim": {
+    "plugins/ddu.vim": {
       "flake": false,
       "locked": {
         "lastModified": 1702091044,
@@ -958,7 +958,7 @@
         "type": "github"
       }
     },
-    "plugin:denops.vim": {
+    "plugins/denops.vim": {
       "flake": false,
       "locked": {
         "lastModified": 1702272861,
@@ -974,7 +974,7 @@
         "type": "github"
       }
     },
-    "plugin:dpp-ext-lazy": {
+    "plugins/dpp-ext-lazy": {
       "flake": false,
       "locked": {
         "lastModified": 1700452572,
@@ -990,7 +990,7 @@
         "type": "github"
       }
     },
-    "plugin:dpp.vim": {
+    "plugins/dpp.vim": {
       "flake": false,
       "locked": {
         "lastModified": 1702091013,
@@ -1006,7 +1006,7 @@
         "type": "github"
       }
     },
-    "plugin:gitsigns.nvim": {
+    "plugins/gitsigns.nvim": {
       "flake": false,
       "locked": {
         "lastModified": 1702247334,
@@ -1022,7 +1022,7 @@
         "type": "github"
       }
     },
-    "plugin:kanagawa.nvim": {
+    "plugins/kanagawa.nvim": {
       "flake": false,
       "locked": {
         "lastModified": 1696244569,
@@ -1038,7 +1038,7 @@
         "type": "github"
       }
     },
-    "plugin:lsp_signature.nvim": {
+    "plugins/lsp_signature.nvim": {
       "flake": false,
       "locked": {
         "lastModified": 1701211782,
@@ -1054,7 +1054,7 @@
         "type": "github"
       }
     },
-    "plugin:markdown-preview.nvim": {
+    "plugins/markdown-preview.nvim": {
       "flake": false,
       "locked": {
         "lastModified": 1697511247,
@@ -1070,7 +1070,7 @@
         "type": "github"
       }
     },
-    "plugin:mr.vim": {
+    "plugins/mr.vim": {
       "flake": false,
       "locked": {
         "lastModified": 1675866639,
@@ -1086,7 +1086,7 @@
         "type": "github"
       }
     },
-    "plugin:nvim-lspconfig": {
+    "plugins/nvim-lspconfig": {
       "flake": false,
       "locked": {
         "lastModified": 1702174514,
@@ -1102,7 +1102,7 @@
         "type": "github"
       }
     },
-    "plugin:nvim-treesitter": {
+    "plugins/nvim-treesitter": {
       "flake": false,
       "locked": {
         "lastModified": 1702287011,
@@ -1118,14 +1118,14 @@
         "type": "github"
       }
     },
-    "plugin:pum.vim": {
+    "plugins/pum.vim": {
       "flake": false,
       "locked": {
-        "lastModified": 1702292365,
-        "narHash": "sha256-EVOEuOjbzdZWrsSLLUgi2MuZ/s1+gor85RCCGSXdoiM=",
+        "lastModified": 1702357605,
+        "narHash": "sha256-O6eggB01IoxWICFo5u+v8G19ND1lAnCBBBG+bKis6e4=",
         "owner": "Shougo",
         "repo": "pum.vim",
-        "rev": "261db8434d64b50a67b08c2b5a16152d4b6f7b0e",
+        "rev": "65c141c409045dfe71f87d14b25e2fe721692117",
         "type": "github"
       },
       "original": {
@@ -1134,7 +1134,7 @@
         "type": "github"
       }
     },
-    "plugin:vim-floaterm": {
+    "plugins/vim-floaterm": {
       "flake": false,
       "locked": {
         "lastModified": 1700403249,
@@ -1150,7 +1150,7 @@
         "type": "github"
       }
     },
-    "plugin:vim-sandwich": {
+    "plugins/vim-sandwich": {
       "flake": false,
       "locked": {
         "lastModified": 1670425625,
