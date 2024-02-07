@@ -17,5 +17,9 @@ devshell.mkShell {
       name = "update";
       command = "nix flake update";
     }
+    {
+      name = "update:offline";
+      command = "nix flake update --offline";
+    }
   ];
 }
