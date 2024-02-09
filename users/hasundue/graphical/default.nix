@@ -10,6 +10,7 @@
     packages = with pkgs; [
       # communication
       slack
+      telegram-desktop
       zoom-us
       discord
 
