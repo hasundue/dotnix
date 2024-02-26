@@ -480,20 +480,14 @@
         "plugins/vim-sandwich": "plugins/vim-sandwich"
       },
       "locked": {
-        "dir": "nix",
-        "lastModified": 1708834470,
-        "narHash": "sha256-7E0pd2OaJ4HGJmt2u+poCkSXeTvz68SyfIaKlB0y/Vc=",
-        "ref": "main",
-        "rev": "8455b4fd4b25013df9d0875173f8d35a487735fd",
-        "revCount": 40,
-        "type": "git",
-        "url": "file:./users/hasundue/core/neovim?dir=nix"
+        "lastModified": 1,
+        "narHash": "sha256-gQd1rGGC2yfteUeQDGMe9pn4i11bbxVK9Xx2z2dEU8k=",
+        "path": "./users/hasundue/core/neovim/nix",
+        "type": "path"
       },
       "original": {
-        "dir": "nix",
-        "ref": "main",
-        "type": "git",
-        "url": "file:./users/hasundue/core/neovim?dir=nix"
+        "path": "./users/hasundue/core/neovim/nix",
+        "type": "path"
       }
     },
     "hercules-ci-effects": {
