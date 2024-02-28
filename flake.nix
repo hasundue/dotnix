@@ -14,7 +14,7 @@
     };
     flake-utils.url = "github:numtide/flake-utils";
     hasundue-neovim = {
-      url = "path:./users/hasundue/core/neovim/nix";
+      url = "git+file:./users/hasundue/core/neovim?dir=nix";
     };
     home-manager = {
       url = "github:nix-community/home-manager";
