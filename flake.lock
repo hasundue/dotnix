@@ -481,15 +481,17 @@
       },
       "locked": {
         "dir": "nix",
-        "dirtyRev": "498f820cfba3b33e9a2cef11bb561382c0c8dc73-dirty",
-        "dirtyShortRev": "498f820-dirty",
         "lastModified": 1709016831,
-        "narHash": "sha256-sWTkt4Bd6b6bOjifvmX2n5E6ZEhnOI8vC/BaU6vXP2o=",
+        "narHash": "sha256-MPx9Ll61s1KQJQ/KX1j+Qdux1MfH3rkfiR1NcS2Q/ck=",
+        "ref": "main",
+        "rev": "498f820cfba3b33e9a2cef11bb561382c0c8dc73",
+        "revCount": 43,
         "type": "git",
         "url": "file:./users/hasundue/core/neovim?dir=nix"
       },
       "original": {
         "dir": "nix",
+        "ref": "main",
         "type": "git",
         "url": "file:./users/hasundue/core/neovim?dir=nix"
       }
