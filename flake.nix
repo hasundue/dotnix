@@ -13,7 +13,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     flake-utils.url = "github:numtide/flake-utils";
-    hasundue-neovim = {
+    neovim-config = {
       url = "git+file:./users/hasundue/core/neovim?dir=nix&ref=main";
     };
     home-manager = {
