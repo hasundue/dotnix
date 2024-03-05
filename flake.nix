@@ -1,9 +1,23 @@
 {
   description = "hasundue's NixOS configuration";
 
+  nixConfig = {
+    extra-trusted-substituters = [
+      "https://nixpkgs-wayland.cachix.org"
+      "https://nix-community.cachix.org"
+    ];
+    extra-trusted-public-keys = [
+      "nixpkgs-wayland.cachix.org-1:3lwxaILxMRkVhehr5StQprHdEo4IrE8sRho9R9HOLYA="
+      "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs=" # neovim-nightly
+    ];
+  };
+
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
-
+    nixpkgs-wayland = {
+      url = "github:nix-community/nixpkgs-wayland";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     base16-schemes = {
       url = "github:tinted-theming/base16-schemes";
       flake = false;
@@ -13,9 +27,6 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     flake-utils.url = "github:numtide/flake-utils";
-    neovim-config = {
-      url = "git+file:./users/hasundue/core/neovim?dir=nix&ref=main";
-    };
     home-manager = {
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -23,6 +34,9 @@
     neovim-nightly = {
       url = "github:nix-community/neovim-nightly-overlay";
       inputs.nixpkgs.follows = "nixpkgs";
+    };
+    neovim-config = {
+      url = "git+file:./users/hasundue/core/neovim?dir=nix&ref=main";
     };
     nixos-hardware.url = "github:nixos/nixos-hardware";
     stylix = {

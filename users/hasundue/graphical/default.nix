@@ -32,17 +32,24 @@
 
     sessionVariables = {
       QT_AUTO_SCREEN_SCALE_FACTOR = 1;
+      # Set the default IME to fcitx 
+      GLFW_IM_MODULE = "ibus";
+      GTK_IM_MODULE = "fcitx";
+      QT_IM_MODULE = "fcitx";
+      XMODIFIERS = "@im=fcitx";
     };
+  };
+
+  i18n.inputMethod = {
+    enabled = "fcitx5";
+    fcitx5.addons = with pkgs; [ fcitx5-mozc fcitx5-gtk ];
   };
 
   gtk = {
     enable = true;
     gtk2.extraConfig = "gtk-application-prefer-dark-theme = true";
     gtk3.extraConfig.gtk-application-prefer-dark-theme = true;
-    gtk4.extraConfig = {
-      # Remedy GTK4 to respect the font hinting settings
-      gtk-hint-font-metrics = true;
-    };
+    gtk4.extraConfig.gtk-hint-font-metrics = true;
   };
 
   qt = {

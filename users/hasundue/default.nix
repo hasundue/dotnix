@@ -1,4 +1,4 @@
-{ config, lib, pkgs, system, base16-schemes, neovim-nightly, stylix, neovim-config, ... }: 
+{ config, lib, pkgs, system, base16-schemes, stylix, neovim-nightly, neovim-config, nixpkgs-wayland, ... }: 
 
 with lib;
 
@@ -23,7 +23,9 @@ with lib;
       inherit
         base16-schemes
         neovim-nightly
-        stylix;
+        nixpkgs-wayland
+        stylix
+        system;
       neovim-plugins = neovim-config.packages.${system};
     };
     users.hasundue = {
@@ -36,11 +38,5 @@ with lib;
       ];
       home.username = config.users.users.hasundue.name;
     };
-  };
-
-  nixpkgs = {
-    overlays = [
-      neovim-nightly.overlay
-    ];
   };
 }
