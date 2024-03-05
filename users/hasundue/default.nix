@@ -13,7 +13,7 @@ with lib;
       ++ optionals config.sound.enable [ "audio" ]
       ++ optionals config.virtualisation.docker.enable [ "docker" ];
     isNormalUser = true;
-    shell = pkgs.fish;
+    shell = pkgs.bash;
   };
 
   users.groups.hasundue = {};
