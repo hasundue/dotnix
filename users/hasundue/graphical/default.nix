@@ -4,6 +4,7 @@
   imports = [
     ./alacritty.nix
     ./chromium.nix
+    ./fcitx5.nix
   ];
 
   home = {
@@ -32,17 +33,7 @@
 
     sessionVariables = {
       QT_AUTO_SCREEN_SCALE_FACTOR = 1;
-      # Set the default IME to fcitx 
-      GLFW_IM_MODULE = "ibus";
-      GTK_IM_MODULE = "fcitx";
-      QT_IM_MODULE = "fcitx";
-      XMODIFIERS = "@im=fcitx";
     };
-  };
-
-  i18n.inputMethod = {
-    enabled = "fcitx5";
-    fcitx5.addons = with pkgs; [ fcitx5-mozc fcitx5-gtk ];
   };
 
   gtk = {
