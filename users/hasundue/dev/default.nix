@@ -16,6 +16,7 @@
       # tools
       act
       gh
+      lazygit
     ];
   };
 
