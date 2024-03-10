@@ -1,4 +1,4 @@
-{ lib, pkgs, nixpkgs-wayland, system, ... }: 
+{ lib, pkgs, ... }: 
 
 {
   imports = [
@@ -27,7 +27,6 @@
       bindsym XF86MonBrightnessUp exec brightnessctl set +5%
       bindsym XF86MonBrightnessDown exec brightnessctl set 5%-
     '';
-    package = nixpkgs-wayland.packages.${system}.sway-unwrapped;
     systemd.enable = true;
     wrapperFeatures.gtk = true;
   };

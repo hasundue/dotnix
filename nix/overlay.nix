@@ -1,4 +1,4 @@
-{ self, nixpkgs, devshell, ... } @ inputs:
+{ self, nixpkgs, devshell, neovim-nightly, nixpkgs-wayland, ... } @ inputs:
 
 let
   inherit (nixpkgs) lib;
@@ -16,5 +16,7 @@ in
 locals // {
   default = lib.composeManyExtensions ([
     devshell.overlays.default
+    neovim-nightly.overlays.default
+    nixpkgs-wayland.overlays.default
   ] ++ (lib.attrValues locals));
 }

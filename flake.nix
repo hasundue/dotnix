@@ -52,6 +52,10 @@
     flake-utils.lib.eachDefaultSystem (system: {
       pkgs = import nixpkgs {
         inherit system;
+        config = {
+          allowAliases = true;
+          allowUnfree = true;
+        };
         overlays = [ self.overlays.default ];
       };
       devShells = import ./nix/shell.nix inputs system;
@@ -62,7 +66,10 @@
         # Thinkpad X1 Carbon 5th Gen
         x1carbon = nixpkgs.lib.nixosSystem rec {
           system = "x86_64-linux";
-          modules = [ ./hosts/x1carbon ];
+          modules = [ 
+            ./hosts/x1carbon
+            { nixpkgs.pkgs = self.pkgs.${system}; }
+          ];
           specialArgs = inputs // { inherit system; };
         };
       };

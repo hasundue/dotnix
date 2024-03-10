@@ -14,14 +14,17 @@ in
       { package = pkgs.deno; }
       {
         name = "rebuild";
+        help = "Rebuild and test the system";
         command = "${rebuild} test";
       }
       {
         name = "switch";
+        help = "Rebuild and switch to the new system";
         command = "${rebuild} switch";
       }
       {
         name = "update";
+        help = "Update the flake inputs";
         command = "nix flake update";
       }
     ];

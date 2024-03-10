@@ -13,7 +13,6 @@
       "/share/zsh"
     ];
     systemPackages = with pkgs; [
-      neovim
       vim
     ];
   };
@@ -21,10 +20,6 @@
   home-manager = {
     useGlobalPkgs = true;
     useUserPackages = true;
-  };
-
-  nixpkgs = {
-    config.allowUnfree = true;
   };
 
   programs = {

@@ -1,4 +1,4 @@
-{ config, lib, pkgs, system, base16-schemes, stylix, neovim-nightly, neovim-config, nixpkgs-wayland, ... }: 
+{ config, lib, pkgs, system, base16-schemes, stylix, neovim-config, ... }: 
 
 with lib;
 
@@ -22,8 +22,6 @@ with lib;
     extraSpecialArgs = { 
       inherit
         base16-schemes
-        neovim-nightly
-        nixpkgs-wayland
         stylix
         system;
       neovim-plugins = neovim-config.packages.${system};
