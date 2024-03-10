@@ -48,19 +48,16 @@
     };
   };
 
-  outputs = { self, nixpkgs, devshell, flake-utils, ... } @ inputs:
-    flake-utils.lib.eachDefaultSystem (system:
-      let
-        pkgs = import nixpkgs {
-          inherit system;
-          overlays = [ devshell.overlays.default ];
-        };
-      in
-      {
-        devShells.default = import ./nix/shell.nix { inherit pkgs; };
-      }
-    ) //
+  outputs = { self, nixpkgs, flake-utils, ... } @ inputs:
+    flake-utils.lib.eachDefaultSystem (system: {
+      pkgs = import nixpkgs {
+        inherit system;
+        overlays = [ self.overlays.default ];
+      };
+      devShells = import ./nix/shell.nix inputs system;
+    }) //
     {
+      overlays = import ./nix/overlay.nix inputs;
       nixosConfigurations = {
         # Thinkpad X1 Carbon 5th Gen
         x1carbon = nixpkgs.lib.nixosSystem rec {
