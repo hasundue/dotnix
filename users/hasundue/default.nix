@@ -1,4 +1,4 @@
-{ config, lib, pkgs, system, base16-schemes, stylix, neovim-config, ... }: 
+{ config, lib, pkgs, system, neovim-config, ... }: 
 
 with lib;
 
@@ -20,10 +20,6 @@ with lib;
 
   home-manager = {
     extraSpecialArgs = { 
-      inherit
-        base16-schemes
-        stylix
-        system;
       neovim-plugins = neovim-config.packages.${system};
     };
     users.hasundue = {

@@ -3,7 +3,7 @@
 let
   inherit (nixpkgs) lib;
 
-  locals = lib.mapAttrs'
+  local = lib.mapAttrs'
     (file: _: lib.nameValuePair
       (lib.removeSuffix ".nix" file)
       (lib.composeExtensions
@@ -13,10 +13,10 @@ let
     )
     (builtins.readDir (./overlays));
 in
-locals // {
+local // {
   default = lib.composeManyExtensions ([
     devshell.overlays.default
     neovim-nightly.overlays.default
     nixpkgs-wayland.overlays.default
-  ] ++ (lib.attrValues locals));
+  ] ++ (lib.attrValues local));
 }

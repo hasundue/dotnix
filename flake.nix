@@ -14,10 +14,22 @@
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
+    nixos-hardware.url = "github:nixos/nixos-hardware";
+    nixpkgs-master.url = "github:nixos/nixpkgs/master";
+
+    home-manager = {
+      url = "github:nix-community/home-manager";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    neovim-nightly = {
+      url = "github:nix-community/neovim-nightly-overlay";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     nixpkgs-wayland = {
       url = "github:nix-community/nixpkgs-wayland";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
     base16-schemes = {
       url = "github:tinted-theming/base16-schemes";
       flake = false;
@@ -27,18 +39,6 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     flake-utils.url = "github:numtide/flake-utils";
-    home-manager = {
-      url = "github:nix-community/home-manager";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-    neovim-nightly = {
-      url = "github:nix-community/neovim-nightly-overlay";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-    neovim-config = {
-      url = "git+file:./users/hasundue/core/neovim?dir=nix&ref=main";
-    };
-    nixos-hardware.url = "github:nixos/nixos-hardware";
     stylix = {
       url = "github:danth/stylix";
       inputs = {
@@ -46,16 +46,17 @@
         home-manager.follows = "home-manager";
       };
     };
+
+    neovim-config = {
+      url = "git+file:./users/hasundue/core/neovim?dir=nix&ref=main";
+    };
   };
 
-  outputs = { self, nixpkgs, flake-utils, ... } @ inputs:
+  outputs = { self, nixpkgs, nixpkgs-master, flake-utils, ... } @ inputs:
     flake-utils.lib.eachDefaultSystem (system: {
       pkgs = import nixpkgs {
         inherit system;
-        config = {
-          allowAliases = true;
-          allowUnfree = true;
-        };
+        config.allowUnfree = true;
         overlays = [ self.overlays.default ];
       };
       devShells = import ./nix/shell.nix inputs system;
@@ -70,7 +71,12 @@
             ./hosts/x1carbon
             { nixpkgs.pkgs = self.pkgs.${system}; }
           ];
-          specialArgs = inputs // { inherit system; };
+          specialArgs = inputs // { 
+            inherit system;
+            pkgs-master = import nixpkgs-master {
+              inherit system;
+            };
+          };
         };
       };
     };

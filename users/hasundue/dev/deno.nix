@@ -1,8 +1,8 @@
-{ pkgs, ... }:
+{ pkgs-master, ... }:
 
 {
   home = {
-    packages = with pkgs; [
+    packages = with pkgs-master; [
       deno
     ];
 
@@ -11,13 +11,13 @@
     ];
 
     shellAliases = rec {
-      # use deno for gnumake
       dt = "deno task";
+      dtb = "${dt} build";
       dtc = "${dt} check";
-      dts = "${dt} switch";
+      dti = "${dt} integratiton";
       dtt = "${dt} test";
-      dtr = "${dt} rebuild";
       dtu = "${dt} update";
+      dtuc = "${dt} update:commit";
     };
   };
 }

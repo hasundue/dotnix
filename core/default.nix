@@ -1,4 +1,4 @@
-{ pkgs, base16-schemes, ... }:
+{ pkgs, system, pkgs-master, base16-schemes, stylix, ... }:
 
 {
   imports = [
@@ -18,6 +18,13 @@
   };
 
   home-manager = {
+    extraSpecialArgs = { 
+      inherit
+        base16-schemes
+        pkgs-master
+        stylix
+        system;
+    };
     useGlobalPkgs = true;
     useUserPackages = true;
   };
