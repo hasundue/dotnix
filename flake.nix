@@ -59,6 +59,9 @@
         config.allowUnfree = true;
         overlays = [ self.overlays.default ];
       };
+      pkgs-master = import nixpkgs-master {
+        inherit system;
+      };
       devShells = import ./nix/shell.nix inputs system;
     }) //
     {
@@ -73,9 +76,7 @@
           ];
           specialArgs = inputs // { 
             inherit system;
-            pkgs-master = import nixpkgs-master {
-              inherit system;
-            };
+            pkgs-master = self.pkgs-master.${system};
           };
         };
       };
