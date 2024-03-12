@@ -44,6 +44,12 @@
   services = {
     swayidle = {
       enable = true;
+      events = [
+        { event = "before-sleep"; command = "${pkgs.swaylock}/bin/swaylock -fF"; }
+      ];
+      timeouts = [
+        { timeout = 60; command = "${pkgs.systemd}/bin/systemctl suspend"; }
+      ];
     };
   };
 }
