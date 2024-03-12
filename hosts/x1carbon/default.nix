@@ -59,7 +59,7 @@
   };
 
   security.pam = {
-    services.login.fprintAuth = true;
+    services.login.fprintAuth = false;
   };
 
   services = {
@@ -72,11 +72,11 @@
     };
     automatic-timezoned.enable = true;
     fprintd = {
-      enable = true;
+      enable = false;
       tod = {
-        enable = true;
+        # enable = true;
         # TODO: use a driver for vfs0097 instead
-        driver = pkgs.libfprint-2-tod1-vfs0090;
+        # driver = pkgs.libfprint-2-tod1-vfs0090;
       };
     };
     geoclue2 = {
