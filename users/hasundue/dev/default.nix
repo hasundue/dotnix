@@ -7,10 +7,12 @@
 
   home = {
     packages = with pkgs; [
-      # runtimes
+      # compilers and runtimes
       bun
+      gcc
       nodejs
       nodePackages.yarn
+      rustup
       zig
 
       # tools
