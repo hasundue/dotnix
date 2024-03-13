@@ -11,7 +11,6 @@
       bun
       gcc
       nodejs
-      nodePackages.yarn
       rustup
       zig
 
