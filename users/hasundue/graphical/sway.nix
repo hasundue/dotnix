@@ -13,7 +13,7 @@
         smartGaps = false;
         inner = 5;
       };
-      menu = "rofi -show run";
+      menu = "wofi --show run";
       terminal = lib.getExe pkgs.alacritty;
       window = {
         titlebar = false;
@@ -33,12 +33,8 @@
 
   programs = {
     i3status.enable = true;
-    swaylock = {
-      enable = true;
-    };
-    rofi = {
-      enable = true;
-    };
+    swaylock.enable = true;
+    wofi.enable = true;
   };
 
   services = {
