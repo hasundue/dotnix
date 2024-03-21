@@ -8,25 +8,32 @@ let
 in
 {
   default = mkShell {
-    commands = let
-      rebuild = "sudo nixos-rebuild --flake '.?submodules=1'";
-    in [
-      { package = pkgs.deno; }
-      {
-        name = "rebuild";
-        help = "Rebuild and test the system";
-        command = "${rebuild} test";
-      }
-      {
-        name = "switch";
-        help = "Rebuild and switch to the new system";
-        command = "${rebuild} switch";
-      }
-      {
-        name = "update";
-        help = "Update the flake inputs";
-        command = "nix flake update";
-      }
-    ];
+    commands =
+      let
+        rebuild = "sudo nixos-rebuild --flake '.?submodules=1'";
+      in
+      [
+        {
+          name = "rebuild";
+          help = "Rebuild and test the system";
+          command = "${rebuild} test";
+        }
+        {
+          name = "switch";
+          help = "Rebuild and switch to the new system";
+          command = "${rebuild} switch";
+        }
+        {
+          name = "update";
+          help = "Update the flake inputs";
+          command = "nix flake update";
+        }
+      ];
+    devshell = {
+      packages = with pkgs; [
+        cachix
+        deno
+      ];
+    };
   };
 }
