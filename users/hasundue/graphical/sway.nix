@@ -1,4 +1,4 @@
-{ lib, pkgs, ... }: 
+{ lib, pkgs, ... }:
 
 {
   imports = [
@@ -7,7 +7,7 @@
 
   wayland.windowManager.sway = {
     config = {
-      bars = [];
+      bars = [ ];
       gaps = {
         smartBorders = "on";
         smartGaps = false;
@@ -44,7 +44,7 @@
         { event = "before-sleep"; command = "${pkgs.swaylock}/bin/swaylock -fF"; }
       ];
       timeouts = [
-        { timeout = 60; command = "${pkgs.systemd}/bin/systemctl suspend"; }
+        { timeout = 1800; command = "${pkgs.systemd}/bin/systemctl suspend"; }
       ];
     };
   };
