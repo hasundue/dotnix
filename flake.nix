@@ -21,6 +21,7 @@
     };
     neovim-nightly = {
       url = "github:nix-community/neovim-nightly-overlay";
+      inputs.nixpkgs.follows = "nixpkgs";
     };
 
     base16-schemes = {
