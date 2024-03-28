@@ -1,4 +1,4 @@
-{ base16-schemes, pkgs, stylix, ... }:
+{ schemes, pkgs, stylix, ... }:
 
 {
   imports = [
@@ -13,7 +13,7 @@
   home = {
     username = "hasundue";
     stateVersion = "23.11";
-    packages = (with pkgs; [ 
+    packages = (with pkgs; [
       fd
       jq
       openssl
@@ -27,7 +27,7 @@
   };
 
   stylix = {
-    base16Scheme = "${base16-schemes}/kanagawa.yaml";
+    base16Scheme = "${schemes}/base16/kanagawa.yaml";
   };
 
   xdg.configFile."nixpkgs/config.nix".text = "{ allowUnfree = true; }";

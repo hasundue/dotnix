@@ -115,22 +115,6 @@
         "type": "github"
       }
     },
-    "base16-schemes": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1702718998,
-        "narHash": "sha256-VTczZi1C4WSzejpTFbneMonAdarRLtDnFehVxWs6ad0=",
-        "owner": "tinted-theming",
-        "repo": "base16-schemes",
-        "rev": "2b6f2d0677216ddda50c9cabd6ee70fae4665f81",
-        "type": "github"
-      },
-      "original": {
-        "owner": "tinted-theming",
-        "repo": "base16-schemes",
-        "type": "github"
-      }
-    },
     "base16-tmux": {
       "flake": false,
       "locked": {
@@ -685,11 +669,11 @@
     },
     "nixpkgs-master": {
       "locked": {
-        "lastModified": 1711585656,
-        "narHash": "sha256-TOlWUWECKtdmAdZGdq3Ac4/a8lT01WwoipCKJYYJIj8=",
+        "lastModified": 1711593151,
+        "narHash": "sha256-/9NCoPI7fqJIN8viONsY9X0fAeq8jc3GslFCO0ky6TQ=",
         "owner": "nixos",
         "repo": "nixpkgs",
-        "rev": "68e06b5c7298cad3993b27cf60c67c80edbb3c2d",
+        "rev": "bb2b73df7bcfbd2dd55ff39b944d70547d53c267",
         "type": "github"
       },
       "original": {
@@ -1117,7 +1101,6 @@
     },
     "root": {
       "inputs": {
-        "base16-schemes": "base16-schemes",
         "devshell": "devshell",
         "flake-utils": "flake-utils_2",
         "home-manager": "home-manager",
@@ -1126,7 +1109,24 @@
         "nixos-hardware": "nixos-hardware",
         "nixpkgs": "nixpkgs_2",
         "nixpkgs-master": "nixpkgs-master",
+        "schemes": "schemes",
         "stylix": "stylix"
+      }
+    },
+    "schemes": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1707678373,
+        "narHash": "sha256-1s6L7vkHKC+eFhDnvFTl1aAjKnTE407MWmMS6gvVg74=",
+        "owner": "tinted-theming",
+        "repo": "schemes",
+        "rev": "ae4ce8b0d1f9b247d3add88a23aec3d833ae76d1",
+        "type": "github"
+      },
+      "original": {
+        "owner": "tinted-theming",
+        "repo": "schemes",
+        "type": "github"
       }
     },
     "stylix": {

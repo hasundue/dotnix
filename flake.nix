@@ -24,15 +24,15 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    base16-schemes = {
-      url = "github:tinted-theming/base16-schemes";
-      flake = false;
-    };
     devshell = {
       url = "github:numtide/devshell";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     flake-utils.url = "github:numtide/flake-utils";
+    schemes = {
+      url = "github:tinted-theming/schemes";
+      flake = false;
+    };
     stylix = {
       url = "github:danth/stylix";
       inputs = {
@@ -47,28 +47,29 @@
   };
 
   outputs = { self, nixpkgs, nixpkgs-master, flake-utils, ... } @ inputs:
-    flake-utils.lib.eachDefaultSystem (system: {
-      pkgs = import nixpkgs {
-        inherit system;
-        config.allowUnfree = true;
-        overlays = [ self.overlays.default ];
-      };
-      pkgs-master = import nixpkgs-master {
-        inherit system;
-      };
-      devShells = import ./nix/shell.nix inputs system;
-    }) //
+    flake-utils.lib.eachDefaultSystem
+      (system: {
+        pkgs = import nixpkgs {
+          inherit system;
+          config.allowUnfree = true;
+          overlays = [ self.overlays.default ];
+        };
+        pkgs-master = import nixpkgs-master {
+          inherit system;
+        };
+        devShells = import ./nix/shell.nix inputs system;
+      }) //
     {
       overlays = import ./nix/overlay.nix inputs;
       nixosConfigurations = {
         # Thinkpad X1 Carbon 5th Gen
         x1carbon = nixpkgs.lib.nixosSystem rec {
           system = "x86_64-linux";
-          modules = [ 
+          modules = [
             ./hosts/x1carbon
             { nixpkgs.pkgs = self.pkgs.${system}; }
           ];
-          specialArgs = inputs // { 
+          specialArgs = inputs // {
             inherit system;
             pkgs-master = self.pkgs-master.${system};
           };
