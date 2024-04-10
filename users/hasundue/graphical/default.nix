@@ -5,6 +5,7 @@
     ./alacritty.nix
     ./chromium.nix
     ./fcitx5.nix
+    ./firefox.nix
   ];
 
   home = {
