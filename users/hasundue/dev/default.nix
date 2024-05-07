@@ -3,6 +3,7 @@
 {
   imports = [
     ./deno.nix
+    ./gh.nix
   ];
 
   home = {
@@ -16,7 +17,6 @@
 
       # tools
       act
-      gh
       lazygit
     ];
   };
