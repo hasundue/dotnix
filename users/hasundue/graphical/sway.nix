@@ -13,23 +13,32 @@
         smartGaps = false;
         inner = 5;
       };
+      keybindings = lib.mkOptionDefault {
+        # Function Keys
+        "XF86AudioRaiseVolume" = "exec pactl set-sink-volume @DEFAULT_SINK@ +5%";
+        "XF86AudioLowerVolume" = "exec pactl set-sink-volume @DEFAULT_SINK@ -5%";
+        "XF86AudioMute" = "exec pactl set-sink-mute @DEFAULT_SINK@ toggle";
+        "XF86AudioMicMute" = "exec pactl set-source-mute @DEFAULT_SOURCE@ toggle";
+        "XF86MonBrightnessUp" = "exec brightnessctl set +5%";
+        "XF86MonBrightnessDown" = "exec brightnessctl set 5%-";
+        # Screenshots
+        "Print" = "exec grimshot savecopy output";
+        "Alt+Print" = "exec grimshot savecopy active";
+        "Ctrl+Print" = "exec grimshot savecopy area";
+      };
       menu = "wofi --show run";
       terminal = lib.getExe pkgs.alacritty;
       window = {
         titlebar = false;
       };
     };
-    extraConfig = ''
-      bindsym XF86AudioRaiseVolume exec pactl set-sink-volume @DEFAULT_SINK@ +5%
-      bindsym XF86AudioLowerVolume exec pactl set-sink-volume @DEFAULT_SINK@ -5%
-      bindsym XF86AudioMute exec pactl set-sink-mute @DEFAULT_SINK@ toggle
-      bindsym XF86AudioMicMute exec pactl set-source-mute @DEFAULT_SOURCE@ toggle
-      bindsym XF86MonBrightnessUp exec brightnessctl set +5%
-      bindsym XF86MonBrightnessDown exec brightnessctl set 5%-
-    '';
     systemd.enable = true;
     wrapperFeatures.gtk = true;
   };
+
+  home.packages = with pkgs; [
+    sway-contrib.grimshot
+  ];
 
   programs = {
     i3status.enable = true;
