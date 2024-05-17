@@ -24,6 +24,7 @@
       hicolor-icon-theme
       qt5.qtwayland
       qt6.qtwayland
+      xfce.thunar
 
       # tools
       grim
