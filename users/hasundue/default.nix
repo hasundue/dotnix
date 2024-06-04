@@ -1,4 +1,4 @@
-{ config, lib, pkgs, system, neovim-config, ... }: 
+{ config, lib, pkgs, system, neovim-plugins, ... }:
 
 with lib;
 
@@ -16,11 +16,11 @@ with lib;
     shell = pkgs.bash;
   };
 
-  users.groups.hasundue = {};
+  users.groups.hasundue = { };
 
   home-manager = {
-    extraSpecialArgs = { 
-      neovim-plugins = neovim-config.packages.${system};
+    extraSpecialArgs = {
+      neovim-plugins = neovim-plugins.packages.${system};
     };
     users.hasundue = {
       imports = [

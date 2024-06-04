@@ -19,7 +19,6 @@
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    neovim-nightly.url = "github:nix-community/neovim-nightly-overlay";
 
     devshell = {
       url = "github:numtide/devshell";
@@ -38,7 +37,7 @@
       };
     };
 
-    neovim-config = {
+    neovim-plugins = {
       url = "git+file:./users/hasundue/core/neovim?dir=nix&ref=main";
     };
   };
@@ -49,7 +48,9 @@
         pkgs = import nixpkgs {
           inherit system;
           config.allowUnfree = true;
-          overlays = [ self.overlays.default ];
+          overlays = [ 
+            inputs.devshell.overlays.default
+          ];
         };
         pkgs-master = import nixpkgs-master {
           inherit system;
@@ -57,7 +58,6 @@
         devShells = import ./nix/shell.nix inputs system;
       }) //
     {
-      overlays = import ./nix/overlay.nix inputs;
       nixosConfigurations = {
         # Thinkpad X1 Carbon 5th Gen
         x1carbon = nixpkgs.lib.nixosSystem rec {
