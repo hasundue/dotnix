@@ -35,7 +35,7 @@
   };
 
   stylix = {
+    enable = true;
     base16Scheme = "${schemes}/base16/kanagawa.yaml";
-    homeManagerIntegration.autoImport = false;
   };
 }

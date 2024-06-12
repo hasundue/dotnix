@@ -1,7 +1,7 @@
 { pkgs, modulesPath, nixos-hardware, ... }:
 
 {
-  imports = [ 
+  imports = [
     (modulesPath + "/installer/scan/not-detected.nix")
 
     nixos-hardware.nixosModules.lenovo-thinkpad-x1-extreme
@@ -32,11 +32,11 @@
   };
 
   fileSystems = {
-    "/" = { 
+    "/" = {
       device = "/dev/disk/by-uuid/0f031ba0-6020-4f3f-859f-fe71a309b9a2";
       fsType = "ext4";
     };
-    "/boot" = { 
+    "/boot" = {
       device = "/dev/disk/by-uuid/6E77-9650";
       fsType = "vfat";
     };
@@ -91,14 +91,7 @@
 
   sound.enable = true;
 
-  stylix.fonts.sizes = {
-    applications = 11;
-    desktop = 11;
-    popups = 11;
-    terminal = 11;
-  };
-
-  swapDevices = [ 
+  swapDevices = [
     { device = "/dev/disk/by-uuid/55a12afc-7e39-4b01-b7a7-314b7083383a"; }
   ];
 

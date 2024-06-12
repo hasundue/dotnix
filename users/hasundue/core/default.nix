@@ -1,9 +1,7 @@
-{ schemes, pkgs, stylix, ... }:
+{ pkgs, ... }:
 
 {
   imports = [
-    stylix.homeManagerModules.stylix
-
     ./fish.nix
     ./git.nix
     ./neovim
@@ -24,10 +22,6 @@
       la = "ls --all";
       ll = "ls -l";
     };
-  };
-
-  stylix = {
-    base16Scheme = "${schemes}/base16/kanagawa.yaml";
   };
 
   xdg.configFile."nixpkgs/config.nix".text = "{ allowUnfree = true; }";
