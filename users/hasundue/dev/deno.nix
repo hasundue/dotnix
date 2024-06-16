@@ -1,8 +1,8 @@
-{ pkgs-master, ... }:
+{ pkgs, ... }:
 
 {
   home = {
-    packages = with pkgs-master; [
+    packages = with pkgs; [
       deno
     ];
 
@@ -13,9 +13,15 @@
     shellAliases = rec {
       dt = "deno task";
       dtb = "${dt} build";
-      dtc = "${dt} check";
-      dti = "${dt} integratiton";
+      dtca = "${dt} cache";
+      dtch = "${dt} check";
+      dtd = "${dt} doc";
+      dtpc = "${dt} pre-commit";
+      dtr = "${dt} run";
       dtt = "${dt} test";
+      dtta = "${dtt}:all";
+      dtti = "${dtt}:integratiton";
+      dttu = "${dtt}:unit";
       dtu = "${dt} update";
       dtuc = "${dt} update:commit";
     };

@@ -1,4 +1,4 @@
-{ pkgs, system, pkgs-master, schemes, stylix, ... }:
+{ pkgs, system, schemes, stylix, ... }:
 
 {
   imports = [
@@ -21,7 +21,6 @@
     extraSpecialArgs = {
       inherit
         schemes
-        pkgs-master
         stylix
         system;
     };

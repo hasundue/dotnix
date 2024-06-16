@@ -13,7 +13,6 @@
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
     nixos-hardware.url = "github:nixos/nixos-hardware";
-    nixpkgs-master.url = "github:nixos/nixpkgs/master";
 
     home-manager = {
       url = "github:nix-community/home-manager";
@@ -42,18 +41,15 @@
     };
   };
 
-  outputs = { self, nixpkgs, nixpkgs-master, flake-utils, ... } @ inputs:
+  outputs = { self, nixpkgs, flake-utils, ... } @ inputs:
     flake-utils.lib.eachDefaultSystem
       (system: {
         pkgs = import nixpkgs {
           inherit system;
           config.allowUnfree = true;
-          overlays = [ 
+          overlays = [
             inputs.devshell.overlays.default
           ];
-        };
-        pkgs-master = import nixpkgs-master {
-          inherit system;
         };
         devShells = import ./nix/shell.nix inputs system;
       }) //
@@ -68,7 +64,6 @@
           ];
           specialArgs = inputs // {
             inherit system;
-            pkgs-master = self.pkgs-master.${system};
           };
         };
       };
