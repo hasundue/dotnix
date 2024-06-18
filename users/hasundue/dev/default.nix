@@ -10,9 +10,9 @@
     packages = with pkgs; [
       # compilers and runtimes
       bun
+      cargo
       gcc
       nodejs
-      rustup
       zig
 
       # tools
