@@ -245,11 +245,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1718526747,
-        "narHash": "sha256-sKrD/utGvmtQALvuDj4j0CT3AJXP1idOAq2p+27TpeE=",
+        "lastModified": 1718744742,
+        "narHash": "sha256-kOG10gJ3zLZNiom9NXJM4/mA4/lsmR3rp74YVw+iros=",
         "owner": "nix-community",
         "repo": "home-manager",
-        "rev": "0a7ffb28e5df5844d0e8039c9833d7075cdee792",
+        "rev": "0dd1c1495af6e6424695670343236f0053bf4947",
         "type": "github"
       },
       "original": {
@@ -294,11 +294,11 @@
       },
       "locked": {
         "dir": "nix",
-        "lastModified": 1717459133,
-        "narHash": "sha256-+VJGIDuPhIorfnQ4vpVFXbFsW2zRBUFXzKFF9Xik6Hk=",
+        "lastModified": 1718753256,
+        "narHash": "sha256-Wit8kNOn/QNtbjXO3MHSWQl9F5Cqi2NxEbMl1riLFzA=",
         "ref": "main",
-        "rev": "6eac22d7a246b08eb11773088a3a3d5751e29ecc",
-        "revCount": 140,
+        "rev": "a7b0773dc775c569425bd0c9c541bf5e674906d9",
+        "revCount": 144,
         "type": "git",
         "url": "file:./users/hasundue/core/neovim?dir=nix"
       },
@@ -599,11 +599,11 @@
     "plugins/noice.nvim": {
       "flake": false,
       "locked": {
-        "lastModified": 1718648690,
-        "narHash": "sha256-eMcxoO6+bi423zJy90zdVAJt44LnV4jaU3U46r2vBGQ=",
+        "lastModified": 1718730262,
+        "narHash": "sha256-Cdxfr3Tk+PWuXBGMGu1yFtQ/ZDrPzvn0es0rV80rdWI=",
         "owner": "folke",
         "repo": "noice.nvim",
-        "rev": "7ee3649b9b5f4df5b44ae63ed85b2c9fc834a124",
+        "rev": "88ac36864b5976a64b14a8f156c616f41b32f228",
         "type": "github"
       },
       "original": {
