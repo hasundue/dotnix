@@ -20,18 +20,4 @@
       act
     ];
   };
-
-  programs.gitui = {
-    enable = true;
-    keyConfig = builtins.readFile ./gitui.ron;
-  };
-
-  programs.lazygit = {
-    enable = true;
-    settings = {
-      gui = {
-        sidePanelWidth = 0.5;
-      };
-    };
-  };
 }
