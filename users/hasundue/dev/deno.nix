@@ -20,6 +20,7 @@
       dtr = "${dt} run";
       dtt = "${dt} test";
       dtta = "${dtt}:all";
+      dttf = "${dtt}:fast";
       dtti = "${dtt}:integratiton";
       dttu = "${dtt}:unit";
       dtu = "${dt} update";

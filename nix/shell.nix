@@ -14,7 +14,7 @@ in
       in
       [
         {
-          name = "rebuild";
+          name = "build";
           help = "Rebuild and test the system";
           command = "${rebuild} test";
         }
