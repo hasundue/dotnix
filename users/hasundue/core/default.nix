@@ -9,8 +9,6 @@
   ];
 
   home = {
-    username = "hasundue";
-    stateVersion = "24.05";
     packages = (with pkgs; [
       fd
       jq
@@ -18,10 +16,15 @@
       ripgrep
       unzip
     ]);
+
     shellAliases = {
       la = "ls --all";
       ll = "ls -l";
     };
+
+    stateVersion = "24.05";
+
+    username = "hasundue";
   };
 
   xdg.configFile."nixpkgs/config.nix".text = "{ allowUnfree = true; }";

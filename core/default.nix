@@ -10,7 +10,6 @@
     pathsToLink = [
       "/share/bash"
       "/share/fish"
-      "/share/zsh"
     ];
     systemPackages = with pkgs; [
       vim
@@ -30,7 +29,6 @@
 
   programs = {
     fish.enable = true;
-    zsh.enable = true;
   };
 
   stylix = {
