@@ -1,4 +1,6 @@
-{ pkgs, ... }:
+{ pkgs, lib, ... }:
+
+with lib;
 
 {
   imports = [
@@ -18,6 +20,14 @@
 
       # tools
       act
+      devenv
     ];
+  };
+
+  programs = {
+    direnv = {
+      enable = true;
+      nix-direnv.enable = true;
+    };
   };
 }
