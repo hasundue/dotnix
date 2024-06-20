@@ -4,6 +4,12 @@
   programs = {
     git = {
       enable = true;
+      ignores = [
+        "*~"
+        ".direnv"
+        ".env"
+        ".envrc"
+      ];
       userEmail = "hasundue@gmail.com";
       userName = "hasundue";
       extraConfig = {
