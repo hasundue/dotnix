@@ -20,14 +20,15 @@ with lib;
 
       # tools
       act
-      devenv
     ];
   };
 
   programs = {
     direnv = {
       enable = true;
-      nix-direnv.enable = true;
+      config = {
+        silent = true;
+      };
     };
   };
 }
