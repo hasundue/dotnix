@@ -28,6 +28,10 @@
       url = "github:tinted-theming/schemes";
       flake = false;
     };
+    rust-overlay = {
+      url = "github:oxalica/rust-overlay";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     stylix = {
       url = "github:danth/stylix";
       inputs = {
@@ -41,14 +45,15 @@
     };
   };
 
-  outputs = { self, nixpkgs, flake-utils, ... } @ inputs:
-    flake-utils.lib.eachDefaultSystem
+  outputs = { self, nixpkgs, ... } @ inputs:
+    inputs.flake-utils.lib.eachDefaultSystem
       (system: {
         pkgs = import nixpkgs {
           inherit system;
           config.allowUnfree = true;
           overlays = [
             inputs.devshell.overlays.default
+            inputs.rust-overlay.overlays.default
           ];
         };
         devShells = import ./nix/shell.nix inputs system;

@@ -12,11 +12,11 @@ with lib;
   home = {
     packages = with pkgs; [
       # compilers and runtimes
-      bun
-      cargo
       gcc
       nodejs
-      zig
+      (rust-bin.stable.latest.default.override {
+        targets = [ "wasm32-unknown-unknown" ];
+      })
 
       # tools
       act

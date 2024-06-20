@@ -311,11 +311,11 @@
     },
     "nixos-hardware": {
       "locked": {
-        "lastModified": 1718806950,
-        "narHash": "sha256-E+W/kbedZAiOuPtT+KQRposLaXGDLd7lyK7oL3IH/5U=",
+        "lastModified": 1718883385,
+        "narHash": "sha256-nLKMEZc6im82lfSdVPIBwff8OEYLlGVPpcZPvtpOFx4=",
         "owner": "nixos",
         "repo": "nixos-hardware",
-        "rev": "acb4f0e9bfa8ca2d6fca5e692307b5c994e7dbda",
+        "rev": "0307a32b553f81056edd6455168c635aeda6743b",
         "type": "github"
       },
       "original": {
@@ -727,11 +727,11 @@
     "plugins/oil.nvim": {
       "flake": false,
       "locked": {
-        "lastModified": 1718504339,
-        "narHash": "sha256-nbFPPIU1kr6EIvsf7G/nXLj5rkNbIkZ8fLk2b7I4r/I=",
+        "lastModified": 1718847665,
+        "narHash": "sha256-uX4ZlvoC9CGQa4W/jeOB2VpSppQdoaccXDGPR4XbGEE=",
         "owner": "stevearc",
         "repo": "oil.nvim",
-        "rev": "64a3a555b40d96faae488ed6cf5d0f8b38520891",
+        "rev": "4c574cf4a2de736d2662d52ce086d8bdf87c49df",
         "type": "github"
       },
       "original": {
@@ -828,8 +828,29 @@
         "neovim-plugins": "neovim-plugins",
         "nixos-hardware": "nixos-hardware",
         "nixpkgs": "nixpkgs_2",
+        "rust-overlay": "rust-overlay",
         "schemes": "schemes",
         "stylix": "stylix"
+      }
+    },
+    "rust-overlay": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1718849885,
+        "narHash": "sha256-Qfc5HKpQvGhWXox0WJVzLqrAcFm3uy6xtWRvVmrkLYc=",
+        "owner": "oxalica",
+        "repo": "rust-overlay",
+        "rev": "bc1a236757cd5f6622f73838e551fb2035afa44a",
+        "type": "github"
+      },
+      "original": {
+        "owner": "oxalica",
+        "repo": "rust-overlay",
+        "type": "github"
       }
     },
     "schemes": {

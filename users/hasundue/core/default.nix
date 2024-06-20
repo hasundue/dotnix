@@ -10,6 +10,7 @@
 
   home = {
     packages = (with pkgs; [
+      dust
       fd
       jq
       openssl
