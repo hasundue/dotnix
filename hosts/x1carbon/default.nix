@@ -45,9 +45,8 @@
   hardware = {
     bluetooth.enable = true;
     brillo.enable = true;
-    opengl = {
+    graphics = {
       enable = true;
-      driSupport = true;
       extraPackages = with pkgs; [ libva ];
     };
     pulseaudio.enable = true;
