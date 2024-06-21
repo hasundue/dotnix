@@ -19,7 +19,7 @@
       output = {
         "eDP-1" = {
           mode = "1920x1080@60Hz";
-          scale = "1.2";
+          scale = "1.25";
         };
         "DP-2" = {
           mode = "1920x1080@120Hz";
@@ -28,7 +28,7 @@
       modifier = "Mod4";
       workspaceOutputAssign = [
         { workspace = "1"; output = "eDP-1"; }
-      ] ++ map 
+      ] ++ map
         (i: { workspace = toString (i); output = "DP-2"; })
         (builtins.genList (i: i + 2) 8);
     };
