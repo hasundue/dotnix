@@ -14,7 +14,7 @@
         "sway/mode"
       ];
 
-      modules-center = [ 
+      modules-center = [
         "clock"
       ];
 
@@ -22,6 +22,8 @@
         "idle_inhibitor"
         "network"
         "temperature"
+        "memory"
+        "disk"
         "pulseaudio"
         "backlight"
         "battery"
@@ -36,13 +38,47 @@
 
       "sway/mode" = { format = ''<span style="italic">{}</span>''; };
 
+      clock = {
+        interval = 60;
+        tooltip-format = "<tt>{calendar}</tt>";
+        format = "󰥔  {:%H:%M}";
+      };
+
+      idle_inhibitor = {
+        format = "{icon}";
+        format-icons = {
+          activated = " ";
+          deactivated = " ";
+        };
+      };
+
+      temperature = {
+        critical-threshold = lib.mkDefault 90;
+        format = "{icon} {temperatureC}°C";
+        format-icons = [ "" "" "" ];
+      };
+
+      memory = {
+        format = "   {percentage}%";
+      };
+
+      disk = {
+        format = "   {percentage_used}%";
+      };
+
+      network = {
+        format-wifi = "    {essid}";
+        format-ethernet = "󰈀  {ifname}: {ipaddr}/{cidr}";
+        format-linked = "󰌘  {ifname} (No IP)";
+        format-disconnected = "⚠  Disconnected";
+        format-alt = "{ifname}: {ipaddr}/{cidr}";
+      };
+
       pulseaudio = {
-        format = "{icon} {volume}%  {format_source}";
-        format-bluetooth = " {volume}%  {format_source}";
-        format-bluetooth-muted = "   {format_source}";
-        format-muted = "   {format_source}";
-        format-source = " {volume}%";
-        format-source-muted = " ";
+        format = "{icon} {volume}%";
+        format-bluetooth = " {volume}%";
+        format-bluetooth-muted = " ";
+        format-muted = " ";
         format-icons = {
           headphones = " ";
           handsfree = "󰋎 ";
@@ -55,28 +91,6 @@
         on-click = "${pkgs.ponymix}/bin/ponymix -t sink toggle";
         on-scroll-up = "${pkgs.ponymix}/bin/ponymix increase 1";
         on-scroll-down = "${pkgs.ponymix}/bin/ponymix decrease 1";
-      };
-
-      idle_inhibitor = {
-        format = "{icon}";
-        format-icons = {
-          activated = " ";
-          deactivated = " ";
-        };
-      };
-
-      network = {
-        format-wifi = "   {essid}";
-        format-ethernet = "󰈀  {ifname}: {ipaddr}/{cidr}";
-        format-linked = "󰌘  {ifname} (No IP)";
-        format-disconnected = "⚠  Disconnected";
-        format-alt = "{ifname}: {ipaddr}/{cidr}";
-      };
-
-      temperature = {
-        critical-threshold = lib.mkDefault 90;
-        format = "{icon} {temperatureC}°C";
-        format-icons = [ "" "" "" ];
       };
 
       backlight = {
@@ -101,19 +115,13 @@
         format-icons = [ " " " " " " " " " " ];
       };
 
-      clock = {
-        interval = 60;
-        tooltip-format = "<tt>{calendar}</tt>";
-        format = "󰥔  {:%H:%M}";
-      };
-
       tray = {
         icon-size = lib.mkDefault 16;
         spacing = lib.mkDefault 4;
       };
 
       "custom/space" = {
-        format = " ";
+        format = "  ";
       };
     };
 
