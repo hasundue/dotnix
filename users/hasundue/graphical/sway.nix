@@ -1,4 +1,4 @@
-{ lib, pkgs, ... }:
+{ config, lib, pkgs, ... }:
 
 {
   imports = [
@@ -13,7 +13,9 @@
         smartGaps = false;
         inner = 5;
       };
-      keybindings = lib.mkOptionDefault {
+      keybindings = let
+        mod = config.wayland.windowManager.sway.config.modifier;
+      in lib.mkOptionDefault {
         # Function Keys
         "XF86AudioRaiseVolume" = "exec pactl set-sink-volume @DEFAULT_SINK@ +5%";
         "XF86AudioLowerVolume" = "exec pactl set-sink-volume @DEFAULT_SINK@ -5%";
@@ -25,6 +27,9 @@
         "Print" = "exec grimshot savecopy output";
         "Alt+Print" = "exec grimshot savecopy active";
         "Ctrl+Print" = "exec grimshot savecopy area";
+        # Power Management
+        "${mod}+Ctrl+l" = "exec swaylock -fF";
+        "${mod}+Ctrl+s" = "exec systemctl suspend";
       };
       menu = "wofi --show run";
       terminal = lib.getExe pkgs.alacritty;
