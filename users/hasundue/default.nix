@@ -9,8 +9,7 @@ with lib;
     group = "hasundue";
     extraGroups = [ "wheel" ]
       ++ optionals config.networking.networkmanager.enable [ "networkmanager" ]
-      ++ optionals config.programs.sway.enable [ "input" "video" ]
-      ++ optionals config.sound.enable [ "audio" ]
+      ++ optionals config.programs.sway.enable [ "audio" "input" "video" ]
       ++ optionals config.virtualisation.docker.enable [ "docker" ];
     isNormalUser = true;
     shell = pkgs.bash;
