@@ -45,11 +45,6 @@
     gtk4.extraConfig.gtk-hint-font-metrics = true;
   };
 
-  qt = {
-    enable = true;
-    platformTheme.name = "gtk";
-  };
-
   services = {
     gammastep = {
       enable = true;
