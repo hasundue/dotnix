@@ -11,7 +11,7 @@
     ];
 
     shellAliases = rec {
-      dt = "deno task";
+      dt = "deno task -q";
       dtb = "${dt} build";
       dtca = "${dt} cache";
       dtch = "${dt} check";
