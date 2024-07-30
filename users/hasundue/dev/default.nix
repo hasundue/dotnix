@@ -7,6 +7,7 @@ with lib;
     ./deno.nix
     ./gh.nix
     ./nix.nix
+    ./zed
   ];
 
   home = {
