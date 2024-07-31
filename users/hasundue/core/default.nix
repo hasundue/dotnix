@@ -10,6 +10,7 @@
 
   home = {
     packages = (with pkgs; [
+      bat
       dust
       fd
       jq
