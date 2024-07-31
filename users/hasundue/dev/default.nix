@@ -21,6 +21,7 @@ with lib;
 
       # tools
       act
+      slides
     ];
   };
 
