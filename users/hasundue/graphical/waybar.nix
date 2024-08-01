@@ -19,6 +19,7 @@
       ];
 
       modules-right = [
+        "custom/recorder"
         "idle_inhibitor"
         "network"
         "temperature"
@@ -42,6 +43,15 @@
         interval = 60;
         tooltip-format = "<tt>{calendar}</tt>";
         format = "󰥔  {:%H:%M}";
+      };
+
+      "custom/recorder" = {
+        format = " ";
+        return-type = "json";
+        interval = 1;
+        exec = "echo '{}'";
+        exec-if = "pgrep wf-recorder";
+        on-click = "pkill --signal SIGINT wf-recorder";
       };
 
       idle_inhibitor = {
