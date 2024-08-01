@@ -7,6 +7,7 @@
       noto-fonts-extra
       noto-fonts-cjk-sans
       noto-fonts-cjk-serif
+      plemoljp-nf
       unifont
     ];
     enableDefaultPackages = false;
