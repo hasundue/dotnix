@@ -63,11 +63,11 @@
       };
 
       disk = {
-        format = "   {percentage_used}%";
+        format = "  {percentage_used}%";
       };
 
       network = {
-        format-wifi = "    {essid}";
+        format-wifi = "   {essid}";
         format-ethernet = "󰈀  {ifname}: {ipaddr}/{cidr}";
         format-linked = "󰌘  {ifname} (No IP)";
         format-disconnected = "⚠  Disconnected";
