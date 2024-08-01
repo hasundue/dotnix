@@ -19,6 +19,11 @@ in
   wayland.windowManager.sway = {
     config = {
       bars = [ ];
+      floating = {
+        criteria = [
+          { app_id = "mpv"; }
+        ];
+      };
       gaps = {
         smartBorders = "on";
         smartGaps = false;
