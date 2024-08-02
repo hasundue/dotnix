@@ -12,7 +12,7 @@ with lib;
       ++ optionals config.programs.sway.enable [ "audio" "input" "video" ]
       ++ optionals config.virtualisation.docker.enable [ "docker" ];
     isNormalUser = true;
-    shell = pkgs.bash;
+    shell = pkgs.fish;
   };
 
   users.groups.hasundue = { };

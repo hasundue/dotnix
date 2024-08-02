@@ -3,6 +3,9 @@
 {
   programs.fish = {
     enable = true;
+    interactiveShellInit = ''
+      set -g fish_greeting
+    '';
     plugins = [
       { name = "autopair"; inherit (pkgs.fishPlugins.autopair) src; }
     ];

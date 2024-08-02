@@ -55,6 +55,15 @@ in
       menu = "wofi --show run";
       terminal = lib.getExe pkgs.alacritty;
       window = {
+        commands = [
+          {
+            command = "resize set 1024 576, move position center";
+            criteria = {
+              floating = true;
+              app_id = "Alacritty";
+            };
+          }
+        ];
         titlebar = false;
       };
     };

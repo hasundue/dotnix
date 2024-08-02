@@ -3,14 +3,13 @@
 {
   fonts = {
     packages = with pkgs; [
+      (nerdfonts.override { fonts = [ "Noto" ]; })
       noto-fonts
-      noto-fonts-extra
       noto-fonts-cjk-sans
       noto-fonts-cjk-serif
       plemoljp-nf
-      unifont
     ];
-    enableDefaultPackages = false;
+    enableDefaultPackages = true;
     enableGhostscriptFonts = false;
     fontconfig = {
       localConf = ''
@@ -51,10 +50,10 @@
     };
     monospace = {
       package = pkgs.nerdfonts.override { fonts = [ "Noto" ]; };
-      name = "NotoMono Nerd Font";
+      name = "NotoMono Nerd Font Mono";
     };
     emoji = {
-      package = pkgs.noto-fonts-emoji;
+      package = pkgs.noto-fonts-color-emoji;
       name = "Noto Color Emoji";
     };
     sizes = {

@@ -10,6 +10,8 @@
 
   home = {
     packages = (with pkgs; [
+      asciinema
+      asciinema-agg
       bat
       dust
       fd
