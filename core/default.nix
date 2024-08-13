@@ -34,5 +34,6 @@
   stylix = {
     enable = true;
     base16Scheme = "${schemes}/base16/kanagawa.yaml";
+    polarity = "dark";
   };
 }
