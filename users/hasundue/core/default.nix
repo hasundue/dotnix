@@ -14,6 +14,7 @@
       asciinema-agg
       bat
       dust
+      fastfetch
       fd
       jq
       openssl
