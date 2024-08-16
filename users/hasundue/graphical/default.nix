@@ -30,7 +30,6 @@
       # tools
       grim
       slurp
-      wf-recorder
       wl-clipboard
       xdg-utils
     ];
@@ -45,15 +44,6 @@
     gtk2.extraConfig = "gtk-application-prefer-dark-theme = true";
     gtk3.extraConfig.gtk-application-prefer-dark-theme = true;
     gtk4.extraConfig.gtk-hint-font-metrics = true;
-  };
-
-  programs = {
-    obs-studio = {
-      enable = true;
-      plugins = with pkgs; [
-        obs-studio-plugins.wlrobs
-      ];
-    };
   };
 
   services = {
