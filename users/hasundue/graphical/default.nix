@@ -16,8 +16,7 @@
       zoom-us
       discord
 
-      # multimedia
-      mpv
+      # entertainment
       spotify
 
       # desktop
