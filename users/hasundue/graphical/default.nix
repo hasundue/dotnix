@@ -3,7 +3,7 @@
 {
   imports = [
     ./alacritty.nix
-    ./chromium.nix
+    # ./chromium.nix
     ./fcitx5.nix
     ./firefox.nix
   ];
@@ -12,12 +12,12 @@
     packages = with pkgs; [
       # communication
       slack
-      telegram-desktop
-      zoom-us
-      discord
+      # telegram-desktop
+      # zoom-us
+      # discord
 
       # entertainment
-      spotify
+      # spotify
 
       # desktop
       gammastep
