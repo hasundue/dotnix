@@ -3,7 +3,7 @@
 {
   imports = [
     ./alacritty.nix
-    # ./chromium.nix
+    ./chromium.nix
     ./fcitx5.nix
     ./firefox.nix
   ];
