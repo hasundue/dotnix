@@ -49,7 +49,7 @@
       enable = true;
       extraPackages = with pkgs; [ libva ];
     };
-    pulseaudio.enable = true;
+    pulseaudio.enable = false;
   };
 
   networking = {
@@ -85,6 +85,7 @@
       enableModemGPS = false;
       submitData = true;
     };
+    pipewire.enable = true;
     upower.enable = true;
   };
 
