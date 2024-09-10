@@ -18,7 +18,6 @@
 
       # entertainment
       # spotify
-      mpv
 
       # desktop
       gammastep
