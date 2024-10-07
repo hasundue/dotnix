@@ -37,11 +37,16 @@
       inputs = {
         nixpkgs.follows = "nixpkgs";
         home-manager.follows = "home-manager";
+        flake-utils.follows = "flake-utils";
       };
     };
 
     neovim-plugins = {
       url = "git+file:./users/hasundue/core/neovim?dir=nix&ref=main";
+      inputs = {
+        nixpkgs.follows = "nixpkgs";
+        flake-utils.follows = "flake-utils";
+      };
     };
   };
 
