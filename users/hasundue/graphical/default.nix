@@ -17,7 +17,7 @@
       # discord
 
       # entertainment
-      # spotify
+      spotify
 
       # desktop
       gammastep
