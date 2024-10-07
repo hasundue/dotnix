@@ -6,6 +6,7 @@
     ./chromium.nix
     ./fcitx5.nix
     ./firefox.nix
+    ./zoom.nix
   ];
 
   home = {
@@ -13,7 +14,6 @@
       # communication
       slack
       # telegram-desktop
-      # zoom-us
       # discord
 
       # entertainment
