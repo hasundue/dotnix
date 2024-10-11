@@ -16,7 +16,8 @@
       # telegram-desktop
       # discord
 
-      # entertainment
+      # multimedia
+      mpv
       spotify
 
       # desktop
