@@ -7,7 +7,7 @@
       dates = "daily";
       options = "--delete-older-than 7d";
     };
-    package = pkgs.nixFlakes;
+    package = pkgs.nixVersions.stable;
     settings = {
       accept-flake-config = true;
       allowed-users = [ "@wheel" ];
