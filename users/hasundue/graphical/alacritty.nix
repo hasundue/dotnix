@@ -20,9 +20,9 @@
         };
         size = lib.mkForce 14;
       };
-      shell = lib.getExe pkgs.fish;
       terminal = {
         osc52 = "CopyPaste";
+        shell = lib.getExe pkgs.fish;
       };
       window = {
         decorations = "None";
