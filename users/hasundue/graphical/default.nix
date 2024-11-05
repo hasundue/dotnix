@@ -16,10 +16,6 @@
       # zoom-us
       # discord
 
-      # multimedia
-      mpv
-      spotify
-
       # desktop
       gammastep
       hicolor-icon-theme
