@@ -4,7 +4,7 @@
   imports = [
     ./alacritty.nix
     ./chromium.nix
-    ./fcitx5.nix
+    ./fcitx5
     ./firefox.nix
   ];
 
