@@ -23,6 +23,13 @@
       url = "github:numtide/devshell";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    firefox-addons = {
+      url = "sourcehut:~rycee/nur-expressions?dir=pkgs/firefox-addons";
+      inputs = {
+        nixpkgs.follows = "nixpkgs";
+        flake-utils.follows = "flake-utils";
+      };
+    };
     flake-utils.url = "github:numtide/flake-utils";
     schemes = {
       url = "github:tinted-theming/schemes";
@@ -74,6 +81,7 @@
           ];
           specialArgs = inputs // {
             inherit system;
+            firefox-addons = inputs.firefox-addons.packages.${system};
           };
         };
       };

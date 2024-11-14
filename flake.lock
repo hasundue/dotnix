@@ -86,6 +86,31 @@
         "type": "github"
       }
     },
+    "firefox-addons": {
+      "inputs": {
+        "flake-utils": [
+          "flake-utils"
+        ],
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "dir": "pkgs/firefox-addons",
+        "lastModified": 1729491205,
+        "narHash": "sha256-luvUK8ZTRTdsVao7VqnxvGEvA3rjEmfiwakDyHxQhx8=",
+        "owner": "~rycee",
+        "repo": "nur-expressions",
+        "rev": "9764579885c84ba5d4bcd9d3061409a527ff805c",
+        "type": "sourcehut"
+      },
+      "original": {
+        "dir": "pkgs/firefox-addons",
+        "owner": "~rycee",
+        "repo": "nur-expressions",
+        "type": "sourcehut"
+      }
+    },
     "flake-compat": {
       "flake": false,
       "locked": {
@@ -794,6 +819,7 @@
     "root": {
       "inputs": {
         "devshell": "devshell",
+        "firefox-addons": "firefox-addons",
         "flake-utils": "flake-utils",
         "home-manager": "home-manager",
         "neovim-plugins": "neovim-plugins",

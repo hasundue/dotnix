@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ pkgs, firefox-addons, ... }:
 
 {
   imports = [
@@ -12,6 +12,12 @@
       "quiet"
       "udev.log_level=3"
     ];
+  };
+
+  home-manager = {
+    extraSpecialArgs = {
+      inherit firefox-addons;
+    };
   };
 
   programs = {
