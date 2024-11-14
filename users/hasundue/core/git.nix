@@ -11,7 +11,7 @@
         ".envrc"
       ];
       userEmail = "hasundue@gmail.com";
-      userName = "hasundue";
+      userName = "Shun Ueda";
       extraConfig = {
         credential."https://github.com".helper = "${pkgs.gh}/bin/gh auth git-credential";
         init = {
