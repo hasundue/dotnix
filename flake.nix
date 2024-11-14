@@ -31,11 +31,6 @@
       };
     };
     flake-utils.url = "github:numtide/flake-utils";
-    schemes = {
-      # FIXME: Kanagawa is unparsable by builtin.toJSON
-      url = "github:tinted-theming/schemes?rev=b3273211d5d1510aee669083fc5a1e0e4b5e310c";
-      flake = false;
-    };
     rust-overlay = {
       url = "github:oxalica/rust-overlay";
       inputs.nixpkgs.follows = "nixpkgs";

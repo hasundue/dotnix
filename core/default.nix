@@ -1,4 +1,4 @@
-{ pkgs, system, schemes, stylix, ... }:
+{ pkgs, system, stylix, ... }:
 
 {
   imports = [
@@ -19,7 +19,6 @@
   home-manager = {
     extraSpecialArgs = {
       inherit
-        schemes
         stylix
         system;
     };
@@ -33,7 +32,7 @@
 
   stylix = {
     enable = true;
-    base16Scheme = "${schemes}/base16/kanagawa.yaml";
+    base16Scheme = "${pkgs.base16-schemes}/share/themes/kanagawa.yaml";
     polarity = "dark";
   };
 }
