@@ -91,9 +91,5 @@
     upower.enable = true;
   };
 
-  swapDevices = [
-    { device = "/dev/disk/by-uuid/55a12afc-7e39-4b01-b7a7-314b7083383a"; }
-  ];
-
   virtualisation.docker.enable = true;
 }
