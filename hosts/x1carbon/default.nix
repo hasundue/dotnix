@@ -17,10 +17,11 @@
 
   boot = {
     initrd = {
-      availableKernelModules = [ "xhci_pci" "ahci" "usb_storage" "sd_mod" "rtsx_pci_sdmmc" ];
-      kernelModules = [ "kvm-intel" ];
+      availableKernelModules = [ "xhci_pci" "nvme" "usb_storage" "sd_mod" "rtsx_pci_sdmmc" ];
+      kernelModules = [ ];
       systemd.enable = true;
     };
+    kernelModules = [ "kvm-intel" ];
     loader.systemd-boot.enable = true;
     plymouth.enable = true;
   };
@@ -33,12 +34,13 @@
 
   fileSystems = {
     "/" = {
-      device = "/dev/disk/by-uuid/0f031ba0-6020-4f3f-859f-fe71a309b9a2";
+      device = "/dev/disk/by-uuid/b84708e4-8ed1-4a7b-bd3e-99943c9cbe9d";
       fsType = "ext4";
     };
     "/boot" = {
-      device = "/dev/disk/by-uuid/6E77-9650";
+      device = "/dev/disk/by-uuid/7DC9-656E";
       fsType = "vfat";
+      options = [ "fmask=0077" "dmask=0077" ];
     };
   };
 
