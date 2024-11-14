@@ -72,6 +72,7 @@
       ];
     };
     automatic-timezoned.enable = true;
+    avahi.enable = true; # for geoclue2
     fprintd = {
       enable = false;
       tod = {
@@ -84,8 +85,11 @@
       enable = true;
       enable3G = false;
       enableCDMA = false;
+      enableNmea = true;
+      enableWifi = true;
       enableModemGPS = false;
-      submitData = true;
+      # FIXME: https://github.com/NixOS/nixpkgs/issues/321121
+      geoProviderUrl = "https://api.beacondb.net/v1/geolocate";
     };
     pipewire.enable = true;
     upower.enable = true;
