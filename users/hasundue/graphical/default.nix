@@ -12,9 +12,8 @@
     packages = with pkgs; [
       # communication
       slack
-      # telegram-desktop
-      # zoom-us
-      # discord
+      zoom-us
+      discord
 
       # desktop
       gammastep
@@ -22,6 +21,9 @@
       qt5.qtwayland
       qt6.qtwayland
       xfce.thunar
+
+      # entertainment
+      spotify
 
       # tools
       grim
