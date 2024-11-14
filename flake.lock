@@ -230,7 +230,6 @@
         "plugins/nvim-lspconfig": "plugins/nvim-lspconfig",
         "plugins/nvim-notify": "plugins/nvim-notify",
         "plugins/nvim-snippy": "plugins/nvim-snippy",
-        "plugins/nvim-treesitter": "plugins/nvim-treesitter",
         "plugins/nvim-web-devicons": "plugins/nvim-web-devicons",
         "plugins/oil.nvim": "plugins/oil.nvim",
         "plugins/peek.nvim": "plugins/peek.nvim",
@@ -242,19 +241,18 @@
       },
       "locked": {
         "dir": "nix",
-        "lastModified": 1730864729,
-        "narHash": "sha256-8Fl5F+53cHCF5RBcnJl/X0R0HS2T25lsVKnRK7V+nNQ=",
-        "ref": "main",
-        "rev": "54abc606ac79fbca04e9c6fc328ad7ed3bee1799",
-        "revCount": 161,
-        "type": "git",
-        "url": "file:./users/hasundue/core/neovim?dir=nix"
+        "lastModified": 1731572304,
+        "narHash": "sha256-Y7/VmocXrXWEkAria6X8cP3OsXghS9ELo3MJ6lEG3cY=",
+        "owner": "hasundue",
+        "repo": "dotlua",
+        "rev": "4863e5e555223372506887c4d3c265e5bc8c1797",
+        "type": "github"
       },
       "original": {
         "dir": "nix",
-        "ref": "main",
-        "type": "git",
-        "url": "file:./users/hasundue/core/neovim?dir=nix"
+        "owner": "hasundue",
+        "repo": "dotlua",
+        "type": "github"
       }
     },
     "nixos-hardware": {
@@ -669,22 +667,6 @@
       "original": {
         "owner": "dcampos",
         "repo": "nvim-snippy",
-        "type": "github"
-      }
-    },
-    "plugins/nvim-treesitter": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1710194835,
-        "narHash": "sha256-KliXVw5KDSQXwnXSTiVRve2ZvQDV8mlJu/ifi6wjM3k=",
-        "owner": "nvim-treesitter",
-        "repo": "nvim-treesitter",
-        "rev": "9d39f00a9559cf3505d73b486c0b8055a6db4215",
-        "type": "github"
-      },
-      "original": {
-        "owner": "nvim-treesitter",
-        "repo": "nvim-treesitter",
         "type": "github"
       }
     },

@@ -49,7 +49,7 @@
     };
 
     neovim-plugins = {
-      url = "git+file:./users/hasundue/core/neovim?dir=nix&ref=main";
+      url = "github:hasundue/dotlua?dir=nix";
       inputs = {
         nixpkgs.follows = "nixpkgs";
         flake-utils.follows = "flake-utils";

@@ -4,7 +4,7 @@
   imports = [
     ./fish.nix
     ./git.nix
-    ./neovim
+    ./neovim.nix
     ./xdg.nix
   ];
 
