@@ -24,18 +24,9 @@
     users.hasundue = import ./home.nix;
   };
 
-  programs.sway.enable = true;
-
-  services.greetd = {
-    enable = false;
-    settings = {
-      session = {
-        default_session = {
-          command = "${pkgs.greetd.tuigreet}/bin/tuigreet --cmd sway";
-          user = "hasundue";
-        };
-      };
-    };
+  programs = {
+    regreet.enable = true;
+    sway.enable = true;
   };
 
   stylix = {
