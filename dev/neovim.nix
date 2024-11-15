@@ -73,9 +73,8 @@ in
       activation.neovimDppMakeState = lib.hm.dag.entryAfter [ "linkGeneration" ] ''
         $DRY_RUN_CMD ${nvim} -l ~/.config/nvim/lua/hook/clear_dpp_state.lua
       '';
-      shellAliases = rec {
-        nvim = "nvim --noplugin";
-        nv = "${nvim}";
+      shellAliases = {
+        nv = "nvim";
       };
     };
 
