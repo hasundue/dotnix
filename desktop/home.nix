@@ -6,6 +6,7 @@
     ./chromium.nix
     ./fcitx5
     ./firefox.nix
+    ./sway.nix
   ];
 
   home = {

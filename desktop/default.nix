@@ -5,8 +5,11 @@
     ./fonts.nix
   ];
 
-  # silent boot for plymouth
+  # Enable plymouth and boot silently
   boot = {
+    plymouth.enable = true;
+    initrd.systemd.enable = true;
+
     consoleLogLevel = 0;
     kernelParams = [
       "quiet"
@@ -18,14 +21,21 @@
     extraSpecialArgs = {
       inherit firefox-addons;
     };
+    users.hasundue = import ./home.nix;
   };
 
-  programs = {
-    dconf.enable = true;
-  };
+  programs.sway.enable = true;
 
-  services = {
-    dbus.packages = with pkgs; [ dconf ];
+  services.greetd = {
+    enable = false;
+    settings = {
+      session = {
+        default_session = {
+          command = "${pkgs.greetd.tuigreet}/bin/tuigreet --cmd sway";
+          user = "hasundue";
+        };
+      };
+    };
   };
 
   stylix = {

@@ -39,10 +39,12 @@ in
 
     extraPackages = with pkgs; [
       lua-language-server
+      nodejs # for copilot.nvim
       nodePackages.typescript-language-server
       nodePackages.yarn # for makrdown-preview.nvim
       nil
       nixpkgs-fmt
+      ripgrep
       rust-analyzer
       rustfmt
       zls
@@ -78,7 +80,7 @@ in
     };
 
   xdg.configFile = {
-    "nvim".source = ./dotlua;
+    "nvim".source = ./neovim;
   };
 
   xdg.dataFile = lib.mapAttrs'

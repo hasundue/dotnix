@@ -1,29 +1,20 @@
-{ pkgs, modulesPath, nixos-hardware, ... }:
+{ config, pkgs, lib, nixos-hardware, ... }:
+
+with lib;
 
 {
   imports = [
-    (modulesPath + "/installer/scan/not-detected.nix")
-
+    ./hardware-configuration.nix
     nixos-hardware.nixosModules.lenovo-thinkpad-x1-extreme
 
     ../../core
-    ../../graphical
-
-    ../../users/hasundue
-
-    # Machine specific user configuration
-    ./users/hasundue
+    ../../dev
+    ../../desktop
   ];
 
-  boot = {
-    initrd = {
-      availableKernelModules = [ "xhci_pci" "nvme" "usb_storage" "sd_mod" "rtsx_pci_sdmmc" ];
-      kernelModules = [ ];
-      systemd.enable = true;
-    };
-    kernelModules = [ "kvm-intel" ];
-    loader.systemd-boot.enable = true;
-    plymouth.enable = true;
+  boot.loader = {
+    systemd-boot.enable = true;
+    efi.canTouchEfiVariables = true;
   };
 
   environment = {
@@ -32,26 +23,13 @@
     ];
   };
 
-  fileSystems = {
-    "/" = {
-      device = "/dev/disk/by-uuid/b84708e4-8ed1-4a7b-bd3e-99943c9cbe9d";
-      fsType = "ext4";
-    };
-    "/boot" = {
-      device = "/dev/disk/by-uuid/7DC9-656E";
-      fsType = "vfat";
-      options = [ "fmask=0077" "dmask=0077" ];
-    };
-  };
-
   hardware = {
     bluetooth.enable = true;
-    brillo.enable = true;
     graphics = {
       enable = true;
       extraPackages = with pkgs; [ libva ];
     };
-    pulseaudio.enable = false;
+    pulseaudio.enable = false; # use pipewire instead
   };
 
   networking = {
@@ -60,7 +38,7 @@
   };
 
   security.pam = {
-    services.login.fprintAuth = false;
+    services.login.fprintAuth = mkIf (config.services.fprintd.enable) true;
   };
 
   services = {
@@ -72,28 +50,24 @@
       ];
     };
     automatic-timezoned.enable = true;
-    avahi.enable = true; # for geoclue2
+    avahi.enable = mkIf (config.services.geoclue2.enable) true;
+
+    # FIXME: use vfs0097 driver and enable this
     fprintd = {
       enable = false;
       tod = {
-        # enable = true;
-        # TODO: use a driver for vfs0097 instead
-        # driver = pkgs.libfprint-2-tod1-vfs0090;
+        enable = true;
+        driver = pkgs.libfprint-2-tod1-vfs0090;
       };
     };
+
+    # FIXME: https://github.com/NixOS/nixpkgs/issues/321121
     geoclue2 = {
       enable = true;
-      enable3G = false;
-      enableCDMA = false;
-      enableNmea = true;
-      enableWifi = true;
-      enableModemGPS = false;
-      # FIXME: https://github.com/NixOS/nixpkgs/issues/321121
       geoProviderUrl = "https://api.beacondb.net/v1/geolocate";
     };
+
     pipewire.enable = true;
     upower.enable = true;
   };
-
-  virtualisation.docker.enable = true;
 }

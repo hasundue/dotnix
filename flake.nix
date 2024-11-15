@@ -1,5 +1,5 @@
 {
-  description = "hasundue's NixOS configuration";
+  description = "hasundue's system configuration";
 
   nixConfig = {
     extra-trusted-substituters = [
@@ -76,8 +76,8 @@
             { nixpkgs.pkgs = self.pkgs.${system}; }
           ];
           specialArgs = inputs // {
-            inherit system;
             firefox-addons = inputs.firefox-addons.packages.${system};
+            neovim-plugins = inputs.neovim-plugins.packages.${system};
           };
         };
       };
