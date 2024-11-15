@@ -49,6 +49,8 @@
     };
   };
 
+  programs.fish.enable = true;
+
   security = {
     sudo = {
       enable = true;
@@ -75,6 +77,7 @@
       ++ lib.optionals config.programs.sway.enable [ "audio" "input" "video" ]
       ++ lib.optionals config.virtualisation.docker.enable [ "docker" ];
     isNormalUser = true;
+    shell = pkgs.fish;
   };
 
   users.groups.hasundue = { };
