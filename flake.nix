@@ -18,6 +18,10 @@
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    nixos-wsl = {
+      url = "github:nix-community/nixos-wsl";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
 
     devshell = {
       url = "github:numtide/devshell";
@@ -53,7 +57,7 @@
     };
   };
 
-  outputs = { self, nixpkgs, ... } @ inputs:
+  outputs = { self, nixpkgs, nixos-wsl, ... } @ inputs:
     inputs.flake-utils.lib.eachDefaultSystem
       (system: {
         pkgs = import nixpkgs {
@@ -77,6 +81,22 @@
           ];
           specialArgs = inputs // {
             firefox-addons = inputs.firefox-addons.packages.${system};
+            neovim-plugins = inputs.neovim-plugins.packages.${system};
+          };
+        };
+        # NixOS-WSL
+        nixos = nixpkgs.lib.nixosSystem rec {
+          system = "x86_64-linux";
+          modules = [
+            nixos-wsl.nixosModules.default
+            { 
+              nixpkgs.pkgs = self.pkgs.${system};
+              system.stateVersion = "24.05";
+              wsl.enable = true;
+            }
+            ./hosts/wsl
+          ];
+          specialArgs = inputs // {
             neovim-plugins = inputs.neovim-plugins.packages.${system};
           };
         };
