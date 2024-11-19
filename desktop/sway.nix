@@ -55,7 +55,7 @@
           mode = "1920x1080@60Hz";
           scale = "1.25";
         };
-        "DP-2" = {
+        "HDMI-A-1" = {
           mode = "1920x1080@120Hz";
         };
       };
@@ -75,7 +75,7 @@
       workspaceOutputAssign = [
         { workspace = "1"; output = "eDP-1"; }
       ] ++ map
-        (i: { workspace = toString (i); output = "DP-2"; })
+        (i: { workspace = toString (i); output = "HDMI-A-1"; })
         (builtins.genList (i: i + 2) 8);
     };
     systemd.enable = true;
