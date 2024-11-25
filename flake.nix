@@ -89,7 +89,7 @@
           system = "x86_64-linux";
           modules = [
             nixos-wsl.nixosModules.default
-            { 
+            {
               nixpkgs.pkgs = self.pkgs.${system};
               system.stateVersion = "24.05";
               wsl.enable = true;
