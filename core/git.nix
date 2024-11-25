@@ -6,9 +6,9 @@
       enable = true;
       ignores = [
         "*~"
-        ".direnv"
-        ".env"
-        ".envrc"
+        ".direnv.local"
+        ".env.local"
+        ".envrc.local"
       ];
       userEmail = "hasundue@gmail.com";
       userName = "Shun Ueda";
