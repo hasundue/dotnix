@@ -14,6 +14,11 @@ in
       in
       [
         {
+          name = "check";
+          help = "Check the flake";
+          command = "nix flake check --show-trace";
+        }
+        {
           name = "build";
           help = "Rebuild and test the system";
           command = "${rebuild} test";

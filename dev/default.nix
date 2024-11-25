@@ -1,9 +1,9 @@
-{ neovim-plugins, ... }:
+{ neovim-flake, ... }:
 
 {
   home-manager = {
     extraSpecialArgs = {
-      inherit neovim-plugins;
+      inherit neovim-flake;
     };
     users.hasundue = {
       imports = [
@@ -22,6 +22,5 @@
       };
     };
   };
-
   virtualisation.docker.enable = true;
 }

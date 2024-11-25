@@ -48,11 +48,10 @@
       };
     };
 
-    neovim-plugins = {
-      url = "github:hasundue/dotlua?dir=nix";
+    neovim-flake = {
+      url = "github:hasundue/dotlua/flake";
       inputs = {
         nixpkgs.follows = "nixpkgs";
-        flake-utils.follows = "flake-utils";
       };
     };
   };
@@ -81,7 +80,7 @@
           ];
           specialArgs = inputs // {
             firefox-addons = inputs.firefox-addons.packages.${system};
-            neovim-plugins = inputs.neovim-plugins.packages.${system};
+            neovim-flake = inputs.neovim-flake.${system};
           };
         };
         # NixOS-WSL
@@ -97,7 +96,7 @@
             ./hosts/wsl
           ];
           specialArgs = inputs // {
-            neovim-plugins = inputs.neovim-plugins.packages.${system};
+            neovim-flake = inputs.neovim-flake.${system};
           };
         };
       };
