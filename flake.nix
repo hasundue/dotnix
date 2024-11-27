@@ -49,9 +49,10 @@
     };
 
     neovim-flake = {
-      url = "github:hasundue/dotlua/flake";
+      url = "github:hasundue/neovim-flake";
       inputs = {
         nixpkgs.follows = "nixpkgs";
+        flake-utils.follows = "flake-utils";
       };
     };
   };

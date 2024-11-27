@@ -5,8 +5,8 @@
 
   home = {
     packages = [
-      (with neovim-flake; neovim.compose {
-        modules = with neovim.modules; [
+      (with neovim-flake; neovim {
+        modules = [
           core
           clipboard
           copilot
