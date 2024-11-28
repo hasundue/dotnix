@@ -6,9 +6,8 @@
       enable = true;
       ignores = [
         "*~"
-        ".direnv.local"
-        ".env.local"
-        ".envrc.local"
+        ".env"
+        ".envrc"
       ];
       userEmail = "hasundue@gmail.com";
       userName = "Shun Ueda";
@@ -19,6 +18,7 @@
         };
         pull.rebase = true;
         push.autoSetupRemote = true;
+        ghq.root = "~/dev";
       };
     };
 
@@ -35,4 +35,6 @@
   home.shellAliases = {
     lg = "lazygit";
   };
+
+  home.packages = with pkgs; [ ghq ];
 }
