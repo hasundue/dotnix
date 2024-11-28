@@ -18,6 +18,7 @@
           config = {
             silent = true;
           };
+          nix-direnv.enable = true;
         };
       };
     };
