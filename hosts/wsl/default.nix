@@ -1,6 +1,13 @@
+{ nixos-wsl, ... }:
+
 {
   imports = [
-    ../../core
-    ../../dev
+    nixos-wsl.nixosModules.default
+    ../../nixos
   ];
+
+  wsl = {
+    enable = true;
+    defaultUser = "hasundue";
+  };
 }

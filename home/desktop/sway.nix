@@ -1,10 +1,6 @@
 { config, lib, pkgs, ... }:
 
 {
-  imports = [
-    ./waybar.nix
-  ];
-
   wayland.windowManager.sway = {
     enable = true;
     config = {

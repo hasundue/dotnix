@@ -23,28 +23,17 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    devshell = {
-      url = "github:numtide/devshell";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
     firefox-addons = {
       url = "sourcehut:~rycee/nur-expressions?dir=pkgs/firefox-addons";
       inputs = {
         nixpkgs.follows = "nixpkgs";
-        flake-utils.follows = "flake-utils";
       };
-    };
-    flake-utils.url = "github:numtide/flake-utils";
-    rust-overlay = {
-      url = "github:oxalica/rust-overlay";
-      inputs.nixpkgs.follows = "nixpkgs";
     };
     stylix = {
       url = "github:danth/stylix";
       inputs = {
         nixpkgs.follows = "nixpkgs";
         home-manager.follows = "home-manager";
-        flake-utils.follows = "flake-utils";
       };
     };
 
@@ -52,54 +41,58 @@
       url = "github:hasundue/neovim-flake";
       inputs = {
         nixpkgs.follows = "nixpkgs";
-        flake-utils.follows = "flake-utils";
       };
     };
   };
 
-  outputs = { self, nixpkgs, nixos-wsl, ... } @ inputs:
-    inputs.flake-utils.lib.eachDefaultSystem
-      (system: {
+  outputs = { nixpkgs, home-manager, ... } @ inputs:
+    let
+      inherit (nixpkgs) lib;
+
+      forSystem = system: f: f {
         pkgs = import nixpkgs {
           inherit system;
           config.allowUnfree = true;
-          overlays = [
-            inputs.devshell.overlays.default
-            inputs.rust-overlay.overlays.default
-          ];
         };
-        devShells = import ./nix/shell.nix inputs system;
-      }) //
-    {
-      nixosConfigurations = {
-        # Thinkpad X1 Carbon 5th Gen
-        x1carbon = nixpkgs.lib.nixosSystem rec {
-          system = "x86_64-linux";
-          modules = [
-            ./hosts/x1carbon
-            { nixpkgs.pkgs = self.pkgs.${system}; }
-          ];
-          specialArgs = inputs // {
-            firefox-addons = inputs.firefox-addons.packages.${system};
-            neovim-flake = inputs.neovim-flake.${system};
-          };
+        inherit lib;
+        firefox-addons = inputs.firefox-addons.packages.${system};
+        neovim-flake = inputs.neovim-flake.${system};
+      };
+
+      forEachSystem = f: lib.genAttrs
+        [ "x86_64-linux" ]
+        (system: forSystem system f);
+
+      nixosSystem = system: host: forSystem system (args: lib.nixosSystem {
+        inherit system;
+        modules = [
+          { nixpkgs.pkgs = args.pkgs; }
+          host
+        ];
+        specialArgs = {
+          inherit (inputs) nixos-hardware nixos-wsl home-manager stylix;
+          inherit (args) firefox-addons neovim-flake;
         };
-        # NixOS-WSL
-        nixos = nixpkgs.lib.nixosSystem rec {
-          system = "x86_64-linux";
-          modules = [
-            nixos-wsl.nixosModules.default
-            {
-              nixpkgs.pkgs = self.pkgs.${system};
-              system.stateVersion = "24.05";
-              wsl.enable = true;
-            }
-            ./hosts/wsl
-          ];
-          specialArgs = inputs // {
-            neovim-flake = inputs.neovim-flake.${system};
-          };
+      });
+
+      homeConfig = args: home-manager.lib.homeManagerConfiguration {
+        inherit (args) pkgs;
+        modules = [ ./home ];
+        extraSpecialArgs = {
+          inherit (args) firefox-addons neovim-flake;
         };
       };
+    in
+    {
+      devShells = forEachSystem (import ./shells);
+
+      nixosConfigurations = {
+        # Thinkpad X1 Carbon 5th Gen
+        x1carbon = nixosSystem "x86_64-linux" ./hosts/x1carbon;
+        # NixOS-WSL
+        nixos = nixosSystem "x86_64-linux" ./hosts/wsl;
+      };
+
+      homeConfigurations = forEachSystem homeConfig;
     };
 }

@@ -1,4 +1,4 @@
-{ config, pkgs, lib, home-manager, stylix, ... }:
+{ config, pkgs, lib, home-manager, stylix, neovim-flake, ... }:
 
 {
   imports = [
@@ -19,11 +19,10 @@
 
   home-manager = {
     extraSpecialArgs = {
-      inherit stylix;
+      inherit stylix neovim-flake;
     };
     useGlobalPkgs = true;
-    useUserPackages = true;
-    users.hasundue = import ./home.nix;
+    users.hasundue = import ../home;
   };
 
   nix = {

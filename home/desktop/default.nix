@@ -7,6 +7,8 @@
     ./fcitx5
     ./firefox.nix
     ./sway.nix
+    ./waybar.nix
+    ./xdg.nix
   ];
 
   home = {

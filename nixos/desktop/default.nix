@@ -21,7 +21,7 @@
     extraSpecialArgs = {
       inherit firefox-addons;
     };
-    users.hasundue = import ./home.nix;
+    users.hasundue = import ../../home/desktop;
   };
 
   programs = {

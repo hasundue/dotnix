@@ -1,15 +1,12 @@
 { config, pkgs, lib, nixos-hardware, ... }:
 
-with lib;
-
 {
   imports = [
     ./hardware-configuration.nix
     nixos-hardware.nixosModules.lenovo-thinkpad-x1-extreme
 
-    ../../core
-    ../../dev
-    ../../desktop
+    ../../nixos
+    ../../nixos/desktop
   ];
 
   boot.loader = {
@@ -38,7 +35,7 @@ with lib;
   };
 
   security.pam = {
-    services.login.fprintAuth = mkIf (config.services.fprintd.enable) true;
+    services.login.fprintAuth = lib.mkIf (config.services.fprintd.enable) true;
   };
 
   services = {
@@ -50,7 +47,7 @@ with lib;
       ];
     };
     automatic-timezoned.enable = true;
-    avahi.enable = mkIf (config.services.geoclue2.enable) true;
+    avahi.enable = lib.mkIf (config.services.geoclue2.enable) true;
 
     # FIXME: use vfs0097 driver and enable this
     fprintd = {
@@ -70,4 +67,6 @@ with lib;
     pipewire.enable = true;
     upower.enable = true;
   };
+
+  virtualisation.docker.enable = true;
 }
