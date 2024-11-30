@@ -5,7 +5,7 @@
 
   home = {
     packages = [
-      (with neovim-flake; neovim {
+      (with neovim-flake; mkNeovim {
         modules = [
           core
           clipboard

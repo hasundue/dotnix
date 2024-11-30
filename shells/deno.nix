@@ -1,7 +1,7 @@
 { pkgs, neovim-flake, ... }:
 
 let
-  neovim = neovim-flake.neovim {
+  neovim = neovim-flake.mkNeovim {
     modules = with neovim-flake; [
       core
       clipboard
