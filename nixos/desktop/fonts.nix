@@ -3,7 +3,7 @@
 {
   fonts = {
     packages = with pkgs; [
-      (nerdfonts.override { fonts = [ "Noto" ]; })
+      nerd-fonts.noto
       noto-fonts
       noto-fonts-cjk-sans
       noto-fonts-cjk-serif
@@ -49,7 +49,7 @@
       name = "Noto Serif CJK JP";
     };
     monospace = {
-      package = pkgs.nerdfonts.override { fonts = [ "Noto" ]; };
+      package = pkgs.nerd-fonts.noto;
       name = "NotoMono Nerd Font Mono";
     };
     emoji = {
