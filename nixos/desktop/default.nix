@@ -1,4 +1,4 @@
-{ pkgs, firefox-addons, ... }:
+{ pkgs, ... }:
 
 {
   imports = [
@@ -18,10 +18,7 @@
   };
 
   home-manager = {
-    extraSpecialArgs = {
-      inherit firefox-addons;
-    };
-    users.hasundue = import ../../home/desktop;
+    users.hasundue.imports = [ ../../home/desktop ];
   };
 
   programs = {

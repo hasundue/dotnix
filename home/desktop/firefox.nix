@@ -1,4 +1,4 @@
-{ firefox-addons, ... }: 
+{ pkgs, ... }:
 
 {
   programs.firefox = {
@@ -10,7 +10,7 @@
         settings = {
           "media.ffmpeg.vaapi.enabled" = true;
         };
-        extensions = with firefox-addons; [
+        extensions = with pkgs.firefox-addons; [
           darkreader
           ublock-origin
         ];

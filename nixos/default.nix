@@ -1,11 +1,6 @@
-{ config, pkgs, lib, home-manager, stylix, neovim-flake, ... }:
+{ config, pkgs, lib, neovim-flake, ... }:
 
 {
-  imports = [
-    home-manager.nixosModules.home-manager
-    stylix.nixosModules.stylix
-  ];
-
   i18n.defaultLocale = "en_US.UTF-8";
 
   environment = {
@@ -19,10 +14,13 @@
 
   home-manager = {
     extraSpecialArgs = {
-      inherit stylix neovim-flake;
+      inherit neovim-flake;
     };
     useGlobalPkgs = true;
-    users.hasundue = import ../home;
+    useUserPackages = true;
+    users.hasundue = {
+      imports = [ ../home ];
+    };
   };
 
   nix = {

@@ -45,17 +45,21 @@
     };
   };
 
-  outputs = { nixpkgs, home-manager, ... } @ inputs:
+  outputs = { nixpkgs, home-manager, stylix, ... } @ inputs:
     let
       inherit (nixpkgs) lib;
 
       forSystem = system: f: f {
+        inherit lib;
         pkgs = import nixpkgs {
           inherit system;
           config.allowUnfree = true;
+          overlays = [
+            (final: prev: {
+              firefox-addons = inputs.firefox-addons.packages.${system};
+            })
+          ];
         };
-        inherit lib;
-        firefox-addons = inputs.firefox-addons.packages.${system};
         neovim-flake = inputs.neovim-flake.${system};
       };
 
@@ -67,11 +71,13 @@
         inherit system;
         modules = [
           { nixpkgs.pkgs = args.pkgs; }
+          home-manager.nixosModules.home-manager
+          stylix.nixosModules.stylix
           host
         ];
         specialArgs = {
-          inherit (inputs) nixos-hardware nixos-wsl home-manager stylix;
-          inherit (args) firefox-addons neovim-flake;
+          inherit (inputs) nixos-hardware nixos-wsl;
+          inherit (args) neovim-flake;
         };
       });
 
@@ -79,7 +85,7 @@
         inherit (args) pkgs;
         modules = [ ./home ];
         extraSpecialArgs = {
-          inherit (args) firefox-addons neovim-flake;
+          inherit (args) neovim-flake;
         };
       };
     in
