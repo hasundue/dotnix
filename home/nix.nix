@@ -1,5 +1,11 @@
+{ pkgs, ... }:
+
 {
   home.shellAliases = {
-    nd = "nix develop";
+    nd = "nom develop";
   };
+
+  home.packages = with pkgs; [
+    nix-output-monitor
+  ];
 }
