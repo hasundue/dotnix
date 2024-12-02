@@ -57,7 +57,7 @@
 
   stylix = {
     enable = true;
-    base16Scheme = "${pkgs.base16-schemes}/share/themes/kanagawa.yaml";
+    base16Scheme = "${pkgs.base16-schemes}/share/themes/catppuccin-mocha.yaml";
     image = pkgs.fetchurl {
       url = "https://upload.wikimedia.org/wikipedia/commons/a/a5/Tsunami_by_hokusai_19th_century.jpg";
       hash = "sha256-MMFwJg3jk/Ub1ZKtrMbwcUtg8VfAl0TpxbbUbmphNxg=";

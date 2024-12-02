@@ -28,8 +28,9 @@
 
   stylix = {
     cursor = {
-      name = "Nordzy-cursors";
-      package = pkgs.nordzy-cursor-theme;
+      name = "catppuccin-mocha-dark-cursors";
+      package = pkgs.catppuccin-cursors.mochaDark;
+      size = 24;
     };
     opacity = {
       applications = 0.9;
