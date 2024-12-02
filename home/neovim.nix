@@ -10,6 +10,7 @@
           core
           clipboard
           copilot
+          deno
           nix
           lua
         ];
