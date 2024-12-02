@@ -9,7 +9,7 @@ let
     , packages ? [ ]
     ,
     }:
-    pkgs.mkShell {
+    pkgs.mkShellNoCC {
       packages = packages ++ (lib.mapAttrsToList mkScript aliases);
     };
 in
