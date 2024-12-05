@@ -1,7 +1,7 @@
 {
   home = {
     username = "hasundue";
-    stateVersion = "24.05";
+    stateVersion = "24.11";
   };
 
   imports = [
