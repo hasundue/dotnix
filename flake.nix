@@ -37,13 +37,6 @@
       };
     };
 
-    neovim-flake = {
-      url = "github:hasundue/neovim-flake";
-      inputs = {
-        nixpkgs.follows = "nixpkgs";
-      };
-    };
-
     incline-nvim = {
       url = "github:b0o/incline.nvim";
       flake = false;
@@ -61,7 +54,6 @@
           config.allowUnfree = true;
           overlays = import ./overlays inputs;
         };
-        neovim-flake = inputs.neovim-flake.${system};
       };
 
       forEachSystem = f: lib.genAttrs
