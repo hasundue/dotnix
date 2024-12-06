@@ -1,4 +1,14 @@
-{ neovim-flake, ... }:
+{ pkgs, neovim-flake, ... }:
+
+let
+  nv = pkgs.writeShellScriptBin "nv" ''
+    if [ -d ~/nvim ]; then
+      exec nix run ~/nvim -- "$@"
+    else
+      exec nvim "$@"
+    fi
+  '';
+in
 
 {
   programs.git.extraConfig.core.editor = "nvim";
@@ -15,8 +25,8 @@
           lua
         ];
       })
+      nv
     ];
-    sessionVariables.EDITOR = "nvim";
-    shellAliases.nv = "nvim";
+    sessionVariables.EDITOR = "nv";
   };
 }
