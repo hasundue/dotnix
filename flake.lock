@@ -280,11 +280,27 @@
         "type": "github"
       }
     },
+    "incline-nvim_2": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1715926410,
+        "narHash": "sha256-5DoIvIdAZV7ZgmQO2XmbM3G+nNn4tAumsShoN3rDGrs=",
+        "owner": "b0o",
+        "repo": "incline.nvim",
+        "rev": "16fc9c073e3ea4175b66ad94375df6d73fc114c0",
+        "type": "github"
+      },
+      "original": {
+        "owner": "b0o",
+        "repo": "incline.nvim",
+        "type": "github"
+      }
+    },
     "neovim-flake": {
       "inputs": {
         "flake-utils": "flake-utils_2",
         "incl": "incl",
-        "incline-nvim": "incline-nvim",
+        "incline-nvim": "incline-nvim_2",
         "nixpkgs": [
           "nixpkgs"
         ]
@@ -375,6 +391,7 @@
       "inputs": {
         "firefox-addons": "firefox-addons",
         "home-manager": "home-manager",
+        "incline-nvim": "incline-nvim",
         "neovim-flake": "neovim-flake",
         "nixos-hardware": "nixos-hardware",
         "nixos-wsl": "nixos-wsl",

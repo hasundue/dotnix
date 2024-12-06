@@ -43,6 +43,11 @@
         nixpkgs.follows = "nixpkgs";
       };
     };
+
+    incline-nvim = {
+      url = "github:b0o/incline.nvim";
+      flake = false;
+    };
   };
 
   outputs = { nixpkgs, home-manager, stylix, ... } @ inputs:
@@ -54,11 +59,7 @@
         pkgs = import nixpkgs {
           inherit system;
           config.allowUnfree = true;
-          overlays = [
-            (final: prev: {
-              firefox-addons = inputs.firefox-addons.packages.${system};
-            })
-          ];
+          overlays = import ./overlays inputs;
         };
         neovim-flake = inputs.neovim-flake.${system};
       };
