@@ -2,8 +2,9 @@
 
 let
   mkScript = alias: command:
-    pkgs.writeShellScriptBin alias command;
-
+    pkgs.writeShellScriptBin alias ''
+      exec ${command} "$@"
+    '';
   mkShell =
     { aliases ? { }
     , packages ? [ ]
