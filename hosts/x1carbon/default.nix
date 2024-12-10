@@ -58,7 +58,6 @@
       };
     };
 
-    # FIXME: https://github.com/NixOS/nixpkgs/issues/321121
     geoclue2 = {
       enable = true;
       geoProviderUrl = "https://api.beacondb.net/v1/geolocate";
