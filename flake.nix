@@ -64,7 +64,7 @@
       };
 
       forEachSystem = f: lib.genAttrs
-        [ "x86_64-linux" ]
+        [ "x86_64-linux" "aarch64-linux" ]
         (system: forSystem system f);
 
       nixosSystem = system: host: forSystem system (args: lib.nixosSystem {
