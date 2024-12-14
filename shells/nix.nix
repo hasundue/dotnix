@@ -1,8 +1,8 @@
-{ pkgs, neovim-flake, ... }:
+{ pkgs, ... }:
 
 let
-  neovim = neovim-flake.mkNeovim {
-    modules = with neovim-flake; [
+  neovim = pkgs.mkNeovim {
+    modules = with pkgs.mkNeovim.modules; [
       core
       clipboard
       copilot

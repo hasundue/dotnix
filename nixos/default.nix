@@ -1,4 +1,4 @@
-{ config, pkgs, lib, neovim-flake, ... }:
+{ config, pkgs, lib, ... }:
 
 {
   i18n.defaultLocale = "en_US.UTF-8";
@@ -13,9 +13,6 @@
   };
 
   home-manager = {
-    extraSpecialArgs = {
-      inherit neovim-flake;
-    };
     useGlobalPkgs = true;
     useUserPackages = true;
     users.hasundue = {

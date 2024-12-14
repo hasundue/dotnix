@@ -1,8 +1,10 @@
-{ pkgs, neovim-flake, ... }:
+{ pkgs, ... }:
 
 let
-  neovim = neovim-flake.mkNeovim {
-    modules = with neovim-flake; [
+  inherit (pkgs) mkNeovim;
+
+  neovim = mkNeovim {
+    modules = with mkNeovim.modules; [
       core
       clipboard
       copilot

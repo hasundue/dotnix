@@ -37,15 +37,15 @@
       };
     };
 
-    neovim-flake = {
-      url = "github:hasundue/neovim-flake";
+    nvim = {
+      url = "github:hasundue/nvim";
       inputs = {
         nixpkgs.follows = "nixpkgs";
       };
     };
   };
 
-  outputs = { nixpkgs, home-manager, stylix, ... } @ inputs:
+  outputs = { nixpkgs, home-manager, stylix, nvim, ... } @ inputs:
     let
       inherit (nixpkgs) lib;
 
@@ -55,12 +55,12 @@
           inherit system;
           config.allowUnfree = true;
           overlays = [
+            nvim.overlays.default
             (final: prev: {
               firefox-addons = inputs.firefox-addons.packages.${system};
             })
           ];
         };
-        neovim-flake = inputs.neovim-flake.${system};
       };
 
       forEachSystem = f: lib.genAttrs
@@ -77,16 +77,12 @@
         ];
         specialArgs = {
           inherit (inputs) nixos-hardware nixos-wsl;
-          inherit (args) neovim-flake;
         };
       });
 
       homeConfig = args: home-manager.lib.homeManagerConfiguration {
         inherit (args) pkgs;
         modules = [ ./home ];
-        extraSpecialArgs = {
-          inherit (args) neovim-flake;
-        };
       };
     in
     {

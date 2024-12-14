@@ -1,4 +1,4 @@
-{ pkgs, neovim-flake, ... }:
+{ pkgs, ... }:
 
 let
   nv = pkgs.writeShellScriptBin "nv" ''
@@ -15,8 +15,8 @@ in
 
   home = {
     packages = [
-      (with neovim-flake; mkNeovim {
-        modules = [
+      (pkgs.mkNeovim {
+        modules = with pkgs.mkNeovim.modules; [
           core
           clipboard
           copilot
