@@ -13,6 +13,10 @@
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
     nixos-hardware.url = "github:nixos/nixos-hardware";
+    nix-on-droid = {
+      url = "github:nix-community/nix-on-droid";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
 
     home-manager = {
       url = "github:nix-community/home-manager";
@@ -45,7 +49,15 @@
     };
   };
 
-  outputs = { nixpkgs, home-manager, stylix, nvim, ... } @ inputs:
+  outputs =
+    { nixpkgs
+    , home-manager
+    , stylix
+    , nix-on-droid
+    , firefox-addons
+    , nvim
+    , ...
+    } @ inputs:
     let
       inherit (nixpkgs) lib;
 
@@ -57,7 +69,7 @@
           overlays = [
             nvim.overlays.default
             (final: prev: {
-              firefox-addons = inputs.firefox-addons.packages.${system};
+              firefox-addons = firefox-addons.packages.${system};
             })
           ];
         };
@@ -93,6 +105,11 @@
         x1carbon = nixosSystem "x86_64-linux" ./hosts/x1carbon;
         # NixOS-WSL
         nixos = nixosSystem "x86_64-linux" ./hosts/wsl;
+      };
+
+      nixOnDroidConfigurations.default = nix-on-droid.lib.nixOnDroidConfiguration {
+        inherit nixpkgs;
+        modules = [ ./nix-on-droid ];
       };
 
       homeConfigurations = forEachSystem homeConfig;
