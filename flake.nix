@@ -96,6 +96,11 @@
         inherit (args) pkgs;
         modules = [ ./home ];
       };
+
+      nixOnDroidConfig = host: forSystem "aarch64-linux" (args: nix-on-droid.lib.nixOnDroidConfiguration {
+        inherit (args) pkgs;
+        modules = [ host ];
+      });
     in
     {
       devShells = forEachSystem (import ./shells);
@@ -107,10 +112,7 @@
         nixos = nixosSystem "x86_64-linux" ./hosts/wsl;
       };
 
-      nixOnDroidConfigurations.default = nix-on-droid.lib.nixOnDroidConfiguration {
-        inherit nixpkgs;
-        modules = [ ./nix-on-droid ];
-      };
+      nixOnDroidConfigurations.default = nixOnDroidConfig (import ./hosts/pixel);
 
       homeConfigurations = forEachSystem homeConfig;
     };
