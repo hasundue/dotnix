@@ -112,7 +112,9 @@
         nixos = nixosSystem "x86_64-linux" ./hosts/wsl;
       };
 
-      nixOnDroidConfigurations.default = nixOnDroidConfig (import ./hosts/pixel);
+      nixOnDroidConfigurations = {
+        default = nixOnDroidConfig (import ./hosts/pixel);
+      };
 
       homeConfigurations = forEachSystem homeConfig;
     };
