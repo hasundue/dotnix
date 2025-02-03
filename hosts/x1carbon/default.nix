@@ -26,7 +26,6 @@
       enable = true;
       extraPackages = with pkgs; [ libva ];
     };
-    pulseaudio.enable = false; # use pipewire instead
   };
 
   networking = {
@@ -64,6 +63,8 @@
     };
 
     pipewire.enable = true;
+    pulseaudio.enable = false;
+
     upower.enable = true;
   };
 
