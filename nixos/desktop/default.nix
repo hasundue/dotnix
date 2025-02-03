@@ -3,6 +3,7 @@
 {
   imports = [
     ./fonts.nix
+    ./steam.nix
   ];
 
   # Enable plymouth and boot silently
