@@ -3,13 +3,16 @@
 {
   wayland.windowManager.sway = {
     enable = true;
+
     config = {
       bars = [ ];
+
       gaps = {
         smartBorders = "on";
         smartGaps = false;
         inner = 5;
       };
+
       input = {
         "type:keyboard" = {
           repeat_delay = "250";
@@ -24,6 +27,7 @@
           pointer_accel = "0.2";
         };
       };
+
       keybindings =
         let
           Mod = config.wayland.windowManager.sway.config.modifier;
@@ -44,8 +48,11 @@
           "${Mod}+Ctrl+l" = "exec swaylock -fF";
           "${Mod}+Ctrl+s" = "exec systemctl suspend";
         };
+
       menu = "wofi --show run";
+
       modifier = "Mod4";
+
       output = {
         "eDP-1" = {
           mode = "1920x1080@60Hz";
@@ -55,7 +62,9 @@
           mode = "1920x1080@120Hz";
         };
       };
+
       terminal = lib.getExe pkgs.alacritty;
+
       window = {
         commands = [
           {
@@ -68,12 +77,14 @@
         ];
         titlebar = false;
       };
+
       workspaceOutputAssign = [
         { workspace = "1"; output = "eDP-1"; }
       ] ++ map
         (i: { workspace = toString (i); output = "HDMI-A-1"; })
         (builtins.genList (i: i + 2) 8);
     };
+
     systemd.enable = true;
     wrapperFeatures.gtk = true;
   };
