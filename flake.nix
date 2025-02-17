@@ -70,7 +70,11 @@
       nixosSystem = system: host: forSystem system (args: lib.nixosSystem {
         inherit system;
         modules = [
-          { nixpkgs.pkgs = args.pkgs; }
+          {
+            nixpkgs.pkgs = args.pkgs;
+            # FIXME: https://github.com/danth/stylix/issues/865
+            nixpkgs.overlays = lib.mkForce [];
+          }
           home-manager.nixosModules.home-manager
           stylix.nixosModules.stylix
           host
