@@ -1,7 +1,13 @@
+{ pkgs, ... }:
+
 {
   home = {
     username = "hasundue";
     stateVersion = "24.11";
+
+    packages = with pkgs; [
+      fd
+    ];
   };
 
   imports = [
@@ -20,5 +26,6 @@
       };
       nix-direnv.enable = true;
     };
+    fd.enable = true;
   };
 }
