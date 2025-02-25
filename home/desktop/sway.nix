@@ -54,12 +54,14 @@
       modifier = "Mod4";
 
       output = {
-        "eDP-1" = {
+        "AU Optronics 0x313D Unknown" = {
           mode = "1920x1080@60Hz";
+          position = "0 0";
           scale = "1.25";
         };
-        "HDMI-A-1" = {
+        "Microstep MSI G271 0x30303146" = {
           mode = "1920x1080@120Hz";
+          position = "1536 0";
         };
       };
 
