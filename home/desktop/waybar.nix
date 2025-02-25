@@ -130,6 +130,4 @@
       target = "sway-session.target";
     };
   };
-
-  systemd.user.services.waybar.Service.Restart = lib.mkForce "always";
 }

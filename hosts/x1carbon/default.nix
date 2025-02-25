@@ -62,9 +62,6 @@
       geoProviderUrl = "https://api.beacondb.net/v1/geolocate";
     };
 
-    pipewire.enable = true;
-    pulseaudio.enable = false;
-
     upower.enable = true;
   };
 

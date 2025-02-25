@@ -94,7 +94,6 @@
   ];
 
   programs = {
-    i3status.enable = true;
     swaylock.enable = true;
     wofi.enable = true;
   };

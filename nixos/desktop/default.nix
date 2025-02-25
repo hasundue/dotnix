@@ -22,9 +22,12 @@
     users.hasundue.imports = [ ../../home/desktop ];
   };
 
-  programs = {
-    regreet.enable = true;
-    sway.enable = true;
+  services = {
+    pipewire = {
+      enable = true;
+      pulse.enable = true;
+    };
+    pulseaudio.enable = false;
   };
 
   stylix = {
