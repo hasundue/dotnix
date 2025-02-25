@@ -65,6 +65,10 @@
         };
       };
 
+      startup = [
+        { command = "swaylock -fF"; } # for auto-login
+      ];
+
       terminal = lib.getExe pkgs.alacritty;
 
       window = {

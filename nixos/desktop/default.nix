@@ -39,6 +39,16 @@
     pulseaudio.enable = false;
   };
 
+  services.greetd = {
+    enable = true;
+    settings.default_session.command = "${pkgs.greetd.greetd}/bin/agreety --cmd sway";
+    settings.initial_session = {
+      command = "sway";
+      user = "hasundue";
+    };
+  };
+
+
   stylix = {
     cursor = {
       name = "catppuccin-mocha-dark-cursors";
