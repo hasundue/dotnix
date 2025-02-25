@@ -27,6 +27,10 @@
     users.hasundue.imports = [ ../../home/desktop ];
   };
 
+  # Make sure not to interfere swaylock from home-manager
+  # https://github.com/NixOS/nixpkgs/issues/158025
+  security.pam.services.swaylock = { };
+
   services = {
     pipewire = {
       enable = true;
