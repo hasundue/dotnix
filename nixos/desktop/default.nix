@@ -18,6 +18,11 @@
     ];
   };
 
+  environment.pathsToLink = [
+    "/share/xdg-desktop-portal"
+    "/share/applications"
+  ];
+
   home-manager = {
     users.hasundue.imports = [ ../../home/desktop ];
   };

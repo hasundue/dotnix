@@ -85,8 +85,13 @@
         (builtins.genList (i: i + 2) 8);
     };
 
-    systemd.enable = true;
-    wrapperFeatures.gtk = true;
+    systemd = {
+      enable = true;
+
+      # Enable xdg-desktop-portal to find applications
+      # FIXME: Import minimal set of variables
+      variables = [ "--all" ];
+    };
   };
 
   home.packages = with pkgs; [
