@@ -19,12 +19,13 @@
           xkb_options = "ctrl:nocaps";
         };
         "type:touchpad" = {
-          tap = "enabled";
+          dwt = "enabled"; # disable-while-typing
           natural_scroll = "enabled";
+          tap = "enabled";
         };
-        "type:mouse" = {
+        "type:pointer" = {
           accel_profile = "adaptive";
-          pointer_accel = "0.2";
+          pointer_accel = "0";
         };
       };
 
