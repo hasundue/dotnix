@@ -1,10 +1,5 @@
 {
   programs.chromium = {
-    commandLineArgs = [
-      "--enable-features=UseOzonePlatform"
-      "--ozone-platform=wayland"
-      "--enable-wayland-ime"
-    ];
     enable = true;
     extensions = [
       { id = "aeblfdkhhhdcdjpifhhbdiojplfjncoa"; } # 1Password
