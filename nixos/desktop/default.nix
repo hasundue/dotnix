@@ -18,10 +18,16 @@
     ];
   };
 
-  environment.pathsToLink = [
-    "/share/xdg-desktop-portal"
-    "/share/applications"
-  ];
+  environment = {
+    pathsToLink = [
+      "/share/xdg-desktop-portal"
+      "/share/applications"
+    ];
+    sessionVariables = {
+      # Define this globally to make sure it's imported to user systemd by sway
+      NIXOS_OZONE_WL = "1";
+    };
+  };
 
   home-manager = {
     users.hasundue.imports = [ ../../home/desktop ];

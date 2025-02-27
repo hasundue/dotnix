@@ -15,8 +15,4 @@
       ];
     };
   };
-
-  # home.shellAliases = {
-  #   vscode = "code --ozone-platform=wayland";
-  # };
 }
