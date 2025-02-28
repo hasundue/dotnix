@@ -1,25 +1,14 @@
-{ pkgs, lib, ... } @ args:
+{ pkgs, ... } @ args:
 
 let
-  mkScript = alias: command:
-    pkgs.writeShellScriptBin alias ''
-      exec ${command} "$@"
-    '';
-  mkShell =
-    { aliases ? { }
-    , nativeBuildInputs ? [ ]
-    , packages ? [ ]
-    , shellHook ? ""
-    ,
-    }:
-    pkgs.mkShell {
-      inherit nativeBuildInputs shellHook;
-      packages = packages ++ (lib.mapAttrsToList mkScript aliases);
-    };
+  aliases = rec {
+    nr = "sudo nixos-rebuild --flake .";
+    nrb = "${nr} boot |& nom";
+    nrs = "${nr} switch |& nom";
+    nrt = "${nr} test |& nom";
+  };
 in
-lib.mapAttrs (name: path: mkShell ((import path) args)) rec {
-  deno = ./deno.nix;
-  ebiten = ./ebiten.nix;
-  nix = ./nix.nix;
-  default = nix;
+pkgs.mkShellNoCC {
+  packages = (pkgs.writeAliasScripts aliases);
+  inputsFrom = [ (import ./nix.nix args) ];
 }

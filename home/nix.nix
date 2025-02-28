@@ -1,11 +1,26 @@
 { pkgs, ... }:
 
 {
-  home.shellAliases = {
-    nd = "nom develop";
-  };
+  home = {
+    packages = with pkgs; [
+      cachix
+      nix-output-monitor
+    ];
 
-  home.packages = with pkgs; [
-    nix-output-monitor
-  ];
+    shellAliases = rec {
+      nd = "nom develop";
+
+      nf = "nix flake";
+      nfc = "${nf} check";
+      nfs = "${nf} show";
+      nfu = "${nf} update";
+
+      nor = "sudo nixos-rebuild --flake .";
+      norb = "${nr} boot |& nom";
+      nors = "${nr} switch |& nom";
+      nort = "${nr} test |& nom";
+
+      nr = "nix run";
+    };
+  };
 }
