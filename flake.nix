@@ -45,9 +45,9 @@
     };
   };
 
-  outputs = { nixpkgs, home-manager, stylix, nvim, ... } @ inputs:
+  outputs = { self, nixpkgs, home-manager, stylix, nvim, ... } @ inputs:
     let
-      inherit (nixpkgs) lib;
+      lib = builtins // nixpkgs.lib;
 
       forSystem = system: f: f {
         inherit lib;
@@ -55,6 +55,7 @@
           inherit system;
           config.allowUnfree = true;
           overlays = [
+            self.overlays.default
             nvim.overlays.default
             (final: prev: {
               firefox-addons = inputs.firefox-addons.packages.${system};
@@ -90,7 +91,9 @@
       };
     in
     {
-      devShells = forEachSystem (import ./shells);
+      devShells = forEachSystem (args: lib.mapAttrs'
+        (name: _: lib.nameValuePair (lib.removeSuffix ".nix" name) (import ./shells/${name} args))
+        (lib.readDir ./shells));
 
       nixosConfigurations = {
         # Thinkpad X1 Carbon 5th Gen
@@ -100,5 +103,7 @@
       };
 
       homeConfigurations = forEachSystem homeConfig;
+
+      overlays = import ./overlays;
     };
 }
