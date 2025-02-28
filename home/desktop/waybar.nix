@@ -1,11 +1,19 @@
 { lib, pkgs, ... }:
 
+let
+  devices = import ./_devices.nix;
+in
 {
   programs.waybar = {
     enable = true;
 
     settings.main = {
       layer = "top";
+
+      output = [
+        "eDP-1"
+        devices.monitor.MSI_G271
+      ];
 
       spacing = 4;
 

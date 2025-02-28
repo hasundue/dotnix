@@ -1,5 +1,8 @@
 { config, lib, pkgs, ... }:
 
+let
+  devices = import ./_devices.nix;
+in
 {
   wayland.windowManager.sway = {
     enable = true;
@@ -55,12 +58,12 @@
       modifier = "Mod4";
 
       output = {
-        "AU Optronics 0x313D Unknown" = {
+        "eDP-1" = {
           mode = "1920x1080@60Hz";
           position = "0 0";
           scale = "1.25";
         };
-        "Microstep MSI G271 0x30303146" = {
+        "${devices.monitor.MSI_G271}" = {
           mode = "1920x1080@120Hz";
           position = "1536 0";
         };
@@ -85,10 +88,11 @@
         titlebar = false;
       };
 
+      # FIXME: Do this dynamically
       workspaceOutputAssign = [
         { workspace = "1"; output = "eDP-1"; }
       ] ++ map
-        (i: { workspace = toString (i); output = "HDMI-A-1"; })
+        (i: { workspace = toString (i); output = devices.monitor.MSI_G271; })
         (builtins.genList (i: i + 2) 8);
     };
 
