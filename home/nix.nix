@@ -15,11 +15,6 @@
       nfs = "${nf} show";
       nfu = "${nf} update";
 
-      nor = "sudo nixos-rebuild --flake .";
-      norb = "${nr} boot |& nom";
-      nors = "${nr} switch |& nom";
-      nort = "${nr} test |& nom";
-
       nr = "nix run";
     };
   };
