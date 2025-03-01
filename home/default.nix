@@ -16,7 +16,6 @@
     ./gh.nix
     ./neovim.nix
     ./nix.nix
-    ./vscode.nix
   ];
 
   programs = {
