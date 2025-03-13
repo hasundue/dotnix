@@ -18,7 +18,6 @@
         bold_italic = {
           style = "SemiBold Italic";
         };
-        size = lib.mkForce 13;
       };
       terminal = {
         osc52 = "CopyPaste";

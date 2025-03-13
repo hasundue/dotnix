@@ -60,7 +60,7 @@
       applications = 12;
       desktop = 12;
       popups = 13;
-      terminal = 13;
+      terminal = 12;
     };
   };
 }
