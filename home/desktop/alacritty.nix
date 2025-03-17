@@ -18,6 +18,7 @@
         bold_italic = {
           style = "SemiBold Italic";
         };
+        offset = { x = 1; y = 0; };
       };
       terminal = {
         osc52 = "CopyPaste";
