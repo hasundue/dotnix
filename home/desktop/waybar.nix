@@ -35,6 +35,7 @@ in
         "pulseaudio"
         "backlight"
         "battery"
+        "custom/space"
         "tray"
         "custom/space"
       ];
@@ -49,7 +50,7 @@ in
       clock = {
         interval = 60;
         tooltip-format = "<tt>{calendar}</tt>";
-        format = "󰥔  {:%H:%M}";
+        format = "󰥔 {:%H:%M}";
       };
 
       idle_inhibitor = {
@@ -62,39 +63,35 @@ in
 
       temperature = {
         critical-threshold = lib.mkDefault 90;
-        format = "{icon} {temperatureC}°C";
+        format = "{icon} {temperatureC}℃";
         format-icons = [ "" "" "" ];
       };
 
       memory = {
-        format = "   {percentage}%";
+        format = " {percentage}%";
       };
 
       disk = {
-        format = "  {percentage_used}%";
+        format = " {percentage_used}%";
       };
 
       network = {
-        format-wifi = "   {essid}";
-        format-ethernet = "󰈀  {ifname}: {ipaddr}/{cidr}";
-        format-linked = "󰌘  {ifname} (No IP)";
-        format-disconnected = "⚠  Disconnected";
-        format-alt = "{ifname}: {ipaddr}/{cidr}";
+        format-wifi = " ";
+        format-disconnected = "睊";
+        tooltip-format = "{essid}";
       };
 
       pulseaudio = {
         format = "{icon} {volume}%";
-        format-bluetooth = " {volume}%";
-        format-bluetooth-muted = " ";
-        format-muted = " ";
+        format-bluetooth = "{volume}%";
+        format-bluetooth-muted = "";
+        format-muted = "";
         format-icons = {
-          headphones = " ";
-          handsfree = "󰋎 ";
-          headset = "󰋎 ";
-          phone = " ";
-          portable = " ";
-          car = " ";
-          default = [ " " " " " " ];
+          headphones = "";
+          handsfree = "󰋎";
+          headset = "󰋎";
+          phone = "";
+          default = [ "" "" "" ];
         };
         on-click = "${pkgs.ponymix}/bin/ponymix -t sink toggle";
         on-scroll-up = "${pkgs.ponymix}/bin/ponymix increase 1";
@@ -103,7 +100,7 @@ in
 
       backlight = {
         device = "intel_backlight";
-        format = "{icon}  {percent}%";
+        format = "{icon} {percent}%";
         format-icons = [ "󱩎" "󱩏" "󱩐" "󱩑" "󱩒" "󱩓" "󱩔" "󱩕" "󱩖" "󰛨" ];
         on-scroll-up = "${pkgs.brightnessctl}/bin/brightnessctl set +1%";
         on-scroll-down = "${pkgs.brightnessctl}/bin/brightnessctl set 1%-";
@@ -116,11 +113,11 @@ in
           warning = 30;
           critical = 15;
         };
-        format = "{icon}   {capacity}%";
-        format-charging = "󰂄  {capacity}%";
-        format-plugged = "   {capacity}%";
-        format-alt = "{icon}   {time}";
-        format-icons = [ " " " " " " " " " " ];
+        format = "{icon} {capacity}%";
+        format-charging = "󰂄 {capacity}%";
+        format-plugged = " {capacity}%";
+        format-alt = "{icon} {time}";
+        format-icons = [ "" "" "" "" "" ];
       };
 
       tray = {
@@ -129,7 +126,7 @@ in
       };
 
       "custom/space" = {
-        format = "  ";
+        format = " ";
       };
     };
 

@@ -50,7 +50,7 @@
     };
     monospace = {
       package = pkgs.nerd-fonts.noto;
-      name = "NotoMono Nerd Font Mono";
+      name = "NotoMono Nerd Font";
     };
     emoji = {
       package = pkgs.noto-fonts-color-emoji;
