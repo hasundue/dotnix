@@ -18,4 +18,6 @@
       debug.id = 99;
     };
   };
+
+  stylix.targets.firefox.profileNames = [ "default" ];
 }
