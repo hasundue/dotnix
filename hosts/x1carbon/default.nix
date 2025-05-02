@@ -57,11 +57,7 @@
       };
     };
 
-    geoclue2 = {
-      enable = true;
-      geoProviderUrl = "https://api.beacondb.net/v1/geolocate";
-    };
-
+    geoclue2.enable = true;
     upower.enable = true;
   };
 
