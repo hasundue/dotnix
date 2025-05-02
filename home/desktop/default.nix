@@ -2,10 +2,10 @@
 
 {
   imports = [
-    ./alacritty.nix
     ./chromium.nix
     ./fcitx5
     ./firefox.nix
+    ./foot.nix
     ./sway.nix
     ./vscode.nix
     ./waybar.nix

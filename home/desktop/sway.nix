@@ -73,7 +73,7 @@ in
         { command = "swaylock -fF"; } # for auto-login
       ];
 
-      terminal = lib.getExe pkgs.alacritty;
+      terminal = lib.getExe pkgs.foot;
 
       window = {
         commands = [
@@ -81,7 +81,7 @@ in
             command = "resize set 1024 576, move position center";
             criteria = {
               floating = true;
-              app_id = "Alacritty";
+              app_id = "foot";
             };
           }
         ];
