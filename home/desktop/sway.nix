@@ -13,7 +13,7 @@ in
       gaps = {
         smartBorders = "on";
         smartGaps = false;
-        inner = 5;
+        inner = 4;
       };
 
       input = {
