@@ -44,7 +44,13 @@
     };
   };
 
-  programs.fish.enable = true;
+  programs = {
+    fish.enable = true;
+    nix-ld = {
+      enable = true;
+      libraries = [ ];
+    };
+  };
 
   security = {
     sudo = {
