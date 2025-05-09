@@ -2,6 +2,7 @@
 
 {
   imports = [
+    ./bluetooth.nix
     ./fonts.nix
     ./steam.nix
   ];
@@ -53,7 +54,6 @@
       user = "hasundue";
     };
   };
-
 
   stylix = {
     cursor = {
