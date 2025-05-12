@@ -16,6 +16,8 @@
       nfu = "${nf} update";
 
       nr = "nix run";
+
+      ns = "nix search nixpkgs";
     };
   };
 }
