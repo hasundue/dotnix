@@ -23,6 +23,9 @@
       enable = true;
       config = {
         silent = true;
+        global = {
+          warn-timeout = 0; # It often takes a while to re-evaluate a flake
+        };
       };
       nix-direnv.enable = true;
     };
