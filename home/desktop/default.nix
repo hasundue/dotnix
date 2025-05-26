@@ -16,7 +16,6 @@
     packages = with pkgs; [
       # communication
       slack
-      zoom-us
       discord
 
       # desktop
