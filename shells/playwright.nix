@@ -2,7 +2,6 @@
 
 pkgs.mkShellNoCC {
   nativeBuildInputs = with pkgs; [
-    vscode
     playwright-driver.browsers
   ];
   shellHook = ''
