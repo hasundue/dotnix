@@ -52,23 +52,26 @@
     };
   };
 
-  outputs = { self, nixpkgs, agenix, home-manager, stylix, nvim, ... } @ inputs:
+  outputs = { self, nixpkgs, ... } @ inputs:
     let
       lib = builtins // nixpkgs.lib;
+
+      overlays = with inputs; [
+        self.overlays.default
+        agenix.overlays.default
+        nvim.overlays.default
+      ];
+
+      firefox-overlay = system: (final: prev: {
+        firefox-addons = inputs.firefox-addons.packages.${system};
+      });
 
       forSystem = system: f: f {
         inherit lib;
         pkgs = import nixpkgs {
           inherit system;
           config.allowUnfree = true;
-          overlays = [
-            self.overlays.default
-            agenix.overlays.default
-            nvim.overlays.default
-            (final: prev: {
-              firefox-addons = inputs.firefox-addons.packages.${system};
-            })
-          ];
+          overlays = overlays ++ [ (firefox-overlay system) ];
         };
       };
 
@@ -76,30 +79,19 @@
         [ "x86_64-linux" "aarch64-linux" ]
         (system: forSystem system f);
 
-      nixosSystem = system: host: forSystem system (args: lib.nixosSystem {
+      nixosSystem = system: modules: forSystem system (args: lib.nixosSystem {
         inherit system;
-        modules = [
+        modules = with inputs; [
+          { nixpkgs.pkgs = args.pkgs; }
           {
             home-manager.sharedModules = [
               agenix.homeManagerModules.default
             ];
-            nixpkgs.pkgs = args.pkgs;
           }
           home-manager.nixosModules.home-manager
           stylix.nixosModules.stylix
-          host
-        ];
-        specialArgs = {
-          inherit (inputs) agenix nixos-hardware nixos-wsl;
-        };
+        ] ++ modules;
       });
-
-      homeConfig = args: home-manager.lib.homeManagerConfiguration {
-        inherit (args) pkgs;
-        modules = [
-          ./home
-        ];
-      };
     in
     {
       devShells = forEachSystem (args: lib.mapAttrs'
@@ -108,12 +100,16 @@
 
       nixosConfigurations = {
         # Thinkpad X1 Carbon 5th Gen
-        x1carbon = nixosSystem "x86_64-linux" ./hosts/x1carbon;
+        x1carbon = nixosSystem "x86_64-linux" [
+          inputs.nixos-hardware.nixosModules.lenovo-thinkpad-x1-extreme
+          ./hosts/x1carbon
+        ];
         # NixOS-WSL
-        nixos = nixosSystem "x86_64-linux" ./hosts/wsl;
+        nixos = nixosSystem "x86_64-linux" [
+          inputs.nixos-wsl.nixosModules.default
+          ./hosts/wsl
+        ];
       };
-
-      homeConfigurations = forEachSystem homeConfig;
 
       overlays = import ./overlays;
     };

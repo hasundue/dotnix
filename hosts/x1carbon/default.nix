@@ -1,9 +1,8 @@
-{ config, pkgs, lib, nixos-hardware, ... }:
+{ config, pkgs, lib, ... }:
 
 {
   imports = [
     ./hardware-configuration.nix
-    nixos-hardware.nixosModules.lenovo-thinkpad-x1-extreme
 
     ../../nixos
     ../../nixos/desktop
