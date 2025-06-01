@@ -11,6 +11,7 @@
   };
 
   imports = [
+    ./agenix.nix
     ./fish.nix
     ./git.nix
     ./gh.nix
