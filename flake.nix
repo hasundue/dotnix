@@ -30,6 +30,13 @@
       };
     };
 
+    agenix = {
+      url = "github:ryantm/agenix";
+      inputs = {
+        nixpkgs.follows = "nixpkgs";
+        home-manager.follows = "home-manager";
+      };
+    };
     firefox-addons = {
       url = "sourcehut:~rycee/nur-expressions?dir=pkgs/firefox-addons";
       inputs = {
@@ -45,7 +52,7 @@
     };
   };
 
-  outputs = { self, nixpkgs, home-manager, stylix, nvim, ... } @ inputs:
+  outputs = { self, nixpkgs, agenix, home-manager, stylix, nvim, ... } @ inputs:
     let
       lib = builtins // nixpkgs.lib;
 
@@ -56,6 +63,7 @@
           config.allowUnfree = true;
           overlays = [
             self.overlays.default
+            agenix.overlays.default
             nvim.overlays.default
             (final: prev: {
               firefox-addons = inputs.firefox-addons.packages.${system};
@@ -71,19 +79,26 @@
       nixosSystem = system: host: forSystem system (args: lib.nixosSystem {
         inherit system;
         modules = [
-          { nixpkgs.pkgs = args.pkgs; }
+          {
+            home-manager.sharedModules = [
+              agenix.homeManagerModules.default
+            ];
+            nixpkgs.pkgs = args.pkgs;
+          }
           home-manager.nixosModules.home-manager
           stylix.nixosModules.stylix
           host
         ];
         specialArgs = {
-          inherit (inputs) nixos-hardware nixos-wsl;
+          inherit (inputs) agenix nixos-hardware nixos-wsl;
         };
       });
 
       homeConfig = args: home-manager.lib.homeManagerConfiguration {
         inherit (args) pkgs;
-        modules = [ ./home ];
+        modules = [
+          ./home
+        ];
       };
     in
     {
