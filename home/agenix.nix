@@ -1,20 +1,22 @@
 { config, pkgs, lib, ... }:
 
+let
+  h = config.home.homeDirectory;
+
+  secrets = lib.mapAttrs'
+    (name: value: {
+      name = lib.removeSuffix ".age" name;
+      value.file = ./secrets/${name};
+    })
+    (import ./secrets/secrets.nix);
+in
 {
   age = {
-    identityPaths = [ "~/.ssh/id_ed25519" ];
-    secrets = {
-      # api-keys = {
-      #   file = ../secrets/api-keys.age;
-      # };
-    };
-    # secretsDir = "${config.home.homeDirectory}/.agenix/agenix";
-    # secretsMountPoint = "${config.home.homeDirectory}/.agenix/agenix.d";
+    inherit secrets;
+    identityPaths = [ "${h}/.ssh/id_ed25519" ];
+    secretsDir = "${h}/.agenix/secrets";
+    secretsMountPoint = "${h}/.agenix/secrets.d";
   };
 
-  home.packages = with pkgs; [
-    agenix
-  ];
-
-  # home.activation.agenix = lib.hm.dag.entryAnywhere config.systemd.user.services.agenix.Service.ExecStart;
+  home.packages = with pkgs; [ agenix ];
 }
