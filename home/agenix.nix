@@ -6,9 +6,9 @@ let
   secrets = lib.mapAttrs'
     (name: value: {
       name = lib.removeSuffix ".age" name;
-      value.file = ./secrets/${name};
+      value.file = ../secrets/${name};
     })
-    (import ./secrets/secrets.nix);
+    (import ../secrets/secrets.nix);
 in
 {
   age = {
