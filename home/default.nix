@@ -12,6 +12,7 @@
   };
 
   imports = [
+    ./aider.nix
     ./agenix.nix
     ./fish.nix
     ./git.nix
