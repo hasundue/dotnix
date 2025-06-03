@@ -121,7 +121,7 @@ in
         { event = "before-sleep"; command = "${pkgs.swaylock}/bin/swaylock -fF"; }
       ];
       timeouts = [
-        { timeout = 1800; command = "${pkgs.systemd}/bin/systemctl suspend"; }
+        { timeout = 3600; command = "${pkgs.systemd}/bin/systemctl suspend"; }
       ];
     };
   };
