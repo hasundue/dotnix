@@ -1,17 +1,22 @@
-{ config, pkgs, ... }:
+{ config, pkgs, lib, ... }:
 
 let
-  apiKeyFile = config.age.secrets."api/gemini".path;
+  apiKeyFile = config.age.secrets."api/copilot".path;
 in
 {
   home = {
     packages = with pkgs; [
       aider-chat
-      python312Packages.google-generativeai
     ];
 
     shellAliases = {
-      ai = "aider --model gemini-2.0-flash --api-key gemini=$(cat ${apiKeyFile})";
+      aider = "aider --api-key openai=$(cat ${apiKeyFile})";
+    };
+
+    file.".aider.conf.yml".text = lib.generators.toYAML { } {
+      openai-api-base = "https://api.githubcopilot.com";
+      model = "openai/gpt-4o";
+      weak-model = "openai/gpt-4o-mini";
     };
   };
 }
