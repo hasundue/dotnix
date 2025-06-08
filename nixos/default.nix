@@ -34,6 +34,7 @@
       auto-optimise-store = true;
       builders-use-substitutes = true;
       experimental-features = [ "nix-command" "flakes" ];
+      extra-experimental-features = [ "pipe-operators" ];
       substituters = [
         "https://cache.nixos.org"
       ];
