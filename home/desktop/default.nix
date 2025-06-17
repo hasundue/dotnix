@@ -6,6 +6,7 @@
     ./fcitx5
     ./firefox.nix
     ./foot.nix
+    ./slack.nix
     ./sway.nix
     ./vscode.nix
     ./waybar.nix
@@ -15,7 +16,6 @@
   home = {
     packages = with pkgs; [
       # communication
-      slack
       discord
 
       # desktop
