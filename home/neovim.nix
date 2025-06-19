@@ -1,15 +1,10 @@
 { pkgs, ... }:
 
-let
-  neovim = pkgs.mkNeovim {
-    modules = pkgs.mkNeovim.modules.all;
-  };
-in
 {
   programs.git.extraConfig.core.editor = "nvim";
 
   home = {
-    packages = [ neovim ];
+    packages = [ pkgs.nvim.pkgs.nix ];
     shellAliases = {
       nv = "nvim";
     };
