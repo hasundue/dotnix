@@ -46,9 +46,6 @@
 
     nvim = {
       url = "github:hasundue/nvim";
-      inputs = {
-        nixpkgs.follows = "nixpkgs";
-      };
     };
   };
 
