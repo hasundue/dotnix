@@ -33,5 +33,6 @@
       nix-direnv.enable = true;
     };
     fd.enable = true;
+    zellij.enable = true;
   };
 }
