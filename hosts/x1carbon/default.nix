@@ -58,6 +58,4 @@
     geoclue2.enable = true;
     upower.enable = true;
   };
-
-  virtualisation.docker.enable = true;
 }
