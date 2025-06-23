@@ -14,6 +14,7 @@
   imports = [
     ./aider.nix
     ./agenix.nix
+    ./claude-code.nix
     ./fish.nix
     ./git.nix
     ./gh.nix
