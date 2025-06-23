@@ -31,4 +31,8 @@ in
       };
     };
   };
+
+  programs.git.ignores = [
+    ".aider*"
+  ];
 }

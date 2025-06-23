@@ -5,7 +5,6 @@
     enable = true;
     ignores = [
       "*~"
-      ".aider*"
       ".direnv/"
       ".env"
       ".envrc"
