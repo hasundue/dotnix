@@ -14,7 +14,10 @@
       ];
 
       config.sway = {
-        default = [ "wlr" "gtk" ];
+        default = [
+          "wlr"
+          "gtk"
+        ];
       };
     };
 
@@ -31,4 +34,3 @@
     };
   };
 }
-

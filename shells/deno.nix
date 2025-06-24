@@ -8,7 +8,10 @@ let
   };
 in
 pkgs.mkShellNoCC {
-  packages = with pkgs; [
-    deno
-  ] ++ (pkgs.writeAliasScripts aliases);
+  packages =
+    with pkgs;
+    [
+      deno
+    ]
+    ++ (pkgs.writeAliasScripts aliases);
 }

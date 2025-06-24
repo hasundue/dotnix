@@ -1,4 +1,9 @@
-{ config, pkgs, lib, ... }:
+{
+  config,
+  pkgs,
+  lib,
+  ...
+}:
 
 {
   i18n.defaultLocale = "en_US.UTF-8";
@@ -33,7 +38,10 @@
       allowed-users = [ "@wheel" ];
       auto-optimise-store = true;
       builders-use-substitutes = true;
-      experimental-features = [ "nix-command" "flakes" ];
+      experimental-features = [
+        "nix-command"
+        "flakes"
+      ];
       extra-experimental-features = [ "pipe-operators" ];
       substituters = [
         "https://cache.nixos.org"
@@ -82,9 +90,17 @@
     createHome = true;
     description = "Shun Ueda";
     group = "hasundue";
-    extraGroups = [ "wheel" "docker" ]
+    extraGroups =
+      [
+        "wheel"
+        "docker"
+      ]
       ++ lib.optionals config.networking.networkmanager.enable [ "networkmanager" ]
-      ++ lib.optionals config.programs.sway.enable [ "audio" "input" "video" ];
+      ++ lib.optionals config.programs.sway.enable [
+        "audio"
+        "input"
+        "video"
+      ];
     isNormalUser = true;
     shell = pkgs.fish;
   };

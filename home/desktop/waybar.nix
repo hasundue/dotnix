@@ -45,7 +45,9 @@ in
         format = "{name}";
       };
 
-      "sway/mode" = { format = ''<span style="italic">{}</span>''; };
+      "sway/mode" = {
+        format = ''<span style="italic">{}</span>'';
+      };
 
       clock = {
         interval = 60;
@@ -64,7 +66,11 @@ in
       temperature = {
         critical-threshold = lib.mkDefault 90;
         format = "{icon} {temperatureC}℃";
-        format-icons = [ "" "" "" ];
+        format-icons = [
+          ""
+          ""
+          ""
+        ];
       };
 
       memory = {
@@ -91,7 +97,11 @@ in
           handsfree = "󰋎";
           headset = "󰋎";
           phone = "";
-          default = [ "" "" "" ];
+          default = [
+            ""
+            ""
+            ""
+          ];
         };
         on-click = "${pkgs.ponymix}/bin/ponymix -t sink toggle";
         on-scroll-up = "${pkgs.ponymix}/bin/ponymix increase 1";
@@ -101,7 +111,18 @@ in
       backlight = {
         device = "intel_backlight";
         format = "{icon} {percent}%";
-        format-icons = [ "󱩎" "󱩏" "󱩐" "󱩑" "󱩒" "󱩓" "󱩔" "󱩕" "󱩖" "󰛨" ];
+        format-icons = [
+          "󱩎"
+          "󱩏"
+          "󱩐"
+          "󱩑"
+          "󱩒"
+          "󱩓"
+          "󱩔"
+          "󱩕"
+          "󱩖"
+          "󰛨"
+        ];
         on-scroll-up = "${pkgs.brightnessctl}/bin/brightnessctl set +1%";
         on-scroll-down = "${pkgs.brightnessctl}/bin/brightnessctl set 1%-";
       };
@@ -117,7 +138,13 @@ in
         format-charging = "󰂄 {capacity}%";
         format-plugged = " {capacity}%";
         format-alt = "{icon} {time}";
-        format-icons = [ "" "" "" "" "" ];
+        format-icons = [
+          ""
+          ""
+          ""
+          ""
+          ""
+        ];
       };
 
       tray = {

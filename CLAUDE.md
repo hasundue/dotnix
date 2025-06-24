@@ -23,9 +23,13 @@ This is a personal NixOS configuration repository using Nix flakes for declarati
 ```bash
 # Make configuration changes
 nfc                           # Validate changes
+nix fmt                       # Format code with treefmt
 nrt                          # Test temporarily
 nrs                          # Apply permanently
 ```
+
+### Code Formatting
+- `nix fmt` - Format all files using treefmt (nixfmt for Nix files)
 
 ### Available Development Shells
 Enter with `nix develop .#<shell-name>`:

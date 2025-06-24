@@ -1,4 +1,4 @@
-{ pkgs, ... } @ args:
+{ pkgs, ... }@args:
 
 let
   home = (import ../home/nix.nix args).home;

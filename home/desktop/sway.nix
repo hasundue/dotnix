@@ -1,4 +1,9 @@
-{ config, lib, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 
 let
   devices = import ./_devices.nix;
@@ -89,11 +94,17 @@ in
       };
 
       # FIXME: Do this dynamically
-      workspaceOutputAssign = [
-        { workspace = "1"; output = "eDP-1"; }
-      ] ++ map
-        (i: { workspace = toString (i); output = devices.monitor.MSI_G271; })
-        (builtins.genList (i: i + 2) 8);
+      workspaceOutputAssign =
+        [
+          {
+            workspace = "1";
+            output = "eDP-1";
+          }
+        ]
+        ++ map (i: {
+          workspace = toString (i);
+          output = devices.monitor.MSI_G271;
+        }) (builtins.genList (i: i + 2) 8);
     };
 
     systemd = {
@@ -118,10 +129,16 @@ in
     swayidle = {
       enable = true;
       events = [
-        { event = "before-sleep"; command = "${pkgs.swaylock}/bin/swaylock -fF"; }
+        {
+          event = "before-sleep";
+          command = "${pkgs.swaylock}/bin/swaylock -fF";
+        }
       ];
       timeouts = [
-        { timeout = 3600; command = "${pkgs.systemd}/bin/systemctl suspend"; }
+        {
+          timeout = 3600;
+          command = "${pkgs.systemd}/bin/systemctl suspend";
+        }
       ];
     };
   };

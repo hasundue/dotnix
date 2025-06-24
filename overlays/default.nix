@@ -1,6 +1,7 @@
 {
   default = final: prev: rec {
-    writeAliasBin = alias: command:
+    writeAliasBin =
+      alias: command:
       final.writeShellScriptBin alias ''
         exec ${command} "$@"
       '';

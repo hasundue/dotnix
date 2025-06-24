@@ -1,14 +1,17 @@
-{ config, pkgs, lib, ... }:
+{
+  config,
+  pkgs,
+  lib,
+  ...
+}:
 
 let
   h = config.home.homeDirectory;
 
-  secrets = lib.mapAttrs'
-    (name: value: {
-      name = lib.removeSuffix ".age" name;
-      value.file = ../secrets/${name};
-    })
-    (import ../secrets/secrets.nix);
+  secrets = lib.mapAttrs' (name: value: {
+    name = lib.removeSuffix ".age" name;
+    value.file = ../secrets/${name};
+  }) (import ../secrets/secrets.nix);
 in
 {
   age = {

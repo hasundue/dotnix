@@ -1,4 +1,9 @@
-{ config, pkgs, lib, ... }:
+{
+  config,
+  pkgs,
+  lib,
+  ...
+}:
 
 {
   imports = [
@@ -39,8 +44,16 @@
     actkbd = {
       enable = true;
       bindings = [
-        { keys = [ 232 ]; events = [ "key" ]; command = "brightnessctl set 5%-"; }
-        { keys = [ 233 ]; events = [ "key" ]; command = "brightnessctl set +5%"; }
+        {
+          keys = [ 232 ];
+          events = [ "key" ];
+          command = "brightnessctl set 5%-";
+        }
+        {
+          keys = [ 233 ];
+          events = [ "key" ];
+          command = "brightnessctl set +5%";
+        }
       ];
     };
     automatic-timezoned.enable = true;

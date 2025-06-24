@@ -47,9 +47,14 @@
     nvim = {
       url = "github:hasundue/nvim";
     };
+    treefmt-nix = {
+      url = "github:numtide/treefmt-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
-  outputs = { self, nixpkgs, ... } @ inputs:
+  outputs =
+    { self, nixpkgs, ... }@inputs:
     let
       lib = builtins // nixpkgs.lib;
 
@@ -59,41 +64,58 @@
         nvim.overlays.default
       ];
 
-      firefox-overlay = system: (final: prev: {
-        firefox-addons = inputs.firefox-addons.packages.${system};
-      });
+      firefox-overlay =
+        system:
+        (final: prev: {
+          firefox-addons = inputs.firefox-addons.packages.${system};
+        });
 
-      forSystem = system: f: f {
-        inherit lib;
-        pkgs = import nixpkgs {
-          inherit system;
-          config.allowUnfree = true;
-          overlays = overlays ++ [ (firefox-overlay system) ];
+      forSystem =
+        system: f:
+        f {
+          inherit lib;
+          pkgs = import nixpkgs {
+            inherit system;
+            config.allowUnfree = true;
+            overlays = overlays ++ [ (firefox-overlay system) ];
+          };
         };
-      };
 
-      forEachSystem = f: lib.genAttrs
-        [ "x86_64-linux" "aarch64-linux" ]
-        (system: forSystem system f);
+      forEachSystem = f: lib.genAttrs [ "x86_64-linux" "aarch64-linux" ] (system: forSystem system f);
 
-      nixosSystem = system: modules: forSystem system (args: lib.nixosSystem {
-        inherit system;
-        modules = with inputs; [
-          { nixpkgs.pkgs = args.pkgs; }
-          {
-            home-manager.sharedModules = [
-              agenix.homeManagerModules.default
-            ];
+      nixosSystem =
+        system: modules:
+        forSystem system (
+          args:
+          lib.nixosSystem {
+            inherit system;
+            modules =
+              with inputs;
+              [
+                { nixpkgs.pkgs = args.pkgs; }
+                {
+                  home-manager.sharedModules = [
+                    agenix.homeManagerModules.default
+                  ];
+                }
+                home-manager.nixosModules.home-manager
+                stylix.nixosModules.stylix
+              ]
+              ++ modules;
           }
-          home-manager.nixosModules.home-manager
-          stylix.nixosModules.stylix
-        ] ++ modules;
-      });
+        );
     in
     {
-      devShells = forEachSystem (args: lib.mapAttrs'
-        (name: _: lib.nameValuePair (lib.removeSuffix ".nix" name) (import ./shells/${name} args))
-        (lib.readDir ./shells));
+      devShells = forEachSystem (
+        args:
+        lib.mapAttrs' (
+          name: _: lib.nameValuePair (lib.removeSuffix ".nix" name) (import ./shells/${name} args)
+        ) (lib.readDir ./shells)
+      );
+
+      formatter = forEachSystem (
+        { pkgs, ... }: (inputs.treefmt-nix.lib.evalModule pkgs ./treefmt.nix).config.build.wrapper
+      );
 
       nixosConfigurations = {
         # Thinkpad X1 Carbon 5th Gen
