@@ -28,6 +28,8 @@ nrt                          # Test temporarily
 nrs                          # Apply permanently
 ```
 
+**Note for Claude Code**: Always run `nix fmt` before committing to avoid pre-commit hook failures.
+
 ### Code Formatting
 - `nix fmt` - Format all files using treefmt (nixfmt for Nix files)
 
