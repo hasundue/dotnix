@@ -51,6 +51,10 @@
       url = "github:numtide/treefmt-nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    git-hooks = {
+      url = "github:cachix/git-hooks.nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =
@@ -109,7 +113,10 @@
       devShells = forEachSystem (
         args:
         lib.mapAttrs' (
-          name: _: lib.nameValuePair (lib.removeSuffix ".nix" name) (import ./shells/${name} args)
+          name: _:
+          lib.nameValuePair (lib.removeSuffix ".nix" name) (
+            import ./shells/${name} (args // { inherit inputs; })
+          )
         ) (lib.readDir ./shells)
       );
 
