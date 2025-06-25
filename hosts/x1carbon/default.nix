@@ -78,12 +78,12 @@
         {
           matches = [
             {
-              device.name = "alsa_card.pci-0000_00_1f.3";
+              "device.name" = "alsa_card.pci-0000_00_1f.3";
             }
           ];
           actions = {
             update-props = {
-              "api.acp.auto-profile" = true;
+              "api.acp.auto-profile" = "true";
             };
           };
         }
