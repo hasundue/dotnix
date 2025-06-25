@@ -43,17 +43,17 @@
         nixpkgs.follows = "nixpkgs";
       };
     };
-
-    nvim = {
-      url = "github:hasundue/nvim";
+    git-hooks = {
+      url = "github:cachix/git-hooks.nix";
+      inputs.nixpkgs.follows = "nixpkgs";
     };
     treefmt-nix = {
       url = "github:numtide/treefmt-nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    git-hooks = {
-      url = "github:cachix/git-hooks.nix";
-      inputs.nixpkgs.follows = "nixpkgs";
+
+    nvim = {
+      url = "github:hasundue/nvim";
     };
   };
 
