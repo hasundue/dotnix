@@ -23,7 +23,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     stylix = {
-      url = "github:nix-community/stylix";
+      url = "github:nix-community/stylix/100b968012804d6526c5f48a32c30680916bc474";
       inputs = {
         nixpkgs.follows = "nixpkgs";
         home-manager.follows = "home-manager";
@@ -36,6 +36,10 @@
         nixpkgs.follows = "nixpkgs";
         home-manager.follows = "home-manager";
       };
+    };
+    claude-code = {
+      url = "github:hasundue/claude-code.nix/pin-mcp-servers";
+      inputs.nixpkgs.follows = "nixpkgs";
     };
     firefox-addons = {
       url = "sourcehut:~rycee/nur-expressions?dir=pkgs/firefox-addons";
@@ -66,6 +70,7 @@
         self.overlays.default
         agenix.overlays.default
         nvim.overlays.default
+        claude-code.overlays.default
       ];
 
       firefox-overlay =
@@ -100,6 +105,7 @@
                 {
                   home-manager.sharedModules = [
                     agenix.homeManagerModules.default
+                    claude-code.homeManagerModules.claude-code
                   ];
                 }
                 home-manager.nixosModules.home-manager
