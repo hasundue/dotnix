@@ -11,6 +11,7 @@
 
     ../../nixos
     ../../nixos/desktop
+    ../../nixos/hdmi-audio.nix
   ];
 
   boot.loader = {
