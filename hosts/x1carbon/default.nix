@@ -71,4 +71,23 @@
     geoclue2.enable = true;
     upower.enable = true;
   };
+
+  services.pipewire.wireplumber.extraConfig = {
+    "acp-auto-profile" = {
+      "monitor.alsa.rules" = [
+        {
+          matches = [
+            {
+              device.name = "alsa_card.pci-0000_00_1f.3";
+            }
+          ];
+          actions = {
+            update-props = {
+              "api.acp.auto-profile" = true;
+            };
+          };
+        }
+      ];
+    };
+  };
 }
