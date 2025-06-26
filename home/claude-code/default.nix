@@ -28,5 +28,6 @@ in
 
   programs.git.ignores = [
     ".claude/"
+    "CLAUDE.local.md"
   ];
 }
