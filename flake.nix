@@ -43,7 +43,7 @@
         nixpkgs.follows = "nixpkgs";
       };
     };
-    git-hooks = {
+    git-hooks-nix = {
       url = "github:cachix/git-hooks.nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
@@ -60,7 +60,13 @@
   outputs =
     { self, nixpkgs, ... }@inputs:
     let
-      lib = builtins // nixpkgs.lib;
+      lib =
+        builtins
+        // nixpkgs.lib
+        // {
+          git-hooks-nix = inputs.git-hooks-nix.lib;
+          treefmt-nix = inputs.treefmt-nix.lib;
+        };
 
       overlays = with inputs; [
         self.overlays.default

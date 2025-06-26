@@ -1,7 +1,6 @@
 {
   pkgs,
   lib,
-  inputs,
   ...
 }@args:
 
@@ -13,9 +12,13 @@ let
     nrt = "${nr} test |& nom";
   };
 
-  treefmt = (inputs.treefmt-nix.lib.evalModule pkgs ../treefmt.nix).config.build.wrapper;
+  treefmt = lib.treefmt-nix.mkWrapper pkgs {
+    programs.nixfmt = {
+      enable = true;
+    };
+  };
 
-  pre-commit = inputs.git-hooks.lib.${pkgs.system}.run {
+  git-hooks = lib.git-hooks-nix.${pkgs.system}.run {
     src = ../.;
     hooks = {
       treefmt = {
@@ -28,5 +31,5 @@ in
 pkgs.mkShellNoCC {
   packages = (pkgs.writeAliasScripts aliases) ++ [ treefmt ];
   inputsFrom = [ (import ./nix.nix args) ];
-  shellHook = pre-commit.shellHook;
+  shellHook = git-hooks.shellHook;
 }
