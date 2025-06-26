@@ -5,6 +5,7 @@ let
     "api/brave"
     "api/copilot"
     "api/gemini"
+    "github/claude-code"
   ];
 
   toAttrs = name: {
