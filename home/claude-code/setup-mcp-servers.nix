@@ -6,18 +6,6 @@
 }:
 
 let
-  getSecretPath = name: config.age.secrets.${name}.path;
-
-  mcp-servers = {
-    github = {
-      type = "http";
-      url = "https://api.githubcopilot.com/mcp/";
-      headers = {
-        "Authorization" = "Bearer $(cat ${getSecretPath "github/claude-code"})";
-      };
-    };
-  };
-
   claude = lib.getExe pkgs.claude-code;
 
   mkClaudeMcpRemoveCmd = name: ''
@@ -52,19 +40,9 @@ let
     $DRY_RUN_CMD ${claude} mcp add-json -s user ${name} '${builtins.toJSON attrs}'
   '';
 in
-{
-  home.activation.claude-mcp-setup = lib.hm.dag.entryAfter [ "writeBoundary" ] (
-    lib.concatLines (
-      map mkClaudeMcpRemoveCmd (lib.attrNames mcp-servers)
-      ++ lib.mapAttrsToList mkAddMcpServerCmd mcp-servers
-    )
-  );
-
-  home.packages = with pkgs; [
-    claude-code
-  ];
-
-  programs.git.ignores = [
-    ".claude/"
-  ];
-}
+mcpSevers:
+lib.hm.dag.entryAfter [ "writeBoundary" ] (
+  lib.concatLines (
+    map mkClaudeMcpRemoveCmd (lib.attrNames mcpSevers) ++ lib.mapAttrsToList mkAddMcpServerCmd mcpSevers
+  )
+)
