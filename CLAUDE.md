@@ -90,3 +90,6 @@ Stylix provides system-wide theming with Kanagawa color scheme. Theme applies to
 
 ### Managing Secrets
 Use Agenix for any sensitive configuration. Add new secrets to `secrets/secrets.nix` and reference in configurations.
+
+### Workflow Recommendations
+- Use `nrt` over `nrs` to test new configuration
