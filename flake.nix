@@ -60,13 +60,10 @@
   outputs =
     { self, nixpkgs, ... }@inputs:
     let
-      lib =
-        builtins
-        // nixpkgs.lib
-        // {
-          git-hooks-nix = inputs.git-hooks-nix.lib;
-          treefmt-nix = inputs.treefmt-nix.lib;
-        };
+      lib = nixpkgs.lib // {
+        git-hooks-nix = inputs.git-hooks-nix.lib;
+        treefmt-nix = inputs.treefmt-nix.lib;
+      };
 
       overlays = with inputs; [
         self.overlays.default
@@ -123,7 +120,7 @@
           lib.nameValuePair (lib.removeSuffix ".nix" name) (
             import ./shells/${name} (args // { inherit inputs; })
           )
-        ) (lib.readDir ./shells)
+        ) (builtins.readDir ./shells)
       );
 
       formatter = forEachSystem (
