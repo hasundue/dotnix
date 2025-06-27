@@ -15,9 +15,11 @@ let
   '';
 
   mkAddMcpServerCmd =
-    name:
-    { type, ... }@attrs:
-    if type == "http" then mkAddMcpHttpServerCmd name attrs else mkAddJsonMcpServerCmd name attrs;
+    name: attrs:
+    if attrs ? type && attrs.type == "http" then
+      mkAddMcpHttpServerCmd name attrs
+    else
+      mkAddJsonMcpServerCmd name attrs;
 
   mkAddMcpHttpServerCmd =
     name:
