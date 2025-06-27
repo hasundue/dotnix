@@ -9,7 +9,7 @@ let
   claude = lib.getExe pkgs.claude-code;
 
   mkClaudeMcpRemoveCmd = name: ''
-    if ${claude} mcp list | grep -q ${name}; then
+    if ${claude} mcp list | grep -q ^${name}:; then
       $DRY_RUN_CMD ${claude} mcp remove ${name}
     fi
   '';
