@@ -128,10 +128,6 @@
         ) (builtins.readDir ./shells)
       );
 
-      formatter = forEachSystem (
-        { pkgs, ... }: (inputs.treefmt-nix.lib.evalModule pkgs ./treefmt.nix).config.build.wrapper
-      );
-
       nixosConfigurations = {
         # Thinkpad X1 Carbon 5th Gen
         x1carbon = nixosSystem "x86_64-linux" [
@@ -146,5 +142,12 @@
       };
 
       overlays = import ./overlays;
+
+      templates = {
+        default = {
+          path = ./templates/default;
+          description = "A minimal Nix flake template";
+        };
+      };
     };
 }
