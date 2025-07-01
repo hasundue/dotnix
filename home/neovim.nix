@@ -4,7 +4,7 @@
   programs.git.extraConfig.core.editor = "nvim";
 
   home = {
-    packages = [ pkgs.nvim.pkgs.nix ];
+    packages = [ pkgs.nvim.pkgs.default ];
     shellAliases = {
       nv = "nvim";
     };
