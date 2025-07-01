@@ -12,7 +12,7 @@
     userEmail = "hasundue@gmail.com";
     userName = "Shun Ueda";
     extraConfig = {
-      credential."https://github.com".helper = "${pkgs.gh}/bin/gh auth git-credential";
+      # credential."https://github.com".helper = "${pkgs.gh}/bin/gh auth git-credential";
       init = {
         defaultBranch = "main";
       };
