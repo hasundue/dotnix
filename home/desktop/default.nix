@@ -7,6 +7,7 @@
     ./firefox.nix
     ./foot.nix
     ./slack.nix
+    ./spotify.nix
     ./sway.nix
     ./vscode.nix
     ./waybar.nix
@@ -25,9 +26,6 @@
       qt5.qtwayland
       qt6.qtwayland
       xfce.thunar
-
-      # entertainment
-      spotify
 
       # tools
       grim
