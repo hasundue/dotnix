@@ -29,7 +29,10 @@ let
   };
 in
 pkgs.mkShellNoCC {
-  packages = (pkgs.writeAliasScripts aliases) ++ [ treefmt ];
+  packages = (pkgs.writeAliasScripts aliases) ++ [
+    pkgs.nil
+    treefmt
+  ];
   inputsFrom = [ (import ./nix.nix args) ];
   shellHook = git-hooks.shellHook;
 }
