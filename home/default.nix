@@ -6,13 +6,11 @@
     stateVersion = "25.05";
 
     packages = with pkgs; [
-      aider-chat
       tree
     ];
   };
 
   imports = [
-    ./aider.nix
     ./agenix.nix
     ./claude-code
     ./fish.nix
