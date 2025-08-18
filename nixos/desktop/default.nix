@@ -48,7 +48,7 @@
 
   services.greetd = {
     enable = true;
-    settings.default_session.command = "${pkgs.greetd.greetd}/bin/agreety --cmd sway";
+    settings.default_session.command = "${pkgs.greetd}/bin/agreety --cmd sway";
     settings.initial_session = {
       command = "sway";
       user = "hasundue";
