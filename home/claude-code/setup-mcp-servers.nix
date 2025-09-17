@@ -8,10 +8,11 @@
 let
   claude = lib.getExe pkgs.claude-code;
 
-  mkClaudeMcpRemoveCmd = name: ''
-    if ${claude} mcp list | grep -q ^${name}:; then
-      $DRY_RUN_CMD ${claude} mcp remove ${name}
-    fi
+  mkClaudeMcpRemoveAllCmd = ''
+    # Remove all existing MCP servers to sync with our configuration
+    for server in $(${claude} mcp list | grep -E '^[^:]+:' | cut -d: -f1); do
+      $DRY_RUN_CMD ${claude} mcp remove "$server"
+    done
   '';
 
   mkAddMcpServerCmd =
@@ -44,7 +45,5 @@ let
 in
 mcpSevers:
 lib.hm.dag.entryAfter [ "writeBoundary" ] (
-  lib.concatLines (
-    map mkClaudeMcpRemoveCmd (lib.attrNames mcpSevers) ++ lib.mapAttrsToList mkAddMcpServerCmd mcpSevers
-  )
+  lib.concatLines ([ mkClaudeMcpRemoveAllCmd ] ++ lib.mapAttrsToList mkAddMcpServerCmd mcpSevers)
 )
