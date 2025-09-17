@@ -6,6 +6,7 @@
     stateVersion = "25.05";
 
     packages = with pkgs; [
+      jq
       ngrok
       tree
     ];
