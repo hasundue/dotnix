@@ -13,6 +13,7 @@
     userName = "Shun Ueda";
     extraConfig = {
       # credential."https://github.com".helper = "${pkgs.gh}/bin/gh auth git-credential";
+      fetch.prune = true;
       init = {
         defaultBranch = "main";
       };
