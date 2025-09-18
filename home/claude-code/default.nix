@@ -31,7 +31,7 @@ in
   ];
 
   programs.git.ignores = [
-    ".claude/"
+    ".claude/settings.local.*"
     "CLAUDE.local.md"
   ];
 }
