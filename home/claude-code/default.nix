@@ -16,6 +16,19 @@ let
         "Authorization" = "Bearer $(cat ${getSecretPath "github/claude-code"})";
       };
     };
+    serena = {
+      type = "stdio";
+      command = lib.getExe' pkgs.serena "serena";
+      args = [
+        "start-mcp-server"
+        "--transport"
+        "stdio"
+        "--context"
+        "ide-assistant"
+        "--project"
+        "$(pwd)"
+      ];
+    };
   };
 
   setupMcpServers = import ./setup-mcp-servers.nix inputs;
@@ -29,6 +42,7 @@ in
 
   programs.git.ignores = [
     ".claude/settings.local.*"
+    ".serena/*"
     "CLAUDE.local.md"
   ];
 }

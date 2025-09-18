@@ -48,6 +48,10 @@
       url = "github:natsukium/mcp-servers-nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    serena = {
+      url = "github:oraios/serena";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     treefmt-nix = {
       url = "github:numtide/treefmt-nix";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -79,6 +83,12 @@
           firefox-addons = inputs.firefox-addons.packages.${system};
         });
 
+      serena-overlay =
+        system:
+        (final: prev: {
+          serena = inputs.serena.packages.${system}.default;
+        });
+
       forSystem =
         system: f:
         f {
@@ -86,7 +96,10 @@
           pkgs = import nixpkgs {
             inherit system;
             config.allowUnfree = true;
-            overlays = overlays ++ [ (firefox-overlay system) ];
+            overlays = overlays ++ [
+              (firefox-overlay system)
+              (serena-overlay system)
+            ];
           };
         };
 
