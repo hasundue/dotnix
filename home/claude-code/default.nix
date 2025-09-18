@@ -9,9 +9,6 @@ let
   getSecretPath = name: config.age.secrets.${name}.path;
 
   mcpServers = {
-    git = {
-      command = lib.getExe pkgs.mcp-server-git;
-    };
     github = {
       type = "http";
       url = "https://api.githubcopilot.com/mcp/";
