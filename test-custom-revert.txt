@@ -1,2 +1,0 @@
-This is a test file to demonstrate the custom revert functionality in lazygit.
-The custom 't' key should create a revert commit with "revert:" prefix.
