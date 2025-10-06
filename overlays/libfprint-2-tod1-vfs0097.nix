@@ -10,6 +10,9 @@
   nss,
   meson,
   ninja,
+  gtk-doc,
+  docbook-xsl-nons,
+  gobject-introspection,
 }:
 stdenv.mkDerivation rec {
   pname = "libfprint-2-tod1-vfs0097";
@@ -19,17 +22,19 @@ stdenv.mkDerivation rec {
     owner = "3v1n0";
     repo = "libfprint";
     rev = "vfs009x/5.15.139.27";
-    sha256 = lib.fakeSha256;
+    hash = "";
   };
 
   nativeBuildInputs = [
     pkg-config
     meson
     ninja
+    gtk-doc
+    docbook-xsl-nons
+    gobject-introspection
   ];
 
   buildInputs = [
-    libfprint
     glib
     gusb
     pixman
@@ -38,7 +43,9 @@ stdenv.mkDerivation rec {
 
   mesonFlags = [
     "-Dudev_rules=enabled"
+    "-Dudev_rules_dir=${placeholder "out"}/lib/udev/rules.d"
     "-Ddrivers=vfs0097"
+    "-Dgtk_examples=false"
   ];
 
   passthru.driverPath = "/lib/libfprint-2/tod-1";
