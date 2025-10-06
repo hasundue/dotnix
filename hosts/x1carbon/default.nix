@@ -59,12 +59,12 @@
     automatic-timezoned.enable = true;
     avahi.enable = lib.mkIf (config.services.geoclue2.enable) true;
 
-    # FIXME: use vfs0097 driver and enable this
+    # Support for Validity vfs0097 fingerprint reader
     fprintd = {
-      enable = false;
+      enable = true;
       tod = {
         enable = true;
-        driver = pkgs.libfprint-2-tod1-vfs0090;
+        driver = pkgs.libfprint-2-tod1-vfs0097;
       };
     };
 
