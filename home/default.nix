@@ -19,6 +19,7 @@
     ./fish.nix
     ./git.nix
     ./gh.nix
+    ./lazygit.nix
     ./neovim.nix
     ./nix.nix
   ];
