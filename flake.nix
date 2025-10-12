@@ -44,10 +44,6 @@
       url = "github:cachix/git-hooks.nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    mcp-servers = {
-      url = "github:natsukium/mcp-servers-nix";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
     treefmt-nix = {
       url = "github:numtide/treefmt-nix";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -70,7 +66,6 @@
         self.overlays.default
         agenix.overlays.default
         nvim.overlays.default
-        mcp-servers.overlays.default
       ];
 
       firefox-overlay =

@@ -317,26 +317,6 @@
         "type": "github"
       }
     },
-    "mcp-servers": {
-      "inputs": {
-        "nixpkgs": [
-          "nixpkgs"
-        ]
-      },
-      "locked": {
-        "lastModified": 1760120863,
-        "narHash": "sha256-McY4dlA2KgSJMCwBaYO7hZ6k0BhUcVhna/9jnOWf/2Q=",
-        "owner": "natsukium",
-        "repo": "mcp-servers-nix",
-        "rev": "c74b11e80fe22ccd82c05cfefd4ed24d0a10e178",
-        "type": "github"
-      },
-      "original": {
-        "owner": "natsukium",
-        "repo": "mcp-servers-nix",
-        "type": "github"
-      }
-    },
     "nixos-hardware": {
       "locked": {
         "lastModified": 1760106635,
@@ -455,7 +435,6 @@
         "firefox-addons": "firefox-addons",
         "git-hooks-nix": "git-hooks-nix",
         "home-manager": "home-manager",
-        "mcp-servers": "mcp-servers",
         "nixos-hardware": "nixos-hardware",
         "nixos-wsl": "nixos-wsl",
         "nixpkgs": "nixpkgs",
