@@ -52,6 +52,11 @@
     nvim = {
       url = "github:hasundue/nvim";
     };
+
+    python-validity = {
+      url = "github:viktor-grunwaldt/t480-fingerprint-nixos";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =
@@ -124,6 +129,7 @@
         # Thinkpad X1 Carbon 5th Gen
         x1carbon = nixosSystem "x86_64-linux" [
           inputs.nixos-hardware.nixosModules.lenovo-thinkpad-x1-extreme
+          inputs.python-validity.nixosModules."06cb-009a-fingerprint-sensor"
           ./hosts/x1carbon
         ];
         # NixOS-WSL
