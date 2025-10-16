@@ -90,17 +90,16 @@
     createHome = true;
     description = "Shun Ueda";
     group = "hasundue";
-    extraGroups =
-      [
-        "wheel"
-        "docker"
-      ]
-      ++ lib.optionals config.networking.networkmanager.enable [ "networkmanager" ]
-      ++ lib.optionals config.programs.sway.enable [
-        "audio"
-        "input"
-        "video"
-      ];
+    extraGroups = [
+      "wheel"
+      "docker"
+    ]
+    ++ lib.optionals config.networking.networkmanager.enable [ "networkmanager" ]
+    ++ lib.optionals config.programs.sway.enable [
+      "audio"
+      "input"
+      "video"
+    ];
     isNormalUser = true;
     shell = pkgs.fish;
   };
