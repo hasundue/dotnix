@@ -449,6 +449,26 @@
         "type": "github"
       }
     },
+    "python-validity": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1752265282,
+        "narHash": "sha256-eipl7Niq9Xurtr+W75LJNdl9A3z3+RmXBWx1n8/l5G4=",
+        "owner": "viktor-grunwaldt",
+        "repo": "t480-fingerprint-nixos",
+        "rev": "1ef501415c23782b9f8de050d3b45d1d480da8bd",
+        "type": "github"
+      },
+      "original": {
+        "owner": "viktor-grunwaldt",
+        "repo": "t480-fingerprint-nixos",
+        "type": "github"
+      }
+    },
     "root": {
       "inputs": {
         "agenix": "agenix",
@@ -460,6 +480,7 @@
         "nixos-wsl": "nixos-wsl",
         "nixpkgs": "nixpkgs",
         "nvim": "nvim",
+        "python-validity": "python-validity",
         "stylix": "stylix",
         "treefmt-nix": "treefmt-nix"
       }

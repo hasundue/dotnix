@@ -94,17 +94,16 @@ in
       };
 
       # FIXME: Do this dynamically
-      workspaceOutputAssign =
-        [
-          {
-            workspace = "1";
-            output = "eDP-1";
-          }
-        ]
-        ++ map (i: {
-          workspace = toString (i);
-          output = devices.monitor.MSI_G271;
-        }) (builtins.genList (i: i + 2) 8);
+      workspaceOutputAssign = [
+        {
+          workspace = "1";
+          output = "eDP-1";
+        }
+      ]
+      ++ map (i: {
+        workspace = toString (i);
+        output = devices.monitor.MSI_G271;
+      }) (builtins.genList (i: i + 2) 8);
     };
 
     systemd = {
