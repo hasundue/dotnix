@@ -35,6 +35,9 @@
       };
       nix-direnv.enable = true;
       silent = true;
+      stdlib = ''
+        nix_direnv_manual_reload
+      '';
     };
     fd.enable = true;
     zellij.enable = true;
