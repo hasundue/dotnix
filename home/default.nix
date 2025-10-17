@@ -30,7 +30,7 @@
       enable = true;
       config = {
         global = {
-          warn-timeout = 0; # It often takes a while to re-evaluate a flake
+          warn_timeout = "0s"; # It often takes a while to re-evaluate a flake
         };
       };
       nix-direnv.enable = true;
