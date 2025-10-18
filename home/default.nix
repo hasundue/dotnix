@@ -23,6 +23,7 @@
     ./lazygit.nix
     ./neovim.nix
     ./nix.nix
+    ./opencode
   ];
 
   programs = {
