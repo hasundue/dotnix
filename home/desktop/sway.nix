@@ -12,6 +12,12 @@ in
   wayland.windowManager.sway = {
     enable = true;
 
+    extraConfig = ''
+      disable_titlebar yes
+      for_window [tiling] border pixel 0
+      workspace_layout tabbed
+    '';
+
     config = {
       bars = [ ];
 
@@ -91,6 +97,12 @@ in
           }
         ];
         titlebar = false;
+        border = 0;
+      };
+
+      floating = {
+        titlebar = false;
+        border = 0;
       };
 
       # FIXME: Do this dynamically

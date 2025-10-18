@@ -20,6 +20,7 @@ in
       modules-left = [
         "sway/workspaces"
         "sway/mode"
+        "custom/sway-window-count"
       ];
 
       modules-center = [
@@ -47,6 +48,11 @@ in
 
       "sway/mode" = {
         format = ''<span style="italic">{}</span>'';
+      };
+
+      "custom/sway-window-count" = {
+        exec = "${./sway-window-count.sh}";
+        format = "{}";
       };
 
       clock = {
