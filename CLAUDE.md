@@ -9,15 +9,15 @@ This is a personal NixOS configuration repository using Nix flakes for declarati
 ## Common Commands
 
 ### System Management
-- `nrs` - Rebuild and switch to new configuration: `sudo nixos-rebuild switch --flake . |& nom`
-- `nrb` - Rebuild for next boot: `sudo nixos-rebuild boot --flake . |& nom`  
-- `nrt` - Test configuration temporarily: `sudo nixos-rebuild test --flake . |& nom`
+- `nrs` - Rebuild and switch to new configuration: `sudo nixos-rebuild switch --flake .`
+- `nrb` - Rebuild for next boot: `sudo nixos-rebuild boot --flake .`
+- `nrt` - Test configuration temporarily: `sudo nixos-rebuild test --flake .`
 
 ### Flake Operations
 - `nfc` - Check flake validity: `nix flake check`
 - `nfs` - Show flake outputs: `nix flake show`
 - `nfu` - Update all flake inputs: `nix flake update`
-- `nd` - Enter development shell: `nom develop`
+- `nd` - Enter development shell: `nix develop`
 
 ### Development Workflow
 ```bash
@@ -28,7 +28,8 @@ nrt                          # Test temporarily
 nrs                          # Apply permanently
 ```
 
-**Note for Claude Code**: Always run `nix fmt` before committing to avoid pre-commit hook failures.
+**Note for Claude Code**: 
+- Always ask for permission before running system management commands (`nrs`, `nrb`, `nrt`).
 
 ### Code Formatting
 - `nix fmt` - Format all files using treefmt (nixfmt for Nix files)
