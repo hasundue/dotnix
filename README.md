@@ -10,7 +10,7 @@ Personal NixOS system configuration using Nix flakes for declarative system and 
 ## Features
 
 - **Home Manager** - User environment and application management
-- **Stylix** - System-wide theming
+- **Stylix** - System-wide theming with Kanagawa color scheme
 - **Agenix** - Encrypted secrets management
 - **Custom Neovim** - Personal Neovim configuration
 - **Development Shells** - Ready-to-use environments for various languages
@@ -26,23 +26,41 @@ Personal NixOS system configuration using Nix flakes for declarative system and 
 - `secrets/` - Encrypted secrets for API keys and credentials
 - `templates/` - Flake templates for new projects
 
-## Usage
+## Common Commands
 
 ### System Management
 
-Build and switch to a configuration:
+- `nrs` - Rebuild and switch: `sudo nixos-rebuild switch --flake .`
+- `nrb` - Rebuild for next boot: `sudo nixos-rebuild boot --flake .`
+- `nrt` - Test configuration: `sudo nixos-rebuild test --flake .`
+
+### Flake Operations
+
+- `nfc` - Check flake: `nix flake check`
+- `nfs` - Show flake outputs: `nix flake show`
+- `nfu` - Update flake inputs: `nix flake update`
+- `nd` - Enter development shell: `nix develop`
+
+### Development Workflow
+
 ```bash
-sudo nixos-rebuild switch --flake .#<hostname>
+# Make configuration changes
+nfc                           # Validate changes
+nrt                          # Test temporarily
+nrs                          # Apply permanently
 ```
 
-### Development
+## Development Shells
 
-Enter a development shell:
-```bash
-nix develop .#<shell-name>
-```
+Enter with `nix develop .#<shell-name>`:
+- `default` - General development with common tools
+- `rust` - Rust development with cargo-cross
+- `python` - Python development environment
+- `deno` - Deno/TypeScript development
+- `playwright` - Web testing with Playwright
+- `nix` - Nix development tools
 
-### Templates
+## Templates
 
 Initialize a new project with the default template:
 ```bash
@@ -55,3 +73,20 @@ The default template includes:
 - Git pre-commit hooks
 - Development shell with common tools
 
+## Architecture
+
+### Modular Configuration
+
+Clear separation between system (`nixos/`), user (`home/`), and host-specific (`hosts/`) configurations. Desktop configurations are optional imports.
+
+### Flake Structure
+
+Uses modern Nix flakes with proper input management. All inputs follow nixpkgs for consistency to reduce duplication.
+
+### Configuration Flow
+
+1. `flake.nix` defines inputs and system configurations
+2. Host configurations import base modules and add customizations
+3. NixOS modules provide system-level configuration
+4. Home Manager modules configure user environment
+5. Overlays provide helper functions and custom packages
