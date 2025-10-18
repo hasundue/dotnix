@@ -1,18 +1,16 @@
 {
   description = "hasundue's system configuration";
 
-  nixConfig = {
-    extra-trusted-substituters = [
-      "https://nix-community.cachix.org"
-    ];
-    extra-trusted-public-keys = [
-      "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
-    ];
-  };
-
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
     nixos-hardware.url = "github:nixos/nixos-hardware";
+
+    systems.url = "github:nix-systems/default";
+
+    flake-compat = {
+      url = "github:nix-community/flake-compat";
+      flake = false;
+    };
 
     home-manager = {
       url = "github:nix-community/home-manager";
@@ -21,10 +19,18 @@
     nixos-wsl = {
       url = "github:nix-community/nixos-wsl";
       inputs.nixpkgs.follows = "nixpkgs";
+      inputs.flake-compat.follows = "flake-compat";
+    };
+    nixpkgs-wayland = {
+      url = "github:nix-community/nixpkgs-wayland";
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.flake-compat.follows = "flake-compat";
+      inputs.lib-aggregate.inputs.flake-utils.inputs.systems.follows = "systems";
     };
     stylix = {
       url = "github:nix-community/stylix";
       inputs.nixpkgs.follows = "nixpkgs";
+      inputs.systems.follows = "systems";
     };
 
     agenix = {
@@ -32,6 +38,7 @@
       inputs = {
         nixpkgs.follows = "nixpkgs";
         home-manager.follows = "home-manager";
+        systems.follows = "systems";
       };
     };
     firefox-addons = {
@@ -43,6 +50,7 @@
     git-hooks-nix = {
       url = "github:cachix/git-hooks.nix";
       inputs.nixpkgs.follows = "nixpkgs";
+      inputs.flake-compat.follows = "flake-compat";
     };
     treefmt-nix = {
       url = "github:numtide/treefmt-nix";
@@ -68,9 +76,10 @@
       };
 
       overlays = with inputs; [
-        self.overlays.default
         agenix.overlays.default
+        nixpkgs-wayland.overlays.default
         nvim.overlays.default
+        self.overlays.default
       ];
 
       firefox-overlay =

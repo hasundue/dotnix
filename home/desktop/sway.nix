@@ -82,6 +82,7 @@ in
 
       startup = [
         { command = "swaylock -fF"; } # for auto-login
+        { command = "${pkgs.swaybg}/bin/swaybg -i ${config.stylix.image} -m fill"; }
       ];
 
       terminal = lib.getExe pkgs.foot;
