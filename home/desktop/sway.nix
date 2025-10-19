@@ -137,6 +137,27 @@ in
     wofi.enable = true;
   };
 
+  programs.waybar = lib.attrsets.optionalAttrs config.wayland.windowManager.sway.enable {
+    settings.main = {
+      modules-left = [
+        "sway/workspaces"
+        "sway/mode"
+        "custom/sway-window-count"
+      ];
+      "sway/workspaces" = {
+        all-outputs = true;
+        format = "{name}";
+      };
+      "sway/mode" = {
+        format = ''<span style="italic">{}</span>'';
+      };
+      "custom/sway-window-count" = {
+        exec = "${./sway-window-count.sh}";
+        format = "{}";
+      };
+    };
+  };
+
   services = {
     swayidle = {
       enable = true;

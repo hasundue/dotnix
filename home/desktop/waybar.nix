@@ -17,12 +17,6 @@ in
 
       spacing = 4;
 
-      modules-left = [
-        "sway/workspaces"
-        "sway/mode"
-        "custom/sway-window-count"
-      ];
-
       modules-center = [
         "clock"
       ];
@@ -40,20 +34,6 @@ in
         "tray"
         "custom/space"
       ];
-
-      "sway/workspaces" = {
-        all-outputs = true;
-        format = "{name}";
-      };
-
-      "sway/mode" = {
-        format = ''<span style="italic">{}</span>'';
-      };
-
-      "custom/sway-window-count" = {
-        exec = "${./sway-window-count.sh}";
-        format = "{}";
-      };
 
       clock = {
         interval = 60;
