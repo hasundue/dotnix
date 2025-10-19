@@ -52,6 +52,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.flake-compat.follows = "flake-compat";
     };
+    niri.url = "github:sodiboo/niri-flake";
     treefmt-nix = {
       url = "github:numtide/treefmt-nix";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -77,6 +78,7 @@
 
       overlays = with inputs; [
         agenix.overlays.default
+        niri.overlays.niri
         nixpkgs-wayland.overlays.default
         nvim.overlays.default
         self.overlays.default
@@ -116,6 +118,7 @@
                     agenix.homeManagerModules.default
                   ];
                 }
+                niri.nixosModules.niri
                 home-manager.nixosModules.home-manager
                 stylix.nixosModules.stylix
               ]

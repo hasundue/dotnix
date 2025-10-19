@@ -129,15 +129,14 @@ in
   };
 
   home.packages = with pkgs; [
+    grim
+    slurp
     sway-contrib.grimshot
   ];
 
-  programs = {
-    swaylock.enable = true;
-    wofi.enable = true;
-  };
+  programs.wofi.enable = true;
 
-  programs.waybar = lib.attrsets.optionalAttrs config.wayland.windowManager.sway.enable {
+  programs.waybar = {
     settings.main = {
       modules-left = [
         "sway/workspaces"
@@ -156,23 +155,10 @@ in
         format = "{}";
       };
     };
-  };
 
-  services = {
-    swayidle = {
+    systemd = {
       enable = true;
-      events = [
-        {
-          event = "before-sleep";
-          command = "${pkgs.swaylock}/bin/swaylock -fF";
-        }
-      ];
-      timeouts = [
-        {
-          timeout = 3600;
-          command = "${pkgs.systemd}/bin/systemctl suspend";
-        }
-      ];
+      target = "sway-session.target";
     };
   };
 }

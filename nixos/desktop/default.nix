@@ -34,6 +34,8 @@
     users.hasundue.imports = [ ../../home/desktop ];
   };
 
+  programs.niri.enable = true;
+
   # Make sure not to interfere swaylock from home-manager
   # https://github.com/NixOS/nixpkgs/issues/158025
   security.pam.services.swaylock = { };
@@ -48,9 +50,9 @@
 
   services.greetd = {
     enable = true;
-    settings.default_session.command = "${pkgs.greetd}/bin/agreety --cmd sway";
+    settings.default_session.command = "${pkgs.greetd}/bin/agreety --cmd niri-session";
     settings.initial_session = {
-      command = "sway";
+      command = "niri-session";
       user = "hasundue";
     };
   };

@@ -6,9 +6,9 @@
     ./fcitx5
     ./firefox.nix
     ./foot.nix
+    ./niri.nix
     ./slack.nix
     ./spotify.nix
-    ./sway.nix
     ./vscode.nix
     ./waybar.nix
     ./xdg.nix
@@ -46,6 +46,11 @@
     gtk4.extraConfig.gtk-hint-font-metrics = true;
   };
 
+  programs = {
+    swaylock.enable = true;
+    fuzzel.enable = true;
+  };
+
   services = {
     gammastep = {
       enable = true;
@@ -55,6 +60,22 @@
         night = 4500;
       };
       tray = true;
+    };
+
+    swayidle = {
+      enable = true;
+      events = [
+        {
+          event = "before-sleep";
+          command = "${pkgs.swaylock}/bin/swaylock -fF";
+        }
+      ];
+      timeouts = [
+        {
+          timeout = 3600;
+          command = "${pkgs.systemd}/bin/systemctl suspend";
+        }
+      ];
     };
   };
 }

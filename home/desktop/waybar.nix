@@ -15,6 +15,7 @@ in
         devices.monitor.MSI_G271
       ];
 
+      height = 32;
       spacing = 4;
 
       modules-center = [
@@ -141,11 +142,6 @@ in
       "custom/space" = {
         format = " ";
       };
-    };
-
-    systemd = {
-      enable = true;
-      target = "sway-session.target";
     };
   };
 }
