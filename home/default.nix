@@ -38,6 +38,7 @@
       silent = true;
     };
     fd.enable = true;
+    ripgrep.enable = true;
     zellij.enable = true;
   };
 }
