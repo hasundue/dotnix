@@ -24,6 +24,7 @@
     ./neovim.nix
     ./nix.nix
     ./opencode
+    ./television.nix
   ];
 
   programs = {
