@@ -20,7 +20,6 @@
       discord
 
       # desktop
-      gammastep
       hicolor-icon-theme
       adwaita-icon-theme # For input-keyboard-symbolic
       qt5.qtwayland
