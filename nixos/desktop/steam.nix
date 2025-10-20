@@ -6,6 +6,9 @@
 {
   programs.steam = {
     enable = true;
+    package = pkgs.steam.override {
+      extraArgs = "-system-composer"; # Prevent a fully black window
+    };
   };
 
   programs.gamescope.enable = true;
