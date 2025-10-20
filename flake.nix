@@ -21,12 +21,6 @@
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.flake-compat.follows = "flake-compat";
     };
-    nixpkgs-wayland = {
-      url = "github:nix-community/nixpkgs-wayland";
-      inputs.nixpkgs.follows = "nixpkgs";
-      inputs.flake-compat.follows = "flake-compat";
-      inputs.lib-aggregate.inputs.flake-utils.inputs.systems.follows = "systems";
-    };
     stylix = {
       url = "github:nix-community/stylix";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -79,7 +73,6 @@
       overlays = with inputs; [
         agenix.overlays.default
         niri.overlays.niri
-        nixpkgs-wayland.overlays.default
         nvim.overlays.default
         self.overlays.default
       ];
