@@ -5,19 +5,6 @@
     enable = true;
     settings = {
       font = {
-        normal = lib.mkForce {
-          family = "PlemolJPConsoleNF";
-          style = "Text";
-        };
-        bold = {
-          style = "SemiBold";
-        };
-        italic = {
-          style = "Text Italic";
-        };
-        bold_italic = {
-          style = "SemiBold Italic";
-        };
         offset = {
           x = 1;
           y = 0;
