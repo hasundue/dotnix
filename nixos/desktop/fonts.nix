@@ -3,6 +3,7 @@
 {
   fonts = {
     packages = with pkgs; [
+      nerd-fonts._0xproto
       nerd-fonts.noto
       noto-fonts
       noto-fonts-cjk-sans
