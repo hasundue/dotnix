@@ -6,8 +6,7 @@
 
     style = ''
       * {
-        font-family: "0xProto Nerd Font";
-        font-weight: bold;
+        font-family: "0xProto Nerd Font Propo";
       }
       tooltip {
         border: none;
