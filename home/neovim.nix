@@ -1,7 +1,7 @@
 { pkgs, ... }:
 
 {
-  programs.git.extraConfig.core.editor = "nvim";
+  programs.git.settings.core.editor = "nvim";
 
   home = {
     packages = [ pkgs.nvim.pkgs.default ];
