@@ -15,14 +15,8 @@
 
     settings.main = {
       layer = "top";
-
       output = [ "eDP-1" ];
-
       height = 32;
-
-      modules-left = [ ];
-
-      modules-center = [ ];
 
       modules-right = [
         "network"
