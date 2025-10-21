@@ -81,6 +81,12 @@ in
         };
       }
       {
+        matches = [ { app-id = "^org.wezfurlong.wezterm$"; } ];
+        default-column-width = {
+          proportion = 0.75;
+        };
+      }
+      {
         matches = [ { app-id = "^firefox$"; } ];
         open-maximized = true;
       }
@@ -128,7 +134,7 @@ in
     binds = with config.lib.niri.actions; {
       "Mod+Shift+Slash".action = show-hotkey-overlay;
 
-      "Mod+T".action = spawn "foot";
+      "Mod+T".action = spawn "wezterm";
       "Mod+D".action = spawn "fuzzel";
       "Super+Alt+L".action = spawn "swaylock";
 
