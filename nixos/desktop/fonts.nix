@@ -2,42 +2,16 @@
 
 {
   fonts = {
-    packages = with pkgs; [
-      nerd-fonts._0xproto
-      nerd-fonts.noto
-      noto-fonts
-      noto-fonts-cjk-sans
-      noto-fonts-cjk-serif
-      plemoljp-nf
-    ];
     enableDefaultPackages = true;
     enableGhostscriptFonts = false;
-    fontconfig = {
-      localConf = ''
-        <?xml version="1.0"?>
-        <!DOCTYPE fontconfig SYSTEM "fonts.dtd">
-        <fontconfig>
-            <alias binding="weak">
-                <family>monospace</family>
-                <prefer>
-                    <family>emoji</family>
-                </prefer>
-            </alias>
-            <alias binding="weak">
-                <family>sans-serif</family>
-                <prefer>
-                    <family>emoji</family>
-                </prefer>
-            </alias>
-            <alias binding="weak">
-                <family>serif</family>
-                <prefer>
-                    <family>emoji</family>
-                </prefer>
-            </alias>
-        </fontconfig>
-      '';
-    };
+
+    # Fallback for monospaced CJK characters
+    packages = with pkgs; [
+      noto-fonts-cjk-sans
+    ];
+    fontconfig.defaultFonts.monospace = [
+      "Noto Sans Mono CJK JP"
+    ];
   };
 
   stylix.fonts = {
@@ -50,8 +24,8 @@
       name = "Noto Serif CJK JP";
     };
     monospace = {
-      package = pkgs.nerd-fonts.noto;
-      name = "NotoMono Nerd Font";
+      package = pkgs.nerd-fonts._0xproto;
+      name = "0xProto Nerd Font";
     };
     emoji = {
       package = pkgs.noto-fonts-color-emoji;
