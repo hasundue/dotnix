@@ -67,7 +67,7 @@
         on-scroll-down = "${pkgs.ponymix}/bin/ponymix decrease 1";
 
         min-length = 6;
-        max-length = 6;
+        max-length = 7;
 
         tooltip-format = "{desc}";
       };
@@ -93,7 +93,7 @@
         on-scroll-down = "${pkgs.brightnessctl}/bin/brightnessctl set 1%-";
 
         min-length = 6;
-        max-length = 6;
+        max-length = 7;
 
         tooltip = false;
       };
