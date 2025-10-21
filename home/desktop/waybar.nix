@@ -1,5 +1,22 @@
 { pkgs, ... }:
 
+let
+  fcitx5-status = pkgs.writeShellScript "fcitx5-status" ''
+    IM=$(${pkgs.fcitx5}/bin/fcitx5-remote -n 2>/dev/null)
+
+    case "$IM" in
+      keyboard-us)
+        echo "EN"
+        ;;
+      mozc)
+        echo "JP"
+        ;;
+      *)
+        echo "$IM"
+        ;;
+    esac
+  '';
+in
 {
   programs.waybar = {
     enable = true;
@@ -19,12 +36,28 @@
       height = 32;
 
       modules-right = [
+        "custom/fcitx5"
         "network"
         "pulseaudio"
         "backlight"
         "battery"
         "clock"
       ];
+
+      "custom/fcitx5" = {
+        exec = "${fcitx5-status}";
+        interval = 1;
+
+        format = "󰌌 {}";
+
+        on-click = "${pkgs.fcitx5}/bin/fcitx5-remote -t";
+        exec-if = "${pkgs.procps}/bin/pgrep fcitx5";
+
+        min-length = 6;
+        max-length = 6;
+
+        tooltip = false;
+      };
 
       network = {
         format-wifi = "{icon}";
