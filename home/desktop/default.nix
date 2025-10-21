@@ -11,6 +11,7 @@
     ./spotify.nix
     ./vscode.nix
     ./waybar.nix
+    ./wezterm
     ./xdg.nix
   ];
 
