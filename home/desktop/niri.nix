@@ -14,6 +14,38 @@ let
     bottom-left = v;
     bottom-right = v;
   };
+
+  overviewAwareMove = pkgs.writeShellScript "niri-overview-aware-move" ''
+    direction="$1"
+
+    state=$(${pkgs.niri}/bin/niri msg overview-state)
+
+    if [[ "$state" == *"open"* ]]; then
+      case "$direction" in
+        "left")
+          ${pkgs.niri}/bin/niri msg action move-workspace-to-monitor-left
+          ;;
+        "right")
+          ${pkgs.niri}/bin/niri msg action move-workspace-to-monitor-right
+          ;;
+      esac
+    else
+      case "$direction" in
+        "left")
+          ${pkgs.niri}/bin/niri msg action move-column-left
+          ;;
+        "right")
+          ${pkgs.niri}/bin/niri msg action move-column-right
+          ;;
+        "up")
+          ${pkgs.niri}/bin/niri msg action move-window-up
+          ;;
+        "down")
+          ${pkgs.niri}/bin/niri msg action move-window-down
+          ;;
+      esac
+    fi
+  '';
 in
 {
   programs.niri.settings = {
@@ -205,14 +237,14 @@ in
       "Mod+K".action = focus-window-up;
       "Mod+L".action = focus-column-right;
 
-      "Mod+Ctrl+Left".action = move-column-left;
-      "Mod+Ctrl+Down".action = move-window-down;
-      "Mod+Ctrl+Up".action = move-window-up;
-      "Mod+Ctrl+Right".action = move-column-right;
-      "Mod+Ctrl+H".action = move-column-left;
-      "Mod+Ctrl+J".action = move-window-down;
-      "Mod+Ctrl+K".action = move-window-up;
-      "Mod+Ctrl+L".action = move-column-right;
+      "Mod+Ctrl+Left".action = spawn "${overviewAwareMove}" "left";
+      "Mod+Ctrl+Down".action = spawn "${overviewAwareMove}" "down";
+      "Mod+Ctrl+Up".action = spawn "${overviewAwareMove}" "up";
+      "Mod+Ctrl+Right".action = spawn "${overviewAwareMove}" "right";
+      "Mod+Ctrl+H".action = spawn "${overviewAwareMove}" "left";
+      "Mod+Ctrl+J".action = spawn "${overviewAwareMove}" "down";
+      "Mod+Ctrl+K".action = spawn "${overviewAwareMove}" "up";
+      "Mod+Ctrl+L".action = spawn "${overviewAwareMove}" "right";
 
       "Mod+Home".action = focus-column-first;
       "Mod+End".action = focus-column-last;
