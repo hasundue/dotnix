@@ -1,11 +1,17 @@
-{ ... }:
+{ lib, ... }:
 
 {
   programs.opencode = {
     enable = true;
+
     settings = {
-      theme = "kanagawa-transparent";
+      theme = "stylix";
       autoupdate = false;
+    };
+
+    themes.stylix.theme.background = {
+      dark = lib.mkForce "none";
+      light = lib.mkForce "none";
     };
   };
 
@@ -13,7 +19,4 @@
     oc = "opencode";
     occ = "${oc} --continue";
   };
-
-  xdg.configFile."opencode/themes/kanagawa-transparent.json".source =
-    ./theme-kanagawa-transparent.json;
 }
