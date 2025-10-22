@@ -6,46 +6,9 @@
 }:
 
 let
-  devices = import ./_devices.nix;
-
-  forEachCorner = v: {
-    top-left = v;
-    top-right = v;
-    bottom-left = v;
-    bottom-right = v;
-  };
-
-  overviewAwareMove = pkgs.writeShellScript "niri-overview-aware-move" ''
-    direction="$1"
-
-    state=$(${pkgs.niri}/bin/niri msg overview-state)
-
-    if [[ "$state" == *"open"* ]]; then
-      case "$direction" in
-        "left")
-          ${pkgs.niri}/bin/niri msg action move-workspace-to-monitor-left
-          ;;
-        "right")
-          ${pkgs.niri}/bin/niri msg action move-workspace-to-monitor-right
-          ;;
-      esac
-    else
-      case "$direction" in
-        "left")
-          ${pkgs.niri}/bin/niri msg action move-column-left
-          ;;
-        "right")
-          ${pkgs.niri}/bin/niri msg action move-column-right
-          ;;
-        "up")
-          ${pkgs.niri}/bin/niri msg action move-window-up
-          ;;
-        "down")
-          ${pkgs.niri}/bin/niri msg action move-window-down
-          ;;
-      esac
-    fi
-  '';
+  devices = import ../_devices.nix;
+  niriLib = import ./lib.nix { inherit pkgs; };
+  inherit (niriLib) forEachCorner overviewAwareMove;
 in
 {
   programs.niri.settings = {
@@ -70,7 +33,6 @@ in
           height = 1080;
           refresh = 120.0;
         };
-        # Position accounts for eDP-1's scaled width: 1920 / 1.25 = 1536
         position = {
           x = 1536;
           y = 0;

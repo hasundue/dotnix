@@ -6,7 +6,7 @@
     ./fcitx5
     ./firefox.nix
     ./foot.nix
-    ./niri.nix
+    ./niri
     ./slack.nix
     ./spotify.nix
     ./vscode.nix
