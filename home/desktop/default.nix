@@ -59,7 +59,6 @@
         day = 5500;
         night = 4500;
       };
-      tray = true;
     };
 
     swayidle = {
