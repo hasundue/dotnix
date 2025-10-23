@@ -1,10 +1,10 @@
-{ ... }:
+{ lib, ... }:
 
 {
   programs.opencode = {
     enable = true;
     settings = {
-      theme = "kanagawa-transparent";
+      theme = lib.mkForce "kanagawa-transparent";
       autoupdate = false;
     };
   };
