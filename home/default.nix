@@ -9,6 +9,7 @@
       act
       google-cloud-sdk
       jq
+      just
       ngrok
       tree
     ];
