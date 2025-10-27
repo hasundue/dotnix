@@ -32,6 +32,9 @@
       slurp
       wl-clipboard
       xdg-utils
+
+      # research
+      zotero
     ];
 
     sessionVariables = {
