@@ -133,7 +133,7 @@ in
       "Super+Alt+L".action = spawn "swaylock";
 
       "Super+Alt+S" = {
-        action = spawn-sh "pkill orca || exec orca";
+        action = spawn-sh "exec systemctl suspend";
         allow-when-locked = true;
       };
 
