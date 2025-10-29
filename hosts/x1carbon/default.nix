@@ -36,8 +36,8 @@
     networkmanager.enable = true;
   };
 
-  security.pam = {
-    services.login.fprintAuth = lib.mkIf (config.services.fprintd.enable) true;
+  security.pam.services = {
+    swaylock.fprintAuth = true;
   };
 
   services = {
