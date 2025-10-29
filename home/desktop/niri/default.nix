@@ -43,11 +43,6 @@ in
     spawn-at-startup = [
       {
         argv = [
-          "waybar"
-        ];
-      }
-      {
-        argv = [
           "swaylock"
           "-fF"
         ];
