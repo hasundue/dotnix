@@ -9,7 +9,7 @@ let
   darkenedImage =
     pkgs.runCommand "darkened-wallpaper.jpg" { nativeBuildInputs = [ pkgs.imagemagick ]; }
       ''
-        magick ${originalImage} -fill black -colorize 40% $out
+        magick ${originalImage} -fill black -colorize 20% $out
       '';
 in
 {
