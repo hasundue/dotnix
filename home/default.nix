@@ -10,6 +10,7 @@
       google-cloud-sdk
       jq
       just
+      julia-bin
       ngrok
       tree
     ];
