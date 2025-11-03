@@ -62,18 +62,12 @@ in
       {
         geometry-corner-radius = forEachCorner 8.0;
         clip-to-geometry = true;
-      }
-      {
-        matches = [ { app-id = "^foot$"; } ];
         default-column-width = {
-          proportion = 0.75;
+          proportion = 0.618; # golden ratio
         };
       }
       {
         matches = [ { app-id = "^org.wezfurlong.wezterm$"; } ];
-        default-column-width = {
-          proportion = 0.75;
-        };
       }
       {
         matches = [ { app-id = "^firefox$"; } ];
@@ -104,7 +98,8 @@ in
 
       preset-column-widths = [
         { proportion = 0.5; }
-        { proportion = 0.75; }
+        { proportion = 0.618; }
+        { proportion = 0.786; } # 0.618 + (1 - 0.618) * 0.618
       ];
 
       border.enable = false;
