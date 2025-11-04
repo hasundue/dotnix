@@ -75,41 +75,65 @@
         niri.overlays.niri
         nvim.overlays.default
         self.overlays.default
-      ];
-
-      firefox-overlay =
-        system:
         (final: prev: {
-          firefox-addons = inputs.firefox-addons.packages.${system};
-        });
+          firefox-addons = inputs.firefox-addons.packages.${final.system};
+        })
+      ];
 
       forSystem =
         system: f:
         f {
           inherit lib;
           pkgs = import nixpkgs {
-            inherit system;
+            inherit system overlays;
             config.allowUnfree = true;
-            overlays = overlays ++ [ (firefox-overlay system) ];
           };
         };
 
       forEachSystem = f: lib.genAttrs [ "x86_64-linux" "aarch64-linux" ] (system: forSystem system f);
 
+      nixpkgsOverlaysContent =
+        name: # nix
+        ''
+          [
+            (
+              final: prev:
+              with prev.lib;
+              let
+                flake = builtins.getFlake "path:''${builtins.toString ${self.outPath}}";
+                inherit (flake.nixosConfigurations.${name}.config.nixpkgs) overlays;
+              in
+              foldl' (flip extends) (_: prev) overlays final
+            )
+          ]
+        '';
+
       nixosSystem =
-        system: modules:
+        name:
+        { system, modules }:
         forSystem system (
-          args:
+          { pkgs, ... }:
+          let
+            nixpkgs-overlays = pkgs.writeTextFile {
+              name = "nixpkgs-overlays";
+              destination = "/default.nix";
+              text = nixpkgsOverlaysContent name;
+            };
+          in
           lib.nixosSystem {
             inherit system;
             modules =
               with inputs;
               [
-                { nixpkgs.pkgs = args.pkgs; }
                 {
                   home-manager.sharedModules = [
                     agenix.homeManagerModules.default
                   ];
+                  nix.nixPath = [
+                    "nixpkgs=${pkgs.path}"
+                    "nixpkgs-overlays=${nixpkgs-overlays}"
+                  ];
+                  nixpkgs.pkgs = pkgs;
                 }
                 niri.nixosModules.niri
                 home-manager.nixosModules.home-manager
@@ -130,18 +154,24 @@
         ) (builtins.readDir ./shells)
       );
 
-      nixosConfigurations = {
+      nixosConfigurations = lib.mapAttrs nixosSystem {
         # Thinkpad X1 Carbon 5th Gen
-        x1carbon = nixosSystem "x86_64-linux" [
-          inputs.nixos-hardware.nixosModules.lenovo-thinkpad-x1-extreme
-          inputs.python-validity.nixosModules."06cb-009a-fingerprint-sensor"
-          ./hosts/x1carbon
-        ];
+        x1carbon = {
+          system = "x86_64-linux";
+          modules = [
+            inputs.nixos-hardware.nixosModules.lenovo-thinkpad-x1-extreme
+            inputs.python-validity.nixosModules."06cb-009a-fingerprint-sensor"
+            ./hosts/x1carbon
+          ];
+        };
         # NixOS-WSL
-        nixos = nixosSystem "x86_64-linux" [
-          inputs.nixos-wsl.nixosModules.default
-          ./hosts/wsl
-        ];
+        nixos = {
+          system = "x86_64-linux";
+          modules = [
+            inputs.nixos-wsl.nixosModules.default
+            ./hosts/wsl
+          ];
+        };
       };
 
       overlays = import ./overlays;
