@@ -33,7 +33,10 @@ in
 
     settings.main = {
       layer = "top";
-      output = [ "eDP-1" ];
+      output = [
+        "eDP-1"
+        "HDMI-A-1"
+      ];
       height = 32;
 
       modules-right = [
