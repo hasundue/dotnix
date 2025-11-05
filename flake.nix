@@ -3,6 +3,7 @@
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
+    nixpkgs-opencode-0_15_14.url = "github:nixos/nixpkgs?ref=876df71365b3c0ab2d363cd6af36a80199879430";
     nixos-hardware.url = "github:nixos/nixos-hardware";
 
     systems.url = "github:nix-systems/default";
@@ -76,7 +77,8 @@
         nvim.overlays.default
         self.overlays.default
         (final: prev: {
-          firefox-addons = inputs.firefox-addons.packages.${final.system};
+          inherit (import nixpkgs-opencode-0_15_14 { inherit (final) system; }) opencode;
+          firefox-addons = firefox-addons.packages.${final.system};
         })
       ];
 
