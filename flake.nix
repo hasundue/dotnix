@@ -92,56 +92,32 @@
 
       forEachSystem = f: lib.genAttrs [ "x86_64-linux" "aarch64-linux" ] (system: forSystem system f);
 
-      nixpkgsOverlaysContent =
-        name: # nix
-        ''
-          [
-            (
-              final: prev:
-              with prev.lib;
-              let
-                flake = builtins.getFlake "path:''${builtins.toString ${self.outPath}}";
-                inherit (flake.nixosConfigurations.${name}.config.nixpkgs) overlays;
-              in
-              foldl' (flip extends) (_: prev) overlays final
-            )
-          ]
-        '';
-
       nixosSystem =
         name:
         { system, modules }:
-        forSystem system (
-          { pkgs, ... }:
-          let
-            nixpkgs-overlays = pkgs.writeTextFile {
-              name = "nixpkgs-overlays";
-              destination = "/default.nix";
-              text = nixpkgsOverlaysContent name;
-            };
-          in
-          lib.nixosSystem {
-            inherit system;
-            modules =
-              with inputs;
-              [
-                {
-                  home-manager.sharedModules = [
-                    agenix.homeManagerModules.default
-                  ];
-                  nix.nixPath = [
-                    "nixpkgs=${pkgs.path}"
-                    "nixpkgs-overlays=${nixpkgs-overlays}"
-                  ];
-                  nixpkgs.pkgs = pkgs;
-                }
-                niri.nixosModules.niri
-                home-manager.nixosModules.home-manager
-                stylix.nixosModules.stylix
-              ]
-              ++ modules;
-          }
-        );
+        lib.nixosSystem {
+          inherit system;
+          modules =
+            with inputs;
+            [
+              {
+                home-manager.sharedModules = [
+                  agenix.homeManagerModules.default
+                ];
+                nix.nixPath = [
+                  "nixos-config=${self.outPath}"
+                ];
+                nixpkgs = {
+                  inherit overlays;
+                  config.allowUnfree = true;
+                };
+              }
+              niri.nixosModules.niri
+              home-manager.nixosModules.home-manager
+              stylix.nixosModules.stylix
+            ]
+            ++ modules;
+        };
     in
     {
       devShells = forEachSystem (

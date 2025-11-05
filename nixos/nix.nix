@@ -1,9 +1,25 @@
 {
+  config,
   pkgs,
   ...
 }:
+let
+  overlays-compat = pkgs.writeTextFile {
+    name = "overlays-compat";
+    destination = "/default.nix";
+    text =
+      pkgs.replaceVars ./_overlays-compat.nix {
+        name = config.networking.hostName;
+      }
+      |> builtins.readFile;
+  };
+in
 {
   nix = {
+    nixPath = [
+      "nixpkgs=${pkgs.path}"
+      "nixpkgs-overlays=${overlays-compat}"
+    ];
     gc = {
       automatic = true;
       dates = "daily";
