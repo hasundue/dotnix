@@ -1,31 +1,10 @@
+{ ... }:
 {
-  config,
-  pkgs,
-  ...
-}@inputs:
-
-let
-  getSecretPath = name: config.age.secrets.${name}.path;
-
-  mcpServers = {
-    github = {
-      type = "http";
-      url = "https://api.githubcopilot.com/mcp/";
-      headers = {
-        "Authorization" = "Bearer $(cat ${getSecretPath "github/claude-code"})";
-      };
-    };
+  programs.claude-code = {
+    enable = false;
+    # Disable MCP integration until `{file:...}` syntax is supported
+    # mcpServers = config.programs.mcp.servers;
   };
-
-  setupMcpServers = import ./setup-mcp-servers.nix inputs;
-in
-{
-  home.activation.claude-mcp-setup = setupMcpServers mcpServers;
-
-  home.packages = with pkgs; [
-    claude-code
-  ];
-
   programs.git.ignores = [
     ".claude/settings.local.*"
     "CLAUDE.local.md"
