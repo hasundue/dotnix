@@ -20,18 +20,6 @@
 
     settings = {
       agent = {
-        build = {
-          model = "github-copilot/claude-sonnet-4.5";
-          tools = {
-            "github*" = false;
-          };
-        };
-        plan = {
-          model = "github-copilot/claude-sonnet-4.5";
-          tools = {
-            "github*" = false;
-          };
-        };
         github = {
           description = "Helps with GitHub operations like creating PRs, issues, and searching resources.";
           mode = "subagent";
@@ -41,7 +29,7 @@
             You will be provided with specific instructions and context to carry out these tasks effectively.
           '';
           tools = {
-            "github*" = true;
+            "github_*" = true;
             write = false;
             edit = false;
             bash = false;
@@ -51,6 +39,10 @@
       model = "github-copilot/claude-sonnet-4.5";
       theme = lib.mkForce "kanagawa-transparent";
       autoupdate = false;
+      tools = {
+        "nixos_*" = false;
+        "github_*" = false;
+      };
     };
   };
 

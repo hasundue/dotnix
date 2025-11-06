@@ -6,24 +6,23 @@ This directory contains the OpenCode configuration used across all projects mana
 
 ### Context Management Strategy
 
-OpenCode is configured to minimize context bloat by delegating heavy operations to specialized subagents. This architecture ensures AI agents maintain optimal performance across all projects.
+OpenCode is configured to minimize context bloat using two complementary approaches:
 
-**Core Principle**: Keep baseline context lean by routing operations with high context costs through subagents, which return only concise, essential results.
+1. **Subagents** - For operations with many tool definitions that would bloat baseline context
+2. **Local overrides** - For moderate-sized tool sets that are project-specific
+
+**Core Principle**: Keep baseline context lean by routing high-context operations strategically.
 
 ### Subagent Usage
 
 #### When to Use Subagents
 
-Use subagents for operations that would bloat the main conversation context:
+Use subagents for operations with **many tool definitions** (high baseline cost):
 
 - **GitHub operations** - Use github subagent instead of direct GitHub MCP tools
   - GitHub MCP exposes many tools (issues, PRs, releases, checks, etc.)
-  - Subagent keeps these tool definitions out of baseline context
-  - Returns only relevant, summarized information
-
-- **NixOS queries** - Delegate to nixos-mcp via subagent when needed
-  - NixOS MCP has extensive tooling for package search, options, etc.
-  - Heavy tool definitions avoided in main context
+  - ~30-50+ tool definitions would bloat baseline context
+  - Subagent returns only relevant, summarized information
 
 - **Code exploration** - Use Task tool with general subagent
   - Large search results and file contents
@@ -34,6 +33,16 @@ Use subagents for operations that would bloat the main conversation context:
   - PDF reading (zotero-mcp)
   - Web searches with large results
   - Any operation returning variable-sized, potentially large responses
+
+#### When to Use Local Overrides
+
+Use local `opencode.jsonc` files for **moderate tool sets** that are project-specific:
+
+- **NixOS tools** - Disabled globally, enabled per-project
+  - ~18 tool definitions (~2K tokens) - moderate cost
+  - Only needed in NixOS configuration projects
+  - Responses are concise and useful
+  - Example: This dotnix repository enables nixos tools via local override
 
 #### Subagent Configuration
 
@@ -60,16 +69,38 @@ agent = {
     };
   };
 }
+
+# Global settings disable nixos tools by default
+settings = {
+  tools = {
+    "nixos*" = false;  # Disabled globally
+  };
+};
+```
+
+#### Local Override Configuration
+
+Project-specific tools are enabled via `opencode.jsonc` in the repository root:
+
+```jsonc
+{
+  // Enable NixOS tools for this project only
+  "tools": {
+    "nixos*": true
+  }
+}
 ```
 
 ### MCP Integration
 
 MCP servers are configured centrally in `home/mcp.nix` and automatically integrated via `enableMcpIntegration = true`.
 
-**Current Setup**:
-- Only lightweight, essential MCP servers in main context
-- Heavy MCP servers accessed exclusively through subagents
-- Subagents have their own tool access configurations
+**Architecture**:
+- MCP servers are always available (configured in `home/mcp.nix`)
+- Tool visibility is controlled separately:
+  - **Heavy tool sets** → Routed through subagents
+  - **Moderate tool sets** → Disabled globally, enabled per-project via `opencode.jsonc`
+  - **Lightweight tools** → Enabled in main context
 
 ## Usage
 
@@ -84,9 +115,16 @@ Uses `kanagawa-transparent` theme matching the overall system aesthetic (Stylix 
 
 ## Philosophy
 
-This configuration reflects a deliberate trade-off:
-- **Higher latency**: Subagent calls add round-trip time
-- **Lower context usage**: Baseline context stays minimal, avoiding frequent context limit issues
-- **Better scalability**: Can work with complex codebases and multiple tools without hitting limits
+This configuration uses a two-tier strategy for context management:
 
-The architecture prioritizes context efficiency over immediate response time, based on the observation that context limits were a more frequent pain point than latency.
+### 1. Subagents (for high tool count)
+- **Trade-off**: Higher latency vs. zero baseline context cost
+- **Use when**: Tool set has 30+ definitions (e.g., GitHub MCP)
+- **Benefit**: Keeps baseline context minimal regardless of tool complexity
+
+### 2. Local Overrides (for moderate, project-specific tools)
+- **Trade-off**: Small baseline cost (~2K tokens) vs. zero latency
+- **Use when**: Tool set is moderate (10-20 tools) and project-specific
+- **Benefit**: Direct access without round-trip overhead when needed
+
+The architecture prioritizes context efficiency while avoiding unnecessary latency for moderate-sized, frequently-used tool sets.

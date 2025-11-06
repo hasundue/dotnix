@@ -57,6 +57,11 @@
       url = "github:hasundue/nvim";
     };
 
+    mcp-nixos = {
+      url = "github:utensils/mcp-nixos";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     python-validity = {
       url = "github:viktor-grunwaldt/t480-fingerprint-nixos";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -79,6 +84,7 @@
         (final: prev: {
           inherit (import nixpkgs-opencode-0_15_14 { inherit (final) system; }) opencode;
           firefox-addons = firefox-addons.packages.${final.system};
+          mcp-nixos = mcp-nixos.packages.${final.system}.default;
         })
       ];
 

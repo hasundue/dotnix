@@ -1,6 +1,10 @@
-{ config, ... }:
+{ config, pkgs, ... }:
 
 {
+  home.packages = [
+    pkgs.mcp-nixos
+  ];
+
   # Single source of truth for ALL MCP servers
   programs.mcp = {
     enable = true;
@@ -11,6 +15,11 @@
           # Direct file reference - no environment variable needed!
           Authorization = "Bearer {file:${config.age.secrets."github/claude-code".path}}";
         };
+      };
+
+      nixos = {
+        command = "mcp-nixos";
+        args = [ ];
       };
 
       # Easy to add more MCP servers here in the future
