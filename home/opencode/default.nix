@@ -4,6 +4,9 @@
   programs.opencode = {
     enable = true;
 
+    # Automatically integrate MCP servers from programs.mcp.servers
+    enableMcpIntegration = true;
+
     rules = ''
       ## Response Formatting
       - Use fenced code blocks for all multi-line code/output (e.g. ``` ... ```).
