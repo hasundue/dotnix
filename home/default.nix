@@ -18,6 +18,7 @@
 
   imports = [
     ./agenix.nix
+    ./mcp.nix
     ./claude-code
     ./fish.nix
     ./git.nix
