@@ -83,6 +83,8 @@ Clear separation between system (`nixos/`), user (`home/`), and host-specific (`
 
 Uses modern Nix flakes with proper input management. All inputs follow nixpkgs for consistency to reduce duplication.
 
+**Input Isolation**: Flake inputs are handled exclusively in `flake.nix` and exposed to modules via overlays. Modules never receive `inputs` directly, keeping them pure and reusable. External packages are accessed through `pkgs.*` after being added to overlays.
+
 ### Configuration Flow
 
 1. `flake.nix` defines inputs and system configurations
