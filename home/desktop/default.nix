@@ -3,7 +3,7 @@
 {
   imports = [
     ./chromium.nix
-    ./fcitx5
+    ./fcitx5.nix
     ./firefox.nix
     ./foot.nix
     ./niri
