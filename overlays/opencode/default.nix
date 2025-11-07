@@ -13,8 +13,12 @@ final: prev: {
         > kanagawa-temp.json
       mv kanagawa-temp.json packages/opencode/src/cli/cmd/tui/context/theme/kanagawa.json
 
-      echo "Patching dialog backdrop to be more transparent..."
-      sed -i 's/backgroundColor={RGBA\.fromInts(0, 0, 0, 150)}/backgroundColor={RGBA.fromInts(0, 0, 0, 60)}/g' \
+      echo "Patching dialog backdrop to be fully transparent..."
+      sed -i 's/backgroundColor={RGBA\.fromInts(0, 0, 0, 150)}/backgroundColor={RGBA.fromInts(0, 0, 0, 0)}/g' \
+        packages/opencode/src/cli/cmd/tui/ui/dialog.tsx
+
+      echo "Patching dialog box background to use darker color..."
+      sed -i 's/backgroundColor={theme\.backgroundPanel}/backgroundColor={RGBA.fromInts(22, 22, 29, 255)}/g' \
         packages/opencode/src/cli/cmd/tui/ui/dialog.tsx
 
       echo "Fixing selected text color in dialog-select..."
