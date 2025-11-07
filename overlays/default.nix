@@ -8,6 +8,7 @@
         })
       ];
     });
+
     writeAliasBin =
       alias: command:
       final.writeShellScriptBin alias ''
@@ -15,4 +16,6 @@
       '';
     writeAliasScripts = aliases: final.lib.mapAttrsToList writeAliasBin aliases;
   };
+
+  opencode = import ./opencode;
 }

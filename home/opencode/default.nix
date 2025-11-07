@@ -26,7 +26,17 @@
     '';
 
     settings = {
+      # Enable this tentatively until custom theme issues are resolved
+      autoupdate = true;
       agent = {
+        plan = {
+          permission = {
+            bash = {
+              "curl" = "allow";
+              "nix eval" = "allow";
+            };
+          };
+        };
         github = {
           description = "Helps with GitHub operations like creating PRs, issues, and searching resources.";
           mode = "subagent";
@@ -60,8 +70,13 @@
         };
       };
       model = "github-copilot/claude-sonnet-4.5";
-      theme = lib.mkForce "kanagawa-transparent";
-      autoupdate = false;
+      theme = lib.mkForce "kanagawa";
+      permission = {
+        bash = {
+          "curl" = "allow";
+          "git push" = "deny";
+        };
+      };
       tools = {
         "nixos_*" = false;
         "github_*" = false;
@@ -73,7 +88,4 @@
     oc = "opencode";
     occ = "${oc} --continue";
   };
-
-  xdg.configFile."opencode/themes/kanagawa-transparent.json".source =
-    ./theme-kanagawa-transparent.json;
 }
