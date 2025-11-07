@@ -1,10 +1,10 @@
 {
   pkgs,
-  lib,
   ...
 }@args:
 
 let
+  lib = pkgs.lib;
   aliases = rec {
     nr = "sudo nixos-rebuild --flake .";
     nrb = "${nr} boot |& nom";

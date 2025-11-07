@@ -1,18 +1,15 @@
 {
   description = "hasundue's system configuration";
-
   inputs = {
+    # Official NixOS Registries
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
     nixpkgs-master.url = "github:nixos/nixpkgs/master";
     nixos-hardware.url = "github:nixos/nixos-hardware";
-
-    systems.url = "github:nix-systems/default";
-
+    # Nix-Community Projects
     flake-compat = {
       url = "github:nix-community/flake-compat";
       flake = false;
     };
-
     home-manager = {
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -27,7 +24,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.systems.follows = "systems";
     };
-
+    # 3rd Party Projects
     agenix = {
       url = "github:ryantm/agenix";
       inputs = {
@@ -47,60 +44,77 @@
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.flake-compat.follows = "flake-compat";
     };
-    niri.url = "github:sodiboo/niri-flake";
-    treefmt-nix = {
-      url = "github:numtide/treefmt-nix";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
-    nvim = {
-      url = "github:hasundue/nvim";
-    };
-
     mcp-nixos = {
       url = "github:utensils/mcp-nixos";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-
+    niri.url = "github:sodiboo/niri-flake";
     python-validity = {
       url = "github:viktor-grunwaldt/t480-fingerprint-nixos";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    pyproject-build-systems = {
+      url = "github:pyproject-nix/build-system-pkgs";
+      inputs = {
+        nixpkgs.follows = "nixpkgs";
+        pyproject-nix.follows = "pyproject-nix";
+        uv2nix.follows = "uv2nix";
+      };
+    };
+    pyproject-nix = {
+      url = "github:pyproject-nix/pyproject.nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    systems.url = "github:nix-systems/default";
+    treefmt-nix = {
+      url = "github:numtide/treefmt-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    uv2nix = {
+      url = "github:pyproject-nix/uv2nix";
+      inputs = {
+        nixpkgs.follows = "nixpkgs";
+        pyproject-nix.follows = "pyproject-nix";
+      };
+    };
+    # My Personal Projects
+    nvim = {
+      url = "github:hasundue/nvim";
+    };
   };
-
   outputs =
     { self, nixpkgs, ... }@inputs:
     let
-      lib = nixpkgs.lib // {
-        git-hooks-nix = inputs.git-hooks-nix.lib;
-        treefmt-nix = inputs.treefmt-nix.lib;
-      };
-
+      lib = nixpkgs.lib;
       overlays = with inputs; [
-        agenix.overlays.default
-        niri.overlays.niri
-        nvim.overlays.default
-        self.overlays.default
         (final: prev: {
+          lib = prev.lib // {
+            git-hooks-nix = inputs.git-hooks-nix.lib;
+            pyproject-build-systems = inputs.pyproject-build-systems;
+            pyproject-nix = inputs.pyproject-nix;
+            treefmt-nix = inputs.treefmt-nix.lib;
+            uv2nix = inputs.uv2nix.lib;
+          };
           inherit (import nixpkgs-master { inherit (final) system; }) opencode;
           firefox-addons = firefox-addons.packages.${final.system};
           mcp-nixos = mcp-nixos.packages.${final.system}.default;
         })
+        agenix.overlays.default
+        niri.overlays.niri
+        nvim.overlays.default
+        self.overlays.default
         self.overlays.opencode
+        self.overlays.zotero-mcp
       ];
-
       forSystem =
-        system: f:
-        f {
-          inherit lib;
+        system: op:
+        op {
           pkgs = import nixpkgs {
             inherit system overlays;
             config.allowUnfree = true;
           };
         };
-
-      forEachSystem = f: lib.genAttrs [ "x86_64-linux" "aarch64-linux" ] (system: forSystem system f);
-
+      forEachSystem = op: lib.genAttrs [ "x86_64-linux" "aarch64-linux" ] (system: forSystem system op);
       nixosSystem =
         name:
         { system, modules }:
@@ -138,7 +152,6 @@
           )
         ) (builtins.readDir ./shells)
       );
-
       nixosConfigurations = lib.mapAttrs nixosSystem {
         # Thinkpad X1 Carbon 5th Gen
         x1carbon = {
@@ -158,9 +171,7 @@
           ];
         };
       };
-
       overlays = import ./overlays;
-
       templates = {
         default = {
           path = ./templates/default;

@@ -1,5 +1,7 @@
-{ pkgs, lib, ... }:
-
+{ pkgs, ... }:
+let
+  lib = pkgs.lib;
+in
 pkgs.mkShell {
   nativeBuildInputs = with pkgs; [
     libGL
@@ -10,11 +12,9 @@ pkgs.mkShell {
     xorg.libXi
     xorg.libXxf86vm
   ];
-
   packages = with pkgs; [
     go
   ];
-
   shellHook = ''
     export LD_LIBRARY_PATH=${pkgs.wayland}/lib:${lib.getLib pkgs.libGL}/lib:$LD_LIBRARY_PATH
   '';

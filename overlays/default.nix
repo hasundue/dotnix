@@ -18,4 +18,5 @@
   };
 
   opencode = import ./opencode;
+  zotero-mcp = import ./zotero-mcp;
 }
