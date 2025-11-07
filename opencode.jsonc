@@ -1,7 +1,11 @@
 {
   "$schema": "https://opencode.ai/config.json",
-  "tools": {
-    "nixos_*": true,
-    "nixos_darwin_*": false
+  "agent": {
+    "plan": {
+      "tools": {
+        "nixos_*": true,
+        "nixos_darwin_*": false
+      }
+    }
   }
 }
