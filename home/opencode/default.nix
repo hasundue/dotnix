@@ -16,6 +16,13 @@
       - For ANY GitHub-related operations (checking issues, PRs, creating issues/PRs, searching
         GitHub resources, etc.), you MUST use the Task tool with the github subagent instead of
         using the gh command directly via Bash.
+
+      ## Web Research Operations
+      - For extensive web research (multiple pages, synthesis needed, uncertain scope), use the
+        Task tool with the web-research subagent instead of WebFetch directly.
+      - For targeted lookups (specific fact, known concise page, user-provided URL), direct
+        WebFetch is acceptable.
+      - Prefer local tools (Read, raw URLs) over web fetches when possible.
     '';
 
     settings = {
@@ -29,10 +36,26 @@
             You will be provided with specific instructions and context to carry out these tasks effectively.
           '';
           tools = {
+            "*" = false;
             "github_*" = true;
-            write = false;
-            edit = false;
-            bash = false;
+          };
+        };
+        web-research = {
+          description = "Performs web research and returns concise summaries.";
+          mode = "subagent";
+          model = "github-copilot/claude-haiku-4.5";
+          prompt = ''
+            You are a web research assistant. Your job is to:
+            1. Fetch web content using WebFetch
+            2. Extract the most relevant information for the user's question
+            3. Return a concise summary (100-500 tokens)
+            4. Include source URLs for reference
+
+            Be direct and factual. Avoid unnecessary details.
+          '';
+          tools = {
+            "*" = false;
+            webfetch = true;
           };
         };
       };
