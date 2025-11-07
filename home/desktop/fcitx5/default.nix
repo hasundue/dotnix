@@ -23,6 +23,9 @@
         fcitx5-gtk
       ];
       settings = {
+        addons = {
+          clipboard.globalSection.TriggerKey = ""; # Ctrl+; to disable
+        };
         inputMethod = {
           GroupOrder."0" = "Default";
           "Groups/0" = {
