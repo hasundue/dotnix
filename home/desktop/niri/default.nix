@@ -63,15 +63,23 @@ in
         geometry-corner-radius = forEachCorner 8.0;
         clip-to-geometry = true;
         default-column-width = {
-          proportion = 0.618; # golden ratio
+          proportion = 0.7;
         };
       }
       {
         matches = [ { app-id = "^org.wezfurlong.wezterm$"; } ];
+        default-column-width = {
+          proportion = 0.5;
+        };
       }
       {
-        matches = [ { app-id = "^firefox$"; } ];
-        open-maximized = true;
+        matches = [
+          { app-id = "^firefox$"; }
+          { app-id = "^Slack$"; }
+        ];
+        default-column-width = {
+          proportion = 0.9;
+        };
       }
     ];
 
@@ -97,9 +105,8 @@ in
       empty-workspace-above-first = true;
 
       preset-column-widths = [
-        { proportion = 0.5; }
-        { proportion = 0.618; }
-        { proportion = 0.786; } # 0.618 + (1 - 0.618) * 0.618
+        { proportion = 0.7; }
+        { proportion = 0.9; }
       ];
 
       border.enable = false;
@@ -289,6 +296,8 @@ in
       "Mod+C".action = center-column;
 
       "Mod+Ctrl+C".action = center-visible-columns;
+
+      "Mod+E".action = set-column-width "50%";
 
       "Mod+Minus".action = set-column-width "-10%";
       "Mod+Equal".action = set-column-width "+10%";
