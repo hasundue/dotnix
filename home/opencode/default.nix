@@ -84,6 +84,10 @@
     };
   };
 
+  programs.git.ignores = [
+    "opencode.local.json*"
+  ];
+
   home.shellAliases = rec {
     oc = "opencode";
     occ = "${oc} --continue";
