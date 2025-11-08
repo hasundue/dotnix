@@ -83,34 +83,23 @@
     };
   };
   outputs =
-    { self, nixpkgs, ... }@inputs:
+    {
+      agenix,
+      home-manager,
+      niri,
+      nixpkgs,
+      nixpkgs-master,
+      nvim,
+      self,
+      stylix,
+      ...
+    }@inputs:
     let
       lib = nixpkgs.lib;
-      overlays = with inputs; [
-        (
-          final: prev:
-          let
-            inherit (prev.stdenv.hostPlatform) system;
-          in
-          {
-            lib = prev.lib // {
-              git-hooks-nix = inputs.git-hooks-nix.lib;
-              pyproject-build-systems = inputs.pyproject-build-systems;
-              pyproject-nix = inputs.pyproject-nix;
-              treefmt-nix = inputs.treefmt-nix.lib;
-              uv2nix = inputs.uv2nix.lib;
-            };
-            inherit (import nixpkgs-master { inherit system; }) opencode;
-            firefox-addons = firefox-addons.packages.${system};
-            mcp-nixos = mcp-nixos.packages.${system}.default;
-          }
-        )
+      overlays = builtins.attrValues self.overlays ++ [
         agenix.overlays.default
         niri.overlays.niri
         nvim.overlays.default
-        self.overlays.default
-        self.overlays.opencode
-        self.overlays.zotero-mcp
       ];
       systems = [
         "x86_64-linux"
@@ -122,63 +111,85 @@
           inherit overlays system;
           config.allowUnfree = true;
         }
+        // self.packages.${system}
       );
-      forEachSystem = f: lib.genAttrs systems (system: f pkgsFor.${system});
+      nixosMetaModule = system: {
+        home-manager.sharedModules = [
+          agenix.homeManagerModules.default
+        ];
+        # Make sure to avoid evaluation of nixpkgs
+        _module.args.pkgs = lib.mkForce pkgsFor.${system};
+        # Consumed by ./nixos/_overlays-compat.nix
+        nix.nixPath = [ "nixos-config=${self.outPath}" ];
+        nixpkgs.overlays = overlays;
+      };
       nixosSystem =
         name:
         { system, modules }:
         lib.nixosSystem {
           inherit system;
-          modules =
-            with inputs;
-            [
-              {
-                # Make sure to avoid evaluation of nixpkgs
-                _module.args.pkgs = lib.mkForce pkgsFor.${system};
-
-                # Comsumed by ./nixos/_overlays-compat.nix
-                nix.nixPath = [ "nixos-config=${self.outPath}" ];
-                nixpkgs.overlays = overlays;
-
-                home-manager.sharedModules = [
-                  agenix.homeManagerModules.default
-                ];
-              }
-              niri.nixosModules.niri
-              home-manager.nixosModules.home-manager
-              stylix.nixosModules.stylix
-            ]
-            ++ modules;
+          modules = [
+            (nixosMetaModule system)
+            niri.nixosModules.niri
+            home-manager.nixosModules.home-manager
+            stylix.nixosModules.stylix
+          ]
+          ++ modules;
         };
+      forEachSystem = f: lib.genAttrs systems (system: f pkgsFor.${system});
     in
     {
       devShells = forEachSystem (
         pkgs:
         lib.mapAttrs' (
           name: _:
-          lib.nameValuePair (lib.removeSuffix ".nix" name) (import ./shells/${name} { inherit pkgs; })
+          lib.nameValuePair (lib.removeSuffix ".nix" name) (
+            import ./shells/${name} {
+              inherit pkgs;
+              inherit (inputs) git-hooks-nix treefmt-nix;
+            }
+          )
         ) (builtins.readDir ./shells)
       );
       nixosConfigurations = lib.mapAttrs nixosSystem {
         # Thinkpad X1 Carbon 5th Gen
         x1carbon = {
           system = "x86_64-linux";
-          modules = [
-            inputs.nixos-hardware.nixosModules.lenovo-thinkpad-x1-extreme
-            inputs.python-validity.nixosModules."06cb-009a-fingerprint-sensor"
+          modules = with inputs; [
+            nixos-hardware.nixosModules.lenovo-thinkpad-x1-extreme
+            python-validity.nixosModules."06cb-009a-fingerprint-sensor"
             ./hosts/x1carbon
           ];
         };
         # NixOS-WSL
         nixos = {
           system = "x86_64-linux";
-          modules = [
-            inputs.nixos-wsl.nixosModules.default
+          modules = with inputs; [
+            nixos-wsl.nixosModules.default
             ./hosts/wsl
           ];
         };
       };
-      overlays = import ./overlays;
+      overlays = import ./overlays // {
+        pristine = import ./overlays/pristine.nix {
+          inherit (inputs)
+            firefox-addons
+            mcp-nixos
+            ;
+        };
+        temporal = import ./overlays/temporal.nix {
+          opencode = nixpkgs-master;
+        };
+      };
+      packages = forEachSystem (pkgs: {
+        zotero-mcp = pkgs.callPackage ./packages/zotero-mcp.nix {
+          inherit (inputs)
+            pyproject-build-systems
+            pyproject-nix
+            uv2nix
+            ;
+        };
+      });
       templates = {
         default = {
           path = ./templates/default;

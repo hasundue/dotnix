@@ -1,23 +1,16 @@
 {
   pkgs,
-  ...
-}@args:
-
+  treefmt-nix,
+  git-hooks-nix,
+}:
 let
-  lib = pkgs.lib;
   system = pkgs.stdenv.hostPlatform.system;
-  aliases = rec {
-    nr = "sudo nixos-rebuild --flake .";
-    nrb = "${nr} boot |& nom";
-    nrs = "${nr} switch |& nom";
-    nrt = "${nr} test |& nom";
-  };
-  treefmt = lib.treefmt-nix.mkWrapper pkgs {
+  treefmt = treefmt-nix.lib.mkWrapper pkgs {
     programs.nixfmt = {
       enable = true;
     };
   };
-  git-hooks = lib.git-hooks-nix.${system}.run {
+  git-hooks = git-hooks-nix.lib.${system}.run {
     src = ../.;
     hooks = {
       treefmt = {
@@ -28,10 +21,9 @@ let
   };
 in
 pkgs.mkShellNoCC {
-  packages = (pkgs.writeAliasScripts aliases) ++ [
+  packages = [
     pkgs.nil
     treefmt
   ];
-  inputsFrom = [ (import ./nix.nix args) ];
   shellHook = git-hooks.shellHook;
 }
