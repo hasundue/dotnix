@@ -5,20 +5,19 @@
 
 let
   lib = pkgs.lib;
+  system = pkgs.stdenv.hostPlatform.system;
   aliases = rec {
     nr = "sudo nixos-rebuild --flake .";
     nrb = "${nr} boot |& nom";
     nrs = "${nr} switch |& nom";
     nrt = "${nr} test |& nom";
   };
-
   treefmt = lib.treefmt-nix.mkWrapper pkgs {
     programs.nixfmt = {
       enable = true;
     };
   };
-
-  git-hooks = lib.git-hooks-nix.${pkgs.system}.run {
+  git-hooks = lib.git-hooks-nix.${system}.run {
     src = ../.;
     hooks = {
       treefmt = {

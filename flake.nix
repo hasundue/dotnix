@@ -87,18 +87,24 @@
     let
       lib = nixpkgs.lib;
       overlays = with inputs; [
-        (final: prev: {
-          lib = prev.lib // {
-            git-hooks-nix = inputs.git-hooks-nix.lib;
-            pyproject-build-systems = inputs.pyproject-build-systems;
-            pyproject-nix = inputs.pyproject-nix;
-            treefmt-nix = inputs.treefmt-nix.lib;
-            uv2nix = inputs.uv2nix.lib;
-          };
-          inherit (import nixpkgs-master { inherit (final) system; }) opencode;
-          firefox-addons = firefox-addons.packages.${final.system};
-          mcp-nixos = mcp-nixos.packages.${final.system}.default;
-        })
+        (
+          final: prev:
+          let
+            inherit (prev.stdenv.hostPlatform) system;
+          in
+          {
+            lib = prev.lib // {
+              git-hooks-nix = inputs.git-hooks-nix.lib;
+              pyproject-build-systems = inputs.pyproject-build-systems;
+              pyproject-nix = inputs.pyproject-nix;
+              treefmt-nix = inputs.treefmt-nix.lib;
+              uv2nix = inputs.uv2nix.lib;
+            };
+            inherit (import nixpkgs-master { inherit system; }) opencode;
+            firefox-addons = firefox-addons.packages.${system};
+            mcp-nixos = mcp-nixos.packages.${system}.default;
+          }
+        )
         agenix.overlays.default
         niri.overlays.niri
         nvim.overlays.default
@@ -106,15 +112,18 @@
         self.overlays.opencode
         self.overlays.zotero-mcp
       ];
-      forSystem =
-        system: op:
-        op {
-          pkgs = import nixpkgs {
-            inherit system overlays;
-            config.allowUnfree = true;
-          };
-        };
-      forEachSystem = op: lib.genAttrs [ "x86_64-linux" "aarch64-linux" ] (system: forSystem system op);
+      systems = [
+        "x86_64-linux"
+        "aarch64-linux"
+      ];
+      pkgsFor = lib.genAttrs systems (
+        system:
+        import nixpkgs {
+          inherit overlays system;
+          config.allowUnfree = true;
+        }
+      );
+      forEachSystem = f: lib.genAttrs systems (system: f pkgsFor.${system});
       nixosSystem =
         name:
         { system, modules }:
@@ -124,16 +133,16 @@
             with inputs;
             [
               {
+                # Make sure to avoid evaluation of nixpkgs
+                _module.args.pkgs = lib.mkForce pkgsFor.${system};
+
+                # Comsumed by ./nixos/_overlays-compat.nix
+                nix.nixPath = [ "nixos-config=${self.outPath}" ];
+                nixpkgs.overlays = overlays;
+
                 home-manager.sharedModules = [
                   agenix.homeManagerModules.default
                 ];
-                nix.nixPath = [
-                  "nixos-config=${self.outPath}"
-                ];
-                nixpkgs = {
-                  inherit overlays;
-                  config.allowUnfree = true;
-                };
               }
               niri.nixosModules.niri
               home-manager.nixosModules.home-manager
@@ -144,12 +153,10 @@
     in
     {
       devShells = forEachSystem (
-        args:
+        pkgs:
         lib.mapAttrs' (
           name: _:
-          lib.nameValuePair (lib.removeSuffix ".nix" name) (
-            import ./shells/${name} (args // { inherit inputs; })
-          )
+          lib.nameValuePair (lib.removeSuffix ".nix" name) (import ./shells/${name} { inherit pkgs; })
         ) (builtins.readDir ./shells)
       );
       nixosConfigurations = lib.mapAttrs nixosSystem {
