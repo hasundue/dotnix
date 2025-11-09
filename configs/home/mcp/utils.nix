@@ -1,4 +1,5 @@
 { pkgs, lib }:
+stdioServers:
 let
   mkMcpServer =
     name: index:
@@ -60,41 +61,36 @@ let
         };
       };
     };
+
+  serverConfigs = lib.imap0 (i: { name, value }: mkMcpServer name i value) (
+    lib.attrsToList stdioServers
+  );
 in
 {
-  mkLocalServerConfigs =
-    stdioServers:
-    let
-      serverConfigs = lib.imap0 (i: { name, value }: mkMcpServer name i value) (
-        lib.attrsToList stdioServers
-      );
-    in
-    {
-      servers = lib.listToAttrs (
-        map (s: {
-          name = s.name;
-          value = {
-            url = "http://127.0.0.1:${s.socketPort}/sse";
-          };
-        }) serverConfigs
-      );
-      sockets = lib.listToAttrs (
-        map (s: {
-          name = "mcp-${s.name}";
-          value = s.socket;
-        }) serverConfigs
-      );
-      services = lib.listToAttrs (
-        lib.concatMap (s: [
-          {
-            name = "mcp-${s.name}-backend";
-            value = s.backend;
-          }
-          {
-            name = "mcp-${s.name}";
-            value = s.proxy;
-          }
-        ]) serverConfigs
-      );
-    };
+  servers = lib.listToAttrs (
+    map (s: {
+      name = s.name;
+      value = {
+        url = "http://127.0.0.1:${s.socketPort}/sse";
+      };
+    }) serverConfigs
+  );
+  sockets = lib.listToAttrs (
+    map (s: {
+      name = "mcp-${s.name}";
+      value = s.socket;
+    }) serverConfigs
+  );
+  services = lib.listToAttrs (
+    lib.concatMap (s: [
+      {
+        name = "mcp-${s.name}-backend";
+        value = s.backend;
+      }
+      {
+        name = "mcp-${s.name}";
+        value = s.proxy;
+      }
+    ]) serverConfigs
+  );
 }
