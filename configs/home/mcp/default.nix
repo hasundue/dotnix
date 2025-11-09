@@ -22,7 +22,7 @@ let
       env = [ "ZOTERO_LOCAL=true" ];
     };
   };
-  mkLocalServerConfigs = import ./utils.nix { inherit pkgs lib; };
+  mkLocalServerConfigs = import ./wrapper.nix { inherit pkgs lib; };
   localServerConfigs = mkLocalServerConfigs stdioServers;
 in
 {
