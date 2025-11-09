@@ -3,20 +3,25 @@
 This file provides guidance for AI agents working with this repository.
 
 ## Repository Type
+NixOS configuration repository using Nix flakes for declarative system and home management.
 
-NixOS configuration repository using Nix flakes.
+## Commands
+- **Validate**: `nix flake check` (validate flake structure and configurations)
+- **Format Code**: `treefmt` (via `nix develop` - runs nixfmt on all .nix files)
+- **Update Inputs**: `nix flake update` (update all flake inputs)
+- **Note**: Do NOT run `nixos-rebuild` commands - user will apply changes manually
 
-## Essential Commands
+## Code Style
+- **Formatter**: Use `nixfmt` for all Nix files (enforced via git pre-commit hooks)
+- **Imports**: List imports first, separate by blank line before other attributes
+- **Module Parameters**: Use `{ pkgs, lib, config, ... }:` pattern; order consistently
+- **Let Bindings**: Use `let...in` for local variables, define before main attribute set
+- **Attribute Sets**: Use multi-line format with proper indentation (2 spaces)
+- **Lists**: Use `[ ]` for simple lists, multi-line for complex items with consistent indentation
+- **With Statements**: Acceptable for `with pkgs;` in package lists
+- **Comments**: Use `#` for inline comments, explain non-obvious configuration decisions
 
-- `nrs` - Rebuild and switch: `sudo nixos-rebuild switch --flake .`
-- `nrt` - Test configuration: `sudo nixos-rebuild test --flake .`
-- `nfc` - Check flake: `nix flake check`
-
-## Important Rules
-
-- **Always ask permission** before running system management commands (`nrs`, `nrb`, `nrt`)
-- Pre-commit hooks handle formatting automatically - don't run `nix fmt` manually
-
-## Additional Documentation
-
-See `README.md` for architecture, commands, and development guidelines.
+## Architecture
+- **Input Isolation**: Flake inputs stay in `flake.nix`, exposed via overlays; modules never receive `inputs` directly
+- **Separation**: System configs in `nixos/`, user configs in `home/`, host-specific in `hosts/`
+- **Overlays**: Add external packages/functions via overlays in `overlays/`, access through `pkgs.*`
