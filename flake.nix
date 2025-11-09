@@ -120,42 +120,48 @@
         nix.nixPath = [ "nixos-config=${self.outPath}" ];
         nixpkgs.overlays = overlays;
       };
-      nixosMetaConfig = {
-        home-manager.sharedModules = [
-          agenix.homeManagerModules.default
-        ];
-      };
       nixosSystem =
         name:
-        { system, modules }:
+        {
+          system,
+          modules ? [ ],
+        }:
         lib.nixosSystem {
           inherit system;
           modules = [
+            {
+              home-manager.sharedModules = [
+                agenix.homeManagerModules.default
+              ];
+            }
+            (metaConfig system)
             niri.nixosModules.niri
             home-manager.nixosModules.home-manager
             stylix.nixosModules.stylix
-            (metaConfig system)
-            nixosMetaConfig
             ./configs/stylix.nix
           ]
           ++ modules;
         };
       username = "hasundue";
-      homeMetaConfigs = {
-        home.homeDirectory = "/home/${username}";
-      };
       homeConfig =
-        pkgs:
+        {
+          system,
+          modules ? [ ],
+        }:
         home-manager.lib.homeManagerConfiguration {
-          inherit pkgs;
+          pkgs = pkgsFor.${system};
           modules = [
+            {
+              home.homeDirectory = "/home/${username}";
+            }
+            (metaConfig system)
             agenix.homeManagerModules.default
             niri.homeModules.niri
             stylix.homeModules.stylix
-            (metaConfig pkgs.stdenv.hostPlatform.system)
-            homeMetaConfigs
+            ./configs/stylix.nix
             ./configs/home
-          ];
+          ]
+          ++ modules;
         };
       forEachSystem = f: lib.genAttrs systems (system: f pkgsFor.${system});
     in
@@ -210,8 +216,16 @@
             uv2nix
             ;
         };
-        homeConfigurations.${username} = homeConfig pkgs;
       });
+      homeConfigurations =
+        lib.mapAttrs' (hostname: v: homeConfig v |> lib.nameValuePair "${username}@${hostname}")
+          {
+            x1carbon = {
+              system = "x86_64-linux";
+              modules = [ ./configs/home/desktop ];
+            };
+            nixos.system = "x86_64-linux";
+          };
       templates = {
         default = {
           path = ./templates/default;
