@@ -4,6 +4,7 @@
     packages = with pkgs; [
       act
       google-cloud-sdk
+      home-manager
       jq
       just
       julia-bin

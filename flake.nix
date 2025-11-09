@@ -113,15 +113,17 @@
         }
         // self.packages.${system}
       );
-      nixosMetaModule = system: {
-        home-manager.sharedModules = [
-          agenix.homeManagerModules.default
-        ];
+      metaConfig = system: {
         # Make sure to avoid evaluation of nixpkgs
         _module.args.pkgs = lib.mkForce pkgsFor.${system};
         # Consumed by ./nixos/_overlays-compat.nix
         nix.nixPath = [ "nixos-config=${self.outPath}" ];
         nixpkgs.overlays = overlays;
+      };
+      nixosMetaConfig = {
+        home-manager.sharedModules = [
+          agenix.homeManagerModules.default
+        ];
       };
       nixosSystem =
         name:
@@ -129,13 +131,31 @@
         lib.nixosSystem {
           inherit system;
           modules = [
-            (nixosMetaModule system)
             niri.nixosModules.niri
             home-manager.nixosModules.home-manager
             stylix.nixosModules.stylix
+            (metaConfig system)
+            nixosMetaConfig
             ./configs/stylix.nix
           ]
           ++ modules;
+        };
+      username = "hasundue";
+      homeMetaConfigs = {
+        home.homeDirectory = "/home/${username}";
+      };
+      homeConfig =
+        pkgs:
+        home-manager.lib.homeManagerConfiguration {
+          inherit pkgs;
+          modules = [
+            agenix.homeManagerModules.default
+            niri.homeModules.niri
+            stylix.homeModules.stylix
+            (metaConfig pkgs.stdenv.hostPlatform.system)
+            homeMetaConfigs
+            ./configs/home
+          ];
         };
       forEachSystem = f: lib.genAttrs systems (system: f pkgsFor.${system});
     in
@@ -190,6 +210,7 @@
             uv2nix
             ;
         };
+        homeConfigurations.${username} = homeConfig pkgs;
       });
       templates = {
         default = {
