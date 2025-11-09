@@ -1,10 +1,127 @@
 { config, pkgs, ... }:
-{
-  home.packages = with pkgs; [
-    mcp-nixos
-    mcp-proxy
-    zotero-mcp
+let
+  lib = pkgs.lib;
+  mcp-proxy = lib.getExe pkgs.mcp-proxy;
+
+  # Define local MCP servers with minimal configuration
+  localServers = [
+    {
+      name = "nixos";
+      package = "mcp-nixos";
+    }
+    {
+      name = "zotero";
+      package = "zotero-mcp";
+      env = [ "ZOTERO_LOCAL=true" ];
+    }
   ];
+
+  # Generate MCP server configuration with auto-assigned ports
+  mkMcpServer =
+    index:
+    {
+      name,
+      package,
+      env ? [ ],
+    }:
+    let
+      socketPort = 9000 + index;
+      backendPort = 9100 + index;
+      socketPortStr = toString socketPort;
+      backendPortStr = toString backendPort;
+      capitalizedName = lib.toUpper (lib.substring 0 1 name) + lib.substring 1 (-1) name;
+    in
+    {
+      inherit name;
+      socketPort = socketPortStr;
+
+      socket = {
+        Unit = {
+          Description = "${capitalizedName} MCP Server Socket";
+        };
+        Socket = {
+          ListenStream = "127.0.0.1:${socketPortStr}";
+          Accept = false;
+        };
+        Install = {
+          WantedBy = [ "sockets.target" ];
+        };
+      };
+
+      backendService = {
+        Unit = {
+          Description = "${capitalizedName} MCP Server";
+          StopWhenUnneeded = true;
+        };
+        Service = {
+          Type = "simple";
+          ExecStart = "${mcp-proxy} --port ${backendPortStr} ${package}";
+          Environment = env;
+          RuntimeMaxSec = 600;
+          Restart = "on-failure";
+          RestartSec = 10;
+        };
+      };
+
+      proxyService = {
+        Unit = {
+          Description = "${capitalizedName} MCP Server Proxy";
+          Requires = [
+            "mcp-${name}.socket"
+            "mcp-${name}-backend.service"
+          ];
+          After = [
+            "mcp-${name}.socket"
+            "mcp-${name}-backend.service"
+          ];
+          StartLimitIntervalSec = 300;
+          StartLimitBurst = 3;
+        };
+        Service = {
+          Type = "notify";
+          ExecStart = "${pkgs.systemd}/lib/systemd/systemd-socket-proxyd 127.0.0.1:${backendPortStr}";
+          RuntimeMaxSec = 600;
+        };
+      };
+    };
+
+  # Generate all server configurations
+  serverConfigs = lib.imap0 mkMcpServer localServers;
+
+  # Convert to attribute sets for systemd
+  allSockets = lib.listToAttrs (
+    map (s: {
+      name = "mcp-${s.name}";
+      value = s.socket;
+    }) serverConfigs
+  );
+
+  allServices = lib.listToAttrs (
+    lib.concatMap (s: [
+      {
+        name = "mcp-${s.name}-backend";
+        value = s.backendService;
+      }
+      {
+        name = "mcp-${s.name}";
+        value = s.proxyService;
+      }
+    ]) serverConfigs
+  );
+
+  # Generate MCP server URLs
+  localMcpServers = lib.listToAttrs (
+    map (s: {
+      name = s.name;
+      value = {
+        url = "http://127.0.0.1:${s.socketPort}/sse";
+      };
+    }) serverConfigs
+  );
+in
+{
+  home.packages = [ pkgs.mcp-proxy ] ++ (map (s: pkgs.${s.package}) localServers);
+
   programs.mcp.enable = true;
   programs.mcp.servers = {
     github = {
@@ -13,107 +130,9 @@
         Authorization = "Bearer {file:${config.age.secrets."github/claude-code".path}}";
       };
     };
-    nixos.url = "http://127.0.0.1:9000/sse";
-    zotero.url = "http://127.0.0.1:9001/sse";
-  };
-  systemd.user.sockets = {
-    mcp-nixos = {
-      Unit = {
-        Description = "NixOS MCP Server Socket";
-      };
-      Socket = {
-        ListenStream = "127.0.0.1:9000";
-        Accept = false;
-      };
-      Install = {
-        WantedBy = [ "sockets.target" ];
-      };
-    };
-    mcp-zotero = {
-      Unit = {
-        Description = "Zotero MCP Server Socket";
-      };
-      Socket = {
-        ListenStream = "127.0.0.1:9001";
-        Accept = false;
-      };
-      Install = {
-        WantedBy = [ "sockets.target" ];
-      };
-    };
-  };
-  systemd.user.services =
-    let
-      lib = pkgs.lib;
-      mcp-proxy = lib.getExe pkgs.mcp-proxy;
-    in
-    {
-      mcp-nixos-backend = {
-        Unit = {
-          Description = "NixOS MCP Server";
-          StopWhenUnneeded = true;
-        };
-        Service = {
-          Type = "simple";
-          ExecStart = "${mcp-proxy} --port 9100 mcp-nixos";
-          RuntimeMaxSec = 600;
-          Restart = "on-failure";
-          RestartSec = 10;
-        };
-      };
-      mcp-nixos = {
-        Unit = {
-          Description = "NixOS MCP Server Proxy";
-          Requires = [
-            "mcp-nixos.socket"
-            "mcp-nixos-backend.service"
-          ];
-          After = [
-            "mcp-nixos.socket"
-            "mcp-nixos-backend.service"
-          ];
-          StartLimitIntervalSec = 300;
-          StartLimitBurst = 3;
-        };
-        Service = {
-          Type = "notify";
-          ExecStart = "${pkgs.systemd}/lib/systemd/systemd-socket-proxyd 127.0.0.1:9100";
-          RuntimeMaxSec = 600;
-        };
-      };
-      mcp-zotero-backend = {
-        Unit = {
-          Description = "Zotero MCP Server";
-          StopWhenUnneeded = true;
-        };
-        Service = {
-          Type = "simple";
-          ExecStart = "${mcp-proxy} --port 9101 zotero-mcp";
-          Environment = [
-            "ZOTERO_LOCAL=true"
-          ];
-          RuntimeMaxSec = 600;
-          Restart = "on-failure";
-          RestartSec = 10;
-        };
-      };
-      mcp-zotero = {
-        Unit = {
-          Description = "Zotero MCP Server Proxy";
-          Requires = [
-            "mcp-zotero.socket"
-            "mcp-zotero-backend.service"
-          ];
-          After = [
-            "mcp-zotero.socket"
-            "mcp-zotero-backend.service"
-          ];
-        };
-        Service = {
-          Type = "notify";
-          ExecStart = "${pkgs.systemd}/lib/systemd/systemd-socket-proxyd 127.0.0.1:9101";
-          RuntimeMaxSec = 600;
-        };
-      };
-    };
+  }
+  // localMcpServers;
+
+  systemd.user.sockets = allSockets;
+  systemd.user.services = allServices;
 }
