@@ -1,10 +1,6 @@
 { pkgs, ... }:
-
 {
   home = {
-    username = "hasundue";
-    stateVersion = "25.05";
-
     packages = with pkgs; [
       act
       google-cloud-sdk
@@ -14,10 +10,11 @@
       ngrok
       tree
     ];
+    stateVersion = "25.05";
+    username = "hasundue";
   };
-
   imports = [
-    ./agenix.nix
+    ./agenix
     ./mcp.nix
     ./claude-code
     ./fish.nix
@@ -29,7 +26,6 @@
     ./opencode
     ./television.nix
   ];
-
   programs = {
     direnv = {
       enable = true;

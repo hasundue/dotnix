@@ -4,14 +4,16 @@
   lib,
   ...
 }:
-
 let
   h = config.home.homeDirectory;
-
-  secrets = lib.mapAttrs' (name: value: {
-    name = lib.removeSuffix ".age" name;
-    value.file = ../secrets/${name};
-  }) (import ../secrets/secrets.nix);
+  secrets =
+    import ./secrets.nix
+    |> lib.mapAttrs' (
+      name: value: {
+        name = lib.removeSuffix ".age" name;
+        value.file = ./${name};
+      }
+    );
 in
 {
   age = {
@@ -20,6 +22,5 @@ in
     secretsDir = "${h}/.agenix/secrets";
     secretsMountPoint = "${h}/.agenix/secrets.d";
   };
-
   home.packages = with pkgs; [ agenix ];
 }

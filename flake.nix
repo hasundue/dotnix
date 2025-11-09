@@ -133,6 +133,7 @@
             niri.nixosModules.niri
             home-manager.nixosModules.home-manager
             stylix.nixosModules.stylix
+            ./configs/stylix.nix
           ]
           ++ modules;
         };
@@ -158,7 +159,7 @@
           modules = with inputs; [
             nixos-hardware.nixosModules.lenovo-thinkpad-x1-extreme
             python-validity.nixosModules."06cb-009a-fingerprint-sensor"
-            ./hosts/x1carbon
+            ./configs/hosts/x1carbon
           ];
         };
         # NixOS-WSL
@@ -166,7 +167,7 @@
           system = "x86_64-linux";
           modules = with inputs; [
             nixos-wsl.nixosModules.default
-            ./hosts/wsl
+            ./configs/hosts/wsl
           ];
         };
       };
