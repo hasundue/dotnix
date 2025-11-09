@@ -15,12 +15,12 @@
   };
   imports = [
     ./agenix
-    ./mcp.nix
     ./claude-code
     ./fish.nix
     ./git.nix
     ./gh.nix
     ./lazygit.nix
+    ./mcp
     ./neovim.nix
     ./nix.nix
     ./opencode
