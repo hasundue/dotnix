@@ -35,9 +35,7 @@
     };
     firefox-addons = {
       url = "sourcehut:~rycee/nur-expressions?dir=pkgs/firefox-addons";
-      inputs = {
-        nixpkgs.follows = "nixpkgs";
-      };
+      inputs.nixpkgs.follows = "nixpkgs";
     };
     git-hooks-nix = {
       url = "github:cachix/git-hooks.nix";
@@ -80,6 +78,7 @@
     # My Personal Projects
     nvim = {
       url = "github:hasundue/nvim";
+      inputs.nixpkgs.follows = "nixpkgs";
     };
   };
   outputs =
