@@ -96,11 +96,13 @@
     }@inputs:
     let
       lib = nixpkgs.lib;
-      overlays = builtins.attrValues self.overlays ++ [
+      overlays = [
+        self.overlays.temporal # This must come first
         agenix.overlays.default
         niri.overlays.niri
         nvim.overlays.default
-      ];
+      ]
+      ++ (self.overlays |> lib.filterAttrs (n: v: n != "temporal") |> lib.attrValues);
       systems = [
         "x86_64-linux"
         "aarch64-linux"

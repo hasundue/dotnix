@@ -2,7 +2,7 @@
 # This overlay applies transparency patches to the OpenCode package from nixpkgs
 
 final: prev: {
-  opencode = final.opencode.overrideAttrs (old: {
+  opencode = prev.opencode.overrideAttrs (old: {
     postPatch = ''
       # Set theme background to fully transparent
       ${final.jq}/bin/jq '
