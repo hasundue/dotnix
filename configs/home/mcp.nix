@@ -1,46 +1,48 @@
 { config, pkgs, ... }:
 let
   lib = pkgs.lib;
-  mcp-proxy = lib.getExe pkgs.mcp-proxy;
+
+  remoteServers = {
+    github = {
+      url = "https://api.githubcopilot.com/mcp/";
+      headers = {
+        Authorization = "Bearer {file:${config.age.secrets."github/claude-code".path}}";
+      };
+    };
+  };
 
   # Define local MCP servers with minimal configuration
-  localServers = [
-    {
-      name = "nixos";
+  stdioServers = {
+    nixos = {
       package = "mcp-nixos";
-    }
-    {
-      name = "zotero";
+    };
+    zotero = {
       package = "zotero-mcp";
       env = [ "ZOTERO_LOCAL=true" ];
-    }
-  ];
+    };
+  };
 
   # Generate MCP server configuration with auto-assigned ports
   mkMcpServer =
-    index:
+    name: index:
     {
-      name,
       package,
       env ? [ ],
     }:
     let
       socketPort = 9000 + index;
       backendPort = 9100 + index;
-      socketPortStr = toString socketPort;
-      backendPortStr = toString backendPort;
       capitalizedName = lib.toUpper (lib.substring 0 1 name) + lib.substring 1 (-1) name;
     in
     {
-      inherit name;
-      socketPort = socketPortStr;
+      inherit name socketPort;
 
       socket = {
         Unit = {
           Description = "${capitalizedName} MCP Server Socket";
         };
         Socket = {
-          ListenStream = "127.0.0.1:${socketPortStr}";
+          ListenStream = "127.0.0.1:${socketPort}";
           Accept = false;
         };
         Install = {
@@ -55,7 +57,7 @@ let
         };
         Service = {
           Type = "simple";
-          ExecStart = "${mcp-proxy} --port ${backendPortStr} ${package}";
+          ExecStart = "${lib.getExe pkgs.mcp-proxy} --port ${backendPort} ${package}";
           Environment = env;
           RuntimeMaxSec = 600;
           Restart = "on-failure";
@@ -79,14 +81,16 @@ let
         };
         Service = {
           Type = "notify";
-          ExecStart = "${pkgs.systemd}/lib/systemd/systemd-socket-proxyd 127.0.0.1:${backendPortStr}";
+          ExecStart = "${pkgs.systemd}/lib/systemd/systemd-socket-proxyd 127.0.0.1:${backendPort}";
           RuntimeMaxSec = 600;
         };
       };
     };
 
   # Generate all server configurations
-  serverConfigs = lib.imap0 mkMcpServer localServers;
+  serverConfigs = lib.imap0 (i: { name, value }: mkMcpServer name i value) (
+    lib.attrsToList stdioServers
+  );
 
   # Convert to attribute sets for systemd
   allSockets = lib.listToAttrs (
@@ -120,18 +124,10 @@ let
   );
 in
 {
-  home.packages = [ pkgs.mcp-proxy ] ++ (map (s: pkgs.${s.package}) localServers);
+  home.packages = map (s: pkgs.${s.package}) (lib.attrValues stdioServers);
 
   programs.mcp.enable = true;
-  programs.mcp.servers = {
-    github = {
-      url = "https://api.githubcopilot.com/mcp/";
-      headers = {
-        Authorization = "Bearer {file:${config.age.secrets."github/claude-code".path}}";
-      };
-    };
-  }
-  // localMcpServers;
+  programs.mcp.servers = remoteServers // localMcpServers;
 
   systemd.user.sockets = allSockets;
   systemd.user.services = allServices;
