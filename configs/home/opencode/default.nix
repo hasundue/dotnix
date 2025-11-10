@@ -1,4 +1,4 @@
-{ lib, ... }:
+{ config, lib, ... }:
 
 let
   models = {
@@ -81,10 +81,9 @@ in
           "git push" = "deny";
         };
       };
-      tools = {
-        "nixos_*" = false;
-        "github_*" = false;
-      };
+      tools = lib.mapAttrs' (
+        name: server: lib.nameValuePair "${name}_*" false
+      ) config.programs.mcp.servers;
     };
   };
 
