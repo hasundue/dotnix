@@ -2,12 +2,7 @@
 {
   home = {
     packages = with pkgs; [
-      act
-      google-cloud-sdk
-      jq
-      just
       julia-bin
-      ngrok
       tree
     ];
     stateVersion = "25.05";
@@ -39,6 +34,7 @@
       silent = true;
     };
     fd.enable = true;
+    jq.enable = true;
     ripgrep.enable = true;
     zellij.enable = true;
   };
