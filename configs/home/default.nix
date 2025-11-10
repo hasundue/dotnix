@@ -27,6 +27,7 @@
     ./television.nix
   ];
   programs = {
+    btop.enable = true;
     direnv = {
       enable = true;
       config = {
