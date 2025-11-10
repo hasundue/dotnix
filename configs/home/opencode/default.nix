@@ -18,17 +18,11 @@ in
       - Use fenced code blocks for all multi-line code/output (e.g. ``` ... ```).
       - Always include a language tag when possible (e.g., ```ts, ```sh, ```json, ```diff).
 
-      ## GitHub Operations
-      - For ANY GitHub-related operations (checking issues, PRs, creating issues/PRs, searching
-        GitHub resources, etc.), you MUST use the Task tool with the github subagent instead of
-        using the gh command directly via Bash.
-
       ## Web Research Operations
       - For extensive web research (multiple pages, synthesis needed, uncertain scope), use the
         Task tool with the web-research subagent instead of WebFetch directly.
       - For targeted lookups (specific fact, known concise page, user-provided URL), direct
         WebFetch is acceptable.
-      - Prefer local tools (Read, raw URLs) over web fetches when possible.
     '';
 
     settings = {
@@ -39,19 +33,6 @@ in
               "curl" = "allow";
               "nix eval" = "allow";
             };
-          };
-        };
-        github = {
-          description = "Helps with GitHub operations like creating PRs, issues, and searching resources.";
-          mode = "subagent";
-          model = models.subagent;
-          prompt = ''
-            You are a helpful assistant that specializes in performing GitHub operations.
-            You will be provided with specific instructions and context to carry out these tasks effectively.
-          '';
-          tools = {
-            "*" = false;
-            "github_*" = true;
           };
         };
         web-research = {

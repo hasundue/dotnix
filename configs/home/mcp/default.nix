@@ -11,6 +11,7 @@ let
       headers = {
         Authorization = "Bearer {file:${config.age.secrets."github/claude-code".path}}";
       };
+      disabled = true;
     };
   };
   stdioServers = {
