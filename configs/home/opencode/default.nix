@@ -1,5 +1,8 @@
-{ config, lib, ... }:
-
+{
+  config,
+  lib,
+  ...
+}:
 let
   models = {
     main = "{env:OPENCODE_MODEL}";
@@ -54,12 +57,28 @@ in
           };
         };
       };
+      formatter = {
+        nixfmt = {
+          command = [
+            "nixfmt"
+            "$FILE"
+          ];
+          extensions = [ ".nix" ];
+        };
+      };
+      lsp = {
+        nixd = {
+          command = [ "nixd" ];
+          extensions = [ ".nix" ];
+        };
+      };
       model = models.main;
       theme = lib.mkForce "kanagawa";
       permission = {
         bash = {
           "curl" = "allow";
           "git push" = "deny";
+          "nixos-rebuild" = "deny";
         };
       };
       tools = lib.mapAttrs' (

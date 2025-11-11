@@ -21,8 +21,10 @@ let
   };
 in
 pkgs.mkShellNoCC {
-  packages = [
-    pkgs.nil
+  packages = with pkgs; [
+    nil
+    nixd
+    nixfmt
     treefmt
   ];
   shellHook = git-hooks.shellHook;
