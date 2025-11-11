@@ -94,7 +94,18 @@
       ...
     }@inputs:
     let
+      hosts = {
+        x1carbon = {
+          system = "x86_64-linux";
+          desktop = true;
+        };
+        nixos = {
+          system = "x86_64-linux";
+          desktop = false;
+        };
+      };
       lib = nixpkgs.lib;
+      systems = lib.attrValues hosts |> lib.map (h: h.system) |> lib.uniqueStrings;
       overlays = [
         self.overlays.temporal # This must come first
         agenix.overlays.default
@@ -102,10 +113,6 @@
         nvim.overlays.default
       ]
       ++ (self.overlays |> lib.filterAttrs (n: v: n != "temporal") |> lib.attrValues);
-      systems = [
-        "x86_64-linux"
-        "aarch64-linux"
-      ];
       pkgsFor = lib.genAttrs systems (
         system:
         import nixpkgs {
@@ -136,7 +143,6 @@
               ];
             }
             (metaConfig system)
-            niri.nixosModules.niri
             home-manager.nixosModules.home-manager
             stylix.nixosModules.stylix
             ./configs/stylix.nix
@@ -157,7 +163,6 @@
             }
             (metaConfig system)
             agenix.homeManagerModules.default
-            niri.homeModules.niri
             stylix.homeModules.stylix
             ./configs/stylix.nix
             ./configs/home
@@ -184,6 +189,7 @@
         x1carbon = {
           system = "x86_64-linux";
           modules = with inputs; [
+            niri.nixosModules.niri
             nixos-hardware.nixosModules.lenovo-thinkpad-x1-extreme
             python-validity.nixosModules."06cb-009a-fingerprint-sensor"
             ./configs/hosts/x1carbon
@@ -223,7 +229,10 @@
           {
             x1carbon = {
               system = "x86_64-linux";
-              modules = [ ./configs/home/desktop ];
+              modules = [
+                niri.homeModules.niri
+                ./configs/home/desktop
+              ];
             };
             nixos.system = "x86_64-linux";
           };
