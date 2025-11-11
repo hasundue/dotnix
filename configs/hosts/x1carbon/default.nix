@@ -40,6 +40,14 @@
     swaylock.fprintAuth = true;
   };
 
+  # Allow btop to monitor Intel GPU usage without sudo
+  security.wrappers.btop = {
+    owner = "root";
+    group = "root";
+    source = lib.getExe pkgs.btop |> toString;
+    capabilities = "cap_perfmon=+ep";
+  };
+
   services = {
     actkbd = {
       enable = true;
