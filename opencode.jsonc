@@ -7,5 +7,10 @@
         "nixos_darwin_*": false
       }
     }
+  },
+  "permission": {
+    "bash": {
+      "nix flake check": "deny",
+    }
   }
 }
