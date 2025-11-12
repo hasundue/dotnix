@@ -25,7 +25,6 @@ pkgs.mkShellNoCC {
   packages = with pkgs; [
     deno
     nil
-    nixd
     nixfmt
     treefmt
   ];

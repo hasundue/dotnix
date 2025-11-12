@@ -50,7 +50,7 @@ in
     };
     lsp = {
       nixd = {
-        command = [ "nixd" ];
+        command = [ "nil" ];
         extensions = [ ".nix" ];
       };
     };
