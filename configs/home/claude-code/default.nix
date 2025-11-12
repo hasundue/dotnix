@@ -1,12 +1,12 @@
 { ... }:
 {
   programs.claude-code = {
-    enable = false;
+    enable = true;
     # Disable MCP integration until `{file:...}` syntax is supported
     # mcpServers = config.programs.mcp.servers;
   };
   programs.git.ignores = [
-    ".claude/settings.local.*"
+    ".claude/"
     "CLAUDE.local.md"
   ];
 }
