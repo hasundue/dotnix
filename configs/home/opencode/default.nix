@@ -68,6 +68,24 @@ in
       };
     };
   };
+  programs.opencode.settings.provider = {
+    anthropic = {
+      models = {
+        claude-sonnet-4-5 = {
+          headers = {
+            "anthropic-beta" =
+              "claude-code-20250219,interleaved-thinking-2025-05-14,fine-grained-tool-streaming-2025-05-14,clear_tool_uses_20250919,clear_thinking_20251015";
+          };
+          options = {
+            thinking = {
+              type = "enabled";
+              budgetTokens = 16000;
+            };
+          };
+        };
+      };
+    };
+  };
   programs.git.ignores = [
     "opencode.local.json*"
   ];
