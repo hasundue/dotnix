@@ -18,6 +18,28 @@ in
   };
   programs.opencode.settings = {
     formatter = {
+      deno = {
+        command = [
+          "deno"
+          "fmt"
+          "$FILE"
+        ];
+        extensions = [
+          ".js"
+          ".jsx"
+          ".mjs"
+          ".cjs"
+          ".ts"
+          ".tsx"
+          ".mts"
+          ".cts"
+          ".md"
+          ".markdown"
+          ".json"
+          ".jsonc"
+          ".ipynb"
+        ];
+      };
       nixfmt = {
         command = [
           "nixfmt"
