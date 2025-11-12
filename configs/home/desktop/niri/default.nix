@@ -76,6 +76,7 @@ in
         matches = [
           { app-id = "^firefox$"; }
           { app-id = "^Slack$"; }
+          { app-id = "^spotify$"; }
         ];
         default-column-width = {
           proportion = 0.9;
