@@ -1,6 +1,7 @@
 # hasundue's NixOS Configuration
 
-Personal NixOS system configuration using Nix flakes for declarative system and user environment management.
+Personal NixOS system configuration using Nix flakes for declarative system and
+user environment management.
 
 ## System Configurations
 
@@ -53,6 +54,7 @@ nrs                          # Apply permanently
 ## Development Shells
 
 Enter with `nix develop .#<shell-name>`:
+
 - `default` - General development with common tools
 - `rust` - Rust development with cargo-cross
 - `python` - Python development environment
@@ -63,11 +65,13 @@ Enter with `nix develop .#<shell-name>`:
 ## Templates
 
 Initialize a new project with the default template:
+
 ```bash
 nix flake init -t github:hasundue/dotnix
 ```
 
 The default template includes:
+
 - Multi-platform Nix flake setup
 - Treefmt for automatic code formatting
 - Git pre-commit hooks
@@ -77,13 +81,18 @@ The default template includes:
 
 ### Modular Configuration
 
-Clear separation between system (`nixos/`), user (`home/`), and host-specific (`hosts/`) configurations. Desktop configurations are optional imports.
+Clear separation between system (`nixos/`), user (`home/`), and host-specific
+(`hosts/`) configurations. Desktop configurations are optional imports.
 
 ### Flake Structure
 
-Uses modern Nix flakes with proper input management. All inputs follow nixpkgs for consistency to reduce duplication.
+Uses modern Nix flakes with proper input management. All inputs follow nixpkgs
+for consistency to reduce duplication.
 
-**Input Isolation**: Flake inputs are handled exclusively in `flake.nix` and exposed to modules via overlays. Modules never receive `inputs` directly, keeping them pure and reusable. External packages are accessed through `pkgs.*` after being added to overlays.
+**Input Isolation**: Flake inputs are handled exclusively in `flake.nix` and
+exposed to modules via overlays. Modules never receive `inputs` directly,
+keeping them pure and reusable. External packages are accessed through `pkgs.*`
+after being added to overlays.
 
 ### Configuration Flow
 

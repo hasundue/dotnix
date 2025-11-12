@@ -6,8 +6,9 @@
 let
   system = pkgs.stdenv.hostPlatform.system;
   treefmt = treefmt-nix.lib.mkWrapper pkgs {
-    programs.nixfmt = {
-      enable = true;
+    programs = {
+      deno.enable = true;
+      nixfmt.enable = true;
     };
   };
   git-hooks = git-hooks-nix.lib.${system}.run {
@@ -22,6 +23,7 @@ let
 in
 pkgs.mkShellNoCC {
   packages = with pkgs; [
+    deno
     nil
     nixd
     nixfmt

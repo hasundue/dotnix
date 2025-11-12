@@ -10,7 +10,7 @@
   },
   "permission": {
     "bash": {
-      "nix flake check": "deny",
+      "nix flake check": "deny"
     }
   }
 }

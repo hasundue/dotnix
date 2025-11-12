@@ -1,23 +1,28 @@
 # OpenCode Configuration
 
-This directory contains the OpenCode configuration used across all projects managed by this NixOS setup.
+This directory contains the OpenCode configuration used across all projects
+managed by this NixOS setup.
 
 ## Architecture
 
 ### Context Management Strategy
 
-OpenCode is configured to minimize context bloat using two complementary approaches:
+OpenCode is configured to minimize context bloat using two complementary
+approaches:
 
-1. **Subagents** - For operations with many tool definitions that would bloat baseline context
+1. **Subagents** - For operations with many tool definitions that would bloat
+   baseline context
 2. **Local overrides** - For moderate-sized tool sets that are project-specific
 
-**Core Principle**: Keep baseline context lean by routing high-context operations strategically.
+**Core Principle**: Keep baseline context lean by routing high-context
+operations strategically.
 
 ### Subagent Usage
 
 #### When to Use Subagents
 
-Use subagents for operations with **many tool definitions** (high baseline cost):
+Use subagents for operations with **many tool definitions** (high baseline
+cost):
 
 - **GitHub operations** - Use github subagent instead of direct GitHub MCP tools
   - GitHub MCP exposes many tools (issues, PRs, releases, checks, etc.)
@@ -36,7 +41,8 @@ Use subagents for operations with **many tool definitions** (high baseline cost)
 
 #### When to Use Local Overrides
 
-Use local `opencode.jsonc` files for **moderate tool sets** that are project-specific:
+Use local `opencode.jsonc` files for **moderate tool sets** that are
+project-specific:
 
 - **NixOS tools** - Disabled globally, enabled per-project
   - ~18 tool definitions (~2K tokens) - moderate cost
@@ -93,13 +99,16 @@ Project-specific tools are enabled via `opencode.jsonc` in the repository root:
 
 ### MCP Integration
 
-MCP servers are configured centrally in `home/mcp.nix` and automatically integrated via `enableMcpIntegration = true`.
+MCP servers are configured centrally in `home/mcp.nix` and automatically
+integrated via `enableMcpIntegration = true`.
 
 **Architecture**:
+
 - MCP servers are always available (configured in `home/mcp.nix`)
 - Tool visibility is controlled separately:
   - **Heavy tool sets** → Routed through subagents
-  - **Moderate tool sets** → Disabled globally, enabled per-project via `opencode.jsonc`
+  - **Moderate tool sets** → Disabled globally, enabled per-project via
+    `opencode.jsonc`
   - **Lightweight tools** → Enabled in main context
 
 ## Usage
@@ -111,20 +120,24 @@ MCP servers are configured centrally in `home/mcp.nix` and automatically integra
 
 ### Custom Theme
 
-Uses `kanagawa-transparent` theme matching the overall system aesthetic (Stylix + Kanagawa).
+Uses `kanagawa-transparent` theme matching the overall system aesthetic
+(Stylix + Kanagawa).
 
 ## Philosophy
 
 This configuration uses a two-tier strategy for context management:
 
 ### 1. Subagents (for high tool count)
+
 - **Trade-off**: Higher latency vs. zero baseline context cost
 - **Use when**: Tool set has 30+ definitions (e.g., GitHub MCP)
 - **Benefit**: Keeps baseline context minimal regardless of tool complexity
 
 ### 2. Local Overrides (for moderate, project-specific tools)
+
 - **Trade-off**: Small baseline cost (~2K tokens) vs. zero latency
 - **Use when**: Tool set is moderate (10-20 tools) and project-specific
 - **Benefit**: Direct access without round-trip overhead when needed
 
-The architecture prioritizes context efficiency while avoiding unnecessary latency for moderate-sized, frequently-used tool sets.
+The architecture prioritizes context efficiency while avoiding unnecessary
+latency for moderate-sized, frequently-used tool sets.
