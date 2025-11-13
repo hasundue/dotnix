@@ -14,7 +14,7 @@ in
   programs.opencode = {
     enable = true;
     enableMcpIntegration = true;
-    rules = toString ./rules.md;
+    rules = ./rules.md;
   };
   programs.opencode.settings = {
     formatter = {
