@@ -60,6 +60,7 @@ in
         "curl" = "allow";
         "git commit" = "ask";
         "git push" = "ask";
+        "nix eval" = "allow";
         "nixos-rebuild" = "deny";
       };
     };
@@ -71,13 +72,6 @@ in
   programs.opencode.settings.agent = {
     general = {
       model = models.subagent;
-    };
-    plan = {
-      permission = {
-        bash = {
-          "nix eval" = "allow";
-        };
-      };
     };
     web-research = {
       description = "Performs web research and returns concise summaries.";
