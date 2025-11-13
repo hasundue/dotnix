@@ -42,6 +42,7 @@ in
       modules-right = [
         "custom/fcitx5"
         "network"
+        "memory"
         "pulseaudio"
         "backlight"
         "battery"
@@ -78,6 +79,16 @@ in
         max-length = 3;
 
         tooltip-format-wifi = "Network: {essid}\nIP Addr: {ipaddr}/{cidr}\nStrength: {signalStrength}%\nFrequency: {frequency} GHz";
+      };
+
+      memory = {
+        format = "󰍛 {percentage}%";
+        interval = 1;
+
+        min-length = 6;
+        max-length = 6;
+
+        tooltip-format = "Used: {used:0.1f}GiB / {total:0.1f}GiB";
       };
 
       pulseaudio = {
