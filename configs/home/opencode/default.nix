@@ -89,13 +89,23 @@ in
       models = {
         claude-sonnet-4-5 = {
           headers = {
-            "anthropic-beta" =
-              "claude-code-20250219,interleaved-thinking-2025-05-14,fine-grained-tool-streaming-2025-05-14,clear_tool_uses_20250919,clear_thinking_20251015";
+            "anthropic-beta" = lib.concatStringsSep "," [
+              "claude-code-20250219"
+              "interleaved-thinking-2025-05-14"
+              "fine-grained-tool-streaming-2025-05-14"
+              "context-management-2025-06-27"
+            ];
           };
           options = {
             thinking = {
               type = "enabled";
               budgetTokens = 16000;
+            };
+            context_management = {
+              edits = [
+                { type = "clear_tool_uses_20250919"; }
+                { type = "clear_thinking_20251015"; }
+              ];
             };
           };
         };
