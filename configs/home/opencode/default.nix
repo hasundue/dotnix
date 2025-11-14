@@ -85,9 +85,13 @@ in
     };
   };
   programs.opencode.settings.provider = {
-    anthropic = {
-      models = {
-        claude-sonnet-4-5 = {
+    anthropic.models =
+      lib.genAttrs
+        [
+          "claude-sonnet-4-5"
+          "claude-haiku-4-5"
+        ]
+        (model: {
           headers = {
             "anthropic-beta" = lib.concatStringsSep "," [
               "claude-code-20250219"
@@ -98,7 +102,7 @@ in
           };
           options = {
             thinking = {
-              type = "enabled";
+              type = "disabled"; # while /thinking is unavailable
               budgetTokens = 16000;
             };
             context_management = {
@@ -108,9 +112,8 @@ in
               ];
             };
           };
-        };
-      };
-    };
+        });
+
   };
   programs.git.ignores = [
     "opencode.local.json*"
