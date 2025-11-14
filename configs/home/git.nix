@@ -1,5 +1,4 @@
 { pkgs, ... }:
-
 {
   programs.git = {
     enable = true;
@@ -10,12 +9,9 @@
       ".envrc"
     ];
     settings = {
-      # credential."https://github.com".helper = "${pkgs.gh}/bin/gh auth git-credential";
       fetch.prune = true;
-      ghq.root = "~/dev";
-      init = {
-        defaultBranch = "main";
-      };
+      ghq.root = "~/.cache/ghq";
+      init.defaultBranch = "main";
       pull.rebase = true;
       push.autoSetupRemote = true;
       user = {
@@ -24,7 +20,6 @@
       };
     };
   };
-
   home.packages = with pkgs; [
     ghq
   ];
