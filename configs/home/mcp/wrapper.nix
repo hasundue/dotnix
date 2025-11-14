@@ -6,7 +6,7 @@ lib.attrsToList stdioServers
   { name, value }:
   let
     package = value.package;
-    env = value.env or [ ];
+    env = value.env or { };
     socketPort = 9000 + i |> toString;
     backendPort = 9100 + i |> toString;
     capitalizedName = lib.toUpper (lib.substring 0 1 name) + lib.substring 1 (-1) name;
@@ -34,8 +34,21 @@ lib.attrsToList stdioServers
       };
       Service = {
         Type = "simple";
-        ExecStart = "${lib.getExe pkgs.mcp-proxy} --port ${backendPort} ${lib.getExe package}";
-        Environment = env;
+        ExecStart = lib.concatStringsSep " " (
+          [
+            "${lib.getExe pkgs.mcp-proxy}"
+            "--port"
+            backendPort
+          ]
+          ++ (lib.concatLists (
+            lib.mapAttrsToList (k: v: [
+              "--env"
+              k
+              v
+            ]) env
+          ))
+          ++ [ "${lib.getExe package}" ]
+        );
         RuntimeMaxSec = 600;
         Restart = "on-failure";
         RestartSec = 10;

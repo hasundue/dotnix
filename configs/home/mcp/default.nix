@@ -20,7 +20,9 @@ let
     };
     zotero = {
       package = pkgs.zotero-mcp;
-      env = [ "ZOTERO_LOCAL=true" ];
+      env = {
+        ZOTERO_LOCAL = "true";
+      };
     };
   };
   mkLocalServerConfigs = import ./wrapper.nix { inherit pkgs lib; };
