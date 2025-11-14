@@ -4,6 +4,8 @@
 final: prev: {
   opencode = prev.opencode.overrideAttrs (old: {
     postPatch = ''
+      ${old.postPatch or ""}
+
       # Set theme background to fully transparent
       ${final.jq}/bin/jq '
         .defs.none = "#00000000" |
