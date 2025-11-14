@@ -10,7 +10,19 @@
 - Assume you are in the project root directory and avoid unnecessary `cd`
   commands.
 
-## Web Research Operations
+## Repository Access and Code Inspection Workflow
+
+When analyzing code from GitHub or similar sources, **do not use WebFetch for
+individual files**.
+
+1. **Clone the repository locally with `ghq`** (reuse the clone if it already
+   exists).
+2. **Use the Read tool** to inspect all files from the local clone.
+3. Use WebFetch **only** for resources outside the repository.
+
+Always operate on the local `ghq` clone for code analysis.
+
+## Web Research Workflow
 
 - For extensive web research (multiple pages, synthesis needed, uncertain
   scope), use the Task tool with the web-research subagent instead of WebFetch
