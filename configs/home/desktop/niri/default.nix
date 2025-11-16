@@ -67,7 +67,10 @@ in
         };
       }
       {
-        matches = [ { app-id = "^org.wezfurlong.wezterm$"; } ];
+        matches = [
+          { app-id = "^kitty$"; }
+          { app-id = "^org.wezfurlong.wezterm$"; }
+        ];
         default-column-width = {
           proportion = 0.5;
         };
@@ -126,7 +129,7 @@ in
     binds = with config.lib.niri.actions; {
       "Mod+Shift+Slash".action = show-hotkey-overlay;
 
-      "Mod+T".action = spawn "wezterm";
+      "Mod+T".action = spawn "kitty";
       "Mod+D".action = spawn "fuzzel";
       "Super+Alt+L".action = spawn "swaylock";
 
