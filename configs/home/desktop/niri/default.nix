@@ -105,7 +105,7 @@ in
     };
 
     layout = {
-      gaps = 8;
+      gaps = 4;
       always-center-single-column = true;
       empty-workspace-above-first = true;
 
@@ -120,9 +120,9 @@ in
       shadow.enable = true;
 
       tab-indicator = {
-        gap = 4;
+        gap = 0;
         position = "top";
-        gaps-between-tabs = 8;
+        gaps-between-tabs = 0;
         corner-radius = 4.0;
       };
     };
