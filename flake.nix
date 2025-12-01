@@ -1,11 +1,9 @@
 {
   description = "hasundue's system configuration";
   inputs = {
-    # Official NixOS Registries
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
     nixpkgs-master.url = "github:nixos/nixpkgs/master";
     nixos-hardware.url = "github:nixos/nixos-hardware";
-    # Nix-Community Projects
     flake-compat = {
       url = "github:nix-community/flake-compat";
       flake = false;
@@ -24,7 +22,6 @@
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.systems.follows = "systems";
     };
-    # 3rd Party Projects
     agenix = {
       url = "github:ryantm/agenix";
       inputs = {
@@ -75,7 +72,6 @@
         pyproject-nix.follows = "pyproject-nix";
       };
     };
-    # My Personal Projects
     nvim = {
       url = "github:hasundue/nvim";
       inputs.nixpkgs.follows = "nixpkgs";
