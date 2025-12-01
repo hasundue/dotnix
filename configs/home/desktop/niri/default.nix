@@ -80,6 +80,7 @@ in
           { app-id = "^firefox$"; }
           { app-id = "^Slack$"; }
           { app-id = "^spotify$"; }
+          { app-id = "^chromium-browser$"; }
         ];
         default-column-width = {
           proportion = 0.9;
