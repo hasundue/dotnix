@@ -5,11 +5,6 @@
 - Use fenced code blocks for all multi-line code/output (e.g. `...`).
 - Always include a language tag when possible (e.g., `ts,`sh, `json,`diff).
 
-## Bash Commands
-
-- Assume you are in the project root directory and avoid unnecessary `cd`
-  commands.
-
 ## Repository Access and Code Inspection Workflow
 
 When analyzing code from GitHub or similar sources, **do not use WebFetch for
