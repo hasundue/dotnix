@@ -1,14 +1,12 @@
 { ... }:
-
 {
   programs.television = {
     enable = true;
-    enableFishIntegration = true;
+    # TODO: re-enable after https://nixpkgs-tracker.ocfox.me/?pr=472586
+    enableFishIntegration = false;
   };
-
   programs.nix-search-tv = {
     enable = true;
-    enableTelevisionIntegration = true;
     settings = {
       indexes = [
         "nixpkgs"
