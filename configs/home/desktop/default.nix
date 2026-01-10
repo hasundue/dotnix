@@ -20,14 +20,13 @@
       discord
 
       # desktop
-      hicolor-icon-theme
       adwaita-icon-theme # For input-keyboard-symbolic
+      hicolor-icon-theme
+      thunar
       qt5.qtwayland
       qt6.qtwayland
-      xfce.thunar
 
       # tools
-      grim
       slurp
       wl-clipboard
       xdg-utils
