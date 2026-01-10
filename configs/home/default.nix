@@ -3,6 +3,7 @@
   home = {
     packages = with pkgs; [
       julia-bin
+      lsof
       tree
     ];
     stateVersion = "25.11";
