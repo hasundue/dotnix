@@ -34,7 +34,17 @@
     fish.enable = true;
     nix-ld = {
       enable = true;
-      libraries = [ ];
+      # https://github.com/cloudflare/workerd/discussions/1515#discussioncomment-10024333
+      libraries = with pkgs; [
+        stdenv.cc.cc
+        zlib
+        fuse3
+        icu
+        nss
+        openssl
+        curl
+        expat
+      ];
     };
   };
 
