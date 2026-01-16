@@ -202,7 +202,7 @@
             ;
         };
         temporal = import ./overlays/temporal.nix {
-          opencode = nixpkgs-master;
+          # opencode = nixpkgs-master;
         };
       };
       packages = forEachSystem (pkgs: {
