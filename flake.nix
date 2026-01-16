@@ -41,7 +41,7 @@
     };
     mcp-nixos = {
       url = "github:utensils/mcp-nixos";
-      inputs.nixpkgs.follows = "nixpkgs";
+      # inputs.nixpkgs.follows = "nixpkgs";
     };
     niri.url = "github:sodiboo/niri-flake";
     python-validity = {
