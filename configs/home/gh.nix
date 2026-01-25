@@ -2,12 +2,7 @@
 
 {
   programs = {
-    gh = {
-      enable = true;
-      extensions = [
-        pkgs.gh-copilot
-      ];
-    };
+    gh.enable = true;
     gh-dash.enable = true;
   };
 
