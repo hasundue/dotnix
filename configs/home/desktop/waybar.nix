@@ -35,6 +35,8 @@ in
       layer = "top";
       output = [
         "eDP-1"
+        "DP-1"
+        "DP-2"
         "HDMI-A-1"
       ];
       height = 32;
