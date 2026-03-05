@@ -13,6 +13,7 @@
     ./agenix
     ./claude-code
     ./fish.nix
+    ./gemini.nix
     ./git.nix
     ./gh.nix
     ./lazygit.nix
