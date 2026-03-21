@@ -74,6 +74,7 @@ in
       }
       {
         matches = [
+          { app-id = "^dev.zed.Zed$"; }
           { app-id = "^firefox$"; }
           { app-id = "^google-chrome$"; }
           { app-id = "^Slack$"; }
