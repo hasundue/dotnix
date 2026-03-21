@@ -16,23 +16,22 @@
 
   home = {
     packages = with pkgs; [
-      # communication
+      # apps
       discord
+      google-chrome
+      zotero
 
       # desktop
       adwaita-icon-theme # For input-keyboard-symbolic
       hicolor-icon-theme
-      thunar
       qt5.qtwayland
       qt6.qtwayland
 
       # tools
       slurp
+      thunar
       wl-clipboard
       xdg-utils
-
-      # research
-      zotero
     ];
 
     sessionVariables = {

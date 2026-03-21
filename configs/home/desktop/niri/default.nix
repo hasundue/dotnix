@@ -75,6 +75,7 @@ in
       {
         matches = [
           { app-id = "^firefox$"; }
+          { app-id = "^google-chrome$"; }
           { app-id = "^Slack$"; }
           { app-id = "^spotify$"; }
           { app-id = "^chromium-browser$"; }
