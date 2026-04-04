@@ -12,16 +12,13 @@
   };
   imports = [
     ./agenix
-    ./claude-code
     ./fish.nix
-    ./gemini.nix
     ./git.nix
     ./gh.nix
     ./lazygit.nix
     ./mcp
     ./neovim.nix
     ./nix.nix
-    ./opencode
     ./television.nix
     ./zed.nix
   ];
