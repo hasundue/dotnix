@@ -1,6 +1,34 @@
 { pkgs, ... }:
 
 let
+  niri-monitor = pkgs.writeShellScript "niri-monitor" ''
+    outputs=$(${pkgs.niri-stable}/bin/niri msg --json outputs 2>/dev/null) || exit 0
+
+    ext=$(echo "$outputs" | ${pkgs.jq}/bin/jq -c '[.[] | select(.name != "eDP-1")] | first // empty')
+    [ -z "$ext" ] && exit 0
+
+    if echo "$ext" | ${pkgs.jq}/bin/jq -e '.current_mode != null' > /dev/null; then
+      echo "$ext" | ${pkgs.jq}/bin/jq -c '{text: "󰍹", class: "active", tooltip: (.model + " (" + .name + ")")}'
+    else
+      echo "$ext" | ${pkgs.jq}/bin/jq -c '{text: "󰍹", class: "inactive", tooltip: (.model + " (" + .name + ")")}'
+    fi
+  '';
+
+  niri-monitor-toggle = pkgs.writeShellScript "niri-monitor-toggle" ''
+    outputs=$(${pkgs.niri-stable}/bin/niri msg --json outputs 2>/dev/null) || exit 1
+
+    connector=$(echo "$outputs" | ${pkgs.jq}/bin/jq -r '[.[] | select(.name != "eDP-1")] | first | .name // empty')
+    [ -z "$connector" ] && exit 1
+
+    is_on=$(echo "$outputs" | ${pkgs.jq}/bin/jq -r '[.[] | select(.name != "eDP-1")] | first | .current_mode != null')
+
+    if [ "$is_on" = "true" ]; then
+      ${pkgs.niri-stable}/bin/niri msg output "$connector" off
+    else
+      ${pkgs.niri-stable}/bin/niri msg output "$connector" on
+    fi
+  '';
+
   fcitx5-status = pkgs.writeShellScript "fcitx5-status" ''
     IM=$(${pkgs.fcitx5}/bin/fcitx5-remote -n 2>/dev/null)
 
@@ -29,6 +57,9 @@ in
       tooltip {
         border: none;
       }
+      #custom-monitor.inactive {
+        opacity: 0.4;
+      }
     '';
 
     settings.main = {
@@ -43,6 +74,7 @@ in
 
       modules-right = [
         "custom/fcitx5"
+        "custom/monitor"
         "network"
         "memory"
         "pulseaudio"
@@ -60,10 +92,23 @@ in
         on-click = "${pkgs.fcitx5}/bin/fcitx5-remote -t";
         exec-if = "${pkgs.procps}/bin/pgrep fcitx5";
 
-        min-length = 6;
-        max-length = 6;
+        min-length = 7;
+        max-length = 7;
 
         tooltip = false;
+      };
+
+      "custom/monitor" = {
+        exec = "${niri-monitor}";
+        return-type = "json";
+        interval = 1;
+
+        on-click = "${niri-monitor-toggle}";
+
+        min-length = 3;
+        max-length = 3;
+
+        tooltip = true;
       };
 
       network = {
