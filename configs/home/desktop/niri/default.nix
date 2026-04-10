@@ -65,12 +65,8 @@ in
       {
         matches = [
           { app-id = "^kitty$"; }
-          { app-id = "^org.wezfurlong.wezterm$"; }
         ];
         default-column-display = "tabbed";
-        default-column-width = {
-          proportion = 0.5;
-        };
       }
       {
         matches = [
@@ -79,7 +75,7 @@ in
           { app-id = "^google-chrome$"; }
           { app-id = "^Slack$"; }
           { app-id = "^spotify$"; }
-          { app-id = "^chromium-browser$"; }
+          { app-id = "^steam$"; }
         ];
         default-column-width = {
           proportion = 0.9;
