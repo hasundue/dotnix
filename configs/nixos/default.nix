@@ -14,9 +14,11 @@
 
   environment = {
     pathsToLink = [
+      "/bin"
       "/share/bash"
     ];
     systemPackages = with pkgs; [
+      bash
       vim
     ];
   };
