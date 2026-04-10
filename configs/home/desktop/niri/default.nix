@@ -116,7 +116,7 @@ in
         gap = 0;
         hide-when-single-tab = true;
         position = "top";
-        gaps-between-tabs = 0;
+        gaps-between-tabs = 16;
         corner-radius = 4.0;
       };
     };
