@@ -116,6 +116,10 @@ in
         corner-radius = 4.0;
       };
     };
+    hotkey-overlay = {
+      hide-not-bound = true;
+      skip-at-startup = true;
+    };
     binds = with config.lib.niri.actions; {
       "Mod+Shift+Slash".action = show-hotkey-overlay;
 
