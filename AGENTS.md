@@ -44,6 +44,12 @@ nix eval .#homeConfigurations."hasundue@x1carbon".config.wayland.windowManager.n
 - **`with pkgs;`**: acceptable in package list expressions
 - **Comments**: `#` only where the intent is non-obvious
 
+## Commit Messages
+
+- Use a scoped subject in the form `scope: imperative summary`
+- Keep the scope lowercase and aligned with the area being changed, for example
+  `flake: ...`, `niri: ...`, or `home/waybar: ...`
+
 ## Architecture
 
 - **Input isolation**: flake inputs are declared only in `flake.nix` and exposed
