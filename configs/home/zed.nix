@@ -24,6 +24,7 @@ in
           ];
         };
       };
+      load_direnv = "shell_hook";
       theme = "Kanagawa Wave - No Italics";
       ui_font_family = config.stylix.fonts.monospace.name;
       ui_font_size = 16;
