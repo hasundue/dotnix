@@ -17,7 +17,7 @@ LEGACY_STATE_MARKER = "<!-- swift-packaging-monitor-state"
 CONFIG_MARKER = "<!-- issue-monitor-config"
 STATE_END = "-->"
 API_ROOT = "https://api.github.com"
-PR_SEARCH_LIMIT = 10
+SEARCH_LIMIT = 10
 
 
 @dataclass(frozen=True)
@@ -107,10 +107,14 @@ def search_pull_requests(query: str) -> list[dict[str, Any]]:
       "q": query,
       "sort": "updated",
       "order": "desc",
-      "per_page": str(PR_SEARCH_LIMIT),
+      "per_page": str(SEARCH_LIMIT),
     },
   )
-  return result.get("items", [])
+  return [
+    item
+    for item in result.get("items", [])
+    if "pull_request" in item
+  ]
 
 
 def fetch_issue_comments(issue_number: int) -> list[dict[str, Any]]:
@@ -178,7 +182,7 @@ def parse_monitor_config(issue: dict[str, Any]) -> MonitorConfig | None:
     name=config.get("name", issue["title"]),
     watched_issues=watched_issues,
     pr_search_queries=pr_search_queries,
-    pr_search_limit=int(config.get("pr_search_limit", PR_SEARCH_LIMIT)),
+    pr_search_limit=int(config.get("pr_search_limit", SEARCH_LIMIT)),
   )
 
 
@@ -202,8 +206,12 @@ def collect_pr_signals(config: MonitorConfig) -> list[Signal]:
       number = item["number"]
       repo_name = item["repository_url"].rsplit("/", 1)[-1]
       title = item["title"]
-      summary = f"New matching PR: `NixOS/{repo_name}#{number}` - {title}"
-      fingerprint = f"pr:NixOS/{repo_name}#{number}"
+      updated_at = item["updated_at"]
+      summary = (
+        f"Matching PR updated: `NixOS/{repo_name}#{number}`"
+        f" - {title} (updated {updated_at})"
+      )
+      fingerprint = f"pr:NixOS/{repo_name}#{number}:{updated_at}"
       matches[fingerprint] = Signal(
         fingerprint=fingerprint,
         summary=summary,
