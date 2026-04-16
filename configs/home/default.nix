@@ -2,9 +2,7 @@
 {
   home = {
     packages = with pkgs; [
-      github-copilot-cli
       julia-bin
-      lsof
       tree
     ];
     stateVersion = "26.05";
@@ -12,6 +10,7 @@
   };
   imports = [
     ./agenix
+    ./copilot.nix
     ./fish.nix
     ./git.nix
     ./gh.nix
