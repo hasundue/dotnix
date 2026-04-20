@@ -10,8 +10,8 @@ in
       "nix"
     ];
     userSettings = {
-      features = {
-        edit_prediction_provider = "copilot";
+      edit_predictions = {
+        provider = "copilot";
       };
       buffer_font_fallbacks = font_fallbacks;
       buffer_font_size = 15;
