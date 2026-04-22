@@ -15,7 +15,6 @@
     ./git.nix
     ./gh.nix
     ./lazygit.nix
-    ./mcp
     ./neovim.nix
     ./nix.nix
     ./television.nix
