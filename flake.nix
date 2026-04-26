@@ -34,6 +34,10 @@
       url = "sourcehut:~rycee/nur-expressions?dir=pkgs/firefox-addons";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    models-dev = {
+      url = "github:anomalyco/models.dev";
+      flake = false;
+    };
     git-hooks-nix = {
       url = "github:cachix/git-hooks.nix";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -199,6 +203,7 @@
           inherit (inputs)
             firefox-addons
             mcp-nixos
+            models-dev
             ;
         };
         temporal = import ./overlays/temporal.nix {

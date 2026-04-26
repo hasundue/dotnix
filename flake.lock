@@ -365,6 +365,22 @@
         "type": "github"
       }
     },
+    "models-dev": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1777139234,
+        "narHash": "sha256-+DCKfRsgO3IKwvoBaV6fPIcLl0JlaMvOM34Rvk3+84A=",
+        "owner": "anomalyco",
+        "repo": "models.dev",
+        "rev": "b491c29cf955e73f5a63c79ba59ed08d34e38bbe",
+        "type": "github"
+      },
+      "original": {
+        "owner": "anomalyco",
+        "repo": "models.dev",
+        "type": "github"
+      }
+    },
     "niri": {
       "inputs": {
         "niri-stable": "niri-stable",
@@ -691,6 +707,7 @@
         "git-hooks-nix": "git-hooks-nix",
         "home-manager": "home-manager",
         "mcp-nixos": "mcp-nixos",
+        "models-dev": "models-dev",
         "niri": "niri",
         "nixos-hardware": "nixos-hardware",
         "nixos-wsl": "nixos-wsl",
