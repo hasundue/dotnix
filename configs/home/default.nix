@@ -17,8 +17,9 @@
     ./lazygit.nix
     ./neovim.nix
     ./nix.nix
+    ./opencode
     ./television.nix
-    ./zed.nix
+    ./zed
   ];
   programs = {
     btop.enable = true;
