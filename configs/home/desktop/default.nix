@@ -12,6 +12,7 @@
     ./vscode.nix
     ./waybar.nix
     ./xdg.nix
+    ./zed
   ];
 
   home = {

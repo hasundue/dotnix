@@ -19,7 +19,6 @@
     ./nix.nix
     ./opencode
     ./television.nix
-    ./zed
   ];
   programs = {
     btop.enable = true;
