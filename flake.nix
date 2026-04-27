@@ -1,5 +1,17 @@
 {
   description = "hasundue's system configuration";
+  nixConfig = {
+    extra-substituters = [
+      "https://cache.garnix.io"
+      "https://crane.cachix.org"
+      "https://zed.cachix.org"
+    ];
+    extra-trusted-public-keys = [
+      "cache.garnix.io:CTFPyKSLcx5RMJKfLo5EEPUObbA78b0YQ2DTCJXqr9g="
+      "crane.cachix.org-1:8Scfpmn9w+hGdXH/Q9tTLiYAE/2dnJYRJP7kl80GuRk="
+      "zed.cachix.org-1:/pHQ6dpMsAZk2DiP4WCL0p9YDNKWj2Q5FL20bNmw1cU="
+    ];
+  };
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
     nixpkgs-master.url = "github:nixos/nixpkgs/master";
@@ -76,6 +88,10 @@
         pyproject-nix.follows = "pyproject-nix";
       };
     };
+    zed-nightly = {
+      url = "github:hasundue/zed/use-nixpkgs-livekit-libwebrtc";
+      # inputs.nixpkgs.follows = "nixpkgs";
+    };
     nvim = {
       url = "github:hasundue/nvim";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -91,6 +107,7 @@
       nvim,
       self,
       stylix,
+      zed-nightly,
       ...
     }@inputs:
     let
@@ -100,6 +117,7 @@
         agenix.overlays.default
         niri.overlays.niri
         nvim.overlays.default
+        zed-nightly.overlays.default
       ]
       ++ (self.overlays |> lib.filterAttrs (n: v: n != "temporal") |> lib.attrValues);
       systems = [

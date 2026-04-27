@@ -1,9 +1,5 @@
 { ... }:
 {
-  imports = [
-    ./language-models.nix
-  ];
-
   programs.zed-editor = {
     enable = true;
     extensions = [
@@ -14,23 +10,6 @@
     userSettings = {
       agent = {
         default_profile = "write";
-        favorite_models = [
-          {
-            provider = "OpenCode Go";
-            model = "glm-5.1";
-            enable_thinking = false;
-          }
-          {
-            provider = "OpenCode Go";
-            model = "kimi-k2.6";
-            enable_thinking = false;
-          }
-          {
-            provider = "OpenCode Go";
-            model = "minimax-m2.7";
-            enable_thinking = false;
-          }
-        ];
         tool_permissions = {
           tools = {
             delete_path = {
@@ -54,11 +33,6 @@
             };
           };
         };
-        default_model = {
-          provider = "OpenCode Go";
-          model = "minimax-m2.7";
-          enable_thinking = false;
-        };
         thinking_display = "always_collapsed";
       };
       agent_buffer_font_size = 14.0;
@@ -77,7 +51,7 @@
       buffer_line_height = "comfortable";
       edit_predictions = {
         mode = "subtle";
-        provider = "copilot";
+        provider = "zed";
       };
       languages = {
         Nix = {
