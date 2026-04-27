@@ -130,7 +130,6 @@
           inherit overlays system;
           config.allowUnfree = true;
         }
-        // self.packages.${system}
       );
       metaConfig = system: {
         # Make sure to avoid evaluation of nixpkgs
@@ -229,13 +228,7 @@
         };
       };
       packages = forEachSystem (pkgs: {
-        zotero-mcp = pkgs.callPackage ./packages/zotero-mcp.nix {
-          inherit (inputs)
-            pyproject-build-systems
-            pyproject-nix
-            uv2nix
-            ;
-        };
+        inherit (pkgs) zed-editor;
       });
       homeConfigurations =
         lib.mapAttrs' (hostname: v: homeConfig v |> lib.nameValuePair "${username}@${hostname}")
