@@ -48,6 +48,12 @@
       # inputs.nixpkgs.follows = "nixpkgs";
     };
     niri.url = "github:sodiboo/niri-flake";
+    opencode = {
+      url = "github:dan-online/opencode-nix";
+      inputs = {
+        nixpkgs.follows = "nixpkgs";
+      };
+    };
     python-validity = {
       url = "github:viktor-grunwaldt/t480-fingerprint-nixos";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -89,6 +95,7 @@
       nixpkgs,
       nixpkgs-master,
       nvim,
+      opencode,
       self,
       stylix,
       ...
@@ -100,6 +107,7 @@
         agenix.overlays.default
         niri.overlays.niri
         nvim.overlays.default
+        opencode.overlays.default
       ]
       ++ (self.overlays |> lib.filterAttrs (n: v: n != "temporal") |> lib.attrValues);
       systems = [
