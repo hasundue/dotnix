@@ -14,8 +14,9 @@ in
   programs.opencode = {
     enable = true;
     enableMcpIntegration = true;
-    rules = ./rules.md;
+    context = ./context.md;
   };
+
   programs.opencode.settings = {
     formatter = {
       deno = {
@@ -49,7 +50,7 @@ in
       };
     };
     lsp = {
-      nixd = {
+      nil = {
         command = [ "nil" ];
         extensions = [ ".nix" ];
       };
@@ -64,11 +65,11 @@ in
         "nixos-rebuild" = "deny";
       };
     };
-    theme = lib.mkForce "kanagawa";
     tools = lib.mapAttrs' (
       name: server: lib.nameValuePair "${name}_*" false
     ) config.programs.mcp.servers;
   };
+
   programs.opencode.settings.agent = {
     general = {
       model = models.subagent;
@@ -84,44 +85,16 @@ in
       };
     };
   };
-  programs.opencode.settings.provider = {
-    anthropic.models =
-      lib.genAttrs
-        [
-          "claude-sonnet-4-5"
-          "claude-haiku-4-5"
-        ]
-        (model: {
-          headers = {
-            "anthropic-beta" = lib.concatStringsSep "," [
-              "claude-code-20250219"
-              "interleaved-thinking-2025-05-14"
-              "fine-grained-tool-streaming-2025-05-14"
-              "context-management-2025-06-27"
-            ];
-          };
-          options = {
-            thinking = {
-              type = "disabled"; # while /thinking is unavailable
-              budgetTokens = 16000;
-            };
-            context_management = {
-              edits = [
-                { type = "clear_tool_uses_20250919"; }
-                { type = "clear_thinking_20251015"; }
-              ];
-            };
-          };
-        });
 
-  };
   programs.git.ignores = [
     "opencode.local.json*"
   ];
+
   home = {
     sessionVariables = {
-      OPENCODE_MODEL = "anthropic/claude-sonnet-4-5";
-      OPENCODE_SUBAGENT_MODEL = "anthropic/claude-haiku-4-5";
+      OPENCODE_MODEL = "opencode-go/deepseek-v4-flash";
+      OPENCODE_SUBAGENT_MODEL = "opencode-go/deepseek-v4-flash";
+      OPENCODE_DISABLE_LSP_DOWNLOAD = "true";
     };
     shellAliases = rec {
       oc = "opencode";
