@@ -20,7 +20,21 @@
     ./opencode
     ./television.nix
   ];
+  mcp-servers.programs = {
+    github = {
+      enable = true;
+      passwordCommand = {
+        GITHUB_PERSONAL_ACCESS_TOKEN = [
+          "gh"
+          "auth"
+          "token"
+        ];
+      };
+    };
+    nixos.enable = true;
+  };
   programs = {
+    mcp.enable = true;
     btop.enable = true;
     direnv = {
       enable = true;

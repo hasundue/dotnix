@@ -52,33 +52,9 @@ project-specific:
 
 #### Subagent Configuration
 
-Subagents are configured in `default.nix`:
-
-```nix
-agent = {
-  general = {
-    # Main agent - minimal tools, uses default model
-  };
-  
-  web-research = {
-    description = "Performs web research and returns concise summaries.";
-    mode = "subagent";
-    model = models.subagent;
-    prompt = toFileRef ./prompts/web-research.md;
-    tools = {
-      "*" = false;
-      webfetch = true;
-    };
-  };
-}
-
-# Global settings disable nixos tools by default
-settings = {
-  tools = {
-    "nixos*" = false;  # Disabled globally
-  };
-};
-```
+Subagents are defined in `default.nix` under `programs.opencode.settings.agent`.
+Each subagent declares its purpose, model, prompt, and which subset of tools it
+has access to. See the actual config for the current definitions.
 
 #### Local Override Configuration
 
@@ -95,12 +71,12 @@ Project-specific tools are enabled via `opencode.jsonc` in the repository root:
 
 ### MCP Integration
 
-MCP servers are configured centrally in `home/mcp.nix` and automatically
-integrated via `enableMcpIntegration = true`.
+MCP servers are configured via `mcp-servers-nix` in `home/default.nix` and
+automatically integrated via `enableMcpIntegration = true`.
 
 **Architecture**:
 
-- MCP servers are always available (configured in `home/mcp.nix`)
+- MCP servers are always available (configured via `mcp-servers-nix`)
 - Tool visibility is controlled separately:
   - **Heavy tool sets** → Routed through subagents
   - **Moderate tool sets** → Disabled globally, enabled per-project via

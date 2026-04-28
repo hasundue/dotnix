@@ -43,9 +43,9 @@
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.flake-compat.follows = "flake-compat";
     };
-    mcp-nixos = {
-      url = "github:utensils/mcp-nixos";
-      # inputs.nixpkgs.follows = "nixpkgs";
+    mcp-servers-nix = {
+      url = "github:natsukium/mcp-servers-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
     };
     niri.url = "github:sodiboo/niri-flake";
     opencode = {
@@ -91,6 +91,7 @@
     {
       agenix,
       home-manager,
+      mcp-servers-nix,
       niri,
       nixpkgs,
       nixpkgs-master,
@@ -141,6 +142,7 @@
             {
               home-manager.sharedModules = [
                 agenix.homeManagerModules.default
+                mcp-servers-nix.homeManagerModules.default
               ];
             }
             (metaConfig system)
@@ -165,6 +167,7 @@
             }
             (metaConfig system)
             agenix.homeManagerModules.default
+            mcp-servers-nix.homeManagerModules.default
             niri.homeModules.niri
             stylix.homeModules.stylix
             ./configs/stylix.nix
@@ -210,7 +213,6 @@
         pristine = import ./overlays/pristine.nix {
           inherit (inputs)
             firefox-addons
-            mcp-nixos
             models-dev
             ;
         };

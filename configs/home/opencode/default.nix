@@ -81,6 +81,24 @@ in
     general = {
       model = models.subagent;
     };
+    github = {
+      description = "Helps with GitHub operations like creating PRs, reviewing PRs, issues, and searching resources.";
+      mode = "subagent";
+      model = models.subagent;
+      prompt = toFileRef ./prompts/github.md;
+      tools = {
+        "github_*" = true;
+      };
+    };
+    nixos = {
+      description = "Queries NixOS data sources — packages, options, docs, flake info, and more.";
+      mode = "subagent";
+      model = models.subagent;
+      prompt = toFileRef ./prompts/nixos.md;
+      tools = {
+        "nixos_*" = true;
+      };
+    };
     web-research = {
       description = "Performs web research and returns concise summaries.";
       mode = "subagent";
