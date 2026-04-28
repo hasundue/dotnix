@@ -54,6 +54,13 @@ in
         command = [ "nil" ];
         extensions = [ ".nix" ];
       };
+      lean = {
+        command = [
+          "lean"
+          "--server"
+        ];
+        extensions = [ ".lean" ];
+      };
     };
     model = models.main;
     permission = {
