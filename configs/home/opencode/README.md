@@ -24,10 +24,10 @@ operations strategically.
 Use subagents for operations with **many tool definitions** (high baseline
 cost):
 
-- **GitHub operations** - Use github subagent instead of direct GitHub MCP tools
-  - GitHub MCP exposes many tools (issues, PRs, releases, checks, etc.)
-  - ~30-50+ tool definitions would bloat baseline context
-  - Subagent returns only relevant, summarized information
+- **MCP servers with many tools** - Route through subagents
+  - Each MCP server exposes its own tool set (e.g., filesystem, github, browser)
+  - Many tools across servers would bloat baseline context if all enabled
+  - Subagent isolates the tool definitions and returns only relevant results
 
 - **Code exploration** - Use Task tool with general subagent
   - Large search results and file contents
@@ -56,22 +56,18 @@ Subagents are configured in `default.nix`:
 
 ```nix
 agent = {
-  build = {
-    # Main agent - minimal tools
-    tools = {
-      "github*" = false;  # Disabled - use subagent instead
-    };
+  general = {
+    # Main agent - minimal tools, uses default model
   };
   
-  github = {
-    # Specialized subagent with focused toolset
+  web-research = {
+    description = "Performs web research and returns concise summaries.";
     mode = "subagent";
-    model = "github-copilot/claude-haiku-4.5";  # Faster model for focused tasks
+    model = models.subagent;
+    prompt = toFileRef ./prompts/web-research.md;
     tools = {
-      "github*" = true;   # GitHub MCP tools available here
-      write = false;      # Limited permissions
-      edit = false;
-      bash = false;
+      "*" = false;
+      webfetch = true;
     };
   };
 }
@@ -130,7 +126,7 @@ This configuration uses a two-tier strategy for context management:
 ### 1. Subagents (for high tool count)
 
 - **Trade-off**: Higher latency vs. zero baseline context cost
-- **Use when**: Tool set has 30+ definitions (e.g., GitHub MCP)
+- **Use when**: Tool set has 30+ definitions (e.g., github)
 - **Benefit**: Keeps baseline context minimal regardless of tool complexity
 
 ### 2. Local Overrides (for moderate, project-specific tools)
