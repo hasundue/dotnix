@@ -27,10 +27,7 @@ jobs:
 
       - name: Check issues with opencode
         run: |
-          nix shell "github:anomalyco/opencode" -c bash <<'SCRIPT'
-            for num in $(gh issue list --json number --jq '.[].number'); do
-              opencode run \
-                -f configs/home/opencode/prompts/check-issue-monitor.md \
-                "$num"
-            done
-          SCRIPT
+          for num in $(gh issue list --json number --jq '.[].number'); do
+            nix run .#opencode -- \
+              run -f configs/home/opencode/prompts/check-issue-monitor.md "$num"
+          done

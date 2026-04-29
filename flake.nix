@@ -238,6 +238,24 @@
             };
             nixos.system = "x86_64-linux";
           };
+      apps.x86_64-linux.opencode =
+        let
+          pkgs = pkgsFor.x86_64-linux;
+          homeConfig = self.homeConfigurations."hasundue@x1carbon";
+          opencodeFiles = lib.mapAttrsToList (name: file: {
+            inherit name;
+            path = file.source;
+          }) (lib.filterAttrs (name: _: lib.hasPrefix "opencode/" name) homeConfig.config.xdg.configFile);
+          configDir = pkgs.linkFarm "opencode-config" opencodeFiles;
+        in
+        {
+          type = "app";
+          program = "${pkgs.writeShellScriptBin "opencode" ''
+            export XDG_CONFIG_HOME="$(mktemp -d)"
+            cp -rsf "${configDir}/"* "$XDG_CONFIG_HOME/"
+            exec ${pkgs.opencode}/bin/opencode "$@"
+          ''}/bin/opencode";
+        };
       templates = {
         default = {
           path = ./templates/default;
