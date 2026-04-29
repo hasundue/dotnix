@@ -4,10 +4,7 @@
   ...
 }:
 let
-  models = {
-    main = "{env:OPENCODE_MODEL}";
-    subagent = "{env:OPENCODE_SUBAGENT_MODEL}";
-  };
+  model = "{env:OPENCODE_MODEL}";
   toFileRef = path: "{file:${path}}";
 in
 {
@@ -62,7 +59,7 @@ in
         extensions = [ ".lean" ];
       };
     };
-    model = models.main;
+    inherit model;
     permission = {
       bash = {
         "curl" = "allow";
@@ -78,13 +75,9 @@ in
   };
 
   programs.opencode.settings.agent = {
-    general = {
-      model = models.subagent;
-    };
     github = {
       description = "Helps with GitHub operations like creating PRs, reviewing PRs, issues, and searching resources.";
       mode = "subagent";
-      model = models.subagent;
       prompt = toFileRef ./prompts/github.md;
       tools = {
         "github_*" = true;
@@ -93,7 +86,6 @@ in
     nixos = {
       description = "Queries NixOS data sources — packages, options, docs, flake info, and more.";
       mode = "subagent";
-      model = models.subagent;
       prompt = toFileRef ./prompts/nixos.md;
       tools = {
         "nixos_*" = true;
@@ -102,7 +94,6 @@ in
     web-research = {
       description = "Performs web research and returns concise summaries.";
       mode = "subagent";
-      model = models.subagent;
       prompt = toFileRef ./prompts/web-research.md;
       tools = {
         "*" = false;
@@ -119,7 +110,6 @@ in
   home = {
     sessionVariables = {
       OPENCODE_MODEL = "opencode-go/deepseek-v4-flash";
-      OPENCODE_SUBAGENT_MODEL = "opencode-go/deepseek-v4-flash";
       OPENCODE_DISABLE_LSP_DOWNLOAD = "true";
     };
     shellAliases = rec {
