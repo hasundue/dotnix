@@ -51,13 +51,6 @@ in
         command = [ "nil" ];
         extensions = [ ".nix" ];
       };
-      lean = {
-        command = [
-          "lean"
-          "--server"
-        ];
-        extensions = [ ".lean" ];
-      };
     };
     inherit model;
     permission = {
