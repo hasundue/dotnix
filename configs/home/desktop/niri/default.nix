@@ -94,7 +94,7 @@ in
       };
       mouse = {
         accel-profile = "adaptive";
-        accel-speed = -0.2;
+        accel-speed = 0.0;
       };
     };
     layout = {
