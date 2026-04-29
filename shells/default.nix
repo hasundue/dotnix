@@ -23,6 +23,7 @@ let
 in
 pkgs.mkShellNoCC {
   packages = with pkgs; [
+    act
     deno
     nil
     nixfmt
