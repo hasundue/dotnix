@@ -113,6 +113,7 @@ in
 
   programs.git.ignores = [
     "opencode.local.json*"
+    ".opencode/"
   ];
 
   home = {
