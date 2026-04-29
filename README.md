@@ -55,35 +55,10 @@ nrs                          # Apply permanently
 
 ## GitHub Actions
 
-- `Issue monitor` is issue-driven: any issue in this repo can opt into
-  monitoring by including a hidden config block in the issue body.
-- You can run it manually from the Actions tab or with:
-
-```bash
-gh workflow run issue-monitor.yml -f issue_number=3
-```
-
-Example issue-body config:
-
-```json
-<!-- issue-monitor-config
-{
-  "name": "Example external tracker",
-  "watched_issues": [
-    { "owner": "NixOS", "repo": "nixpkgs", "number": 343210 },
-    { "owner": "NixOS", "repo": "nixpkgs", "number": 405893 }
-  ],
-  "pr_search_queries": [
-    "repo:NixOS/nixpkgs is:pr \"swift 6\"",
-    "repo:NixOS/nixpkgs is:pr author:reckenrode swift"
-  ],
-  "pr_search_limit": 10
-}
--->
-```
-
-The workflow keeps a hidden state comment per configured issue and only adds a
-visible comment when it finds new matching signals.
+- `Issue monitor` uses an opencode agent to check open issues for upstream
+  changes. Any issue with `## Upstream` and `## Search` sections is monitored
+  automatically — no hidden config needed.
+- You can run it manually from the Actions tab.
 
 ## Development Shells
 
