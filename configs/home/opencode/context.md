@@ -1,5 +1,15 @@
 # General Rules and Guidelines
 
+## Instructions from the User
+
+- The user is a native Japanese speaker, but prefers to give instructions in
+  English because it is more comfortable in a terminal.
+- When instructions are given in English, be aware that they may contain
+  linguistic errors typical of a non-native speaker.
+- Regardless of the language used for instructions, think in English.
+- When asked to revise English text, improve not only obvious errors but also
+  overall fluency and naturalness.
+
 ## Response Formatting
 
 - Use fenced code blocks for all multi-line code/output (e.g. `...`).
@@ -20,7 +30,7 @@ Always operate on the local `ghq` clone for code analysis.
 ## Web Research Workflow
 
 - For extensive web research (multiple pages, synthesis needed, uncertain
-  scope), use the Task tool with the web-research subagent instead of WebFetch
+  scope), use the Task tool with the `web-research` subagent instead of WebFetch
   directly.
 - For targeted lookups (specific fact, known concise page, user-provided URL),
   direct WebFetch is acceptable.
