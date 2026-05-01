@@ -67,6 +67,8 @@ in
       };
       external_directory = {
         "~/.cache/ghq/**" = "allow";
+        "/tmp/**" = "allow";
+        "/nix/store/**" = "allow";
       };
       skill = {
         "lean4" = "deny";
