@@ -1,16 +1,20 @@
 {
+  pkgs,
   config,
   lib,
   ...
 }:
 let
-  model = "{env:OPENCODE_MODEL}";
   toFileRef = path: "{file:${path}}";
 in
 {
   programs.opencode = {
     enable = true;
     enableMcpIntegration = true;
+    extraPackages = with pkgs; [
+      nodejs
+      python3
+    ];
     context = ./context.md;
   };
 
@@ -52,7 +56,7 @@ in
         extensions = [ ".nix" ];
       };
     };
-    inherit model;
+    model = "opencode-go/deepseek-v4-flash";
     permission = {
       bash = {
         "curl" = "allow";
@@ -63,6 +67,9 @@ in
       };
       external_directory = {
         "~/.cache/ghq/**" = "allow";
+      };
+      skill = {
+        "lean4" = "deny";
       };
     };
     tools = lib.mapAttrs' (
@@ -98,14 +105,18 @@ in
     };
   };
 
+  programs.opencode.skills = {
+    lean4 = "${pkgs.lean4-skills-src}/plugins/lean4/skills/lean4";
+  };
+
   programs.git.ignores = [
-    "opencode.local.json*"
+    ".opencode.local.json*"
     ".opencode/"
   ];
 
   home = {
     sessionVariables = {
-      OPENCODE_MODEL = "opencode-go/deepseek-v4-flash";
+      OPENCODE_CONFIG = ".opencode.local.json";
       OPENCODE_DISABLE_LSP_DOWNLOAD = "true";
     };
     shellAliases = rec {

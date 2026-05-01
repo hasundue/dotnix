@@ -44,6 +44,10 @@
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.flake-compat.follows = "flake-compat";
     };
+    lean4-skills = {
+      url = "github:cameronfreer/lean4-skills";
+      flake = false;
+    };
     mcp-servers-nix = {
       url = "github:natsukium/mcp-servers-nix";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -219,6 +223,9 @@
         };
         temporal = import ./overlays/temporal.nix {
           mcp-nixos = inputs.nixpkgs-mcp-nixos;
+        };
+        lean4-skills = final: prev: {
+          lean4-skills-src = inputs.lean4-skills;
         };
       };
       packages = forEachSystem (pkgs: {

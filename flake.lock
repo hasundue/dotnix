@@ -340,6 +340,22 @@
         "type": "github"
       }
     },
+    "lean4-skills": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1776807829,
+        "narHash": "sha256-+ohV+huc3EECYbvm4gFhAwUSOr/7On7T+4rpJfhuPOQ=",
+        "owner": "cameronfreer",
+        "repo": "lean4-skills",
+        "rev": "95406b3787957473fa97e4e8d62bd3225bcaa09b",
+        "type": "github"
+      },
+      "original": {
+        "owner": "cameronfreer",
+        "repo": "lean4-skills",
+        "type": "github"
+      }
+    },
     "mcp-servers-nix": {
       "inputs": {
         "nixpkgs": [
@@ -709,6 +725,7 @@
         "flake-compat": "flake-compat",
         "git-hooks-nix": "git-hooks-nix",
         "home-manager": "home-manager",
+        "lean4-skills": "lean4-skills",
         "mcp-servers-nix": "mcp-servers-nix",
         "models-dev": "models-dev",
         "niri": "niri",
