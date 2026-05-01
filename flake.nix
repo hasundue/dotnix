@@ -3,6 +3,7 @@
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
     nixpkgs-master.url = "github:nixos/nixpkgs/master";
+    nixpkgs-mcp-nixos.url = "github:nixos/nixpkgs?ref=d8a0e4a8091f";
     nixos-hardware.url = "github:nixos/nixos-hardware";
     flake-compat = {
       url = "github:nix-community/flake-compat";
@@ -217,7 +218,7 @@
             ;
         };
         temporal = import ./overlays/temporal.nix {
-          # opencode = nixpkgs-master;
+          mcp-nixos = inputs.nixpkgs-mcp-nixos;
         };
       };
       packages = forEachSystem (pkgs: {
