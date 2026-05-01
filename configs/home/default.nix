@@ -33,6 +33,10 @@
     };
     nixos.enable = true;
   };
+
+  mcp-servers.settings.servers.lean = {
+    command = "${pkgs.lean-lsp-mcp}/bin/lean-lsp-mcp";
+  };
   programs = {
     mcp.enable = true;
     btop.enable = true;

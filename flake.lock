@@ -502,6 +502,22 @@
         "type": "github"
       }
     },
+    "nixpkgs-mcp-nixos": {
+      "locked": {
+        "lastModified": 1776634114,
+        "narHash": "sha256-lzrb39KgdWAxEFH5fkDp1GsSCXK/Lh0VIW//3QJLux8=",
+        "owner": "nixos",
+        "repo": "nixpkgs",
+        "rev": "d8a0e4a8091f117064845083529f1252082552bf",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nixos",
+        "ref": "d8a0e4a8091f",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
     "nixpkgs-stable": {
       "locked": {
         "lastModified": 1777428379,
@@ -700,6 +716,7 @@
         "nixos-wsl": "nixos-wsl",
         "nixpkgs": "nixpkgs_2",
         "nixpkgs-master": "nixpkgs-master",
+        "nixpkgs-mcp-nixos": "nixpkgs-mcp-nixos",
         "nvim": "nvim",
         "opencode": "opencode",
         "pyproject-build-systems": "pyproject-build-systems",
