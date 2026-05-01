@@ -13,9 +13,7 @@
     };
     nixos.enable = true;
   };
-  mcp-servers.settings.servers = {
-    lean = {
-      command = "${pkgs.lean-lsp-mcp}/bin/lean-lsp-mcp";
-    };
-  };
+  # mcp-servers.settings.servers.lean = {
+  #   command = "${pkgs.lean-lsp-mcp}/bin/lean-lsp-mcp";
+  # };
 }
