@@ -61,6 +61,9 @@ in
         "nix eval" = "allow";
         "nixos-rebuild" = "deny";
       };
+      external_directory = {
+        "~/.cache/ghq/**" = "allow";
+      };
     };
     tools = lib.mapAttrs' (
       name: server: lib.nameValuePair "${name}_*" false
