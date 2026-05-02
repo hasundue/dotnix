@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ ... }:
 {
   mcp-servers.programs = {
     github = {
@@ -13,7 +13,4 @@
     };
     nixos.enable = true;
   };
-  # mcp-servers.settings.servers.lean = {
-  #   command = "${pkgs.lean-lsp-mcp}/bin/lean-lsp-mcp";
-  # };
 }

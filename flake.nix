@@ -236,13 +236,6 @@
             uv2nix
             ;
         };
-        lean-lsp-mcp = pkgs.callPackage ./packages/lean-lsp-mcp.nix {
-          inherit (inputs)
-            pyproject-build-systems
-            pyproject-nix
-            uv2nix
-            ;
-        };
       });
       homeConfigurations =
         lib.mapAttrs' (hostname: v: homeConfig v |> lib.nameValuePair "${username}@${hostname}")
