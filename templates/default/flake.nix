@@ -22,44 +22,32 @@
       treefmt-nix,
     }:
     let
+      inherit (nixpkgs) lib;
       systems = [
         "x86_64-linux"
         "aarch64-linux"
         "x86_64-darwin"
         "aarch64-darwin"
       ];
-      forEachSystem =
-        f:
-        nixpkgs.lib.genAttrs systems (
-          system:
-          f {
-            inherit system;
-            pkgs = import nixpkgs {
-              inherit system;
-              config.allowUnfree = false;
-            };
-            lib = nixpkgs.lib // {
-              git-hooks-nix = git-hooks-nix.lib;
-              treefmt-nix = treefmt-nix.lib;
-            };
-          }
-        );
+      packages = lib.genAttrs systems (
+        system:
+        import nixpkgs {
+          inherit system;
+        }
+      );
+      forEachSystem = f: lib.genAttrs systems (s: f packages.${s});
     in
     {
       devShells = forEachSystem (
-        {
-          pkgs,
-          lib,
-          system,
-        }:
+        pkgs:
         let
-          treefmt = lib.treefmt-nix.mkWrapper pkgs {
+          inherit (pkgs.stdenv.hostPlatform) system;
+          treefmt = treefmt-nix.lib.mkWrapper pkgs {
             programs.nixfmt = {
               enable = true;
             };
           };
-
-          git-hooks = lib.git-hooks-nix.${system}.run {
+          git-hooks = git-hooks-nix.lib.${system}.run {
             src = ./.;
             hooks = {
               treefmt = {
@@ -71,19 +59,12 @@
         in
         {
           default = pkgs.mkShell {
-            buildInputs = with pkgs; [
+            packages = with pkgs; [
+              nil
               treefmt
-              # Add your development dependencies here
             ];
             shellHook = git-hooks.shellHook;
           };
-        }
-      );
-
-      packages = forEachSystem (
-        { pkgs, ... }:
-        {
-          default = pkgs.hello; # Replace with your package
         }
       );
     };
