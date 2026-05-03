@@ -74,6 +74,7 @@ in
 
       modules-right = [
         "custom/fcitx5"
+        "idle_inhibitor"
         "custom/monitor"
         "network"
         "memory"
@@ -109,6 +110,16 @@ in
         max-length = 3;
 
         tooltip = true;
+      };
+
+      idle_inhibitor = {
+        format = "{icon}";
+        format-icons = {
+          activated = "";
+          deactivated = "";
+        };
+        min-length = 3;
+        max-length = 3;
       };
 
       network = {
