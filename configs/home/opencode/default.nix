@@ -116,6 +116,22 @@ in
     ".opencode/"
   ];
 
+  systemd.user.services.opencode-web = {
+    Unit = {
+      Description = "Opencode web server";
+      After = [ "network-online.target" ];
+    };
+
+    Service = {
+      Type = "simple";
+      ExecStart = "${lib.getExe pkgs.opencode} web --hostname 0.0.0.0 --port 4096";
+      Restart = "on-failure";
+      RestartSec = "5s";
+    };
+
+    Install.WantedBy = [ "default.target" ];
+  };
+
   home = {
     sessionVariables = {
       OPENCODE_CONFIG = ".opencode.local.json";
@@ -124,6 +140,7 @@ in
     shellAliases = rec {
       oc = "opencode";
       occ = "${oc} --continue";
+      ocw = "${oc} web --hostname 0.0.0.0 --port 4096";
     };
   };
 }
