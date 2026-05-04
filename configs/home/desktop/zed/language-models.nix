@@ -24,6 +24,7 @@ let
       capabilities = {
         tools = data.tool_call or false;
         images = lib.elem "image" (data.modalities.input or [ ]);
+        interleaved_reasoning = data.interleaved.field or null != null;
         parallel_tool_calls = false;
         prompt_cache_key = false;
         chat_completions = true;
