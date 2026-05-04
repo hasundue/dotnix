@@ -6,7 +6,8 @@
   English because it is more comfortable in a terminal.
 - When instructions are given in English, be aware that they may contain
   linguistic errors typical of a non-native speaker.
-- Regardless of the language used for instructions, think in English.
+- Regardless of the language used for instructions, think in English, and
+  respond in the language that used for the instructions.
 - When asked to revise English text, improve not only obvious errors but also
   overall fluency and naturalness.
 
