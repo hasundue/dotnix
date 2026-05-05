@@ -111,26 +111,20 @@ in
     lean4 = "${pkgs.lean4-skills-src}/plugins/lean4/skills/lean4";
   };
 
+  programs.opencode.web = {
+    enable = true;
+    extraArgs = [
+      "--hostname"
+      "0.0.0.0"
+      "--port"
+      "4096"
+    ];
+  };
+
   programs.git.ignores = [
     ".opencode.local.json*"
     ".opencode/"
   ];
-
-  systemd.user.services.opencode-web = {
-    Unit = {
-      Description = "Opencode web server";
-      After = [ "network-online.target" ];
-    };
-
-    Service = {
-      Type = "simple";
-      ExecStart = "${lib.getExe pkgs.opencode} web --hostname 0.0.0.0 --port 4096";
-      Restart = "on-failure";
-      RestartSec = "5s";
-    };
-
-    Install.WantedBy = [ "default.target" ];
-  };
 
   home = {
     sessionVariables = {
