@@ -88,6 +88,7 @@
         };
       };
       load_direnv = "shell_hook";
+      semantic_tokens = "combined";
       theme = "Kanagawa Wave - No Italics";
       ui_font_family = "0xProto Nerd Font Propo";
       ui_font_fallbacks = [ "Noto Sans CJK JP" ];
