@@ -17,18 +17,18 @@
         favorite_models = [
           {
             provider = "OpenCode Go";
-            model = "glm-5.1";
-            enable_thinking = false;
+            model = "deepseek-v4-flash";
+            enable_thinking = true;
+          }
+          {
+            provider = "OpenCode Go";
+            model = "deepseek-v4-pro";
+            enable_thinking = true;
           }
           {
             provider = "OpenCode Go";
             model = "kimi-k2.6";
-            enable_thinking = false;
-          }
-          {
-            provider = "OpenCode Go";
-            model = "minimax-m2.7";
-            enable_thinking = false;
+            enable_thinking = true;
           }
         ];
         tool_permissions = {
