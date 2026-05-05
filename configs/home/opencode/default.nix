@@ -109,6 +109,7 @@ in
 
   programs.opencode.skills = {
     lean4 = "${pkgs.lean4-skills-src}/plugins/lean4/skills/lean4";
+    nixos = ./skills/nixos.md;
   };
 
   programs.opencode.web = {

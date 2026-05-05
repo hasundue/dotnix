@@ -16,6 +16,14 @@
 - Use fenced code blocks for all multi-line code/output (e.g. `...`).
 - Always include a language tag when possible (e.g., `ts,`sh, `json,`diff).
 
+## NixOS Query Workflow
+
+When `nixos_*` MCP tools are available (this repository enables them), use them
+as your primary data source for NixOS-related lookups — packages, options, Nix
+functions, flake info, docs, cache status, version history. The `nixos` skill
+has detailed parameter guidance. Fall back to `nix eval` bash for evaluating
+config expressions from this repository.
+
 ## Repository Access and Code Inspection Workflow
 
 When analyzing code from GitHub or similar sources, **do not use WebFetch for
