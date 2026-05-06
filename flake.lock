@@ -615,6 +615,23 @@
         "type": "github"
       }
     },
+    "ocx": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1777868695,
+        "narHash": "sha256-7GUcfYHEvPh09eRWTIo10vo3D3oGTLyking56dGvZzk=",
+        "owner": "kdcokenny",
+        "repo": "ocx",
+        "rev": "dbf6dccc0a77b05e23cb5efb80c9a083bdc5d3eb",
+        "type": "github"
+      },
+      "original": {
+        "owner": "kdcokenny",
+        "ref": "v2.0.9",
+        "repo": "ocx",
+        "type": "github"
+      }
+    },
     "opencode": {
       "inputs": {
         "flake-utils": "flake-utils",
@@ -735,6 +752,7 @@
         "nixpkgs-master": "nixpkgs-master",
         "nixpkgs-mcp-nixos": "nixpkgs-mcp-nixos",
         "nvim": "nvim",
+        "ocx": "ocx",
         "opencode": "opencode",
         "pyproject-build-systems": "pyproject-build-systems",
         "pyproject-nix": "pyproject-nix",

@@ -91,6 +91,10 @@
       url = "github:hasundue/nvim";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    ocx = {
+      url = "github:kdcokenny/ocx/v2.0.9";
+      flake = false;
+    };
   };
   outputs =
     {
@@ -235,6 +239,9 @@
             pyproject-nix
             uv2nix
             ;
+        };
+        ocx = pkgs.callPackage ./packages/ocx.nix {
+          ocx = inputs.ocx;
         };
       });
       homeConfigurations =
