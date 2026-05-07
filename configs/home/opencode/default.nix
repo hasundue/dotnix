@@ -10,12 +10,12 @@ in
 {
   programs.opencode = {
     enable = true;
-    enableMcpIntegration = true;
+    # enableMcpIntegration = true;
     extraPackages = with pkgs; [
       nodejs
       python3
     ];
-    context = ./context.md;
+    # context = ./context.md; # commented: testing vanilla ws profile
   };
 
   programs.opencode.settings = {
@@ -56,7 +56,8 @@ in
         extensions = [ ".nix" ];
       };
     };
-    model = "opencode-go/deepseek-v4-flash";
+    model = "opencode-go/minimax-m2.5";
+    small_model = "opencode-go/qwen3.5-plus";
     permission = {
       bash = {
         "curl" = "allow";
@@ -74,43 +75,62 @@ in
         "lean4" = "deny";
       };
     };
-    tools = lib.mapAttrs' (
-      name: server: lib.nameValuePair "${name}_*" false
-    ) config.programs.mcp.servers;
+    # tools = lib.mapAttrs' (
+    #   name: server: lib.nameValuePair "${name}_*" false
+    # ) config.programs.mcp.servers;
   };
 
   programs.opencode.settings.agent = {
-    github = {
-      description = "Helps with GitHub operations like creating PRs, reviewing PRs, issues, and searching resources.";
-      mode = "subagent";
-      prompt = toFileRef ./prompts/github.md;
-      tools = {
-        "github_*" = true;
-      };
+    plan = {
+      model = "opencode-go/minimax-m2.5";
+      temperature = 0.3;
+      reasoningEffort = "high";
+      textVerbosity = "low";
     };
-    nixos = {
-      description = "Queries NixOS data sources — packages, options, docs, flake info, and more.";
-      mode = "subagent";
-      prompt = toFileRef ./prompts/nixos.md;
-      tools = {
-        "nixos_*" = true;
-      };
+    build = {
+      model = "opencode-go/minimax-m2.5";
+      temperature = 0.3;
+      reasoningEffort = "high";
+      textVerbosity = "low";
     };
-    web-research = {
-      description = "Performs web research and returns concise summaries.";
-      mode = "subagent";
-      prompt = toFileRef ./prompts/web-research.md;
-      tools = {
-        "*" = false;
-        webfetch = true;
-      };
+    coder = {
+      model = "opencode-go/deepseek-v4-flash";
+      temperature = 0.2;
+      reasoningEffort = "high";
+      textVerbosity = "low";
+    };
+    explore = {
+      model = "opencode-go/qwen3.5-plus";
+      temperature = 0.2;
+      reasoningEffort = "low";
+      textVerbosity = "low";
+    };
+    researcher = {
+      model = "opencode-go/deepseek-v4-flash";
+      temperature = 0.4;
+      reasoningEffort = "high";
+      textVerbosity = "medium";
+    };
+    scribe = {
+      model = "opencode-go/deepseek-v4-flash";
+      temperature = 1.0;
+      reasoningEffort = "low";
+      textVerbosity = "high";
+    };
+    reviewer = {
+      model = "opencode-go/deepseek-v4-pro";
+      temperature = 0.1;
+      reasoningEffort = "high";
+      textVerbosity = "medium";
     };
   };
 
-  programs.opencode.skills = {
-    lean4 = "${pkgs.lean4-skills-src}/plugins/lean4/skills/lean4";
-    nixos = ./skills/nixos.md;
-  };
+  # programs.opencode.skills = {
+  #   lean4 = "${pkgs.lean4-skills-src}/plugins/lean4/skills/lean4";
+  #   nixos = ./skills/nixos.md;
+  # };
+
+  imports = [ ./ocx.nix ];
 
   programs.opencode.web = {
     enable = true;
