@@ -47,6 +47,14 @@ Customize number of results and search type:
 # Types: auto, fast, instant, deep-lite, deep, deep-reasoning
 ```
 
+Disable highlights to reduce token usage:
+
+```bash
+./search.ts "query" --highlights false
+# or
+./search.ts "query" --no-highlights
+```
+
 Get full page text content (use `maxCharacters` to control token cost):
 
 ```bash
@@ -57,6 +65,15 @@ Summaries per result:
 
 ```bash
 ./search.ts "query" --summary
+```
+
+## Output Modes
+
+Output is compact by default (strips `requestId`, `resolvedSearchType`, empty
+`highlightScores`). Use `--verbose` for full output:
+
+```bash
+./search.ts "query" --verbose
 ```
 
 ## Content Extraction
@@ -114,10 +131,12 @@ Target specific sources or exclude low-quality domains:
 | ------------------------ | ------- | ----------------------------------------------------------------------------- |
 | `--num-results`          | `10`    | Number of results (1–100)                                                     |
 | `--type`                 | `auto`  | Search type: `auto`, `fast`, `instant`, `deep-lite`, `deep`, `deep-reasoning` |
+| `--highlights`           | `true`  | Include query-relevant excerpts (use `--highlights false` to disable)         |
+| `--no-highlights`        | —       | Disable highlights (alternative to `--highlights false`)                      |
 | `--text`                 | `false` | Include full page text                                                        |
 | `--max-chars`            | `2000`  | Max characters per page when `--text` is set                                  |
 | `--summary`              | `false` | Include per-result summaries                                                  |
-| `--highlights`           | `true`  | Include query-relevant excerpts (default on)                                  |
+| `--verbose`              | `false` | Include verbose fields (requestId, resolvedSearchType)                        |
 | `--schema`               | —       | JSON Schema for structured output (outputSchema)                              |
 | `--include-domains`      | —       | Comma-separated list of domains to include                                    |
 | `--exclude-domains`      | —       | Comma-separated list of domains to exclude                                    |

@@ -15,6 +15,7 @@
  */
 
 import { Exa } from "npm:exa-js@2.12.1";
+import { parseArgs } from "jsr:@std/cli@1.0.17/parse-args";
 
 function getApiKey(): string {
   const direct = Deno.env.get("EXA_API_KEY");
@@ -47,64 +48,85 @@ if (!API_KEY) {
 }
 const exa = new Exa(API_KEY);
 
-// --- Argument parsing ---
-const args = Deno.args;
-const positional: string[] = [];
-const flags: Record<string, unknown> = {};
+// --- Argument parsing using Deno std lib ---
+const parsed = parseArgs(Deno.args, {
+  boolean: ["verbose", "text", "summary", "highlights", "no-highlights"],
+  string: [
+    "type",
+    "num-results",
+    "max-chars",
+    "max-age-hours",
+    "start-published-date",
+    "end-published-date",
+    "include-domains",
+    "exclude-domains",
+  ],
+});
 
-for (let i = 0; i < args.length; i++) {
-  const a = args[i];
-  if (a.startsWith("--")) {
-    const key = a.slice(2);
-    if (key === "urls") {
-      const urls: string[] = [];
-      while (++i < args.length && !args[i].startsWith("--")) {
-        urls.push(args[i]);
-      }
-      i--;
-      flags.urls = urls;
-    } else if (key === "schema") {
-      const raw = args[++i];
-      try {
-        flags.schema = JSON.parse(raw);
-      } catch {
-        console.error("Error: --schema must be valid JSON.");
-        Deno.exit(1);
-      }
-    } else if (key === "include-domains" || key === "exclude-domains") {
-      const val = args[++i];
-      flags[key] = val
-        ? val.split(",").map((s) => s.trim()).filter(Boolean)
-        : [];
-    } else if (
-      key === "start-published-date" || key === "end-published-date" ||
-      key === "max-age-hours"
-    ) {
-      flags[key] = args[++i];
-    } else if (key === "num-results") {
-      flags.numResults = parseInt(args[++i], 10);
-    } else if (key === "max-chars") {
-      flags.maxChars = parseInt(args[++i], 10);
-    } else if (key === "type") {
-      flags.type = args[++i];
-    } else if (key === "text" || key === "summary" || key === "highlights") {
-      flags[key] = true;
-    } else if (key === "no-highlights") {
-      flags.highlights = false;
-    } else if (key === "help") {
-      showHelp();
-      Deno.exit(0);
-    } else {
-      console.error(`Unknown flag: ${a}`);
-      console.error("Run with --help to see available options.");
+// Extract positional args (query)
+const query = parsed._.join(" ");
+
+// Extract flags - handle highlights resolution manually
+const flags: Record<string, unknown> = {
+  verbose: parsed.verbose ?? false,
+  text: parsed.text ?? false,
+  summary: parsed.summary ?? false,
+  type: parsed.type,
+  numResults: parsed["num-results"]
+    ? parseInt(parsed["num-results"] as string, 10)
+    : undefined,
+  maxChars: parsed["max-chars"]
+    ? parseInt(parsed["max-chars"] as string, 10)
+    : undefined,
+  "max-age-hours": parsed["max-age-hours"],
+  "start-published-date": parsed["start-published-date"],
+  "end-published-date": parsed["end-published-date"],
+  "include-domains": parsed["include-domains"]
+    ? (parsed["include-domains"] as string).split(",").map((s: string) =>
+      s.trim()
+    ).filter(Boolean)
+    : undefined,
+  "exclude-domains": parsed["exclude-domains"]
+    ? (parsed["exclude-domains"] as string).split(",").map((s: string) =>
+      s.trim()
+    ).filter(Boolean)
+    : undefined,
+};
+
+// Resolve highlights: --no-highlights overrides --highlights
+// parseArgs treats --highlights false as setting highlights to false
+// but we also handle --no-highlights as explicit negation
+flags.highlights = parsed["no-highlights"]
+  ? false
+  : (parsed.highlights ?? true);
+
+// Handle --schema manually (needs JSON parse)
+const schemaArg = Deno.args.find((a) => a.startsWith("--schema"));
+if (schemaArg) {
+  const schemaIdx = Deno.args.indexOf(schemaArg);
+  if (schemaIdx >= 0 && Deno.args[schemaIdx + 1]) {
+    try {
+      flags.schema = JSON.parse(Deno.args[schemaIdx + 1]);
+    } catch {
+      console.error("Error: --schema must be valid JSON.");
       Deno.exit(1);
     }
-  } else {
-    positional.push(a);
   }
 }
 
-function showHelp() {
+// Handle --urls manually (collect all args after --urls until next --)
+const urlsIdx = Deno.args.indexOf("--urls");
+if (urlsIdx >= 0) {
+  const urls: string[] = [];
+  for (let i = urlsIdx + 1; i < Deno.args.length; i++) {
+    if (Deno.args[i].startsWith("--")) break;
+    urls.push(Deno.args[i]);
+  }
+  if (urls.length > 0) flags.urls = urls;
+}
+
+// Handle --help
+if (Deno.args.includes("--help") || Deno.args.includes("-h")) {
   console.log(`
 Usage:
   ./search.ts "query" [options]
@@ -113,11 +135,12 @@ Usage:
 Search options:
   --num-results <n>         Number of results (default: 10)
   --type <type>             Search type: auto, fast, instant, deep-lite, deep, deep-reasoning (default: auto)
-  --highlights              Include query-relevant excerpts (default: on)
+  --highlights [true|false] Include query-relevant excerpts (default: on)
   --no-highlights           Disable highlights
   --text                    Include full page text
   --max-chars <n>           Max characters when --text is set (default: 2000)
   --summary                 Include per-result summaries
+  --verbose                 Include verbose fields (requestId, resolvedSearchType)
   --schema <json>           JSON Schema for structured output (outputSchema)
 
 Filtering:
@@ -130,12 +153,12 @@ Filtering:
 Content extraction (from known URLs):
   --urls <url...>           Extract content from URLs (uses /contents endpoint)
 `);
+  Deno.exit(0);
 }
 
 // --- Determine mode ---
 const isContents = Array.isArray(flags.urls) &&
   (flags.urls as string[]).length > 0;
-const query = positional.join(" ");
 
 if (!isContents && !query) {
   console.error(
@@ -155,8 +178,7 @@ function buildSearchParams(): Record<string, unknown> {
   // contents block
   const contents: Record<string, unknown> = {};
 
-  const wantHighlights = flags.highlights !== false;
-  if (wantHighlights) contents.highlights = true;
+  if (flags.highlights) contents.highlights = true;
   if (flags.text) {
     contents.text = {
       maxCharacters: flags.maxChars ?? 2000,
@@ -194,18 +216,39 @@ function buildSearchParams(): Record<string, unknown> {
   return params;
 }
 
+function minifyResponse(data: unknown): unknown {
+  if (Array.isArray(data)) {
+    return data.map(minifyResponse);
+  }
+  if (data && typeof data === "object") {
+    const obj = data as Record<string, unknown>;
+    const out: Record<string, unknown> = {};
+    for (const [k, v] of Object.entries(obj)) {
+      if (k === "highlightScores" && Array.isArray(v) && v.length === 0) {
+        continue;
+      }
+      if (!flags.verbose && (k === "requestId" || k === "resolvedSearchType")) {
+        continue;
+      }
+      out[k] = minifyResponse(v);
+    }
+    return out;
+  }
+  return data;
+}
+
 // --- Execute ---
 async function doSearch() {
   const params = buildSearchParams();
   const results = await exa.search(query, params);
-  console.log(JSON.stringify(results, null, 2));
+  console.log(JSON.stringify(minifyResponse(results), null, 2));
 }
 
 async function doContents() {
   const urls = flags.urls as string[];
   const options: Record<string, unknown> = {};
 
-  if (flags.highlights !== false) options.highlights = true;
+  if (flags.highlights) options.highlights = true;
   if (flags.text) {
     options.text = {
       maxCharacters: flags.maxChars ?? 2000,
@@ -217,7 +260,7 @@ async function doContents() {
   }
 
   const results = await exa.getContents(urls, options);
-  console.log(JSON.stringify(results, null, 2));
+  console.log(JSON.stringify(minifyResponse(results), null, 2));
 }
 
 try {
