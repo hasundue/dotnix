@@ -7,9 +7,14 @@
 
 let
   opencodeGoKeyPath = config.age.secrets."api/opencode-go".path;
+  exaKeyFile = config.age.secrets."api/exa".path;
 in
 {
   home.packages = [ pkgs.llm-agents.pi ];
+
+  home.sessionVariables = {
+    EXA_API_KEY_FILE = exaKeyFile;
+  };
 
   home.file =
     lib.mapAttrs'
@@ -35,6 +40,11 @@ in
             type = "api_key";
             key = "!cat ${opencodeGoKeyPath}";
           };
+        };
+        "skills/exa-search/SKILL.md".source = ./skills/exa-search/SKILL.md;
+        "skills/exa-search/search.ts" = {
+          source = ./skills/exa-search/search.ts;
+          executable = true;
         };
       };
 }

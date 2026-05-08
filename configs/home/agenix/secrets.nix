@@ -4,6 +4,7 @@ let
   secrets = [
     "api/brave"
     "api/copilot"
+    "api/exa"
     "api/gemini"
     "api/opencode-go"
     "github/claude-code"
