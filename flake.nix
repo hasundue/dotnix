@@ -57,12 +57,6 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     niri.url = "github:sodiboo/niri-flake";
-    opencode = {
-      url = "github:dan-online/opencode-nix";
-      inputs = {
-        nixpkgs.follows = "nixpkgs";
-      };
-    };
     llm-agents-nix = {
       url = "github:numtide/llm-agents.nix";
       inputs = {
@@ -111,7 +105,6 @@
       nixpkgs,
       nixpkgs-master,
       nvim,
-      opencode,
       llm-agents-nix,
       self,
       stylix,
@@ -124,7 +117,6 @@
         agenix.overlays.default
         niri.overlays.niri
         nvim.overlays.default
-        opencode.overlays.default
         llm-agents-nix.overlays.default
       ]
       ++ (self.overlays |> lib.filterAttrs (n: v: n != "temporal") |> lib.attrValues);
@@ -273,7 +265,7 @@
           program = "${pkgs.writeShellScriptBin "opencode" ''
             export XDG_CONFIG_HOME="$(mktemp -d)"
             cp -rsf "${configDir}/"* "$XDG_CONFIG_HOME/"
-            exec ${pkgs.opencode}/bin/opencode "$@"
+            exec ${pkgs.llm-agents.opencode}/bin/opencode "$@"
           ''}/bin/opencode";
         };
       templates = {
