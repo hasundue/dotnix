@@ -46,5 +46,8 @@ in
           source = ./skills/exa-search/search.ts;
           executable = true;
         };
+        "skills/create-skill/SKILL.md".source = ./skills/create-skill/SKILL.md;
+        "skills/create-skill/script.ts".source = ./skills/create-skill/script.ts;
+        "skills/create-skill/SKILL_TEMPLATE.md".source = ./skills/create-skill/SKILL_TEMPLATE.md;
       };
 }

@@ -12,6 +12,8 @@ NixOS configuration flake for user `hasundue`. Hosts:
 ## Directory Structure
 
 ```
+.agents/
+  skills/      # Repo-local agent skills (e.g., config-agent-skill)
 configs/
   hosts/       # Host-specific NixOS modules (x1carbon, wsl)
   nixos/       # Shared NixOS modules
