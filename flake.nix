@@ -59,6 +59,12 @@
         nixpkgs.follows = "nixpkgs";
       };
     };
+    pi-mono = {
+      url = "github:lukasl-dev/pi-mono.nix";
+      inputs = {
+        nixpkgs.follows = "nixpkgs";
+      };
+    };
     python-validity = {
       url = "github:viktor-grunwaldt/t480-fingerprint-nixos";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -102,6 +108,7 @@
       nixpkgs-master,
       nvim,
       opencode,
+      pi-mono,
       self,
       stylix,
       ...
@@ -114,6 +121,7 @@
         niri.overlays.niri
         nvim.overlays.default
         opencode.overlays.default
+        pi-mono.overlays.default
       ]
       ++ (self.overlays |> lib.filterAttrs (n: v: n != "temporal") |> lib.attrValues);
       systems = [
