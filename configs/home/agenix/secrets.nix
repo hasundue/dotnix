@@ -5,6 +5,7 @@ let
     "api/brave"
     "api/copilot"
     "api/gemini"
+    "api/opencode-go"
     "github/claude-code"
   ];
 
