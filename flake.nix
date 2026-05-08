@@ -1,5 +1,9 @@
 {
   description = "hasundue's system configuration";
+  nixConfig = {
+    extra-substituters = [ "https://cache.numtide.com" ];
+    extra-trusted-public-keys = [ "niks3.numtide.com-1:DTx8wZduET09hRmMtKdQDxNNthLQETkc/yaX7M4qK0g=" ];
+  };
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
     nixpkgs-master.url = "github:nixos/nixpkgs/master";
@@ -59,8 +63,8 @@
         nixpkgs.follows = "nixpkgs";
       };
     };
-    pi-mono = {
-      url = "github:lukasl-dev/pi-mono.nix";
+    llm-agents-nix = {
+      url = "github:numtide/llm-agents.nix";
       inputs = {
         nixpkgs.follows = "nixpkgs";
       };
@@ -108,7 +112,7 @@
       nixpkgs-master,
       nvim,
       opencode,
-      pi-mono,
+      llm-agents-nix,
       self,
       stylix,
       ...
@@ -121,7 +125,7 @@
         niri.overlays.niri
         nvim.overlays.default
         opencode.overlays.default
-        pi-mono.overlays.default
+        llm-agents-nix.overlays.default
       ]
       ++ (self.overlays |> lib.filterAttrs (n: v: n != "temporal") |> lib.attrValues);
       systems = [

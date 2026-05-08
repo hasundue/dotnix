@@ -9,7 +9,7 @@ let
   opencodeGoKeyPath = config.age.secrets."api/opencode-go".path;
 in
 {
-  home.packages = [ pkgs.pi-coding-agent ];
+  home.packages = [ pkgs.llm-agents.pi ];
 
   home.file =
     lib.mapAttrs'
