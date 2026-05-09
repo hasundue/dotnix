@@ -33,38 +33,40 @@ Get an API key at [dashboard.exa.ai](https://dashboard.exa.ai).
 
 ## Search
 
+> Run commands from this directory (`~/.pi/agent/skills/exa-search/`).
+
 Basic search with highlights (token-efficient excerpts — ideal for LLM
 workflows):
 
 ```bash
-./search.ts "your search query"
+deno search.ts "your search query"
 ```
 
 Customize number of results and search type:
 
 ```bash
-./search.ts "query" --num-results 5 --type auto
+deno search.ts "query" --num-results 5 --type auto
 # Types: auto, fast, instant, deep-lite, deep, deep-reasoning
 ```
 
 Disable highlights to reduce token usage:
 
 ```bash
-./search.ts "query" --highlights false
+deno search.ts "query" --highlights false
 # or
-./search.ts "query" --no-highlights
+deno search.ts "query" --no-highlights
 ```
 
 Get full page text content (use `maxCharacters` to control token cost):
 
 ```bash
-./search.ts "query" --text --max-chars 5000
+deno search.ts "query" --text --max-chars 5000
 ```
 
 Summaries per result:
 
 ```bash
-./search.ts "query" --summary
+deno search.ts "query" --summary
 ```
 
 ## Output Modes
@@ -73,7 +75,7 @@ Output is compact by default (strips `requestId`, `resolvedSearchType`, empty
 `highlightScores`). Use `--verbose` for full output:
 
 ```bash
-./search.ts "query" --verbose
+deno search.ts "query" --verbose
 ```
 
 ## Content Extraction
@@ -81,13 +83,13 @@ Output is compact by default (strips `requestId`, `resolvedSearchType`, empty
 Get clean content for URLs you already have:
 
 ```bash
-./search.ts --urls https://example.com/article https://example.com/blog
+deno search.ts --urls https://example.com/article https://example.com/blog
 ```
 
 With freshness control (livecrawl if cached content is older than N hours):
 
 ```bash
-./search.ts --urls https://example.com --max-age-hours 24
+deno search.ts --urls https://example.com --max-age-hours 24
 ```
 
 ## Structured Outputs (outputSchema)
@@ -95,7 +97,7 @@ With freshness control (livecrawl if cached content is older than N hours):
 Get grounded structured JSON from search results with field-level citations:
 
 ```bash
-./search.ts "query" --schema '
+deno search.ts "query" --schema '
 {
   "type": "object",
   "properties": {
@@ -115,14 +117,14 @@ The response includes `output.content` (structured JSON) and `output.grounding`
 Target specific sources or exclude low-quality domains:
 
 ```bash
-./search.ts "query" --include-domains arxiv.org,github.com
-./search.ts "query" --exclude-domains pinterest.com,medium.com
+deno search.ts "query" --include-domains arxiv.org,github.com
+deno search.ts "query" --exclude-domains pinterest.com,medium.com
 ```
 
 ## Date Filtering
 
 ```bash
-./search.ts "query" --start-published-date 2025-01-01 --end-published-date 2025-12-31
+deno search.ts "query" --start-published-date 2025-01-01 --end-published-date 2025-12-31
 ```
 
 ## All Options

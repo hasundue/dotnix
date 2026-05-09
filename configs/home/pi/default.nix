@@ -27,7 +27,7 @@ in
           theme = "kanagawa-wave";
           defaultProvider = "opencode-go";
           defaultModel = "deepseek-v4-flash";
-          defaultThinkingLevel = "high";
+          defaultThinkingLevel = "xhigh";
           hideThinkingBlock = true;
           enabledModels = [
             "opencode-go/deepseek-v4-flash"
@@ -41,13 +41,17 @@ in
             key = "!cat ${opencodeGoKeyPath}";
           };
         };
-        "skills/exa-search/SKILL.md".source = ./skills/exa-search/SKILL.md;
-        "skills/exa-search/search.ts" = {
-          source = ./skills/exa-search/search.ts;
-          executable = true;
+        "skills".source = ./skills;
+        "extensions".source = ./extensions;
+        "APPEND_SYSTEM.md".text = ''
+          Be conservative about making changes. Unless the user says "edit",
+          "write", "modify", "implement", or otherwise clearly indicates they
+          want actual modifications, treat their input as theoretical — explain
+          feasibility, approach, and trade-offs instead of executing. Prefer to
+          ask clarifying questions before editing.
+        '';
+        "keybindings.json".text = builtins.toJSON {
+          "app.session.rename" = "ctrl+shift+r";
         };
-        "skills/create-skill/SKILL.md".source = ./skills/create-skill/SKILL.md;
-        "skills/create-skill/script.ts".source = ./skills/create-skill/script.ts;
-        "skills/create-skill/SKILL_TEMPLATE.md".source = ./skills/create-skill/SKILL_TEMPLATE.md;
       };
 }
