@@ -1,0 +1,7 @@
+{
+  "name": "pi-packages",
+  "private": true,
+  "dependencies": {
+    "pi-mcp-adapter": "^2.5.0"
+  }
+}

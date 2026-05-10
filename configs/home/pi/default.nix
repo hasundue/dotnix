@@ -8,6 +8,15 @@
 let
   opencodeGoKeyPath = config.age.secrets."api/opencode-go".path;
   exaKeyFile = config.age.secrets."api/exa".path;
+
+  # Build all npm pi packages from the lockfile into the Nix store
+  npmPkgs = pkgs.importNpmLock.buildNodeModules {
+    npmRoot = ./.;
+    nodejs = pkgs.nodejs;
+  };
+
+  # Helper: resolve a pi package's directory inside the store
+  piPkg = name: "${npmPkgs}/node_modules/${name}";
 in
 {
   home.packages = [ pkgs.llm-agents.pi ];
@@ -39,6 +48,11 @@ in
           enabledModels = [
             "opencode-go/deepseek-v4-flash"
             "opencode-go/deepseek-v4-pro"
+          ];
+
+          # Nix store paths — resolved by the lockfile, fully declarative
+          packages = [
+            "${piPkg "pi-mcp-adapter"}"
           ];
         };
         "themes/kanagawa-wave.json".source = ./themes/kanagawa-wave.json;
