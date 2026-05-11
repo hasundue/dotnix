@@ -8,7 +8,10 @@ in
   pi = {
     enable = true;
     packagesDir = ./.;
-    packages = [ "pi-mcp-adapter" ];
+    packages = [
+      "pi-mcp-adapter"
+      "pi-web-access"
+    ];
 
     settings = {
       theme = "kanagawa-wave";
@@ -34,7 +37,7 @@ in
     ];
 
     skills = [
-      ./skills/exa-search
+      # ./skills/exa-search
     ];
 
     keybindings = {

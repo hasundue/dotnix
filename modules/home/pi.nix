@@ -141,10 +141,9 @@ in
 
       home.file = mkMerge [
         {
-          "${piFile "settings.json"}".text = builtins.toJSON (mkMerge [
-            (optionalAttrs (allPackages != [ ]) { packages = allPackages; })
-            cfg.settings
-          ]);
+          "${piFile "settings.json"}".text = builtins.toJSON (
+            (optionalAttrs (allPackages != [ ]) { packages = allPackages; }) // cfg.settings
+          );
         }
         (optionalAttrs (cfg.context != null) {
           "${piFile "AGENTS.md"}".text = cfg.context;

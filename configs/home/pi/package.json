@@ -2,6 +2,7 @@
   "name": "pi-packages",
   "private": true,
   "dependencies": {
-    "pi-mcp-adapter": "^2.5.0"
+    "pi-mcp-adapter": "^2.5.0",
+    "pi-web-access": "^0.10.0"
   }
 }
