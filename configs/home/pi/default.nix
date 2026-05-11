@@ -11,6 +11,7 @@ in
     packages = [
       "pi-mcp-adapter"
       "pi-web-access"
+      "pi-subdir-context"
     ];
 
     settings = {
