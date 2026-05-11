@@ -48,9 +48,12 @@ nix eval .#homeConfigurations."hasundue@x1carbon".config.wayland.windowManager.n
 
 ## Commit Messages
 
-- Use a scoped subject in the form `scope: imperative summary`
-- Keep the scope lowercase and aligned with the area being changed, for example
-  `flake: ...`, `niri: ...`, or `home/waybar: ...`
+- `scope: imperative summary` — always use a scope
+- Use the config name as scope (`niri`, `waybar`, `flake`)
+- Prefix with parent only when ambiguous: `home/waybar` vs `nixos/waybar`
+- Known conventions:
+  - `agents:` — repository-local agent config (AGENTS.md, .agents/)
+  - `flake:` — flake.nix / inputs
 
 ## Architecture
 
