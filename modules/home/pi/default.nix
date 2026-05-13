@@ -14,7 +14,6 @@ let
     types
     ;
   inherit (lib.attrsets) filterAttrs mapAttrs' optionalAttrs;
-  inherit (lib.strings) removePrefix;
 
   cfg = config.pi;
 
@@ -28,116 +27,16 @@ let
       default = true;
       description = "Enable this sub-extension. Set false to opt out.";
     };
-    agents = mkOption {
-      type = types.attrsOf (types.submodule { options = agentOptions; });
-      default = { };
-      description = ''
-        Agent definitions for this sub-extension (e.g. agent-selection).
-        Each key becomes the agent ID (filename) when written to disk.
-      '';
-    };
-  };
-
-  # ---------------------------------------------------------------------------
-  # Agent submodule
-  # ---------------------------------------------------------------------------
-
-  agentOptions = {
-    type = mkOption {
-      type = types.enum [
-        "main"
-        "subagent"
-        "both"
-      ];
-      default = "main";
-      description = "Agent type.";
-    };
-    description = mkOption {
-      type = types.str;
-      default = "";
-      description = "Short description shown in agent lists.";
-    };
-    model = mkOption {
-      type = types.submodule {
-        options = {
-          id = mkOption {
-            type = types.nullOr types.str;
-            default = null;
-            description = "Model ID in provider/model form (e.g. opencode-go/deepseek-v4-flash).";
-          };
-          thinking = mkOption {
-            type = types.nullOr (
-              types.enum [
-                "off"
-                "minimal"
-                "low"
-                "medium"
-                "high"
-                "xhigh"
-              ]
-            );
-            default = null;
-            description = "Thinking level.";
-          };
-        };
-      };
-      default = { };
-      description = "Optional model override for this agent.";
-    };
-    tools = mkOption {
-      type = types.listOf types.str;
-      default = [ ];
-      description = "Allowed tools (exact names or narrow wildcard patterns).";
-    };
-    subAgents = mkOption {
-      type = types.listOf types.str;
-      default = [ ];
-      description = "Subagent IDs that this agent may call (YAML field: agents).";
-    };
-    text = mkOption {
-      type = types.str;
-      description = "Agent system prompt body (markdown after the YAML frontmatter).";
-    };
   };
 
   # ---------------------------------------------------------------------------
   # Helpers
   # ---------------------------------------------------------------------------
 
-  # Derive the per-package config directory from npm package name.
-  # Convention: pi-* packages strip the prefix, e.g. pi-agent-suite → agent-suite.
-  pkgDir = name: removePrefix "pi-" name;
-
-  # Map extension config key to its storage directory under the package dir.
-  # Some extensions use a different directory name for state/agents.
-  extStorageDir =
-    extName:
-    {
-      "main-agent-selection" = "agent-selection";
-    }
-    .${extName} or extName;
-
-  # Build the YAML frontmatter attrset for an agent, omitting null/empty fields
-  agentFrontmatter =
-    agent:
-    {
-      type = agent.type;
-    }
-    // optionalAttrs (agent.description != "") { description = agent.description; }
-    // optionalAttrs (agent.model.id != null || agent.model.thinking != null) {
-      model = filterAttrs (_: v: v != null) {
-        id = agent.model.id;
-        thinking = agent.model.thinking;
-      };
-    }
-    // optionalAttrs (agent.tools != [ ]) { tools = agent.tools; }
-    // optionalAttrs (agent.subAgents != [ ]) { agents = agent.subAgents; };
-
-  # Generate the full content of one agent .md file
-  agentFileContent = agent: "---\n${builtins.toJSON (agentFrontmatter agent)}\n---\n\n${agent.text}";
-
 in
 {
+  imports = [ ./packages ];
+
   options.pi = {
     enable = mkOption {
       type = types.bool;
@@ -162,6 +61,7 @@ in
     packages = mkOption {
       type = types.attrsOf (
         types.submodule {
+          freeformType = types.attrs;
           options = {
             enable = mkOption {
               type = types.bool;
@@ -169,16 +69,18 @@ in
               description = "Enable the package. Disabled packages are not added to settings.json.";
             };
             extensions = mkOption {
-              type = types.attrsOf (types.submodule { options = subExtOptions; });
+              type = types.attrsOf (
+                types.submodule {
+                  freeformType = types.attrs;
+                  options = subExtOptions;
+                }
+              );
               default = { };
               description = ''
                 Sub-extension configurations within this package.
 
                 To opt out of a default sub-extension:
                   footer.enable = false;
-
-                To configure agents for agent-selection:
-                  agent-selection.agents = { ... };
               '';
             };
           };
@@ -394,36 +296,6 @@ in
           )
         ) resources;
 
-      # -----------------------------------------------------------------------
-      # Agent .md files
-      # Iterate enabled packages → enabled sub-extensions with agents
-      # -----------------------------------------------------------------------
-
-      agentFiles = builtins.foldl' (
-        acc: pkgName:
-        let
-          pkg = enabledPkgs.${pkgName};
-          pkgConfigDir = pkgDir pkgName;
-
-          # Sub-extensions that are enabled and have agents defined
-          extWithAgents = filterAttrs (_: ext: ext.enable && ext.agents != { }) pkg.extensions;
-        in
-        acc
-        // builtins.foldl' (
-          acc2: extName:
-          let
-            ext = extWithAgents.${extName};
-          in
-          acc2
-          // mapAttrs' (
-            agentName: agent:
-            nameValuePair (piFile "${pkgConfigDir}/${extStorageDir extName}/agents/${agentName}.md") {
-              text = agentFileContent agent;
-            }
-          ) ext.agents
-        ) { } (builtins.attrNames extWithAgents)
-      ) { } (builtins.attrNames enabledPkgs);
-
     in
     {
       home.packages = [ pkgs.llm-agents.pi ];
@@ -434,7 +306,6 @@ in
             (optionalAttrs (allPackages != [ ]) { packages = allPackages; }) // cfg.settings
           );
         }
-        agentFiles
         (optionalAttrs (cfg.context != null) {
           "${piFile "AGENTS.md"}".text = cfg.context;
         })

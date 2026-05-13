@@ -1,5 +1,5 @@
 {
   imports = [
-    ./pi.nix
+    ./pi
   ];
 }
