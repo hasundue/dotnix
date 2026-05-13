@@ -8,11 +8,47 @@ in
   pi = {
     enable = true;
     packagesDir = ./.;
-    packages = [
-      "pi-mcp-adapter"
-      "pi-web-access"
-      "pi-subdir-context"
-    ];
+
+    packages = {
+      pi-agent-suite = {
+        extensions = {
+          codex-verbosity.enable = false;
+          codex-quota.enable = false;
+          context-projection.enable = false;
+          convene-council.enable = false;
+          url-scheme.enable = false;
+          enable-tools.enable = false;
+          footer.enable = false;
+          custom-compaction.enable = false;
+          context-overflow.enable = false;
+          completion-sound.enable = false;
+          cmux.enable = false;
+          system-prompt.enable = false;
+          run-subagent.enable = false;
+          ask-llm.enable = false;
+          consult-advisor.enable = false;
+
+          main-agent-selection.agents = {
+            CodeReview = {
+              type = "both";
+              description = "Reviews code for correctness and risks";
+              model = {
+                id = "opencode-go/deepseek-v4-flash";
+                thinking = "high";
+              };
+              tools = [
+                "read"
+                "bash"
+                "edit"
+              ];
+              text = ''
+                You are a code review agent. Check correctness, risks, and missing validation.
+              '';
+            };
+          };
+        };
+      };
+    };
 
     settings = {
       theme = "kanagawa-wave";
@@ -35,6 +71,12 @@ in
 
     themes = [
       ./themes/kanagawa-wave.json
+    ];
+
+    extensions = [
+      ./extensions/agent-status.ts
+      # ./extensions/readonly-mode
+      # ./extensions/toggle-bash
     ];
 
     skills = [

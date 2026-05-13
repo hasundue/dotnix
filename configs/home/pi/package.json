@@ -2,6 +2,7 @@
   "name": "pi-packages",
   "private": true,
   "dependencies": {
+    "pi-agent-suite": "^0.9.2",
     "pi-mcp-adapter": "^2.5.0",
     "pi-web-access": "^0.10.0",
     "pi-subdir-context": "^1.1.7"
