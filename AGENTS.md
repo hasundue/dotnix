@@ -53,8 +53,12 @@ nix eval .#homeConfigurations."hasundue@x1carbon".config.wayland.windowManager.n
 ## Commit Messages
 
 - `scope: imperative summary` — always use a scope
-- Use the config name as scope (`niri`, `waybar`, `flake`)
-- Prefix with parent only when ambiguous: `home/waybar` vs `nixos/waybar`
+- Derive scope from the changed config's directory name (the leaf, e.g. `pi`
+  from `configs/home/pi/`, `waybar` from `configs/nixos/waybar/`)
+- Prepend parent only when the same config name exists under a different parent
+  (e.g. `configs/home/waybar` and `configs/nixos/waybar` both exist → use
+  `home/waybar` and `nixos/waybar`). Otherwise use the bare name (`pi`, `niri`,
+  `stylix`, etc.)
 - Known conventions:
   - `agents:` — repository-local agent config (AGENTS.md, .agents/)
   - `flake:` — flake.nix / inputs
