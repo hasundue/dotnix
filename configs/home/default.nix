@@ -13,7 +13,6 @@
   };
   imports = [
     ./agenix
-    ./copilot.nix
     ./fish.nix
     ./git.nix
     ./gh.nix
@@ -21,7 +20,6 @@
     ./mcp.nix
     ./neovim.nix
     ./nix.nix
-    ./opencode
     ./pi
     ./television.nix
   ];
