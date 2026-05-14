@@ -17,7 +17,6 @@
     ./git.nix
     ./gh.nix
     ./lazygit.nix
-    ./mcp.nix
     ./neovim.nix
     ./nix.nix
     ./pi
