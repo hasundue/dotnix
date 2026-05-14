@@ -4,6 +4,7 @@
   imports = [
     ./bluetooth.nix
     ./fonts.nix
+    ./kanata.nix
     ./steam.nix
   ];
 
