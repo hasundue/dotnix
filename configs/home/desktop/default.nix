@@ -52,6 +52,22 @@
     fuzzel.enable = true;
   };
 
+  systemd.user = {
+    services.sync-desktop-entries = {
+      Unit.Description = "Sync ~/Desktop .desktop files to XDG applications dir";
+      Service = {
+        Type = "oneshot";
+        ExecStart = "${pkgs.bash}/bin/bash -c 'for f in $HOME/Desktop/*.desktop; do [ -f \"$f\" ] && ln -sf \"$f\" $HOME/.local/share/applications/; done'";
+      };
+    };
+
+    paths.sync-desktop-entries = {
+      Unit.Description = "Watch ~/Desktop for .desktop file changes";
+      Install.WantedBy = [ "default.target" ];
+      Path.PathModified = "%h/Desktop/*.desktop";
+    };
+  };
+
   services = {
     gammastep = {
       enable = true;
