@@ -312,7 +312,11 @@ in
         ))
         (builtins.listToAttrs (
           map (
-            dir: nameValuePair (piFile "skills/${baseNameOf (builtins.toString dir)}") { source = dir; }
+            dir:
+            let
+              name = builtins.unsafeDiscardStringContext (baseNameOf (builtins.toString dir));
+            in
+            nameValuePair (piFile "skills/${name}") { source = dir; }
           ) cfg.skills
         ))
         (resourceEntries "extensions" (

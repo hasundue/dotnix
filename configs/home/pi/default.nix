@@ -1,4 +1,4 @@
-{ config, ... }:
+{ config, pkgs, ... }:
 
 let
   opencodeGoKeyPath = config.age.secrets."api/opencode-go".path;
@@ -87,6 +87,7 @@ in
     ];
 
     skills = [
+      "${pkgs.worktrunk.src}/skills/worktrunk"
       # ./skills/exa-search
     ];
 
