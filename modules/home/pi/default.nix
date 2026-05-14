@@ -286,15 +286,7 @@ in
 
       resourceEntries =
         prefix: resources:
-        mapAttrs' (
-          name: source:
-          nameValuePair (piFile "${prefix}/${name}") (
-            if builtins.isPath source || builtins.isString source then
-              { source = builtins.toString source; }
-            else
-              source
-          )
-        ) resources;
+        mapAttrs' (name: source: nameValuePair (piFile "${prefix}/${name}") { inherit source; }) resources;
 
     in
     {
@@ -324,7 +316,15 @@ in
           ) cfg.skills
         ))
         (resourceEntries "extensions" (
-          builtins.listToAttrs (map (f: nameValuePair (baseNameOf (builtins.toString f)) f) cfg.extensions)
+          builtins.listToAttrs (
+            map (
+              f:
+              let
+                name = if builtins.isPath f then baseNameOf (toString f) else f.name;
+              in
+              nameValuePair name f
+            ) cfg.extensions
+          )
         ))
       ];
     }

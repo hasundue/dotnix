@@ -3,6 +3,15 @@
 let
   opencodeGoKeyPath = config.age.secrets."api/opencode-go".path;
   exaKeyFile = config.age.secrets."api/exa".path;
+
+  fromPiExamples =
+    names:
+    map (
+      name:
+      pkgs.runCommandLocal name { } ''
+        ln -s ${pkgs.llm-agents.pi}/lib/node_modules/@earendil-works/pi-coding-agent/examples/extensions/${name} "$out"
+      ''
+    ) names;
 in
 {
   pi = {
@@ -80,12 +89,11 @@ in
     ];
 
     extensions =
-      let
-        examples = "${pkgs.llm-agents.pi}/lib/node_modules/@earendil-works/pi-coding-agent/examples/extensions";
-      in
-      [
+      fromPiExamples [
+        "minimal-mode.ts"
+      ]
+      ++ [
         ./extensions/agent-status.ts
-        "${examples}/minimal-mode.ts"
         # ./extensions/readonly-mode
         # ./extensions/toggle-bash
       ];
