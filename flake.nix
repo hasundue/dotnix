@@ -52,6 +52,10 @@
       url = "github:cameronfreer/lean4-skills";
       flake = false;
     };
+    worktrunk = {
+      url = "github:max-sixty/worktrunk";
+      flake = false;
+    };
     mcp-servers-nix = {
       url = "github:natsukium/mcp-servers-nix";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -232,6 +236,9 @@
         };
         lean4-skills = final: prev: {
           lean4-skills-src = inputs.lean4-skills;
+        };
+        worktrunk = final: prev: {
+          worktrunk-src = inputs.worktrunk;
         };
       };
       packages = forEachSystem (pkgs: {

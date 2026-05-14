@@ -808,7 +808,8 @@
         "stylix": "stylix",
         "systems": "systems_2",
         "treefmt-nix": "treefmt-nix_2",
-        "uv2nix": "uv2nix"
+        "uv2nix": "uv2nix",
+        "worktrunk": "worktrunk"
       }
     },
     "stylix": {
@@ -1017,6 +1018,22 @@
       "original": {
         "owner": "pyproject-nix",
         "repo": "uv2nix",
+        "type": "github"
+      }
+    },
+    "worktrunk": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1778691418,
+        "narHash": "sha256-ZnO5u5/7whPkbphYNWn0KdD5El+7XX0PUCn1hEAKf+k=",
+        "owner": "max-sixty",
+        "repo": "worktrunk",
+        "rev": "4cfc8e6acde820b0fd63cbcc2280fbe084c072df",
+        "type": "github"
+      },
+      "original": {
+        "owner": "max-sixty",
+        "repo": "worktrunk",
         "type": "github"
       }
     },
