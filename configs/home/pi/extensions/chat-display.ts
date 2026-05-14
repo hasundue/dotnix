@@ -9,7 +9,7 @@
  * block + diff preview that tool's `renderShell: "self"` requires.
  */
 
-import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
+import type { ExtensionAPI, Theme } from "@earendil-works/pi-coding-agent";
 import {
   createBashTool,
   createEditTool,
@@ -23,12 +23,80 @@ import {
 import { Box, Container, Text } from "@earendil-works/pi-tui";
 import { homedir } from "os";
 
+// Shorter placeholder for the pi-coding-agent store path, which appears very
+// frequently when configuring pi.
+const PI_AGENT_RE =
+  /\/nix\/store\/[a-z0-9]{32}-[\w.~-]+\/lib\/node_modules\/@earendil-works\/pi-coding-agent\//g;
+
+// General nix store path shortening: /nix/store/<hash>-<name>/... → <<name>/...
+const NIX_STORE_RE = /\/nix\/store\/[a-z0-9]{32}-([^\s"'<>]+)/g;
+
+function shortenNixPaths(text: string): string {
+  // Pi-agent first (more specific, must run before general nix store pass)
+  let result = text.replace(PI_AGENT_RE, "<pi-coding-agent>/");
+  // Then general nix store paths
+  result = result.replace(NIX_STORE_RE, (_match, pkgRest) => {
+    const firstSlash = pkgRest.indexOf("/");
+    const pkgName = firstSlash >= 0 ? pkgRest.slice(0, firstSlash) : pkgRest;
+    const restPath = firstSlash >= 0 ? pkgRest.slice(firstSlash) : "";
+    return `<${pkgName}>${restPath}`;
+  });
+  return result;
+}
+
+/**
+ * Apply nix path shortening + highlight the `<placeholder>` parts with a
+ * distinct style, so they stand out as synthetic markers rather than real
+ * directory names.
+ */
+function highlightNixShortcuts(
+  text: string,
+  normalStyle: (s: string) => string,
+  placeholderStyle: (s: string) => string,
+): string {
+  const shortened = shortenNixPaths(text);
+  // Quick exit if nothing changed
+  if (shortened === text) return normalStyle(text);
+
+  // Split on <placeholder> tokens (but not </something> which could be XML)
+  const parts = shortened.split(/(<[^/][^>]*>)/g);
+  return parts.map((part) => {
+    if (/^<[^/][^>]*>$/.test(part)) {
+      return placeholderStyle(part);
+    }
+    return normalStyle(part);
+  }).join("");
+}
+
+/**
+ * Style a bash command with the prompt and the command name bold, arguments
+ * in normal style, and nix store path placeholders in accent (matching the
+ * color used for paths in read/write/edit tool calls).
+ */
+function styleBashCommand(
+  command: string,
+  theme: Theme,
+): string {
+  const trimmed = command.trimStart();
+  const firstSpace = trimmed.indexOf(" ");
+  const cmd = firstSpace < 0 ? trimmed : trimmed.slice(0, firstSpace);
+  const args = firstSpace < 0 ? "" : trimmed.slice(firstSpace);
+
+  const styledCmd = theme.fg("toolTitle", theme.bold(cmd));
+  const styledArgs = highlightNixShortcuts(
+    args,
+    (s) => theme.fg("toolTitle", s),
+    (s) => theme.fg("accent", s),
+  );
+  return `${theme.fg("toolTitle", theme.bold("$"))} ${styledCmd}${styledArgs}`;
+}
+
 function shortenPath(path: string): string {
   const home = homedir();
   if (path.startsWith(home)) {
     return `~${path.slice(home.length)}`;
   }
-  return path;
+  return shortenNixPaths(path);
 }
 
 // ---------------------------------------------------------------------------
@@ -132,7 +200,8 @@ export default function (pi: ExtensionAPI) {
         return new Text("", 0, 0);
       }
 
-      const lines = textContent.text.split("\n");
+      const text = shortenNixPaths(textContent.text);
+      const lines = text.split("\n");
       const output = lines.map((line) => theme.fg("toolOutput", line)).join(
         "\n",
       );
@@ -161,14 +230,13 @@ export default function (pi: ExtensionAPI) {
 
       let text;
       if (context.expanded) {
-        // Show full command when expanded
-        text = theme.fg("toolTitle", theme.bold(`$ ${command}`));
+        text = styleBashCommand(command, theme);
       } else {
         const lines = command.split("\n");
         const firstLine = lines[0].trim();
         const extraLines = lines.length - 1;
 
-        text = theme.fg("toolTitle", theme.bold(`$ ${firstLine}`));
+        text = styleBashCommand(firstLine, theme);
         if (extraLines > 0) {
           text += theme.fg(
             "muted",
@@ -191,10 +259,15 @@ export default function (pi: ExtensionAPI) {
         return new Text("", 0, 0);
       }
 
+      const normalStyle = (s: string) => theme.fg("toolOutput", s);
+      const placeholderStyle = (s: string) => theme.fg("accent", s);
+
       const output = textContent.text
         .trim()
         .split("\n")
-        .map((line) => theme.fg("toolOutput", line))
+        .map((line) =>
+          highlightNixShortcuts(line, normalStyle, placeholderStyle)
+        )
         .join("\n");
 
       if (!output) return new Text("", 0, 0);
@@ -242,7 +315,11 @@ export default function (pi: ExtensionAPI) {
       if (result.content.some((c) => c.type === "text" && c.text)) {
         const textContent = result.content.find((c) => c.type === "text");
         if (textContent?.type === "text" && textContent.text) {
-          return new Text(`\n${theme.fg("error", textContent.text)}`, 0, 0);
+          return new Text(
+            `\n${theme.fg("error", shortenNixPaths(textContent.text))}`,
+            0,
+            0,
+          );
         }
       }
 
@@ -331,7 +408,11 @@ export default function (pi: ExtensionAPI) {
         if (textContent?.type === "text" && textContent.text) {
           const color = context.isError ? "error" : "toolOutput";
           box.addChild(
-            new Text(`\n${theme.fg(color, textContent.text)}`, 0, 0),
+            new Text(
+              `\n${theme.fg(color, shortenNixPaths(textContent.text))}`,
+              0,
+              0,
+            ),
           );
         }
       }
@@ -397,7 +478,7 @@ export default function (pi: ExtensionAPI) {
         return new Text("", 0, 0);
       }
 
-      const output = textContent.text
+      const output = shortenNixPaths(textContent.text)
         .trim()
         .split("\n")
         .map((line) => theme.fg("toolOutput", line))
@@ -470,7 +551,7 @@ export default function (pi: ExtensionAPI) {
         return new Text("", 0, 0);
       }
 
-      const output = textContent.text
+      const output = shortenNixPaths(textContent.text)
         .trim()
         .split("\n")
         .map((line) => theme.fg("toolOutput", line))
@@ -537,7 +618,7 @@ export default function (pi: ExtensionAPI) {
         return new Text("", 0, 0);
       }
 
-      const output = textContent.text
+      const output = shortenNixPaths(textContent.text)
         .trim()
         .split("\n")
         .map((line) => theme.fg("toolOutput", line))
