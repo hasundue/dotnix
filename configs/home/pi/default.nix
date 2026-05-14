@@ -52,6 +52,8 @@ in
       pi-web-access.settings = {
         workflow = "none";
       };
+
+      context-mode.enable = false;
     };
 
     settings = {
