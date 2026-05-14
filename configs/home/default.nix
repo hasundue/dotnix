@@ -21,6 +21,7 @@
     ./nix.nix
     ./pi
     ./television.nix
+    ./worktrunk.nix
   ];
   programs = {
     mcp.enable = true;
