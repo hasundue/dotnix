@@ -1,4 +1,4 @@
-{ config, ... }:
+{ config, pkgs, ... }:
 
 let
   opencodeGoKeyPath = config.age.secrets."api/opencode-go".path;
@@ -79,11 +79,16 @@ in
       ./themes/kanagawa-wave.json
     ];
 
-    extensions = [
-      ./extensions/agent-status.ts
-      # ./extensions/readonly-mode
-      # ./extensions/toggle-bash
-    ];
+    extensions =
+      let
+        examples = "${pkgs.llm-agents.pi}/lib/node_modules/@earendil-works/pi-coding-agent/examples/extensions";
+      in
+      [
+        ./extensions/agent-status.ts
+        "${examples}/minimal-mode.ts"
+        # ./extensions/readonly-mode
+        # ./extensions/toggle-bash
+      ];
 
     skills = [
       # ./skills/exa-search
