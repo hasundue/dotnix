@@ -36,6 +36,14 @@ export default function agentStatus(pi: ExtensionAPI): void {
           tui.requestRender();
         },
       );
+      pi.on("model_select", (event) => {
+        modelId = event.model.id;
+        tui.requestRender();
+      });
+      pi.on("thinking_level_select", (event) => {
+        thinkingLevel = event.level;
+        tui.requestRender();
+      });
       const unsubBranch = footerData.onBranchChange(() => tui.requestRender());
 
       return {

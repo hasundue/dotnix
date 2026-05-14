@@ -93,7 +93,7 @@ in
         "minimal-mode.ts"
       ]
       ++ [
-        ./extensions/agent-status.ts
+        ./extensions/footer.ts
         # ./extensions/readonly-mode
         # ./extensions/toggle-bash
       ];
