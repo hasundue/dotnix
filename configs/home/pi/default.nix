@@ -1,17 +1,8 @@
-{ config, pkgs, ... }:
+{ config, ... }:
 
 let
   opencodeGoKeyPath = config.age.secrets."api/opencode-go".path;
   exaKeyFile = config.age.secrets."api/exa".path;
-
-  fromPiExamples =
-    names:
-    map (
-      name:
-      pkgs.runCommandLocal name { } ''
-        ln -s ${pkgs.llm-agents.pi}/lib/node_modules/@earendil-works/pi-coding-agent/examples/extensions/${name} "$out"
-      ''
-    ) names;
 in
 {
   pi = {
@@ -88,15 +79,12 @@ in
       ./themes/kanagawa-wave.json
     ];
 
-    extensions =
-      fromPiExamples [
-        "minimal-mode.ts"
-      ]
-      ++ [
-        ./extensions/footer.ts
-        # ./extensions/readonly-mode
-        # ./extensions/toggle-bash
-      ];
+    extensions = [
+      ./extensions/chat-display.ts
+      ./extensions/footer.ts
+      # ./extensions/readonly-mode
+      # ./extensions/toggle-bash
+    ];
 
     skills = [
       # ./skills/exa-search
