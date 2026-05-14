@@ -155,18 +155,32 @@ export default function (pi: ExtensionAPI) {
       return tools.bash.execute(toolCallId, params, signal, onUpdate);
     },
 
-    renderCall(args, theme, _context) {
+    renderCall(args, theme, context) {
       const command = args.command || "...";
       const timeout = args.timeout as number | undefined;
-      const timeoutSuffix = timeout
-        ? theme.fg("muted", ` (timeout ${timeout}s)`)
-        : "";
 
-      return new Text(
-        theme.fg("toolTitle", theme.bold(`$ ${command}`)) + timeoutSuffix,
-        0,
-        0,
-      );
+      let text;
+      if (context.expanded) {
+        // Show full command when expanded
+        text = theme.fg("toolTitle", theme.bold(`$ ${command}`));
+      } else {
+        const lines = command.split("\n");
+        const firstLine = lines[0].trim();
+        const extraLines = lines.length - 1;
+
+        text = theme.fg("toolTitle", theme.bold(`$ ${firstLine}`));
+        if (extraLines > 0) {
+          text += theme.fg(
+            "muted",
+            ` [+${extraLines} line${extraLines > 1 ? "s" : ""}]`,
+          );
+        }
+      }
+      if (timeout) {
+        text += theme.fg("muted", ` (timeout ${timeout}s)`);
+      }
+
+      return new Text(text, 0, 0);
     },
 
     renderResult(result, { expanded }, theme, _context) {
