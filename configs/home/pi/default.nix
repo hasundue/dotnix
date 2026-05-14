@@ -100,6 +100,9 @@ in
       want actual modifications, treat their input as theoretical — explain
       feasibility, approach, and trade-offs instead of executing. Prefer to
       ask clarifying questions before editing.
+
+      Prefer relative paths for tool calls. Use absolute paths only when
+      referencing files outside the current working directory.
     '';
   };
 
