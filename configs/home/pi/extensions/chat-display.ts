@@ -60,6 +60,32 @@ function getBuiltInTools(cwd: string) {
 
 export default function (pi: ExtensionAPI) {
   // =========================================================================
+  // Setup
+  // =========================================================================
+
+  // When hideThinkingBlock is toggled (Ctrl+T), the built-in
+  // AssistantMessageComponent shows the "Thinking..." label during
+  // streaming, which is fine. Once streaming finishes, we strip thinking
+  // content blocks at message_end so they disappear entirely.
+  //
+  // Note: this also strips thinking from the session history permanently.
+  // When you toggle hideThinkingBlock back via Ctrl+T, previously stripped
+  // messages won't regain their thinking. Old messages (before this extension
+  // existed) still show the default "Thinking..." label when hidden.
+  pi.on("message_end", (event, _ctx) => {
+    const content = event.message.content;
+    const filtered = content.filter((c) => c.type !== "thinking");
+    if (filtered.length < content.length) {
+      return {
+        message: {
+          ...event.message,
+          content: filtered,
+        } as typeof event.message,
+      };
+    }
+  });
+
+  // =========================================================================
   // Read Tool
   // =========================================================================
   pi.registerTool({
