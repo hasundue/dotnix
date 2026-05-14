@@ -342,7 +342,7 @@ export default function (pi: ExtensionAPI) {
       return tools.find.execute(toolCallId, params, signal, onUpdate);
     },
 
-    renderCall(args, theme, _context) {
+    renderCall(args, theme, context) {
       const pattern = args.pattern || "";
       const path = shortenPath(args.path || ".");
       const limit = args.limit;
@@ -354,18 +354,25 @@ export default function (pi: ExtensionAPI) {
       if (limit !== undefined) {
         text += theme.fg("toolOutput", ` (limit ${limit})`);
       }
+      if (context.state.countStr) {
+        text += context.state.countStr;
+      }
 
       return new Text(text, 0, 0);
     },
 
-    renderResult(result, { expanded }, theme, _context) {
+    renderResult(result, { expanded }, theme, context) {
       if (!expanded) {
-        const textContent = result.content.find((c) => c.type === "text");
-        if (textContent?.type === "text") {
-          const count =
-            textContent.text.trim().split("\n").filter(Boolean).length;
-          if (count > 0) {
-            return new Text(theme.fg("muted", ` → ${count} files`), 0, 0);
+        if (!context.state.countSet) {
+          const textContent = result.content.find((c) => c.type === "text");
+          if (textContent?.type === "text") {
+            const count =
+              textContent.text.trim().split("\n").filter(Boolean).length;
+            if (count > 0) {
+              context.state.countStr = theme.fg("muted", ` →  ${count} files`);
+              context.state.countSet = true;
+              context.invalidate();
+            }
           }
         }
         return new Text("", 0, 0);
@@ -401,7 +408,7 @@ export default function (pi: ExtensionAPI) {
       return tools.grep.execute(toolCallId, params, signal, onUpdate);
     },
 
-    renderCall(args, theme, _context) {
+    renderCall(args, theme, context) {
       const pattern = args.pattern || "";
       const path = shortenPath(args.path || ".");
       const glob = args.glob;
@@ -417,18 +424,28 @@ export default function (pi: ExtensionAPI) {
       if (limit !== undefined) {
         text += theme.fg("toolOutput", ` limit ${limit}`);
       }
+      if (context.state.countStr) {
+        text += context.state.countStr;
+      }
 
       return new Text(text, 0, 0);
     },
 
-    renderResult(result, { expanded }, theme, _context) {
+    renderResult(result, { expanded }, theme, context) {
       if (!expanded) {
-        const textContent = result.content.find((c) => c.type === "text");
-        if (textContent?.type === "text") {
-          const count =
-            textContent.text.trim().split("\n").filter(Boolean).length;
-          if (count > 0) {
-            return new Text(theme.fg("muted", ` → ${count} matches`), 0, 0);
+        if (!context.state.countSet) {
+          const textContent = result.content.find((c) => c.type === "text");
+          if (textContent?.type === "text") {
+            const count =
+              textContent.text.trim().split("\n").filter(Boolean).length;
+            if (count > 0) {
+              context.state.countStr = theme.fg(
+                "muted",
+                ` →  ${count} matches`,
+              );
+              context.state.countSet = true;
+              context.invalidate();
+            }
           }
         }
         return new Text("", 0, 0);
@@ -464,7 +481,7 @@ export default function (pi: ExtensionAPI) {
       return tools.ls.execute(toolCallId, params, signal, onUpdate);
     },
 
-    renderCall(args, theme, _context) {
+    renderCall(args, theme, context) {
       const path = shortenPath(args.path || ".");
       const limit = args.limit;
 
@@ -474,18 +491,28 @@ export default function (pi: ExtensionAPI) {
       if (limit !== undefined) {
         text += theme.fg("toolOutput", ` (limit ${limit})`);
       }
+      if (context.state.countStr) {
+        text += context.state.countStr;
+      }
 
       return new Text(text, 0, 0);
     },
 
-    renderResult(result, { expanded }, theme, _context) {
+    renderResult(result, { expanded }, theme, context) {
       if (!expanded) {
-        const textContent = result.content.find((c) => c.type === "text");
-        if (textContent?.type === "text") {
-          const count =
-            textContent.text.trim().split("\n").filter(Boolean).length;
-          if (count > 0) {
-            return new Text(theme.fg("muted", ` → ${count} entries`), 0, 0);
+        if (!context.state.countSet) {
+          const textContent = result.content.find((c) => c.type === "text");
+          if (textContent?.type === "text") {
+            const count =
+              textContent.text.trim().split("\n").filter(Boolean).length;
+            if (count > 0) {
+              context.state.countStr = theme.fg(
+                "muted",
+                ` →  ${count} entries`,
+              );
+              context.state.countSet = true;
+              context.invalidate();
+            }
           }
         }
         return new Text("", 0, 0);
