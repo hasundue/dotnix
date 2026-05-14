@@ -1,4 +1,9 @@
-{ lib, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 
 {
   services.kanata = {
@@ -25,6 +30,12 @@
       };
     };
   };
+
+  # Restart kanata when the BT keyboard reconnects — inotify can miss it after
+  # frequent Bluetooth disconnects/reconnects
+  services.udev.extraRules = ''
+    ACTION=="add", SUBSYSTEM=="input", ATTRS{name}=="BT5.0 KB Keyboard", RUN+="${pkgs.systemd}/bin/systemctl restart kanata-bt-keyboard.service"
+  '';
 
   # /dev/uinput has ACL restrictions (steam uaccess rule), so DynamicUser
   # doesn't get access even with SupplementaryGroups=uinput.
