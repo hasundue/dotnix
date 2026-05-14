@@ -2,6 +2,10 @@
 
 This file provides guidance for AI agents working with this repository.
 
+> **Note**: You, the coding agent reading this file, are likely configured via
+> Nix in this very repository. See `configs/home/<your-name>/` for user-wide
+> settings and `modules/home/<your-name>/` for the Home Manager module.
+
 ## Overview
 
 NixOS configuration flake for user `hasundue`. Hosts:
