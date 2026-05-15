@@ -84,7 +84,6 @@ in
     ];
     input = {
       keyboard = {
-        xkb.options = "ctrl:nocaps";
         repeat-delay = 250;
       };
       touchpad = {
