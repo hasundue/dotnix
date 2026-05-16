@@ -16,17 +16,26 @@
         devices = [ ];
         extraDefCfg = ''
           linux-dev-names-include ("BT5.0 KB Keyboard")
+          process-unmapped-keys yes
         '';
         config = ''
           (defsrc
             caps
             rshift
-            up)
+            lsft
+            /
+            ralt
+            comp
+            rctl)
 
           (deflayermap (default-layer)
             caps lctl
             rshift (tap-hold 150 100 up rshift)
-            up     /
+            lsft   _
+            /      /
+            ralt   left
+            comp   down
+            rctl   rght
           )
         '';
       };
@@ -56,6 +65,9 @@
   # doesn't get access even with SupplementaryGroups=uinput.
   # Run as the normal user who already has ACL-granted access.
   systemd.services."kanata-bt-keyboard" = {
+    restartTriggers = [
+      config.services.kanata.keyboards.bt-keyboard.configFile
+    ];
     serviceConfig = {
       User = lib.mkForce "hasundue";
       DynamicUser = lib.mkForce false;
