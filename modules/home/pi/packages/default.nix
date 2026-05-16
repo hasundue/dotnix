@@ -4,5 +4,6 @@
   imports = [
     ./pi-agent-suite.nix
     ./pi-web-access.nix
+    ./pi-mcporter.nix
   ];
 }

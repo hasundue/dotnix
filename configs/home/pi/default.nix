@@ -53,6 +53,11 @@ in
         workflow = "none";
       };
 
+      pi-mcporter.settings = {
+        mode = "lazy";
+        timeoutMs = 30000;
+      };
+
       context-mode.enable = false;
     };
 

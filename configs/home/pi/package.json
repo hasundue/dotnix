@@ -2,10 +2,10 @@
   "name": "pi-packages",
   "private": true,
   "dependencies": {
+    "context-mode": "^1.0.129",
     "pi-agent-suite": "^0.9.2",
-    "pi-mcp-adapter": "^2.5.0",
-    "pi-web-access": "^0.10.0",
+    "pi-mcporter": "^0.4.0",
     "pi-subdir-context": "^1.1.7",
-    "context-mode": "^1.0.129"
+    "pi-web-access": "^0.10.0"
   }
 }
