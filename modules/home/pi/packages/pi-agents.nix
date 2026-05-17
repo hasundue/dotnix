@@ -1,10 +1,19 @@
-# Per-package module for pi-agent-suite (npm:pi-agent-suite).
+# Per-package module for pi-agents (npm:pi-agents).
 #
-# Generates agent .md files with YAML frontmatter from extension agent definitions.
+# Generates agent .md files with YAML frontmatter in ~/.pi/agents/.
 #
 # Usage:
-#   pi.packages.pi-agent-suite.extensions.main-agent-selection.agents = {
-#     AgentName = { type = "main"; description = "..."; model.id = "..."; ... };
+#   pi.packages.pi-agents.agents = {
+#     explorer = {
+#       name = "explorer";
+#       description = "Fast codebase exploration";
+#       model = "opencode-go/deepseek-v4-flash";
+#       thinking = "low";
+#       skills = [ "search" ];
+#       text = ''
+#         You are an explorer agent...
+#       '';
+#     };
 #   };
 
 { config, lib, ... }:
@@ -14,52 +23,34 @@ let
     filterAttrs
     mapAttrs'
     mkIf
-    nameValuePair
     optionalAttrs
     ;
-  inherit (lib.strings) removePrefix;
 
   # ---------------------------------------------------------------------------
   # Helpers
   # ---------------------------------------------------------------------------
-
-  # Map extension config key to its storage directory.
-  extStorageDir =
-    extName:
-    {
-      "main-agent-selection" = "agent-selection";
-    }
-    .${extName} or extName;
 
   # Build the YAML frontmatter attrset for an agent, omitting null/empty fields
   agentFrontmatter =
     agent:
     let
       desc = agent.description or "";
-      model = agent.model or { };
-      tools = agent.tools or [ ];
-      subAgents = agent.subAgents or [ ];
+      skills = agent.skills or [ ];
     in
     {
-      type = agent.type or "main";
+      name = agent.name;
     }
     // optionalAttrs (desc != "") { description = desc; }
-    // optionalAttrs (model.id or null != null || model.thinking or null != null) {
-      model = filterAttrs (_: v: v != null) {
-        id = model.id or null;
-        thinking = model.thinking or null;
-      };
-    }
-    // optionalAttrs (tools != [ ]) { tools = tools; }
-    // optionalAttrs (subAgents != [ ]) { agents = subAgents; };
+    // optionalAttrs (agent.model or null != null) { model = agent.model; }
+    // optionalAttrs (agent.thinking or null != null) { thinking = agent.thinking; }
+    // optionalAttrs (skills != [ ]) { inherit skills; };
 
   # ---------------------------------------------------------------------------
-  # Minimal YAML serializer (subsets: attrs, list of strings, nested attrs)
+  # Minimal YAML serializer
   # ---------------------------------------------------------------------------
 
   indent = n: builtins.concatStringsSep "" (builtins.genList (_: "  ") n);
 
-  # Serialize a YAML value at a given indentation depth.
   go =
     v: i:
     if builtins.isAttrs v then
@@ -69,7 +60,6 @@ let
     else
       builtins.toString v;
 
-  # Serialize attrs, each key on its own line.
   goAttrs =
     attrs: i:
     let
@@ -86,7 +76,6 @@ let
     in
     builtins.concatStringsSep "\n" entries;
 
-  # Serialize a list, each item on its own line.
   goList =
     list: i:
     let
@@ -103,32 +92,26 @@ let
   # Config
   # ---------------------------------------------------------------------------
 
-  pkg = config.pi.packages.pi-agent-suite or { };
-  pkgConfigDir = removePrefix "pi-" "pi-agent-suite"; # → "agent-suite"
-
-  # Enabled extensions that have agents defined
-  extWithAgents = filterAttrs (_: ext: (ext.enable or true) && (ext.agents or { }) != { }) (
-    pkg.extensions or { }
-  );
+  pkgConfig = config.pi.packages.pi-agents or { };
+  agents = pkgConfig.agents or { };
 
   # Generate agent .md files
-  agentFiles = builtins.foldl' (
-    acc: extName:
+  agentFiles = mapAttrs' (
+    agentName: agent:
     let
-      ext = extWithAgents.${extName};
+      name = agent.name or agentName;
     in
-    acc
-    // mapAttrs' (
-      agentName: agent:
-      nameValuePair (".pi/agent/${pkgConfigDir}/${extStorageDir extName}/agents/${agentName}.md") {
+    {
+      name = ".pi/agents/${name}.md";
+      value = {
         text = agentFileContent agent;
-      }
-    ) ext.agents
-  ) { } (builtins.attrNames extWithAgents);
+      };
+    }
+  ) agents;
 
 in
 {
-  config = mkIf (agentFiles != { }) {
+  config = mkIf (agents != { }) {
     home.file = agentFiles;
   };
 }

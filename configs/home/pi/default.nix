@@ -10,47 +10,54 @@ in
     packagesDir = ./.;
 
     packages = {
-      pi-agent-suite = {
-        extensions = {
-          codex-verbosity.enable = false;
-          codex-quota.enable = false;
-          context-projection.enable = false;
-          convene-council.enable = false;
-          url-scheme.enable = false;
-          enable-tools.enable = false;
-          footer.enable = false;
-          custom-compaction.enable = false;
-          context-overflow.enable = false;
-          completion-sound.enable = false;
-          cmux.enable = false;
-          system-prompt.enable = false;
-          run-subagent.enable = false;
-          ask-llm.enable = false;
-          consult-advisor.enable = false;
+      pi-agents = {
+        agents = {
+          explorer = {
+            name = "explorer";
+            description = "Fast codebase exploration and file-level reconnaissance";
+            model = "opencode-go/deepseek-v4-flash";
+            thinking = "off";
+            skills = [ ];
+            text = ''
+              You are an explorer agent.
 
-          main-agent-selection.agents = {
-            CodeReview = {
-              type = "both";
-              description = "Reviews code for correctness and risks";
-              model = {
-                id = "opencode-go/deepseek-v4-flash";
-                thinking = "high";
-              };
-              tools = [
-                "read"
-                "bash"
-                "edit"
-              ];
-              text = ''
-                You are a code review agent. Check correctness, risks, and missing validation.
-              '';
-            };
+              - Find the relevant files, APIs, and call paths quickly.
+              - Return a compact, structured summary for handoff.
+              - Always include concrete file paths.
+            '';
+          };
+          worker = {
+            name = "worker";
+            description = "General-purpose worker for delegated coding tasks";
+            model = "opencode-go/deepseek-v4-flash";
+            thinking = "xhigh";
+            skills = [ ];
+            text = ''
+              You are a focused worker agent.
+
+              - Complete the delegated task directly.
+              - Be concise.
+              - If you touch code, explain exactly what changed.
+              - If there is uncertainty, call it out explicitly.
+            '';
           };
         };
       };
 
-      pi-web-access.settings = {
-        workflow = "none";
+      pi-web-providers.settings = {
+        tools = {
+          search = "exa";
+          contents = "exa";
+          answer = "exa";
+          research = "exa";
+        };
+        providers = {
+          exa = {
+            credentials = {
+              api = "!cat ${exaKeyFile}";
+            };
+          };
+        };
       };
 
       pi-mcporter.settings = {
@@ -86,13 +93,13 @@ in
 
     extensions = [
       ./extensions/chat-display.ts
-      ./extensions/footer.ts
+      # ./extensions/footer.ts
       # ./extensions/readonly-mode
       # ./extensions/toggle-bash
     ];
 
     skills = [
-      "${pkgs.worktrunk.src}/skills/worktrunk"
+      # "${pkgs.worktrunk.src}/skills/worktrunk"
       # ./skills/exa-search
     ];
 

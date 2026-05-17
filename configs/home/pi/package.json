@@ -3,9 +3,15 @@
   "private": true,
   "dependencies": {
     "context-mode": "^1.0.129",
-    "pi-agent-suite": "^0.9.2",
+    "pi-agents": "^0.2.1",
     "pi-mcporter": "^0.4.0",
     "pi-subdir-context": "^1.1.7",
-    "pi-web-access": "^0.10.0"
+    "pi-web-providers": "^3.0.0"
+  },
+  "overrides": {
+    "@mariozechner/pi-ai": "npm:@earendil-works/pi-ai@^0.74.0",
+    "@mariozechner/pi-agent-core": "npm:@earendil-works/pi-agent-core@^0.74.0",
+    "@mariozechner/pi-coding-agent": "npm:@earendil-works/pi-coding-agent@^0.74.0",
+    "@mariozechner/pi-tui": "npm:@earendil-works/pi-tui@^0.74.0"
   }
 }
