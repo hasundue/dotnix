@@ -69,6 +69,7 @@ in
     skills = [
       # "${pkgs.worktrunk.src}/skills/worktrunk"
       # ./skills/exa-search
+      ./skills/delegate
     ];
 
     keybindings = {

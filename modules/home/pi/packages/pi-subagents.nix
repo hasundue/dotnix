@@ -37,6 +37,10 @@ let
     let
       desc = agent.description or "";
       skills = agent.skills or [ ];
+      tools = agent.tools or null;
+      disallowedTools = agent.disallowed_tools or null;
+      extensions = agent.extensions or null;
+      promptMode = agent.prompt_mode or null;
     in
     {
       name = agent.name;
@@ -44,7 +48,11 @@ let
     // optionalAttrs (desc != "") { description = desc; }
     // optionalAttrs (agent.model or null != null) { model = agent.model; }
     // optionalAttrs (agent.thinking or null != null) { thinking = agent.thinking; }
-    // optionalAttrs (skills != [ ]) { inherit skills; };
+    // optionalAttrs (skills != [ ]) { inherit skills; }
+    // optionalAttrs (tools != null) { inherit tools; }
+    // optionalAttrs (disallowedTools != null) { disallowed_tools = disallowedTools; }
+    // optionalAttrs (extensions != null) { inherit extensions; }
+    // optionalAttrs (promptMode != null) { prompt_mode = promptMode; };
 
   # ---------------------------------------------------------------------------
   # Minimal YAML serializer
@@ -54,7 +62,11 @@ let
 
   go =
     v: i:
-    if builtins.isAttrs v then
+    if v == true then
+      "true"
+    else if v == false then
+      "false"
+    else if builtins.isAttrs v then
       goAttrs v i
     else if builtins.isList v then
       goList v i
