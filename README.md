@@ -33,24 +33,30 @@ user environment management.
 
 ### System Management
 
-- `nrs` - Rebuild and switch: `sudo nixos-rebuild switch --flake .`
-- `nrb` - Rebuild for next boot: `sudo nixos-rebuild boot --flake .`
-- `nrt` - Test configuration: `sudo nixos-rebuild test --flake .`
+```bash
+nix run .#nixos-build          # Build new system generation (no sudo)
+sudo nix run .#nixos-switch    # Activate built generation
+sudo nix run .#nixos-test      # Test without making default
+sudo nix run .#nixos-boot       # Set boot entry for next reboot
+nix run .#home-build           # Build home-manager generation
+nix run .#home-switch          # Activate home-manager generation
+```
 
 ### Flake Operations
 
 - `nfc` - Check flake: `nix flake check`
 - `nfs` - Show flake outputs: `nix flake show`
 - `nfu` - Update flake inputs: `nix flake update`
-- `nd` - Enter development shell: `nix develop`
+- `nd` - Enter development shell: `nom develop`
 
 ### Development Workflow
 
 ```bash
 # Make configuration changes
 nfc                           # Validate changes
-nrt                          # Test temporarily
-nrs                          # Apply permanently
+nix run .#nixos-build         # Build the system
+sudo nix run .#nixos-test     # Test temporarily
+sudo nix run .#nixos-switch   # Apply permanently
 ```
 
 ## GitHub Actions

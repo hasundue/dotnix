@@ -51,10 +51,7 @@
   };
 
   security = {
-    sudo = {
-      enable = true;
-      wheelNeedsPassword = false;
-    };
+    sudo.enable = true;
   };
 
   services = {
