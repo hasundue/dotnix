@@ -10,39 +10,7 @@ in
     packagesDir = ./.;
 
     packages = {
-      pi-agents = {
-        agents = {
-          explorer = {
-            name = "explorer";
-            description = "Fast codebase exploration and file-level reconnaissance";
-            model = "opencode-go/deepseek-v4-flash";
-            thinking = "off";
-            skills = [ ];
-            text = ''
-              You are an explorer agent.
-
-              - Find the relevant files, APIs, and call paths quickly.
-              - Return a compact, structured summary for handoff.
-              - Always include concrete file paths.
-            '';
-          };
-          worker = {
-            name = "worker";
-            description = "General-purpose worker for delegated coding tasks";
-            model = "opencode-go/deepseek-v4-flash";
-            thinking = "xhigh";
-            skills = [ ];
-            text = ''
-              You are a focused worker agent.
-
-              - Complete the delegated task directly.
-              - Be concise.
-              - If you touch code, explain exactly what changed.
-              - If there is uncertainty, call it out explicitly.
-            '';
-          };
-        };
-      };
+      "@tintinweb/pi-subagents" = { };
 
       pi-web-providers.settings = {
         tools = {

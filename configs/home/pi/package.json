@@ -3,7 +3,7 @@
   "private": true,
   "dependencies": {
     "context-mode": "^1.0.129",
-    "pi-agents": "^0.2.1",
+    "@tintinweb/pi-subagents": "^0.7.3",
     "pi-mcporter": "^0.4.0",
     "pi-subdir-context": "^1.1.7",
     "pi-web-providers": "^3.0.0"

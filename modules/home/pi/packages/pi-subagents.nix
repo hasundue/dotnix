@@ -1,9 +1,10 @@
-# Per-package module for pi-agents (npm:pi-agents).
+# Per-package module for @tintinweb/pi-subagents.
 #
-# Generates agent .md files with YAML frontmatter in ~/.pi/agents/.
+# Generates agent .md files with YAML frontmatter in ~/.pi/agent/agents/
+# (the global agent dir for pi-subagents).
 #
 # Usage:
-#   pi.packages.pi-agents.agents = {
+#   pi.packages."@tintinweb/pi-subagents".agents = {
 #     explorer = {
 #       name = "explorer";
 #       description = "Fast codebase exploration";
@@ -92,7 +93,7 @@ let
   # Config
   # ---------------------------------------------------------------------------
 
-  pkgConfig = config.pi.packages.pi-agents or { };
+  pkgConfig = config.pi.packages."@tintinweb/pi-subagents" or { };
   agents = pkgConfig.agents or { };
 
   # Generate agent .md files
@@ -102,7 +103,7 @@ let
       name = agent.name or agentName;
     in
     {
-      name = ".pi/agents/${name}.md";
+      name = ".pi/agent/agents/${name}.md";
       value = {
         text = agentFileContent agent;
       };

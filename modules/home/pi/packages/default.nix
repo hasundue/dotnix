@@ -2,7 +2,7 @@
 # Each file here configures a specific npm package's options and home.file entries.
 {
   imports = [
-    ./pi-agents.nix
+    ./pi-subagents.nix
     ./pi-mcporter.nix
     ./pi-web-providers.nix
   ];
