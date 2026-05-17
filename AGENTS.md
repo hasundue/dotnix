@@ -29,37 +29,6 @@ shells/        # Dev shells (each subdir is a flake devShell)
 templates/     # Flake templates
 ```
 
-## Validation
-
-Prefer LSP evaluation. When LSP is insufficient, target the exact path:
-
-```bash
-# NixOS
-nix eval .#nixosConfigurations.x1carbon.config.services.openssh
-
-# Home Manager
-nix eval .#homeConfigurations."hasundue@x1carbon".config.wayland.windowManager.niri
-```
-
-## Flake Apps
-
-Build/activate-split apps (build runs `nix build` without sudo, activate
-applies the result):
-
-```bash
-# NixOS (build then activate with sudo)
-nix run .#nixos-build
-sudo nix run .#nixos-switch  # or nixos-test, nixos-boot
-
-# Home Manager (no sudo needed)
-nix run .#home-build
-nix run .#home-switch
-```
-
-Build apps accept passthrough flags (`--impure`, `--show-trace`, etc.).
-Activate apps require a prior build (they check for `result-nixos` or
-`result-home` symlinks and fail with a clear message if missing).
-
 ## Code Style
 
 - **Module parameters**: `{ pkgs, lib, config, ... }:` — keep this order

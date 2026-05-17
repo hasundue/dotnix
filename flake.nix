@@ -255,7 +255,8 @@
       apps = forEachSystem (
         pkgs:
         let
-          buildOpts = "--log-format internal-json -v";
+          # Flags recommended by nix-output-monitor for pretty human output
+          nomOpts = "--log-format internal-json -v";
           opencodeConfig =
             let
               homeConfig = self.homeConfigurations."hasundue@x1carbon";
@@ -270,97 +271,95 @@
           # Build home-manager generation (no sudo)
           "home-build" = {
             type = "app";
-            program = "${
-              pkgs.writeShellScriptBin "home-build" ''
-                set -euo pipefail
-                exec nix build '.#homeConfigurations."hasundue@'"$(hostname)"'".activationPackage' \
-                  ${buildOpts} "$@" -o result-home 2>&1 | ${pkgs.nix-output-monitor}/bin/nom --json
-              ''
-            }/bin/home-build";
+            program = "${pkgs.writeShellScriptBin "home-build" ''
+              set -euo pipefail
+              target='.#homeConfigurations."hasundue@'"$(hostname)"'".activationPackage'
+              if [ -t 1 ] && [ -z "''${NOM_DISABLE:-}" ]; then
+                exec nix build "$target" \
+                  ${nomOpts} "$@" -o result-home 2>&1 | ${pkgs.nix-output-monitor}/bin/nom --json
+              else
+                exec nix build "$target" \
+                  "$@" -o result-home
+              fi
+            ''}/bin/home-build";
           };
 
           # Activate previously built home-manager generation (no sudo)
           "home-switch" = {
             type = "app";
-            program = "${
-              pkgs.writeShellScriptBin "home-switch" ''
-                set -euo pipefail
-                if [ ! -L ./result-home ]; then
-                  echo "error: no result-home symlink found. Run 'nix run .#home-build' first." >&2
-                  exit 1
-                fi
-                exec ./result-home/activate "$@"
-              ''
-            }/bin/home-switch";
+            program = "${pkgs.writeShellScriptBin "home-switch" ''
+              set -euo pipefail
+              if [ ! -L ./result-home ]; then
+                echo "error: no result-home symlink found. Run 'nix run .#home-build' first." >&2
+                exit 1
+              fi
+              exec ./result-home/activate "$@"
+            ''}/bin/home-switch";
           };
 
           # Build NixOS toplevel (no sudo)
           "nixos-build" = {
             type = "app";
-            program = "${
-              pkgs.writeShellScriptBin "nixos-build" ''
-                set -euo pipefail
-                exec nix build ".#nixosConfigurations.$(hostname).config.system.build.toplevel" \
-                  ${buildOpts} "$@" -o result-nixos 2>&1 | ${pkgs.nix-output-monitor}/bin/nom --json
-              ''
-            }/bin/nixos-build";
+            program = "${pkgs.writeShellScriptBin "nixos-build" ''
+              set -euo pipefail
+              target=".#nixosConfigurations.$(hostname).config.system.build.toplevel"
+              if [ -t 1 ] && [ -z "''${NOM_DISABLE:-}" ]; then
+                exec nix build "$target" \
+                  ${nomOpts} "$@" -o result-nixos 2>&1 | ${pkgs.nix-output-monitor}/bin/nom --json
+              else
+                exec nix build "$target" \
+                  "$@" -o result-nixos
+              fi
+            ''}/bin/nixos-build";
           };
 
           # Switch to previously built NixOS toplevel (needs sudo at runtime)
           "nixos-switch" = {
             type = "app";
-            program = "${
-              pkgs.writeShellScriptBin "nixos-switch" ''
-                set -euo pipefail
-                if [ ! -L ./result-nixos ]; then
-                  echo "error: no result-nixos symlink found. Run 'nix run .#nixos-build' first." >&2
-                  exit 1
-                fi
-                exec ./result-nixos/bin/switch-to-configuration switch "$@"
-              ''
-            }/bin/nixos-switch";
+            program = "${pkgs.writeShellScriptBin "nixos-switch" ''
+              set -euo pipefail
+              if [ ! -L ./result-nixos ]; then
+                echo "error: no result-nixos symlink found. Run 'nix run .#nixos-build' first." >&2
+                exit 1
+              fi
+              exec ./result-nixos/bin/switch-to-configuration switch "$@"
+            ''}/bin/nixos-switch";
           };
 
           # Test previously built NixOS toplevel (needs sudo at runtime)
           "nixos-test" = {
             type = "app";
-            program = "${
-              pkgs.writeShellScriptBin "nixos-test" ''
-                set -euo pipefail
-                if [ ! -L ./result-nixos ]; then
-                  echo "error: no result-nixos symlink found. Run 'nix run .#nixos-build' first." >&2
-                  exit 1
-                fi
-                exec ./result-nixos/bin/switch-to-configuration test "$@"
-              ''
-            }/bin/nixos-test";
+            program = "${pkgs.writeShellScriptBin "nixos-test" ''
+              set -euo pipefail
+              if [ ! -L ./result-nixos ]; then
+                echo "error: no result-nixos symlink found. Run 'nix run .#nixos-build' first." >&2
+                exit 1
+              fi
+              exec ./result-nixos/bin/switch-to-configuration test "$@"
+            ''}/bin/nixos-test";
           };
 
           # Boot previously built NixOS toplevel (needs sudo at runtime)
           "nixos-boot" = {
             type = "app";
-            program = "${
-              pkgs.writeShellScriptBin "nixos-boot" ''
-                set -euo pipefail
-                if [ ! -L ./result-nixos ]; then
-                  echo "error: no result-nixos symlink found. Run 'nix run .#nixos-build' first." >&2
-                  exit 1
-                fi
-                exec ./result-nixos/bin/switch-to-configuration boot "$@"
-              ''
-            }/bin/nixos-boot";
+            program = "${pkgs.writeShellScriptBin "nixos-boot" ''
+              set -euo pipefail
+              if [ ! -L ./result-nixos ]; then
+                echo "error: no result-nixos symlink found. Run 'nix run .#nixos-build' first." >&2
+                exit 1
+              fi
+              exec ./result-nixos/bin/switch-to-configuration boot "$@"
+            ''}/bin/nixos-boot";
           };
 
           # Run opencode with ephemeral XDG_CONFIG_HOME from flake-tracked config
           opencode = {
             type = "app";
-            program = "${
-              pkgs.writeShellScriptBin "opencode" ''
-                export XDG_CONFIG_HOME="$(mktemp -d)"
-                cp -rsf "${opencodeConfig}/"* "$XDG_CONFIG_HOME/"
-                exec ${pkgs.llm-agents.opencode}/bin/opencode "$@"
-              ''
-            }/bin/opencode";
+            program = "${pkgs.writeShellScriptBin "opencode" ''
+              export XDG_CONFIG_HOME="$(mktemp -d)"
+              cp -rsf "${opencodeConfig}/"* "$XDG_CONFIG_HOME/"
+              exec ${pkgs.llm-agents.opencode}/bin/opencode "$@"
+            ''}/bin/opencode";
           };
         }
       );
