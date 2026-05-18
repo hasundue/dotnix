@@ -29,6 +29,7 @@
       qt6.qtwayland
 
       # tools
+      networkmanager_dmenu
       slurp
       thunar
       wl-clipboard

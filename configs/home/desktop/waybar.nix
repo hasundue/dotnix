@@ -137,6 +137,8 @@ in
         max-length = 3;
 
         tooltip-format-wifi = "Network: {essid}\nIP Addr: {ipaddr}/{cidr}\nStrength: {signalStrength}%\nFrequency: {frequency} GHz";
+
+        on-click = "${pkgs.networkmanager_dmenu}/bin/networkmanager_dmenu";
       };
 
       memory = {
