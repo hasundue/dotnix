@@ -1,11 +1,15 @@
 # Per-package module for @juicesharp/rpiv-pi.
 #
-# Builds a patched copy of rpiv-pi that injects `model: opencode-go/deepseek-v4-flash`
-# into every bundled agent .md file's YAML frontmatter. The patched derivation is
-# injected via pi.extraPackages; the user must disable the original auto-discovered
-# package in configs/home/pi/default.nix:
+# Builds a patched copy of rpiv-pi that injects per-agent `model` and `thinking`
+# configuration into bundled agent .md file YAML frontmatter.
 #
-#   pi.packages."@juicesharp/rpiv-pi".enable = false;
+# Usage:
+#   pi.rpiv-pi.agents = {
+#     codebase-analyzer = {
+#       model = "opencode-go/deepseek-v4-pro";
+#       thinking = "high";
+#     };
+#   };
 
 {
   config,
@@ -15,7 +19,20 @@
 }:
 
 let
-  inherit (lib) mkIf;
+  inherit (lib)
+    mkIf
+    mkMerge
+    mkOption
+    types
+    mapAttrs'
+    nameValuePair
+    optionalString
+    concatMapStringsSep
+    concatStringsSep
+    attrNames
+    filter
+    literalExpression
+    ;
 
   cfg = config.pi;
 
@@ -31,7 +48,39 @@ let
 
   rpivPiOrig = if npmModules != null then "${npmModules}/node_modules/@juicesharp/rpiv-pi" else null;
 
-  # Patched derivation: symlink original, replace agents/ with model-pinned copies
+  # Generate newline-separated YAML lines to insert for an agent
+  mkAgentYAML =
+    agentCfg:
+    let
+      lines = filter (x: x != "") [
+        (optionalString (agentCfg.model or null != null) "model: ${agentCfg.model}")
+        (optionalString (agentCfg.thinking or null != null) "thinking: ${agentCfg.thinking}")
+      ];
+    in
+    lines;
+
+  # Build per-agent patch: agentName -> newline-separated YAML lines
+  agentPatches = mapAttrs' (
+    name: agentCfg: nameValuePair name (mkAgentYAML agentCfg)
+  ) cfg.rpiv-pi.agents;
+
+  # Serialized case statements for bash
+  patchCases = concatStringsSep "\n" (
+    map (
+      name:
+      let
+        lines = agentPatches.${name};
+        sedLines = concatMapStringsSep "\\n" (line: line) lines;
+      in
+      ''
+        ${name})
+          sed -i '1a\${sedLines}' "$f"
+          ;;
+      ''
+    ) (attrNames agentPatches)
+  );
+
+  # Patched derivation: symlink original, replace agents/ with configured copies
   rpivPiPatched =
     if rpivPiOrig != null then
       pkgs.runCommand "rpiv-pi-patched" { } ''
@@ -47,22 +96,22 @@ let
           ln -s "$f" "$out/$base"
         done
 
-        # Copy extensions/ so import.meta.url resolves to the patched store path.
-        # agents.ts resolves PACKAGE_ROOT from its own file URL via
-        # dirname(dirname(dirname(thisFile))). Symlinks would follow-through to
-        # the original store, making syncBundledAgents() read unpatched agent
-        # files. A real copy keeps the resolution inside the patched path.
+        # Copy extensions/ so import.meta.url resolves to the patched store path
         cp -r --no-preserve=mode ${rpivPiOrig}/extensions "$out/extensions"
         chmod -R u+w "$out/extensions"
 
-        # Create agents/ with patched copies — insert model: after opening ---
-        mkdir "$out/agents"
-        for f in ${rpivPiOrig}/agents/*; do
-          base=$(basename "$f")
-          cp --no-preserve=mode "$f" "$out/agents/$base"
-          if [[ "$base" == *.md ]]; then
-            sed -i '1a\model: opencode-go/deepseek-v4-flash' "$out/agents/$base"
-          fi
+        # Copy agents/ so we can patch them
+        cp -r --no-preserve=mode ${rpivPiOrig}/agents "$out/agents"
+
+        # Apply per-agent patches
+        for f in "$out"/agents/*.md; do
+          base=$(basename "$f" .md)
+          case "$base" in
+            ${patchCases}
+            *)
+              # No custom config for this agent
+              ;;
+          esac
         done
 
         # Symlink original node_modules so require() resolves correctly
@@ -73,7 +122,51 @@ let
 
 in
 {
-  config = mkIf (cfg.enable && cfg.packagesDir != null) {
-    pi.extraPackages = [ "${rpivPiPatched}" ];
+  options.pi.rpiv-pi = {
+    agents = mkOption {
+      type = types.attrsOf (
+        types.submodule {
+          options = {
+            model = mkOption {
+              type = types.nullOr types.str;
+              default = null;
+              description = "Model ID for this agent (e.g., opencode-go/deepseek-v4-flash).";
+            };
+            thinking = mkOption {
+              type = types.nullOr types.str;
+              default = null;
+              description = "Thinking level for this agent (e.g., low, medium, high).";
+            };
+          };
+        }
+      );
+      default = { };
+      example = literalExpression ''
+        {
+          codebase-analyzer = {
+            model = "opencode-go/deepseek-v4-flash";
+            thinking = "high";
+          };
+        }
+      '';
+      description = "Per-agent configuration for bundled rpiv-pi agents.";
+    };
   };
+
+  config = mkIf (cfg.enable && cfg.packagesDir != null && cfg.rpiv-pi.agents != { }) (mkMerge [
+    {
+      # Disable the original auto-discovered package
+      pi.packages."@juicesharp/rpiv-pi".enable = lib.mkDefault false;
+
+      # Inject the patched package
+      pi.extraPackages = [ "${rpivPiPatched}" ];
+
+      # Fix permissions on copied agent files so pi can update them
+      home.activation.fixPiAgentPermissions = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+        if [ -d "$HOME/.pi/agent/agents" ]; then
+          chmod -R u+w "$HOME/.pi/agent/agents"/*.md 2>/dev/null || true
+        fi
+      '';
+    }
+  ]);
 }

@@ -21,6 +21,18 @@ in
       "@juicesharp/rpiv-pi".enable = false;
     };
 
+    # Per-agent model/thinking configuration
+    rpiv-pi.agents = {
+      codebase-analyzer = {
+        model = "opencode-go/deepseek-v4-flash";
+        thinking = "high";
+      };
+      scope-tracer = {
+        model = "opencode-go/deepseek-v4-flash";
+        thinking = "off";
+      };
+    };
+
     settings = {
       theme = "kanagawa-wave";
       defaultProvider = "opencode-go";
