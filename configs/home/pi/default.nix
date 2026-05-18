@@ -93,4 +93,15 @@ in
     }
     EOF
   '';
+
+  home.activation.writeRpivAdvisorConfig = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+    cfgDir="$HOME/.config/rpiv-advisor"
+    mkdir -p "$cfgDir"
+    cat > "$cfgDir/advisor.json" << EOF
+    {
+      "modelKey": "opencode-go:deepseek-v4-pro",
+      "effort": "high"
+    }
+    EOF
+  '';
 }
