@@ -1,4 +1,9 @@
-{ config, pkgs, lib, ... }:
+{
+  config,
+  pkgs,
+  lib,
+  ...
+}:
 
 let
   opencodeGoKeyPath = config.age.secrets."api/opencode-go".path;
@@ -51,7 +56,7 @@ in
     ];
 
     skills = [
-      # "${pkgs.worktrunk.src}/skills/worktrunk"
+      "${pkgs.worktrunk.src}/skills/worktrunk"
       # ./skills/exa-search
     ];
 
@@ -71,7 +76,7 @@ in
     '';
   };
 
-  home.activation.writeRpivWebToolsConfig = lib.hm.dag.entryAfter ["writeBoundary"] ''
+  home.activation.writeRpivWebToolsConfig = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
     cfgDir="$HOME/.config/rpiv-web-tools"
     mkdir -p "$cfgDir"
     cat > "$cfgDir/config.json" << EOF
