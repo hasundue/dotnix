@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ config, pkgs, lib, ... }:
 
 let
   opencodeGoKeyPath = config.age.secrets."api/opencode-go".path;
@@ -11,22 +11,6 @@ in
 
     packages = {
       "@tintinweb/pi-subagents" = { };
-
-      pi-web-providers.settings = {
-        tools = {
-          search = "exa";
-          contents = "exa";
-          answer = "exa";
-          research = "exa";
-        };
-        providers = {
-          exa = {
-            credentials = {
-              api = "!cat ${exaKeyFile}";
-            };
-          };
-        };
-      };
 
       pi-mcporter.settings = {
         mode = "lazy";
@@ -69,7 +53,6 @@ in
     skills = [
       # "${pkgs.worktrunk.src}/skills/worktrunk"
       # ./skills/exa-search
-      ./skills/delegate
     ];
 
     keybindings = {
@@ -88,7 +71,16 @@ in
     '';
   };
 
-  home.sessionVariables = {
-    EXA_API_KEY_FILE = exaKeyFile;
-  };
+  home.activation.writeRpivWebToolsConfig = lib.hm.dag.entryAfter ["writeBoundary"] ''
+    cfgDir="$HOME/.config/rpiv-web-tools"
+    mkdir -p "$cfgDir"
+    cat > "$cfgDir/config.json" << EOF
+    {
+      "provider": "exa",
+      "apiKeys": {
+        "exa": "$(cat ${exaKeyFile})"
+      }
+    }
+    EOF
+  '';
 }

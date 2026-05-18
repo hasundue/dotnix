@@ -2,11 +2,16 @@
   "name": "pi-packages",
   "private": true,
   "dependencies": {
-    "context-mode": "^1.0.129",
     "@tintinweb/pi-subagents": "^0.7.3",
+    "@juicesharp/rpiv-pi": "^1.8.0",
+    "@juicesharp/rpiv-web-tools": "^1.8.0",
+    "@juicesharp/rpiv-args": "^1.8.0",
+    "@juicesharp/rpiv-ask-user-question": "^1.8.0",
+    "@juicesharp/rpiv-todo": "^1.8.0",
+    "@juicesharp/rpiv-advisor": "^1.5.0",
+    "@juicesharp/rpiv-i18n": "^1.8.0",
     "pi-mcporter": "^0.4.0",
-    "pi-subdir-context": "^1.1.7",
-    "pi-web-providers": "^3.0.0"
+    "context-mode": "^1.0.129"
   },
   "overrides": {
     "@mariozechner/pi-ai": "npm:@earendil-works/pi-ai@^0.74.0",
