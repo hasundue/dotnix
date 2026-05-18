@@ -7,6 +7,10 @@
 
     [merge]
     remove = false
+
+    [post-start]
+    copy-envrc = "test -f {{ primary_worktree_path }}/.envrc && cp {{ primary_worktree_path }}/.envrc {{ worktree_path }}/.envrc"
+    copy-rpiv = "test -d {{ primary_worktree_path }}/.rpiv && cp -r {{ primary_worktree_path }}/.rpiv {{ worktree_path }}/.rpiv"
   '';
 
   programs.fish.interactiveShellInit = ''
