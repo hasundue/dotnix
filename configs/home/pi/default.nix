@@ -15,14 +15,10 @@ in
     packagesDir = ./.;
 
     packages = {
-      "@tintinweb/pi-subagents" = { };
-
       pi-mcporter.settings = {
         mode = "lazy";
         timeoutMs = 30000;
       };
-
-      context-mode.enable = false;
     };
 
     settings = {

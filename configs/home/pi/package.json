@@ -10,13 +10,6 @@
     "@juicesharp/rpiv-todo": "^1.8.0",
     "@juicesharp/rpiv-advisor": "^1.5.0",
     "@juicesharp/rpiv-i18n": "^1.8.0",
-    "pi-mcporter": "^0.4.0",
-    "context-mode": "^1.0.129"
-  },
-  "overrides": {
-    "@mariozechner/pi-ai": "npm:@earendil-works/pi-ai@^0.74.0",
-    "@mariozechner/pi-agent-core": "npm:@earendil-works/pi-agent-core@^0.74.0",
-    "@mariozechner/pi-coding-agent": "npm:@earendil-works/pi-coding-agent@^0.74.0",
-    "@mariozechner/pi-tui": "npm:@earendil-works/pi-tui@^0.74.0"
+    "pi-mcporter": "^0.4.0"
   }
 }
