@@ -18,6 +18,8 @@ in
         mode = "lazy";
         timeoutMs = 30000;
       };
+
+      "@juicesharp/rpiv-pi".enable = false;
     };
 
     settings = {

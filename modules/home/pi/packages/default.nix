@@ -6,6 +6,7 @@
     ./pi-subagents.nix
     ./pi-web-providers.nix
     ./rpiv-advisor.nix
+    ./rpiv-pi.nix
     ./rpiv-web-tools.nix
   ];
 }
