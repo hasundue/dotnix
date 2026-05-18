@@ -7,7 +7,6 @@
 
 let
   opencodeGoKeyPath = config.age.secrets."api/opencode-go".path;
-  exaKeyFile = config.age.secrets."api/exa".path;
 in
 {
   pi = {
@@ -77,27 +76,4 @@ in
     ".rpiv/"
   ];
 
-  home.activation.writeRpivWebToolsConfig = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
-    cfgDir="$HOME/.config/rpiv-web-tools"
-    mkdir -p "$cfgDir"
-    cat > "$cfgDir/config.json" << EOF
-    {
-      "provider": "exa",
-      "apiKeys": {
-        "exa": "$(cat ${exaKeyFile})"
-      }
-    }
-    EOF
-  '';
-
-  home.activation.writeRpivAdvisorConfig = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
-    cfgDir="$HOME/.config/rpiv-advisor"
-    mkdir -p "$cfgDir"
-    cat > "$cfgDir/advisor.json" << EOF
-    {
-      "modelKey": "opencode-go:deepseek-v4-pro",
-      "effort": "high"
-    }
-    EOF
-  '';
 }
