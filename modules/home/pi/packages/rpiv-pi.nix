@@ -38,13 +38,22 @@ let
         set -e
         mkdir -p "$out"
 
-        # Symlink original package contents (skip agents and node_modules)
+        # Symlink original package contents (skip node_modules, agents, and extensions)
         for f in ${rpivPiOrig}/*; do
           base=$(basename "$f")
           [ "$base" = "node_modules" ] && continue
           [ "$base" = "agents" ] && continue
+          [ "$base" = "extensions" ] && continue
           ln -s "$f" "$out/$base"
         done
+
+        # Copy extensions/ so import.meta.url resolves to the patched store path.
+        # agents.ts resolves PACKAGE_ROOT from its own file URL via
+        # dirname(dirname(dirname(thisFile))). Symlinks would follow-through to
+        # the original store, making syncBundledAgents() read unpatched agent
+        # files. A real copy keeps the resolution inside the patched path.
+        cp -r --no-preserve=mode ${rpivPiOrig}/extensions "$out/extensions"
+        chmod -R u+w "$out/extensions"
 
         # Create agents/ with patched copies — insert model: after opening ---
         mkdir "$out/agents"
