@@ -1,7 +1,6 @@
 {
   config,
   pkgs,
-  lib,
   ...
 }:
 
@@ -26,7 +25,7 @@ in
       theme = "kanagawa-wave";
       defaultProvider = "opencode-go";
       defaultModel = "deepseek-v4-flash";
-      defaultThinkingLevel = "xhigh";
+      defaultThinkingLevel = "high";
       hideThinkingBlock = true;
       enabledModels = [
         "opencode-go/deepseek-v4-flash"
@@ -60,17 +59,6 @@ in
     keybindings = {
       "app.session.rename" = "ctrl+shift+r";
     };
-
-    context = ''
-      Be conservative about making changes. Unless the user says "edit",
-      "write", "modify", "implement", or otherwise clearly indicates they
-      want actual modifications, treat their input as theoretical — explain
-      feasibility, approach, and trade-offs instead of executing. Prefer to
-      ask clarifying questions before editing.
-
-      Prefer relative paths for tool calls. Use absolute paths only when
-      referencing files outside the current working directory.
-    '';
   };
 
   programs.git.ignores = [
