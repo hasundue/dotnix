@@ -142,6 +142,7 @@ export default function (pi: ExtensionAPI) {
   // existed) still show the default "Thinking..." label when hidden.
   pi.on("message_end", (event, _ctx) => {
     const content = event.message.content;
+    if (!Array.isArray(content)) return;
     const filtered = content.filter((c) => c.type !== "thinking");
     if (filtered.length < content.length) {
       return {
