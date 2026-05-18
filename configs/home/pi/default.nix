@@ -76,6 +76,11 @@ in
     '';
   };
 
+  programs.git.ignores = [
+    ".pi/"
+    ".rpiv/"
+  ];
+
   home.activation.writeRpivWebToolsConfig = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
     cfgDir="$HOME/.config/rpiv-web-tools"
     mkdir -p "$cfgDir"
