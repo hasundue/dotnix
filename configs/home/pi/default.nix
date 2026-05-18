@@ -30,6 +30,8 @@ in
       enabledModels = [
         "opencode-go/deepseek-v4-flash"
         "opencode-go/deepseek-v4-pro"
+        "opencode-go/kimi-k2.5"
+        "opencode-go/minimax-m2.7"
       ];
     };
 
