@@ -361,6 +361,40 @@
               exec ${pkgs.llm-agents.opencode}/bin/opencode "$@"
             ''}/bin/opencode";
           };
+
+          # Update pi extension packages in configs/home/pi/
+          "update-pi-packages" = {
+            type = "app";
+            program = "${pkgs.writeShellScriptBin "update-pi-packages" ''
+              set -euo pipefail
+              export PATH="${pkgs.nodejs}/bin:${pkgs.jq}/bin:$PATH"
+
+              PI_DIR="configs/home/pi"
+              LOCK="$PI_DIR/package-lock.json"
+
+              # Snapshot old resolved versions
+              old_versions() {
+                for name in $(jq -r '.packages[""].dependencies | keys[]' "$LOCK"); do
+                  oldver=$(jq -r --arg n "$name" '.packages["node_modules/"+$n].version // "?"' "$LOCK")
+                  printf "%s\t%s\n" "$name" "$oldver"
+                done
+              }
+              old=$(old_versions)
+
+              # Update lockfile only
+              (cd "$PI_DIR" && npm update --package-lock-only)
+
+              # Print diff: lines where resolved version changed
+              while IFS=$'\t' read -r name _oldver; do
+                newver=$(jq -r --arg n "$name" '
+                  .packages["node_modules/"+$n].version // "?"
+                ' "$LOCK")
+                if [ "$_oldver" != "$newver" ]; then
+                  printf "%s\t%s\t%s\n" "$name" "$_oldver" "$newver"
+                fi
+              done <<< "$old"
+            ''}/bin/update-pi-packages";
+          };
         }
       );
       templates = {

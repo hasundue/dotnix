@@ -5,3 +5,4 @@ result-nixos
 __pycache__/
 *.pyc
 **/node_modules/
+**/deno.lock
