@@ -141,6 +141,24 @@ in
     keybindings = {
       "app.session.rename" = "ctrl+shift+r";
     };
+
+    context = ''
+       When the user types /skill:<name> [args], pi expands it into an XML block:
+
+       ```
+       <skill name="<name>" location="/.../.../SKILL.md">
+       [system guidance from pi]
+
+       [instructions in SKILL.md]
+       </skill>
+
+       [args] (optional)
+       ```
+
+       - You have already read the skill content. DO NOT call read on the skill file.
+       - Follow the instructions immediately.
+       - Respond as if the user had typed `/skill:<name> [args]`.
+    '';
   };
 
   programs.git.ignores = [
