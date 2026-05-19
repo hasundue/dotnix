@@ -6,6 +6,11 @@ This file provides guidance for AI agents working with this repository.
 > Nix in this very repository. See `configs/home/<your-name>/` for user-wide
 > settings and `modules/home/<your-name>/` for the Home Manager module.
 
+## Your Capability
+
+The `nixos` MCP server may be available for NixOS-related queries. Use it
+instead of web search, `nixpkgs search`, or grep-ing the store.
+
 ## Overview
 
 NixOS configuration flake for user `hasundue`. Hosts:
@@ -69,6 +74,7 @@ different parent (e.g. both `configs/home/waybar` and `configs/nixos/waybar`
 exist → use `home/waybar` and `nixos/waybar`).
 
 Fixed scopes (exceptions):
+
 - `agents:` — AGENTS.md
 - `flake:` — flake.nix, flake inputs
 
