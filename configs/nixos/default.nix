@@ -21,6 +21,13 @@
       bash
       vim
     ];
+    # Native .node addons (decibri, sherpa-onnx-node) loaded via dlopen()
+    # by Node.js don't see nix-ld libraries. alsa-lib needed for microphone.
+    # sessionVariables propagate via PAM to all sessions (greetd → niri → terminal).
+    # Conflicts with another module setting LD_LIBRARY_PATH would fail at eval.
+    sessionVariables = {
+      LD_LIBRARY_PATH = lib.makeSearchPath "lib" [ pkgs.alsa-lib ];
+    };
   };
 
   home-manager = {
@@ -46,6 +53,9 @@
         openssl
         curl
         expat
+
+        # rpiv-voice: native deps for sherpa-onnx-node (STT)
+        alsa-lib
       ];
     };
   };
@@ -69,9 +79,9 @@
     extraGroups = [
       "wheel"
       "docker"
-    ]
-    ++ lib.optionals config.networking.networkmanager.enable [ "networkmanager" ]
-    ++ lib.optionals config.programs.sway.enable [
+      "networkmanager"
+
+      # Desktop access — always needed for audio, input, and video devices
       "audio"
       "input"
       "video"

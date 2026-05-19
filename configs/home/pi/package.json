@@ -10,6 +10,7 @@
     "@juicesharp/rpiv-todo": "^1.8.0",
     "@juicesharp/rpiv-advisor": "^1.5.0",
     "@juicesharp/rpiv-i18n": "^1.8.0",
+    "@juicesharp/rpiv-voice": "^1.9.0",
     "pi-mcporter": "^0.4.0"
   }
 }
