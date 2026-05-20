@@ -24,6 +24,8 @@ Use this skill when:
 - Know which skill(s) will invoke this agent (determines prompt format)
 - A representative task/query matching that skill's calling pattern
 - Multiple candidate models to test (see available models with `pi models list`)
+- **For two-step agents** (e.g., artifacts-locator → artifacts-analyzer): Test
+  the full calling pattern, not just the downstream agent in isolation
 
 ## Critical: Prompt Format is Determined by the Caller
 
@@ -46,14 +48,14 @@ actually invoke your agent.
 Find which skill invokes your agent and determine its prompt pattern:
 
 ```bash
-# Read the skill that calls your agent
-cat ~/.pi/agent/skills/<caller-skill>/SKILL.md
-# or
-cat /nix/store/.../rpiv-pi-patched/skills/<caller-skill>/SKILL.md
+# Grep the rpiv-pi patched skills directory (standard location)
+grep -r "<agent-name>" /nix/store/gycfdrlq595s5vc4im87455apppqfr9w-rpiv-pi-patched/skills/
+# Or for custom skills:
+grep -r "<agent-name>" ~/.pi/agent/skills/
 ```
 
-Look for the `Agent({ subagent_type: "<your-agent>" ... })` call and see what
-`prompt:` value it uses.
+Look for `Agent({ subagent_type: "<your-agent>" ... })` calls and see what
+`prompt:` value is used.
 
 ### 2. Prepare the Benchmark
 
@@ -64,12 +66,17 @@ Choose a **representative task**:
 - Should be answerable with the codebase content
 - Must be **identical across all model variants**
 
+**Present the prompt to the user for review before proceeding.** Getting the
+prompt format right is critical — a single file path vs a list of paths from a
+locator agent makes a big difference.
+
 **Examples by caller skill:**
 
-| Caller Skill                   | Example Prompt                                                           |
-| ------------------------------ | ------------------------------------------------------------------------ |
-| `research` → `scope-tracer`    | `"can we add a new waybar icon for sound inputs?"` (exact user question) |
-| `design` → `codebase-analyzer` | `"{Full dense question paragraph from scope-tracer output}"`             |
+| Caller Skill                   | Example Prompt                                                                                    |
+| ------------------------------ | ------------------------------------------------------------------------------------------------- |
+| `research` → `scope-tracer`    | `"can we add a new waybar icon for sound inputs?"` (exact user question)                          |
+| `design` → `codebase-analyzer` | `"{Full dense question paragraph from scope-tracer output}"`                                      |
+| `revise` → `artifacts-*`       | **Two-step**: run `artifacts-locator` first, then invoke `artifacts-analyzer` with returned paths |
 
 ### 3. Edit Agent Configuration
 
@@ -266,16 +273,19 @@ investigation paths). Bad: `"find X files"` (triggers direct answer mode).
 
 ## Common Pitfalls
 
-1. **Wrong prompt format** — Using detailed instructions when the caller passes
+1. **Not showing user the prompt** — Always present the benchmark prompt for
+   user review before execution. Prompt format dramatically affects results
+   (e.g., single file path vs list of paths from locator agent)
+2. **Wrong prompt format** — Using detailed instructions when the caller passes
    exact questions (or vice versa)
-2. **Testing only one model** — Format compliance varies dramatically (m2.5 vs
+3. **Testing only one model** — Format compliance varies dramatically (m2.5 vs
    m2.7)
-3. **Ignoring thinking level** — Default `high` isn't always optimal; test `off`
-4. **Ignoring format compliance** — Fast, cheap models may skip required output
+4. **Ignoring thinking level** — Default `high` isn't always optimal; test `off`
+5. **Ignoring format compliance** — Fast, cheap models may skip required output
    schemas
-5. **Not checking downstream compatibility** — Agent output feeds other skills;
+6. **Not checking downstream compatibility** — Agent output feeds other skills;
    verify the format they expect
-6. **Token blind spot** — High-token models (qwen3.5-plus at 164k vs minimax at
+7. **Token blind spot** — High-token models (qwen3.5-plus at 164k vs minimax at
    6k) hurt on long sessions
 
 ## Recording Results
@@ -321,6 +331,16 @@ From our scope-tracer benchmark (research skill → exact prompt format):
 - **Critical for**: Downstream design/plan skills consume these questions
 - **Format failure mode**: Agent answers question directly instead of producing
   questions
+
+### Revise → Artifacts-Locator → Artifacts-Analyzer
+
+**Calling pattern** (two-step):
+
+1. `artifacts-locator` finds relevant docs in `.rpiv/artifacts/`
+2. `artifacts-analyzer` analyzes the paths returned by step 1
+
+**Prompt format**: List of document paths from artifacts-locator, not a single
+exact path upfront. The agent receives multiple paths to analyze in one call.
 
 ### Design → Codebase-Analyzer
 
