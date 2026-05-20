@@ -89,6 +89,51 @@ sections. Prioritize compliance when the agent feeds downstream skills.
 
 ---
 
+## 2026-05-20: precedent-locator (research/design skills)
+
+**Prompt format**: Natural language task description — the research and design
+skills pass detailed instructions about finding git history precedent. The agent
+searches commit log, blast radius, follow-up fixes, and .rpiv/artifacts/ docs.
+
+| Model             | Thinking | Time      | Tools | Tokens | Format | Quality                             |
+| ----------------- | -------- | --------- | ----- | ------ | ------ | ----------------------------------- |
+| minimax-m2.7      | off      | **37.8s** | 13    | 18.8k  | ✅     | **5 lessons, focused, analytical**  |
+| kimi-k2.5         | high     | 124.9s    | 38    | 26.9k  | ✅     | 6 lessons, surgical details         |
+| deepseek-v4-flash | off      | 155.4s    | 78    | 43.7k  | ✅     | 6 lessons, verbose (2.3× tokens)    |
+| qwen3.5-plus      | high     | 216.1s    | 31    | 224.1k | ✅     | 6 lessons, 7 precedents (12× bloat) |
+
+**Winner**: minimax-m2.7 (thinking: off)
+
+- **3.3× faster** than kimi-k2.5, **5.7× faster** than qwen
+- **44% fewer tokens** than kimi-k2.5, **92% fewer** than qwen
+- Same format compliance and comparable lesson quality
+- qwen3.5-plus had **12× token bloat** (224k vs 18.8k) — avoid for this agent
+
+### Quality Assessment
+
+All four models produced **format-compliant** output matching the expected
+structure (Composite Lessons, blast radius, follow-up fixes). Key differences:
+
+- **minimax-m2.7**: Lean, analytical — 18.8k tokens, 37.8s. Found 3 high-value
+  precedents with focused, actionable takeaways. Best quality per token ratio.
+
+- **kimi-k2.5**: Thorough but 3.3× slower — 26.9k tokens, 124.9s, 38 tools. Same
+  precedent coverage. More granular blast radius analysis, but the additional
+  depth doesn't translate to better downstream actionability.
+
+- **deepseek-v4-flash**: Most verbose — 43.7k tokens, 155.4s, 78 tool uses. 2.3×
+  more tokens than minimax for similar lesson quality. The 78 tools (vs 13 for
+  minimax) suggest over-mining: it read more individual git objects and files
+  than necessary for the task scope.
+
+- **qwen3.5-plus**: **12× token bloat** (224.1k vs 18.8k) for essentially the
+  same quality output. It found 7 precedents (more than others) but at extreme
+  cost. Not suitable for this agent type.
+
+**Verdict**: minimax-m2.7 captures the same essential analysis as kimi at 3× the
+speed with 44% fewer tokens. deepseek is overzealous with tool use for this
+git-history mining use case.
+
 ---
 
 ## 2026-05-20: web-search-researcher (ecosystem scan)
