@@ -17,22 +17,10 @@ in
         mode = "lazy";
         timeoutMs = 30000;
       };
-
-      "@juicesharp/rpiv-pi".enable = false;
     };
 
-    # Per-agent model/thinking configuration.
-    #
-    # | Tier | Model              | Thinking | Role                              |
-    # |------|--------------------|----------|-----------------------------------|
-    # | A    | deepseek-v4-flash  | off      | Mechanical lookups (7 agents)     |
-    # | B    | kimi-k2.5 / qwen   | high     | Analysis & synthesis (4 agents)   |
-    # | C    | deepseek-v4-pro    | high     | Adversarial gatekeeping (3)       |
-    # | D    | minimax-m2.7       | medium   | Web research (1 agent)            |
-    #
-    # qwen3.5-plus is a subagent-only model — not in the Ctrl+P picker.
     rpiv-pi.agents = {
-      # ── Tier A: Mechanical lookups — flash + off ──────────────────
+      # ── Tier A: Mechanical lookups
       codebase-locator = {
         model = "opencode-go/deepseek-v4-flash";
         thinking = "off";
@@ -62,42 +50,42 @@ in
         thinking = "off";
       };
 
-      # ── Tier B: Analysis & synthesis — kimi (deep) / qwen (shallow) ─
+      # ── Tier B: Analysis & synthesis
       codebase-analyzer = {
         model = "opencode-go/kimi-k2.5";
         thinking = "high";
       };
       scope-tracer = {
-        model = "opencode-go/kimi-k2.5";
-        thinking = "high";
+        model = "opencode-go/minimax-m2.7";
+        thinking = "off";
       };
       artifacts-analyzer = {
-        model = "opencode-go/qwen3.5-plus";
+        model = "opencode-go/deepseek-v4-flash";
         thinking = "high";
       };
       precedent-locator = {
-        model = "opencode-go/qwen3.5-plus";
-        thinking = "high";
+        model = "opencode-go/minimax-m2.7";
+        thinking = "off";
       };
 
-      # ── Tier C: Adversarial gatekeeping — pro + high ──────────────
+      # ── Tier C: Adversarial gatekeeping
       claim-verifier = {
-        model = "opencode-go/deepseek-v4-pro";
+        model = "opencode-go/deepseek-v4-flash";
         thinking = "high";
       };
       artifact-reviewer = {
-        model = "opencode-go/deepseek-v4-pro";
+        model = "opencode-go/minimax-m2.7";
         thinking = "high";
       };
       slice-verifier = {
-        model = "opencode-go/deepseek-v4-pro";
+        model = "opencode-go/minimax-m2.7";
         thinking = "high";
       };
 
-      # ── Tier D: Web research — minimax + medium ───────────────────
+      # ── Tier D: Web research
       web-search-researcher = {
-        model = "opencode-go/minimax-m2.7";
-        thinking = "medium";
+        model = "opencode-go/deepseek-v4-flash";
+        thinking = "off";
       };
     };
 
@@ -110,7 +98,7 @@ in
       enabledModels = [
         "opencode-go/deepseek-v4-flash"
         "opencode-go/deepseek-v4-pro"
-        "opencode-go/kimi-k2.5"
+        "opencode-go/kimi-k2.6"
         "opencode-go/minimax-m2.7"
       ];
     };
