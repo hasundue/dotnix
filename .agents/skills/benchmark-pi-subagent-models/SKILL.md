@@ -26,15 +26,31 @@ Find the optimal model and thinking level for a specific pi subagent.
 > **Note:** This skill's prompt format is determined by the **caller skill**,
 > not the agent itself. See [Skill-Specific Notes](#skill-specific-notes).
 
+> **Pricing source**: All model costs sourced from
+> [`opencode-go` provider models](https://github.com/anomalyco/models.dev/tree/dev/providers/opencode-go/models)
+> in the [anomalyco/models.dev](https://github.com/anomalyco/models.dev)
+> repository.
+
 ## Candidate Models
 
-| Model                 | Strengths                                  | Try When                                                               |
-| --------------------- | ------------------------------------------ | ---------------------------------------------------------------------- |
-| **kimi-k2.5**         | Best format compliance, surgical precision | Agent feeds downstream skills needing exact schema, adversarial review |
-| **minimax-m2.7**      | Leanest tokens, analytical depth           | Research/analysis agents, cost-sensitive pipelines                     |
-| **deepseek-v4-flash** | Fastest raw speed, decent depth            | Speed matters more than schema precision                               |
-| qwen3.5-plus          | Exhaustive, thorough                       | Budget allows, need maximum depth                                      |
-| minimax-m2.5          | Fast, cheap                                | Prompt sensitivity — test before committing                            |
+Pricing data sourced from
+[`opencode-go` provider models](https://github.com/anomalyco/models.dev/tree/dev/providers/opencode-go/models).
+All prices in **USD per million tokens**.
+
+| Model                 | Input $/M | Output $/M | Cache $/M | Context | Strengths                                  | Try When                                                               |
+| --------------------- | --------- | ---------- | --------- | ------- | ------------------------------------------ | ---------------------------------------------------------------------- |
+| **deepseek-v4-flash** | **0.14**  | **0.28**   | **0.003** | 1M      | Fastest, cheapest, good depth              | Default for most agents; speed + cost win                              |
+| qwen3.5-plus          | 0.20      | 1.20       | 0.02      | 262K    | Exhaustive, thorough                       | Need maximum depth, budget allows                                      |
+| **minimax-m2.7**      | 0.30      | 1.20       | 0.06      | 205K    | Leanest tokens, analytical depth           | Research/analysis agents (format compliance matters)                   |
+| **kimi-k2.5**         | 0.60      | 3.00       | 0.10      | 262K    | Best format compliance, surgical precision | Agent feeds downstream skills needing exact schema, adversarial review |
+| deepseek-v4-pro       | 1.74      | 3.48       | 0.015     | 1M      | Deep reasoning, strong precision           | Complex multi-step analysis where flash isn't enough                   |
+| qwen3.6-plus          | 0.50      | 3.00       | 0.05      | 262K    | Newer than 3.5, similar strengths          | If qwen3.5-plus is insufficient                                        |
+| kimi-k2.6             | 0.95      | 4.00       | 0.16      | 262K    | Latest Kimi, image/video input             | Multimodal analysis tasks                                              |
+
+> **Cost-awareness tip**: Effective cost = (input_tokens × input_price +
+> output_tokens × output_price) / 1_000_000. A model with 3× fewer output tokens
+> may still cost more if its per-token price is 4× higher. Always compute
+> effective cost, not raw token count.
 
 See [RESULTS.md](RESULTS.md) for full historical benchmark data.
 
@@ -106,17 +122,31 @@ Capture per run: **Time**, **Tool uses**, **Tokens**, **Format compliance**,
 | **Tokens**  | Output token count, context usage        | Cost and context pressure             |
 | **Format**  | Follows agent's output schema?           | Downstream skills depend on structure |
 | **Quality** | Analytical depth, citations, correctness | Value of the analysis                 |
+| **Cost**    | Effective input/output cost per run      | Real-world $/run in your pipeline     |
+
+> **Computing effective cost**: Multiply each model's token counts by its
+> per-M-token prices from the Candidate Models table. A model with fewer tokens
+> may cost more if it has a higher per-token price (e.g., minimax-m2.7 uses 3×
+> fewer tokens than deepseek-v4-flash, but its output price is 4.3× higher —
+> flash ends up cheaper).
 
 ### 6. Select Winner
 
-Weight by the agent's role:
+Weight by the agent's role, **always factoring in effective cost**:
 
-| Agent Role                          | Prioritize                           |
-| ----------------------------------- | ------------------------------------ |
-| Research tracer (`scope-tracer`)    | Format compliance, analytical depth  |
-| Code analyzer (`codebase-analyzer`) | Format compliance, precise citations |
-| Design / plan generator             | Balanced depth + precision           |
-| Cost-sensitive deployments          | Token efficiency, speed              |
+| Agent Role                          | Prioritize                                 | Default Model                                    |
+| ----------------------------------- | ------------------------------------------ | ------------------------------------------------ |
+| Research tracer (`scope-tracer`)    | Format compliance, analytical depth, cost  | minimax-m2.7 or deepseek-v4-flash                |
+| Code analyzer (`codebase-analyzer`) | Format compliance, precise citations, cost | kimi-k2.5 (precision) / deepseek-v4-flash (cost) |
+| Design / plan generator             | Balanced depth + precision, cost           | deepseek-v4-flash                                |
+| Web search researcher               | Information retrieval quality, cost        | **deepseek-v4-flash** (cheapest, good quality)   |
+| Cost-sensitive bulk pipelines       | Effective cost per run, speed              | deepseek-v4-flash                                |
+
+> **Cost-first heuristic**: When in doubt, start with `deepseek-v4-flash`
+> (cheapest, fast, good quality). Only upgrade to kimi-k2.5 or minimax-m2.7 if
+> the task demands strict format compliance or deeper analytical structure that
+> flash demonstrably can't deliver. Benchmark before upgrading — diminishing
+> returns apply.
 
 ## Advanced: Parallel Benchmarking
 
