@@ -7,6 +7,7 @@
 
     [merge]
     remove = false
+    commit = false    # --no-commit by default
 
     [post-start]
     copy-envrc = "test -f {{ primary_worktree_path }}/.envrc && cp {{ primary_worktree_path }}/.envrc {{ worktree_path }}/.envrc"
