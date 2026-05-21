@@ -56,6 +56,17 @@ See [RESULTS.md](RESULTS.md) for full historical benchmark data.
 
 ## Process
 
+### 0. Record the Original Config
+
+Before making any changes, read and record the agent config file so you can
+restore it later:
+
+```bash
+cat ~/.pi/agent/agents/<agent-name>.md
+```
+
+Note the original `model` and `thinking` values as the **default config**.
+
 ### 1. Identify the Caller Skill and Prompt Format
 
 Agents are invoked from **two locations** in the rpiv-pi extension:
@@ -99,17 +110,22 @@ name: <agent-name>
 
 Each agent reads `model` and `thinking` from its `.md` file at spawn time
 (rpiv-pi's agent dispatch ignores `model`/`thinking` on the `Agent` tool call).
-Edit the config, then dispatch:
+Edit the config, then dispatch. Repeat for each candidate, then **immediately
+restore the original config** before collecting results.
 
 ```
-Agent({
-  subagent_type: "<agent-name>",
-  description: "Benchmark <model> <thinking>",
-  prompt: "<test prompt matching caller skill format>"
-})
+# 1. Edit config → candidate model A
+# 2. Dispatch Agent A (run_in_background: true)
+
+# 3. Edit config → candidate model B
+# 4. Dispatch Agent B (run_in_background: true)
+
+# ... repeat for all candidates ...
+
+# LAST: Restore original config from Step 0
 ```
 
-Edit the `.md` file again with the next model/thinking and dispatch again.
+Then collect results from each agent as they complete.
 
 Capture per run: **Time**, **Tool uses**, **Tokens**, **Format compliance**,
 **Quality**.
@@ -159,14 +175,17 @@ assistant message. The pi-subagents extension manages concurrency (typically max
 Each agent loads its model config from the `.md` file at spawn time and keeps it
 for the duration. This means you can:
 
-1. **Set Model A** in `~/.pi/agent/agents/<agent>.md`
-2. **Spawn Agent A** with `run_in_background: true` via the `Agent` tool (no
+1. **Record the default config** (model + thinking) from Step 0.
+2. **Set Model A** in `~/.pi/agent/agents/<agent>.md`
+3. **Spawn Agent A** with `run_in_background: true` via the `Agent` tool (no
    `model`/`thinking` params — rpiv-pi ignores those)
-3. **Immediately change to Model B** in the config file
-4. **Spawn Agent B** (also `run_in_background: true`) — extension queues if at
+4. **Immediately change to Model B** in the config file
+5. **Spawn Agent B** (also `run_in_background: true`) — extension queues if at
    capacity
-5. Repeat for all models
-6. **Retrieve results** from each agent as they complete
+6. Repeat for all models
+7. **Immediately restore the original config** from Step 0 — before collecting
+   any results
+8. **Retrieve results** from each agent as they complete
 
 Each agent keeps its originally-loaded model even though the config file changed
 between spawns.
@@ -174,6 +193,8 @@ between spawns.
 ### Example: All 5 benchmark runs at once
 
 ```
+# 0. Record default → model: deepseek-v4-flash, thinking: off
+
 # 1. Edit ~/.pi/agent/agents/codebase-analyzer.md → model: kimi-k2.5, thinking: high
 Agent({
   subagent_type: "codebase-analyzer",
@@ -213,11 +234,14 @@ Agent({
   prompt: "<test prompt>",
   run_in_background: true
 })
+
+# 6. RESTORE default config → model: deepseek-v4-flash, thinking: off
 ```
 
-**Important**: The `# Edit config → ...` comments are instructions to you (the
-agent running this skill), not shell commands. You edit the `.md` file between
-each `Agent()` dispatch.
+**Important**: The `# Edit config → ...` / `# RESTORE default config → ...`
+comments are instructions to you (the agent running this skill), not shell
+commands. You edit the `.md` file between each `Agent()` dispatch. Restore the
+original config immediately after the last spawn, before collecting results.
 
 **Results collected as agents complete** (not necessarily in spawn order):
 
