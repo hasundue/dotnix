@@ -403,3 +403,45 @@ Emerging model-selection heuristics from 5 benchmarked subagent roles:
    scope-tracer but loses the critical finding for slice-verifier. flash `high`
    suppresses narrative leak for claim-verifier but adds cost without benefit
    for artifacts-analyzer. Always test both levels.
+
+---
+
+## 2026-05-21: codebase-pattern-finder (design/blueprint skills)
+
+**Test prompt**: "Find the implementation pattern I should model after for
+adding a new Home Manager module" — matching the `design`/`blueprint` skill's
+canonical invocation pattern. Same prompt for both runs.
+
+| Model             | Thinking | Time      | Tools | Tokens | Format   | Quality                          | Narrative leak? |
+| ----------------- | -------- | --------- | ----- | ------ | -------- | -------------------------------- | --------------- |
+| deepseek-v4-flash | **off**  | **94.9s** | 57    | 31.8k  | ✅ Clean | Excellent — found all 5 patterns | ❌ None         |
+| deepseek-v4-flash | high     | 125.7s    | 59    | 33.1k  | ✅ Clean | Excellent — equally thorough     | ❌ None         |
+
+**Winner**: deepseek-v4-flash (thinking: **off**) — keep current default.
+
+Both models produced **clean, structured output** with zero narrative pollution.
+The one-line preambles ("I now have a thorough understanding…" / "Now I have a
+thorough picture…") are minimal and don't impact the orchestrator's context.
+
+### Key findings
+
+- **No narrative leak at either thinking level** — unlike claim-verifier where
+  flash off leaked internal deliberation, codebase-pattern-finder stays on-task
+  regardless of thinking level. This is likely because the agent's prompt is
+  inherently task-focused (find patterns, show code) rather than adversarial.
+- **Quality is identical** — both found the same patterns, same file paths, same
+  level of detail. The ~4% token difference is within noise.
+- **flash high is 32% slower** (125.7s vs 94.9s) for no quality gain.
+- **General codebase knowledge**: 57-59 tool uses reflect deep codebase
+  investigation, which is appropriate for this role.
+
+### Recommendation
+
+Keep `deepseek-v4-flash` with `thinking: off` as the default for
+codebase-pattern-finder. Unlike adversarial roles (claim-verifier) where
+thinking helps constrain output, this agent is naturally concise and structured.
+The thinking overhead only adds cost and latency.
+
+### Updates to the Agent Config
+
+No change needed — current config is optimal.
