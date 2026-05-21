@@ -52,7 +52,7 @@ in
 
       # ── Tier B: Analysis & synthesis
       codebase-analyzer = {
-        model = "opencode-go/kimi-k2.5";
+        model = "opencode-go/deepseek-v4-flash";
         thinking = "high";
       };
       scope-tracer = {
