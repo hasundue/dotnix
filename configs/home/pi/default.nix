@@ -152,7 +152,7 @@ in
 
   programs.git.ignores = [
     ".pi/"
-    ".rpiv/"
+    ".rpiv"
   ];
 
 }

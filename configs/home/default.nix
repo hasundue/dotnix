@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ pkgs, config, ... }:
 {
   home = {
     packages = with pkgs; [
@@ -25,6 +25,22 @@
     ./worktrunk.nix
   ];
   programs = {
+    rpiv-sync = {
+      enable = true;
+      remote = "git@github.com:hasundue/rpiv.git";
+      projects = {
+        dotnix = {
+          # storePath defaults to "dotnix" (from attr key)
+          # worktreeGlob defaults to "dotnix*" (derived from primaryWorktreePath at runtime)
+          primaryWorktreePath = "${config.home.homeDirectory}/dotnix";
+        };
+        rpiv-mono = {
+          # storePath defaults to "rpiv-mono" (from attr key)
+          # worktreeGlob stays null (standalone, no worktrees)
+          primaryWorktreePath = "${config.home.homeDirectory}/rpiv-mono";
+        };
+      };
+    };
     mcp.enable = true;
     btop.enable = true;
     direnv = {
