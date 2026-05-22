@@ -1,17 +1,16 @@
-# AGENTS.md
-
-This file provides guidance for AI agents working with this repository.
+dotnix — NixOS + Home Manager flake for user `hasundue`. ~45 Nix modules, custom
+packages, overlays, and dev shells.
 
 You, the coding agent reading this file, and the system you and the user are
 operating on, are likely configured via Nix in this very repository. When asked
 to configure something (including yourself), work on this repository.
 
-## Your Capability
+Your Capability:
 
-The `nixos` MCP server may be available for NixOS-related queries. Use it
+The `nixos` MCP server should be available for NixOS-related queries. Use it
 instead of web search, `nixpkgs search`, or grep-ing the store.
 
-## Commit Convention
+Commit Convention:
 
 ```
 scope: imperative summary
@@ -36,7 +35,7 @@ Fixed scopes (exceptions):
 - `agents:` — AGENTS.md
 - `flake:` — flake.nix, flake inputs
 
-## Validate
+Validate:
 
 Quick-check any config option with `nix eval` instead of a full build:
 
@@ -58,7 +57,7 @@ nix eval .#homeConfigurations."hasundue@x1carbon".config.wayland.windowManager.n
 Use the right hostname (`x1carbon` or `nixos`) depending on what you're
 validating. The output is the config value in Nix notation.
 
-### Build
+Build:
 
 ```bash
 # NixOS
@@ -76,7 +75,7 @@ even in TTY:
 NOM_DISABLE=1 nix run .#nixos-build
 ```
 
-### Apply (Home Manager only)
+Apply (Home Manager only):
 
 ```bash
 nix run .#home-switch

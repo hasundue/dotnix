@@ -15,6 +15,27 @@
     - # Project Context (contents of AGENTS.md / CLAUDE.md)
     - # Skills (contents of loaded SKILL.md files)
     - Current date / Current working directory
+
+How project context is appended (default prompt path, see dist/core/system-prompt.js):
+
+    prompt += "\n\n# Project Context\n\n";
+    prompt += "Project-specific instructions and guidelines:\n\n";
+    for (const { path: filePath, content } of contextFiles) {
+        prompt += `## ${filePath}\n\n${content}\n\n`;
+    }
+
+So pi injects:
+  - h1 „# Project Context“
+  - h2 „## /path/to/AGENTS.md“ per file
+  - file content as-is (no heading stripping)
+
+→ AGENTS.md should have NO h1 (pi adds its own "## /path") and preferably
+  no h2/h3 either — they create nested staircasing under the h2 wrapper.
+  Flat plain-text with label lines avoids this entirely.
+
+Custom prompt path (when SYSTEM.md or --system-prompt is used) wraps
+context in <project_context> XML tags with <project_instructions path="...">
+blocks instead.
 -->
 
 You are an expert coding assistant operating inside pi, a coding agent harness.
