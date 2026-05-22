@@ -161,7 +161,8 @@ in
 
     extensions = [
       ./extensions/chat-display.ts
-      # ./extensions/footer.ts
+      ./extensions/footer.ts
+      ./extensions/temperature.ts
       # ./extensions/readonly-mode
       # ./extensions/toggle-bash
     ];
