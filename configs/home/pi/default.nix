@@ -124,11 +124,6 @@ in
         mode = "lazy";
         timeoutMs = 30000;
       };
-      rpiv-advisor.enable = false;
-      rpiv-i18n.enable = false;
-      rpiv-voice.enable = false;
-      # Disable the npm-published rpiv-pi; replaced by the fork wrapping below
-      "@juicesharp/rpiv-pi".enable = false;
     };
 
     # Inject the fork wrapper into the pi packages array
