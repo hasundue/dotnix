@@ -805,10 +805,27 @@
         "pyproject-build-systems": "pyproject-build-systems",
         "pyproject-nix": "pyproject-nix",
         "python-validity": "python-validity",
+        "rpiv-mono": "rpiv-mono",
         "stylix": "stylix",
         "systems": "systems_2",
         "treefmt-nix": "treefmt-nix_2",
         "uv2nix": "uv2nix"
+      }
+    },
+    "rpiv-mono": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1779445203,
+        "narHash": "sha256-/p+0UuICfjyTBEREgy9MJoU+1m0Z1ooOJhgRndEh0PA=",
+        "owner": "hasundue",
+        "repo": "rpiv-mono",
+        "rev": "f1f85c09b9bd1491b7b161527fcc10d593e91fe2",
+        "type": "github"
+      },
+      "original": {
+        "owner": "hasundue",
+        "repo": "rpiv-mono",
+        "type": "github"
       }
     },
     "stylix": {

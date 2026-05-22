@@ -52,6 +52,10 @@
       url = "github:cameronfreer/lean4-skills";
       flake = false;
     };
+    rpiv-mono = {
+      url = "github:hasundue/rpiv-mono";
+      flake = false;
+    };
     mcp-servers-nix = {
       url = "github:natsukium/mcp-servers-nix";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -225,6 +229,7 @@
           inherit (inputs)
             firefox-addons
             models-dev
+            rpiv-mono
             ;
         };
         temporal = import ./overlays/temporal.nix {
