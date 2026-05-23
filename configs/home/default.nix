@@ -16,6 +16,7 @@
     ./agenix
     ./fish.nix
     ./git.nix
+    ./ketch.nix
     ./syncthing.nix
     ./gh.nix
     ./lazygit.nix

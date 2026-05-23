@@ -155,7 +155,7 @@ in
     ];
 
     extensions = [
-      ./extensions/chat-display.ts
+      # ./extensions/chat-display.ts
       ./extensions/footer.ts
       ./extensions/temperature.ts
       # ./extensions/readonly-mode
