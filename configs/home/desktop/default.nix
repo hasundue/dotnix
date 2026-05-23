@@ -20,6 +20,7 @@
       # apps
       discord
       google-chrome
+      obsidian
       zotero
 
       # desktop

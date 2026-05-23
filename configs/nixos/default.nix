@@ -10,6 +10,11 @@
     ./nix.nix
   ];
 
+  networking.firewall = {
+    allowedTCPPorts = [ 22000 ];
+    allowedUDPPorts = [ 21027 ];
+  };
+
   i18n.defaultLocale = "en_US.UTF-8";
 
   environment = {
