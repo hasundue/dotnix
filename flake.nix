@@ -240,6 +240,7 @@
         };
       };
       packages = forEachSystem (pkgs: {
+        ketch = pkgs.callPackage ./packages/ketch.nix { };
         zotero-mcp = pkgs.callPackage ./packages/zotero-mcp.nix {
           inherit (inputs)
             pyproject-build-systems

@@ -2,6 +2,7 @@
 {
   home = {
     packages = with pkgs; [
+      ketch
       deno
       nodejs
       julia-bin
