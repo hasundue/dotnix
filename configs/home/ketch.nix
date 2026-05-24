@@ -38,6 +38,6 @@ in
   };
 
   home.activation.ketchConfig = lib.hm.dag.entryAfter [ "reloadSystemd" ] ''
-    systemctl --user start ketch-config.service || true
+    ${pkgs.systemd}/bin/systemctl --user start ketch-config.service || true
   '';
 }
