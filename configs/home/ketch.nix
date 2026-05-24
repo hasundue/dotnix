@@ -8,14 +8,16 @@
 let
   ketchCfg = "${config.home.homeDirectory}/.config/ketch";
   braveKey = config.age.secrets."api/brave".path;
+  ctx7Key = config.age.secrets."api/context7".path;
 in
 {
-  # Generate ketch config on activation, injecting the decrypted Brave API key
+  # Generate ketch config on activation, injecting decrypted API keys
   home.activation.ketchConfig = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
     ${pkgs.coreutils}/bin/mkdir -p "${ketchCfg}"
     ${pkgs.jq}/bin/jq -n \
-      --arg key "$(cat "${braveKey}")" \
-      '{backend: "brave", brave_api_key: $key}' \
+      --arg brave "$(cat "${braveKey}")" \
+      --arg ctx7 "$(cat "${ctx7Key}")" \
+      '{backend: "brave", brave_api_key: $brave, context7_api_key: $ctx7}' \
       > "${ketchCfg}/config.json"
   '';
 }

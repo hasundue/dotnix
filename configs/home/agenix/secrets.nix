@@ -3,6 +3,7 @@ let
 
   secrets = [
     "api/brave"
+    "api/context7"
     "api/copilot"
     "api/exa"
     "api/gemini"
