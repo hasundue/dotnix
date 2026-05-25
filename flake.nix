@@ -156,7 +156,6 @@
               home-manager.sharedModules = [
                 agenix.homeManagerModules.default
                 mcp-servers-nix.homeManagerModules.default
-                ./modules/home
               ];
             }
             (metaConfig system)
@@ -184,7 +183,6 @@
             mcp-servers-nix.homeManagerModules.default
             niri.homeModules.niri
             stylix.homeModules.stylix
-            ./modules/home
             ./configs/stylix.nix
             ./configs/home
           ]
