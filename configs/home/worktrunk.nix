@@ -11,8 +11,6 @@
 
     [post-start]
     copy-envrc = "test -f {{ primary_worktree_path }}/.envrc && cp {{ primary_worktree_path }}/.envrc {{ worktree_path }}/.envrc"
-    # Symlink .rpiv/ to canonical repo (shared across all worktrees)
-    link-rpiv = "ln -sfn ${config.programs.rpiv-sync.rootDir}/${config.programs.rpiv-sync.projects.dotnix.storePath} {{ worktree_path }}/.rpiv"
   '';
 
   programs.fish.interactiveShellInit = ''
