@@ -17,4 +17,6 @@
   environment.systemPackages = with pkgs; [
     xwayland-satellite
   ];
+
+  hardware.xpadneo.enable = true;
 }
