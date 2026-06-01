@@ -10,8 +10,8 @@
         x1carbon = {
           id = "RIMQVCF-3UF3DLT-HDJJPKP-AB6K6PS-YVDT5QQ-6QNVW3B-4FWXORC-ALIY6QC";
         };
-        phone = {
-          id = "YEVQBMC-UUKJZG4-OKFY6ED-7OB33ZF-EVDSUYR-XTVK26J-TRQMQKG-77EUDAY";
+        pixel = {
+          id = "EW3ELLD-XI2BP2D-M6B5K7L-EAQ74NZ-44YWVPR-VFWHFPF-46F22PH-CPXUJQW";
         };
       };
       folders = {
@@ -21,7 +21,7 @@
           type = "sendreceive";
           devices = [
             "x1carbon"
-            "phone"
+            "pixel"
           ];
           versioning = {
             type = "trashcan";
