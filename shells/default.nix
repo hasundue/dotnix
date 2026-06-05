@@ -6,6 +6,7 @@
 let
   system = pkgs.stdenv.hostPlatform.system;
   treefmt = treefmt-nix.lib.mkWrapper pkgs {
+    projectRootFile = "flake.nix";
     programs = {
       deno.enable = true;
       nixfmt.enable = true;
