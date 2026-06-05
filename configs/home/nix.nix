@@ -20,7 +20,7 @@
       nfc = "${nf} check";
       nfs = "${nf} show";
       nfu = "${nf} update";
-      nor = "sudo nixos-rebuild";
+      nor = "nixos-rebuild";
       norb = "${nor} ${opts} boot --flake . ${pipeToNom}";
       nors = "${nor} ${opts} switch --flake ${pipeToNom}";
       nort = "${nor} ${opts} test --flake . ${pipeToNom}";
