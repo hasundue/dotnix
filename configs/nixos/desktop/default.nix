@@ -29,6 +29,9 @@
       # Define this globally to make sure it's imported to user systemd by sway
       NIXOS_OZONE_WL = "1";
     };
+    systemPackages = with pkgs; [
+      xwayland-satellite
+    ];
   };
 
   home-manager = {
