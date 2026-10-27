@@ -25,7 +25,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           OPENCODE_API_KEY: ${{ secrets.OPENCODE_API_KEY }}
         with:
-          model: opencode-go/deepseek-v4-flash
+          model: opencode-go/deepseek-v4.1-flash
           use_github_token: true
           prompt: |
             You are an issue monitoring assistant. Check all open issues in this repo for
