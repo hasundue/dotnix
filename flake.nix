@@ -26,7 +26,9 @@
       inputs.flake-compat.follows = "flake-compat";
     };
     stylix = {
-      url = "github:nix-community/stylix";
+      # TODO: revert to github:nix-community/stylix once
+      # https://github.com/nix-community/stylix/pull/2503 is merged.
+      url = "github:nix-community/stylix/pull/2503/head";
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.systems.follows = "systems";
     };
