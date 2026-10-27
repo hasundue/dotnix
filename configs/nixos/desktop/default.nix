@@ -10,7 +10,6 @@
   # Enable plymouth and boot silently
   boot = {
     plymouth.enable = true;
-    initrd.systemd.enable = true;
 
     consoleLogLevel = 0;
     kernelParams = [
