@@ -8,7 +8,10 @@
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
     nixpkgs-master.url = "github:nixos/nixpkgs/master";
     nixpkgs-mcp-nixos.url = "github:nixos/nixpkgs?ref=d8a0e4a8091f";
-    nixos-hardware.url = "github:nixos/nixos-hardware";
+    nixos-hardware = {
+      url = "github:nixos/nixos-hardware";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     flake-compat = {
       url = "github:nix-community/flake-compat";
       flake = false;
@@ -29,11 +32,7 @@
     };
     agenix = {
       url = "github:ryantm/agenix";
-      inputs = {
-        nixpkgs.follows = "nixpkgs";
-        home-manager.follows = "home-manager";
-        systems.follows = "systems";
-      };
+      inputs.nixpkgs.follows = "nixpkgs";
     };
     firefox-addons = {
       url = "sourcehut:~rycee/nur-expressions?dir=pkgs/firefox-addons";
@@ -120,8 +119,14 @@
         self.overlays.temporal # This must come first
         agenix.overlays.default
         niri.overlays.niri
+        # niri-stable (v25.08) still links against libdisplay-info 0.2, which
+        # current nixpkgs dropped; take it from niri-flake's pinned nixpkgs.
+        (final: _prev: {
+          libdisplay-info_0_2 =
+            niri.inputs.nixpkgs.legacyPackages.${final.stdenv.hostPlatform.system}.libdisplay-info_0_2;
+        })
         nvim.overlays.default
-        llm-agents-nix.overlays.default
+        llm-agents-nix.overlays.shared-nixpkgs
       ]
       ++ (self.overlays |> lib.filterAttrs (n: v: n != "temporal") |> lib.attrValues);
       systems = [
@@ -132,7 +137,12 @@
         system:
         import nixpkgs {
           inherit overlays system;
-          config.allowUnfree = true;
+          config = {
+            allowUnfree = true;
+            # Zotero still bundles the EOL Firefox ESR 140 runtime; drop this
+            # once nixpkgs switches its Zotero package to a supported ESR.
+            permittedInsecurePackages = [ "firefox-esr-140-bin-unwrapped-140.17.0esr" ];
+          };
         }
         // self.packages.${system}
       );
