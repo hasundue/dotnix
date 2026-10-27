@@ -2,7 +2,7 @@
 
 let
   niri-monitor = pkgs.writeShellScript "niri-monitor" ''
-    outputs=$(${pkgs.niri-stable}/bin/niri msg --json outputs 2>/dev/null) || exit 0
+    outputs=$(${pkgs.niri}/bin/niri msg --json outputs 2>/dev/null) || exit 0
 
     ext=$(echo "$outputs" | ${pkgs.jq}/bin/jq -c '[.[] | select(.name != "eDP-1")] | first // empty')
     [ -z "$ext" ] && exit 0
@@ -15,7 +15,7 @@ let
   '';
 
   niri-monitor-toggle = pkgs.writeShellScript "niri-monitor-toggle" ''
-    outputs=$(${pkgs.niri-stable}/bin/niri msg --json outputs 2>/dev/null) || exit 1
+    outputs=$(${pkgs.niri}/bin/niri msg --json outputs 2>/dev/null) || exit 1
 
     connector=$(echo "$outputs" | ${pkgs.jq}/bin/jq -r '[.[] | select(.name != "eDP-1")] | first | .name // empty')
     [ -z "$connector" ] && exit 1
@@ -23,9 +23,9 @@ let
     is_on=$(echo "$outputs" | ${pkgs.jq}/bin/jq -r '[.[] | select(.name != "eDP-1")] | first | .current_mode != null')
 
     if [ "$is_on" = "true" ]; then
-      ${pkgs.niri-stable}/bin/niri msg output "$connector" off
+      ${pkgs.niri}/bin/niri msg output "$connector" off
     else
-      ${pkgs.niri-stable}/bin/niri msg output "$connector" on
+      ${pkgs.niri}/bin/niri msg output "$connector" on
     fi
   '';
 

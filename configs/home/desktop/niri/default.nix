@@ -6,240 +6,305 @@
 }:
 let
   devices = import ../_devices.nix;
-  niriLib = import ./lib.nix { inherit pkgs; };
-  inherit (niriLib) forEachCorner;
+  cornerRadius = 8.0;
 in
 {
-  programs.niri.settings = {
-    prefer-no-csd = true;
-    outputs = {
-      "eDP-1" = {
-        mode = {
-          width = 1920;
-          height = 1080;
-          refresh = 60.0;
-        };
-        position = {
-          x = 0;
-          y = 0;
-        };
-        scale = 1.25;
-      };
-      "${devices.monitor.MSI_G271}" = {
-        mode = {
-          width = 1920;
-          height = 1080;
-          refresh = 120.0;
-        };
-        position = {
-          x = 1536;
-          y = 0;
-        };
-      };
-    };
-    spawn-at-startup = [
-      {
-        argv = [
-          "swaylock"
-          "-fF"
-        ];
-      }
-      {
-        argv = [
-          (lib.getExe pkgs.swaybg)
-          "-i"
-          "${config.stylix.image}"
-          "-m"
-          "fill"
-        ];
-      }
-    ];
-    window-rules = [
-      {
-        geometry-corner-radius = forEachCorner 8.0;
-        clip-to-geometry = true;
-        default-column-width = {
-          proportion = 0.7;
-        };
-      }
-      {
-        matches = [
-          { app-id = "^kitty$"; }
-        ];
-        default-column-display = "tabbed";
-      }
-      {
-        matches = [
-          { app-id = "^dev.zed.Zed$"; }
-          { app-id = "^firefox$"; }
-          { app-id = "^google-chrome$"; }
-          { app-id = "^Slack$"; }
-          { app-id = "^spotify$"; }
-          { app-id = "^steam$"; }
-        ];
-        default-column-width = {
-          proportion = 0.9;
-        };
-      }
-    ];
-    input = {
-      keyboard = {
-        repeat-delay = 250;
-      };
-      touchpad = {
-        dwt = true;
-        natural-scroll = true;
-        tap = true;
-      };
-      mouse = {
-        accel-profile = "adaptive";
-        accel-speed = 0.0;
-      };
-    };
-    layout = {
-      gaps = 4;
-      always-center-single-column = true;
-      empty-workspace-above-first = true;
-      preset-column-widths = [
-        { proportion = 0.7; }
-        { proportion = 0.9; }
+  wayland.windowManager.niri = {
+    enable = true;
+    # NixOS owns the niri package, session, portals, and xwayland-satellite.
+    systemd.enable = false;
+    portalPackage = null;
+    xwaylandSatellitePackage = null;
+
+    settings = {
+      prefer-no-csd = { };
+
+      _children = [
+        {
+          output = {
+            _args = [ "eDP-1" ];
+            mode = "1920x1080@60.000000";
+            position = {
+              _props = {
+                x = 0;
+                y = 0;
+              };
+            };
+            scale = 1.25;
+          };
+        }
+        {
+          output = {
+            _args = [ devices.monitor.MSI_G271 ];
+            mode = "1920x1080@120.000000";
+            position = {
+              _props = {
+                x = 1536;
+                y = 0;
+              };
+            };
+          };
+        }
+        {
+          spawn-at-startup = [
+            "swaylock"
+            "-fF"
+          ];
+        }
+        {
+          spawn-at-startup = [
+            (lib.getExe pkgs.swaybg)
+            "-i"
+            "${config.stylix.image}"
+            "-m"
+            "fill"
+          ];
+        }
+        {
+          window-rule = {
+            geometry-corner-radius = {
+              _args = [
+                cornerRadius
+                cornerRadius
+                cornerRadius
+                cornerRadius
+              ];
+            };
+            clip-to-geometry = true;
+            default-column-width = {
+              proportion = 0.7;
+            };
+          };
+        }
+        {
+          window-rule = {
+            _children = [
+              {
+                match._props = {
+                  app-id = "^kitty$";
+                };
+              }
+            ];
+            default-column-display = "tabbed";
+          };
+        }
+        {
+          window-rule = {
+            _children = [
+              {
+                match._props = {
+                  app-id = "^dev.zed.Zed$";
+                };
+              }
+              {
+                match._props = {
+                  app-id = "^firefox$";
+                };
+              }
+              {
+                match._props = {
+                  app-id = "^google-chrome$";
+                };
+              }
+              {
+                match._props = {
+                  app-id = "^Slack$";
+                };
+              }
+              {
+                match._props = {
+                  app-id = "^spotify$";
+                };
+              }
+              {
+                match._props = {
+                  app-id = "^steam$";
+                };
+              }
+            ];
+            default-column-width = {
+              proportion = 0.9;
+            };
+          };
+        }
       ];
-      border.enable = false;
-      focus-ring.enable = false;
-      shadow.enable = true;
-      tab-indicator = {
-        gap = 0;
-        hide-when-single-tab = true;
-        position = "top";
-        gaps-between-tabs = 16;
-        corner-radius = 4.0;
-      };
-    };
-    hotkey-overlay = {
-      hide-not-bound = true;
-      skip-at-startup = true;
-    };
-    binds = with config.lib.niri.actions; {
-      "Mod+Shift+Slash".action = show-hotkey-overlay;
 
-      "Mod+T".action = spawn "kitty";
-      "Mod+D".action = spawn "fuzzel";
-      "Mod+Alt+L".action = spawn "swaylock";
-
-      "Mod+Alt+S" = {
-        action = spawn-sh "exec systemctl suspend";
-        allow-when-locked = true;
-      };
-      "Mod+O" = {
-        action = toggle-overview;
-        repeat = false;
-      };
-      "Mod+Q" = {
-        action = close-window;
-        repeat = false;
-      };
-      "Mod+W".action = toggle-column-tabbed-display;
-
-      "Mod+H".action = focus-column-left;
-      "Mod+L".action = focus-column-right;
-      "Mod+Shift+H".action = move-column-left;
-      "Mod+Shift+L".action = move-column-right;
-
-      "Mod+N".action = focus-window-down; # N stands for Next
-      "Mod+P".action = focus-window-up; # P stands for Previous
-      "Mod+Shift+N".action = move-window-down;
-      "Mod+Shift+P".action = move-window-up;
-
-      "Mod+J".action = focus-workspace-down;
-      "Mod+K".action = focus-workspace-up;
-      "Mod+Shift+J".action = move-column-to-workspace-down;
-      "Mod+Shift+K".action = move-column-to-workspace-up;
-
-      "Mod+Left".action = focus-monitor-left;
-      "Mod+Right".action = focus-monitor-right;
-      "Mod+Shift+Left".action = move-column-to-monitor-left;
-      "Mod+Shift+Right".action = move-column-to-monitor-right;
-
-      "Mod+Home".action = focus-column-first;
-      "Mod+End".action = focus-column-last;
-      "Mod+Shift+Home".action = move-column-to-first;
-      "Mod+Shift+End".action = move-column-to-last;
-
-      "Mod+BracketLeft".action = consume-or-expel-window-left;
-      "Mod+BracketRight".action = consume-or-expel-window-right;
-
-      "Mod+Comma".action = consume-window-into-column;
-      "Mod+Period".action = expel-window-from-column;
-
-      "Mod+R".action = switch-preset-column-width;
-      "Mod+Shift+R".action = switch-preset-window-height;
-      "Mod+Ctrl+R".action = reset-window-height;
-      "Mod+F".action = maximize-column;
-      "Mod+Ctrl+F".action = expand-column-to-available-width;
-      "Mod+Shift+F".action = fullscreen-window;
-
-      "Mod+C".action = center-column;
-      "Mod+Ctrl+C".action = center-visible-columns;
-
-      "Mod+E".action = set-column-width "50%";
-      "Mod+Minus".action = set-column-width "-10%";
-      "Mod+Equal".action = set-column-width "+10%";
-      "Mod+Shift+Minus".action = set-window-height "-10%";
-      "Mod+Shift+Equal".action = set-window-height "+10%";
-
-      "Mod+V".action = toggle-window-floating;
-      "Mod+Shift+V".action = switch-focus-between-floating-and-tiling;
-
-      "Print".action.screenshot = [ ];
-      "Ctrl+Print".action.screenshot-screen = [ ];
-      "Alt+Print".action.screenshot-window = [ ];
-      "Mod+Escape" = {
-        action = toggle-keyboard-shortcuts-inhibit;
-        allow-inhibiting = false;
+      input = {
+        keyboard = {
+          repeat-delay = 250;
+        };
+        touchpad = {
+          dwt = { };
+          natural-scroll = { };
+          tap = { };
+        };
+        mouse = {
+          accel-profile = "adaptive";
+          accel-speed = 0.0;
+        };
       };
 
-      "Mod+Shift+E".action = quit;
-      "Ctrl+Alt+Delete".action = quit;
+      layout = {
+        gaps = 4;
+        always-center-single-column = { };
+        empty-workspace-above-first = { };
+        preset-column-widths._children = [
+          {
+            proportion = 0.7;
+          }
+          {
+            proportion = 0.9;
+          }
+        ];
+        border.off = { };
+        focus-ring.off = { };
+        shadow.on = { };
+        tab-indicator = {
+          gap = 0;
+          hide-when-single-tab = { };
+          position = "top";
+          gaps-between-tabs = 16;
+          corner-radius = 4.0;
+        };
+      };
 
-      "XF86AudioRaiseVolume" = {
-        action = spawn-sh "wpctl set-volume @DEFAULT_AUDIO_SINK@ 0.1+";
-        allow-when-locked = true;
+      hotkey-overlay = {
+        hide-not-bound = { };
+        skip-at-startup = { };
       };
-      "XF86AudioLowerVolume" = {
-        action = spawn-sh "wpctl set-volume @DEFAULT_AUDIO_SINK@ 0.1-";
-        allow-when-locked = true;
-      };
-      "XF86AudioMute" = {
-        action = spawn-sh "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle";
-        allow-when-locked = true;
-      };
-      "XF86AudioMicMute" = {
-        action = spawn-sh "wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle";
-        allow-when-locked = true;
-      };
-      "XF86AudioPlay" = {
-        action = spawn-sh "playerctl play-pause";
-        allow-when-locked = true;
-      };
-      "XF86AudioStop" = {
-        action = spawn-sh "playerctl stop";
-        allow-when-locked = true;
-      };
-      "XF86AudioPrev" = {
-        action = spawn-sh "playerctl previous";
-        allow-when-locked = true;
-      };
-      "XF86AudioNext" = {
-        action = spawn-sh "playerctl next";
-        allow-when-locked = true;
-      };
-      "XF86MonBrightnessUp" = {
-        action = spawn "brightnessctl" "--class=backlight" "set" "+10%";
-        allow-when-locked = true;
-      };
-      "XF86MonBrightnessDown" = {
-        action = spawn "brightnessctl" "--class=backlight" "set" "10%-";
-        allow-when-locked = true;
+
+      binds = {
+        "Mod+Shift+Slash".show-hotkey-overlay = { };
+
+        "Mod+T".spawn = [ "kitty" ];
+        "Mod+D".spawn = [ "fuzzel" ];
+        "Mod+Alt+L".spawn = [ "swaylock" ];
+
+        "Mod+Alt+S" = {
+          _props.allow-when-locked = true;
+          spawn-sh = "exec systemctl suspend";
+        };
+        "Mod+O" = {
+          _props.repeat = false;
+          toggle-overview = { };
+        };
+        "Mod+Q" = {
+          _props.repeat = false;
+          close-window = { };
+        };
+        "Mod+W".toggle-column-tabbed-display = { };
+
+        "Mod+H".focus-column-left = { };
+        "Mod+L".focus-column-right = { };
+        "Mod+Shift+H".move-column-left = { };
+        "Mod+Shift+L".move-column-right = { };
+
+        "Mod+N".focus-window-down = { };
+        "Mod+P".focus-window-up = { };
+        "Mod+Shift+N".move-window-down = { };
+        "Mod+Shift+P".move-window-up = { };
+
+        "Mod+J".focus-workspace-down = { };
+        "Mod+K".focus-workspace-up = { };
+        "Mod+Shift+J".move-column-to-workspace-down = { };
+        "Mod+Shift+K".move-column-to-workspace-up = { };
+
+        "Mod+Left".focus-monitor-left = { };
+        "Mod+Right".focus-monitor-right = { };
+        "Mod+Shift+Left".move-column-to-monitor-left = { };
+        "Mod+Shift+Right".move-column-to-monitor-right = { };
+
+        "Mod+Home".focus-column-first = { };
+        "Mod+End".focus-column-last = { };
+        "Mod+Shift+Home".move-column-to-first = { };
+        "Mod+Shift+End".move-column-to-last = { };
+
+        "Mod+BracketLeft".consume-or-expel-window-left = { };
+        "Mod+BracketRight".consume-or-expel-window-right = { };
+
+        "Mod+Comma".consume-window-into-column = { };
+        "Mod+Period".expel-window-from-column = { };
+
+        "Mod+R".switch-preset-column-width = { };
+        "Mod+Shift+R".switch-preset-window-height = { };
+        "Mod+Ctrl+R".reset-window-height = { };
+        "Mod+F".maximize-column = { };
+        "Mod+Ctrl+F".expand-column-to-available-width = { };
+        "Mod+Shift+F".fullscreen-window = { };
+
+        "Mod+C".center-column = { };
+        "Mod+Ctrl+C".center-visible-columns = { };
+
+        "Mod+E".set-column-width = "50%";
+        "Mod+Minus".set-column-width = "-10%";
+        "Mod+Equal".set-column-width = "+10%";
+        "Mod+Shift+Minus".set-window-height = "-10%";
+        "Mod+Shift+Equal".set-window-height = "+10%";
+
+        "Mod+V".toggle-window-floating = { };
+        "Mod+Shift+V".switch-focus-between-floating-and-tiling = { };
+
+        "Print".screenshot = { };
+        "Ctrl+Print".screenshot-screen = { };
+        "Alt+Print".screenshot-window = { };
+        "Mod+Escape" = {
+          _props.allow-inhibiting = false;
+          toggle-keyboard-shortcuts-inhibit = { };
+        };
+
+        "Mod+Shift+E".quit = { };
+        "Ctrl+Alt+Delete".quit = { };
+
+        "XF86AudioRaiseVolume" = {
+          _props.allow-when-locked = true;
+          spawn-sh = "wpctl set-volume @DEFAULT_AUDIO_SINK@ 0.1+";
+        };
+        "XF86AudioLowerVolume" = {
+          _props.allow-when-locked = true;
+          spawn-sh = "wpctl set-volume @DEFAULT_AUDIO_SINK@ 0.1-";
+        };
+        "XF86AudioMute" = {
+          _props.allow-when-locked = true;
+          spawn-sh = "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle";
+        };
+        "XF86AudioMicMute" = {
+          _props.allow-when-locked = true;
+          spawn-sh = "wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle";
+        };
+        "XF86AudioPlay" = {
+          _props.allow-when-locked = true;
+          spawn-sh = "playerctl play-pause";
+        };
+        "XF86AudioStop" = {
+          _props.allow-when-locked = true;
+          spawn-sh = "playerctl stop";
+        };
+        "XF86AudioPrev" = {
+          _props.allow-when-locked = true;
+          spawn-sh = "playerctl previous";
+        };
+        "XF86AudioNext" = {
+          _props.allow-when-locked = true;
+          spawn-sh = "playerctl next";
+        };
+        "XF86MonBrightnessUp" = {
+          _props.allow-when-locked = true;
+          spawn = [
+            "brightnessctl"
+            "--class=backlight"
+            "set"
+            "+10%"
+          ];
+        };
+        "XF86MonBrightnessDown" = {
+          _props.allow-when-locked = true;
+          spawn = [
+            "brightnessctl"
+            "--class=backlight"
+            "set"
+            "10%-"
+          ];
+        };
       };
     };
   };

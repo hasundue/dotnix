@@ -59,7 +59,6 @@
       url = "github:natsukium/mcp-servers-nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    niri.url = "github:sodiboo/niri-flake";
     llm-agents-nix = {
       url = "github:numtide/llm-agents.nix";
       inputs = {
@@ -104,7 +103,6 @@
       agenix,
       home-manager,
       mcp-servers-nix,
-      niri,
       nixpkgs,
       nixpkgs-master,
       nvim,
@@ -118,13 +116,6 @@
       overlays = [
         self.overlays.temporal # This must come first
         agenix.overlays.default
-        niri.overlays.niri
-        # niri-stable (v25.08) still links against libdisplay-info 0.2, which
-        # current nixpkgs dropped; take it from niri-flake's pinned nixpkgs.
-        (final: _prev: {
-          libdisplay-info_0_2 =
-            niri.inputs.nixpkgs.legacyPackages.${final.stdenv.hostPlatform.system}.libdisplay-info_0_2;
-        })
         nvim.overlays.default
         llm-agents-nix.overlays.shared-nixpkgs
       ]
@@ -169,7 +160,6 @@
               ];
             }
             (metaConfig system)
-            niri.nixosModules.niri
             home-manager.nixosModules.home-manager
             stylix.nixosModules.stylix
             ./configs/stylix.nix
@@ -191,7 +181,6 @@
             (metaConfig system)
             agenix.homeManagerModules.default
             mcp-servers-nix.homeManagerModules.default
-            niri.homeModules.niri
             stylix.homeModules.stylix
             ./configs/stylix.nix
             ./configs/home
