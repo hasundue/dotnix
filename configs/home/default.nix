@@ -5,7 +5,6 @@
       ketch
       deno
       nodejs
-      pi-coding-agent
       julia-bin
       python3
       tree
@@ -24,6 +23,7 @@
     ./mcp.nix
     ./neovim.nix
     ./nix.nix
+    ./pi.nix
     ./television.nix
     ./worktrunk.nix
   ];
