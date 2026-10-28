@@ -1,7 +1,6 @@
 .pre-commit-config.yaml
 result
 result-home
-result-nixos
 __pycache__/
 *.pyc
 **/node_modules/

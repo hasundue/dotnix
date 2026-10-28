@@ -302,58 +302,53 @@
             ''}/bin/home-switch";
           };
 
-          # Build NixOS toplevel (no sudo)
+          # NixOS actions wrap nixos-rebuild. The toplevel already includes
+          # home-manager (used as a NixOS module), so one build covers both.
+          # Activation prompts for the sudo password itself via
+          # --ask-elevate-password, and updates the system profile so
+          # rollback keeps working.
+
+          # Build NixOS + home-manager (no sudo; leaves ./result)
           "nixos-build" = {
             type = "app";
             program = "${pkgs.writeShellScriptBin "nixos-build" ''
               set -euo pipefail
-              target=".#nixosConfigurations.$(hostname).config.system.build.toplevel"
               if [ -t 1 ] && [ -z "''${NOM_DISABLE:-}" ]; then
-                exec nix build "$target" \
-                  ${nomOpts} "$@" -o result-nixos 2>&1 | ${pkgs.nix-output-monitor}/bin/nom --json
+                exec nixos-rebuild build --flake '.#'$(hostname) \
+                  ${nomOpts} "$@" 2>&1 | ${pkgs.nix-output-monitor}/bin/nom --json
               else
-                exec nix build "$target" \
-                  "$@" -o result-nixos
+                exec nixos-rebuild build --flake '.#'$(hostname) "$@"
               fi
             ''}/bin/nixos-build";
           };
 
-          # Switch to previously built NixOS toplevel (needs sudo at runtime)
+          # Switch to the new toplevel
           "nixos-switch" = {
             type = "app";
             program = "${pkgs.writeShellScriptBin "nixos-switch" ''
               set -euo pipefail
-              if [ ! -L ./result-nixos ]; then
-                echo "error: no result-nixos symlink found. Run 'nix run .#nixos-build' first." >&2
-                exit 1
-              fi
-              exec ./result-nixos/bin/switch-to-configuration switch "$@"
+              exec nixos-rebuild switch --flake '.#'$(hostname) \
+                --ask-elevate-password "$@"
             ''}/bin/nixos-switch";
           };
 
-          # Test previously built NixOS toplevel (needs sudo at runtime)
+          # Test the new toplevel without making it the default
           "nixos-test" = {
             type = "app";
             program = "${pkgs.writeShellScriptBin "nixos-test" ''
               set -euo pipefail
-              if [ ! -L ./result-nixos ]; then
-                echo "error: no result-nixos symlink found. Run 'nix run .#nixos-build' first." >&2
-                exit 1
-              fi
-              exec ./result-nixos/bin/switch-to-configuration test "$@"
+              exec nixos-rebuild test --flake '.#'$(hostname) \
+                --ask-elevate-password "$@"
             ''}/bin/nixos-test";
           };
 
-          # Boot previously built NixOS toplevel (needs sudo at runtime)
+          # Set the boot entry for the next reboot
           "nixos-boot" = {
             type = "app";
             program = "${pkgs.writeShellScriptBin "nixos-boot" ''
               set -euo pipefail
-              if [ ! -L ./result-nixos ]; then
-                echo "error: no result-nixos symlink found. Run 'nix run .#nixos-build' first." >&2
-                exit 1
-              fi
-              exec ./result-nixos/bin/switch-to-configuration boot "$@"
+              exec nixos-rebuild boot --flake '.#'$(hostname) \
+                --ask-elevate-password "$@"
             ''}/bin/nixos-boot";
           };
 
