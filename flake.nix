@@ -262,6 +262,25 @@
         let
           # Flags recommended by nix-output-monitor for pretty human output
           nomOpts = "--log-format internal-json -v";
+          # Run a nixos-rebuild action as the nixos-{build,test,switch,boot}
+          # apps. The toplevel already includes home-manager (used as a NixOS
+          # module), so one build covers both; activation updates the system
+          # profile, so rollback keeps working. Elevation: as a normal user
+          # --elevate=sudo lets sudo prompt at activation time (not at all
+          # with a warm timestamp or NOPASSWD). Under `sudo nix run` no flag
+          # is passed, so ng neither warns nor asks for the password a second
+          # time (--ask-elevate-password has no root check in ng and would
+          # always prompt).
+          nixosApp =
+            action:
+            pkgs.writeShellScriptBin "nixos-${action}" ''
+              set -euo pipefail
+              args=(--flake '.#'$(hostname))
+              if [ "$(id -u)" -ne 0 ]; then
+                args+=(--elevate=sudo)
+              fi
+              exec nixos-rebuild ${action} "''${args[@]}" "$@"
+            '';
           opencodeConfig =
             let
               homeConfig = self.homeConfigurations."hasundue@x1carbon";
@@ -302,12 +321,6 @@
             ''}/bin/home-switch";
           };
 
-          # NixOS actions wrap nixos-rebuild. The toplevel already includes
-          # home-manager (used as a NixOS module), so one build covers both.
-          # Activation prompts for the sudo password itself via
-          # --ask-elevate-password, and updates the system profile so
-          # rollback keeps working.
-
           # Build NixOS + home-manager (no sudo; leaves ./result)
           "nixos-build" = {
             type = "app";
@@ -325,31 +338,19 @@
           # Switch to the new toplevel
           "nixos-switch" = {
             type = "app";
-            program = "${pkgs.writeShellScriptBin "nixos-switch" ''
-              set -euo pipefail
-              exec nixos-rebuild switch --flake '.#'$(hostname) \
-                --ask-elevate-password "$@"
-            ''}/bin/nixos-switch";
+            program = "${nixosApp "switch"}/bin/nixos-switch";
           };
 
           # Test the new toplevel without making it the default
           "nixos-test" = {
             type = "app";
-            program = "${pkgs.writeShellScriptBin "nixos-test" ''
-              set -euo pipefail
-              exec nixos-rebuild test --flake '.#'$(hostname) \
-                --ask-elevate-password "$@"
-            ''}/bin/nixos-test";
+            program = "${nixosApp "test"}/bin/nixos-test";
           };
 
           # Set the boot entry for the next reboot
           "nixos-boot" = {
             type = "app";
-            program = "${pkgs.writeShellScriptBin "nixos-boot" ''
-              set -euo pipefail
-              exec nixos-rebuild boot --flake '.#'$(hostname) \
-                --ask-elevate-password "$@"
-            ''}/bin/nixos-boot";
+            program = "${nixosApp "boot"}/bin/nixos-boot";
           };
 
           # Run opencode with ephemeral XDG_CONFIG_HOME from flake-tracked config
