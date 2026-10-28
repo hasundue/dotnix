@@ -6,11 +6,11 @@
 
 stdenvNoCC.mkDerivation {
   pname = "zenzai-model";
-  version = "3.1-small-q5_k_m";
+  version = "3.2-small-q5_k_m";
 
   src = fetchurl {
-    url = "https://huggingface.co/Miwa-Keita/zenz-v3.1-small-gguf/resolve/main/ggml-model-Q5_K_M.gguf";
-    hash = "sha256-TekwwGvvjCY6oapAaEryBttM4bljdbO47Q6lCOCxT2w=";
+    url = "https://huggingface.co/Miwa-Keita/zenz-v3.2-small-gguf/resolve/main/ggml-model-Q5_K_M.gguf";
+    hash = "sha256-KcIj1MIzJ7gP0T67WrJVUFekYxeZfV2jkVhP++8NtnM=";
   };
 
   dontUnpack = true;
@@ -22,9 +22,9 @@ stdenvNoCC.mkDerivation {
   '';
 
   meta = {
-    description = "Zenzai model (zenz-v3.1-small, Q5_K_M GGUF) for Hazkey";
-    homepage = "https://huggingface.co/Miwa-Keita/zenz-v3.1-small-gguf";
-    license = lib.licenses.cc-by-sa-40;
+    description = "Zenzai model (zenz-v3.2-small, Q5_K_M GGUF) for Hazkey";
+    homepage = "https://huggingface.co/Miwa-Keita/zenz-v3.2-small-gguf";
+    license = lib.licenses.asl20;
     platforms = lib.platforms.all;
   };
 }
