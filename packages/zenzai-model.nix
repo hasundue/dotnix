@@ -6,6 +6,9 @@
 
 stdenvNoCC.mkDerivation {
   pname = "zenzai-model";
+  # Hazkey's own download button still points at zenz-v3.1-small (that URL was
+  # last touched in 2026-02, before v3.2 was published). v3.2 is the same size,
+  # newer, and Apache-2.0 licensed, so prefer it here.
   version = "3.2-small-q5_k_m";
 
   src = fetchurl {
