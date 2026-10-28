@@ -75,13 +75,17 @@ even in TTY:
 NOM_DISABLE=1 nix run .#nixos-build
 ```
 
-Apply (NixOS; wraps nixos-rebuild, prompts for the sudo password itself):
+Apply (NixOS; wraps nixos-rebuild and manages the system profile):
 
 ```bash
 nix run .#nixos-test    # Test without making it the default
 nix run .#nixos-switch  # Apply permanently
 nix run .#nixos-boot    # Set the boot entry for next reboot
 ```
+
+Run them as a normal user: sudo is requested only for activation, so the
+password is asked at most once (not at all with a cached sudo timestamp).
+Prefixing with `sudo` also works without a second prompt.
 
 Apply (Home Manager only):
 

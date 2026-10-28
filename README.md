@@ -35,7 +35,7 @@ user environment management.
 
 ```bash
 nix run .#nixos-build          # Build system + home-manager (no sudo; leaves ./result)
-nix run .#nixos-switch         # Activate it (prompts for sudo password)
+nix run .#nixos-switch         # Activate it (asks sudo once, if at all)
 nix run .#nixos-test           # Test without making default
 nix run .#nixos-boot          # Set boot entry for next reboot
 nix run .#home-build           # Build standalone home-manager generation
