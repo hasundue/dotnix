@@ -45,6 +45,12 @@
   # $XDG_DATA_HOME/hazkey/zenzai/zenzai.gguf.
   xdg.dataFile."hazkey/zenzai/zenzai.gguf".source = "${pkgs.zenzai-model}/share/zenzai.gguf";
 
+  # Hazkey profile settings. zenzaiInferLimit is lowered from the default 10 to
+  # 3; Zenzai runs one CPU inference per candidate, so this dominates latency on
+  # low-power CPUs. Tune by editing ./hazkey-config.json (changes made in
+  # hazkey-settings cannot be persisted because this file is a read-only symlink).
+  xdg.configFile."hazkey/config.json".source = ./hazkey-config.json;
+
   home.sessionVariables = {
     QT_IM_MODULE = "fcitx";
     XMODIFIERS = "@im=fcitx";

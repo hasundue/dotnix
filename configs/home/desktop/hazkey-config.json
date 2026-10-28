@@ -1,0 +1,60 @@
+[
+  {
+    "profileName": "Default",
+    "autoConvertMode": 3,
+    "auxTextMode": 3,
+    "suggestionListMode": 3,
+    "numSuggestions": 3,
+    "useRichSuggestion": false,
+    "numCandidatesPerPage": 9,
+    "useRichCandidates": false,
+    "useInputHistory": true,
+    "stopStoreNewHistory": false,
+    "specialConversionMode": {
+      "commaSeparatedNumber": true,
+      "mailDomain": true,
+      "calendar": true,
+      "time": true,
+      "romanTypography": true,
+      "unicodeCodepoint": true,
+      "hazkeyVersion": true,
+      "halfwidthKatakana": true,
+      "extendedEmoji": true
+    },
+    "enabledKeymaps": [
+      {
+        "name": "Fullwidth Number",
+        "isBuiltIn": true,
+        "filename": "Fullwidth Number"
+      },
+      {
+        "name": "Fullwidth Symbol",
+        "isBuiltIn": true,
+        "filename": "Fullwidth Symbol"
+      },
+      {
+        "name": "Japanese Symbol",
+        "isBuiltIn": true,
+        "filename": "Japanese Symbol"
+      },
+      {
+        "name": "Fullwidth Space",
+        "isBuiltIn": true,
+        "filename": "Fullwidth Space"
+      }
+    ],
+    "enabledTables": [
+      {
+        "name": "Romaji",
+        "isBuiltIn": true,
+        "filename": "Romaji"
+      }
+    ],
+    "submodeEntryPointChars": "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
+    "zenzaiBackendDeviceName": "CPU",
+    "zenzaiEnable": true,
+    "zenzaiInferLimit": 10,
+    "zenzaiContextualMode": true,
+    "zenzaiProfile": ""
+  }
+]
