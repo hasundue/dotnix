@@ -3,7 +3,7 @@
     "profileName": "Default",
     "autoConvertMode": 3,
     "auxTextMode": 3,
-    "suggestionListMode": 3,
+    "suggestionListMode": 1,
     "numSuggestions": 3,
     "useRichSuggestion": false,
     "numCandidatesPerPage": 9,
