@@ -5,7 +5,7 @@
     ./chromium.nix
     ./fcitx5.nix
     ./firefox.nix
-    ./foot.nix
+    ./kitty.nix
     ./niri
     ./slack.nix
     ./spotify.nix

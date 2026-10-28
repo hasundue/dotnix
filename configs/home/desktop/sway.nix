@@ -85,7 +85,7 @@ in
         { command = "${pkgs.swaybg}/bin/swaybg -i ${config.stylix.image} -m fill"; }
       ];
 
-      terminal = lib.getExe pkgs.foot;
+      terminal = lib.getExe pkgs.kitty;
 
       window = {
         commands = [
@@ -93,7 +93,7 @@ in
             command = "resize set 1024 576, move position center";
             criteria = {
               floating = true;
-              app_id = "foot";
+              app_id = "kitty";
             };
           }
         ];
