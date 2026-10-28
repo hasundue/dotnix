@@ -17,6 +17,7 @@
   fcitx5,
   qt6,
   version ? "0.2.1",
+  vulkanSupport ? false,
 }:
 
 let
@@ -24,7 +25,7 @@ let
   generated = swiftpm2nix.helpers ./hazkey/swiftpm;
 
   # llama.cpp (7ka-hiira fork) providing libllama for the Zenzai backend.
-  llamaCpp = callPackage ./llama.nix { inherit version; };
+  llamaCpp = callPackage ./llama.nix { inherit version vulkanSupport; };
 in
 stdenv.mkDerivation {
   pname = "hazkey";

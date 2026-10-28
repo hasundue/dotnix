@@ -5,7 +5,12 @@
   ninja,
   git,
   fetchFromGitHub,
+  shaderc,
+  spirv-headers,
+  vulkan-headers,
+  vulkan-loader,
   version,
+  vulkanSupport ? false,
 }:
 
 stdenv.mkDerivation {
@@ -26,13 +31,25 @@ stdenv.mkDerivation {
     cmake
     ninja
     git
+    # `glslc` compiles the Vulkan compute shaders at build time.
+  ]
+  ++ lib.optionals vulkanSupport [ shaderc ];
+
+  buildInputs = lib.optionals vulkanSupport [
+    spirv-headers
+    vulkan-headers
+    vulkan-loader
   ];
 
   cmakeFlags = [
     "-DCMAKE_BUILD_TYPE=Release"
     "-DBUILD_SHARED_LIBS=ON"
     "-DGGML_CPU=ON"
-    "-DGGML_VULKAN=OFF"
+    # Build every x86 CPU variant (AVX2/FMA, AVX512, ...) as separate backend
+    # libraries so ggml picks the best one at runtime. Without this the generic
+    # x86-64 build disables AVX/AVX2/FMA entirely, which is dramatically slower.
+    "-DGGML_CPU_ALL_VARIANTS=ON"
+    "-DGGML_VULKAN=${if vulkanSupport then "ON" else "OFF"}"
     "-DGGML_CUDA=OFF"
     "-DGGML_HIP=OFF"
     "-DGGML_BACKEND_DL=ON"

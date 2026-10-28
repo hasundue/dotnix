@@ -247,6 +247,7 @@
             ;
         };
         hazkey = pkgs.callPackage ./packages/hazkey.nix { };
+        hazkey-vulkan = pkgs.callPackage ./packages/hazkey.nix { vulkanSupport = true; };
         zenzai-model = pkgs.callPackage ./packages/zenzai-model.nix { };
       });
       homeConfigurations =
