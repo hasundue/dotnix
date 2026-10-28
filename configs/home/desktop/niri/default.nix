@@ -81,7 +81,7 @@ in
             _children = [
               {
                 match._props = {
-                  app-id = "^kitty$";
+                  app-id = "^foot$";
                 };
               }
             ];
@@ -176,7 +176,7 @@ in
       binds = {
         "Mod+Shift+Slash".show-hotkey-overlay = { };
 
-        "Mod+T".spawn = [ "kitty" ];
+        "Mod+T".spawn = [ (lib.getExe pkgs.foot) ];
         "Mod+D".spawn = [ "fuzzel" ];
         "Mod+Alt+L".spawn = [ "swaylock" ];
 
