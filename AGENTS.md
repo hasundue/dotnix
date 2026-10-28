@@ -20,11 +20,11 @@ Always use a scope. Imperative mood, no period at the end.
 
 Derive scope from the **leaf** of the changed config's directory path:
 
-| Changed path                       | Scope    |
-| ---------------------------------- | -------- |
-| `configs/home/pi/default.nix`      | `pi`     |
-| `configs/home/niri/default.nix`    | `niri`   |
-| `configs/nixos/waybar/default.nix` | `waybar` |
+| Changed path                        | Scope      |
+| ----------------------------------- | ---------- |
+| `configs/home/opencode/default.nix` | `opencode` |
+| `configs/home/niri/default.nix`     | `niri`     |
+| `configs/nixos/waybar/default.nix`  | `waybar`   |
 
 Prepend the parent directory _only_ when the same config name exists under a
 different parent (e.g. both `configs/home/waybar` and `configs/nixos/waybar`
