@@ -15,7 +15,7 @@ let
     ${pkgs.jq}/bin/jq -n \
       --arg brave "$(cat "${braveKey}")" \
       --arg ctx7 "$(cat "${ctx7Key}")" \
-      '{backend: "brave", brave_api_key: $brave, context7_api_key: $ctx7}' \
+      '{backend: "brave", code_backend: "sourcegraph", brave_api_key: $brave, context7_api_key: $ctx7}' \
       > "${ketchCfg}/config.json"
   '';
 in
