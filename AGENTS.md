@@ -60,10 +60,10 @@ validating. The output is the config value in Nix notation.
 Build:
 
 ```bash
-# NixOS
+# NixOS + home-manager together (wraps nixos-rebuild; leaves ./result)
 nix run .#nixos-build
 
-# Home Manager
+# Home Manager only (standalone generation; leaves ./result-home)
 nix run .#home-build
 ```
 
@@ -73,6 +73,14 @@ even in TTY:
 
 ```bash
 NOM_DISABLE=1 nix run .#nixos-build
+```
+
+Apply (NixOS; wraps nixos-rebuild, prompts for the sudo password itself):
+
+```bash
+nix run .#nixos-test    # Test without making it the default
+nix run .#nixos-switch  # Apply permanently
+nix run .#nixos-boot    # Set the boot entry for next reboot
 ```
 
 Apply (Home Manager only):

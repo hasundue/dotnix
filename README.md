@@ -34,12 +34,12 @@ user environment management.
 ### System Management
 
 ```bash
-nix run .#nixos-build          # Build new system generation (no sudo)
-sudo nix run .#nixos-switch    # Activate built generation
-sudo nix run .#nixos-test      # Test without making default
-sudo nix run .#nixos-boot       # Set boot entry for next reboot
-nix run .#home-build           # Build home-manager generation
-nix run .#home-switch          # Activate home-manager generation
+nix run .#nixos-build          # Build system + home-manager (no sudo; leaves ./result)
+nix run .#nixos-switch         # Activate it (prompts for sudo password)
+nix run .#nixos-test           # Test without making default
+nix run .#nixos-boot          # Set boot entry for next reboot
+nix run .#home-build           # Build standalone home-manager generation
+nix run .#home-switch          # Activate standalone home-manager generation
 ```
 
 ### Flake Operations
@@ -55,8 +55,8 @@ nix run .#home-switch          # Activate home-manager generation
 # Make configuration changes
 nfc                           # Validate changes
 nix run .#nixos-build         # Build the system
-sudo nix run .#nixos-test     # Test temporarily
-sudo nix run .#nixos-switch   # Apply permanently
+nix run .#nixos-test          # Test temporarily
+nix run .#nixos-switch        # Apply permanently
 ```
 
 ## GitHub Actions
