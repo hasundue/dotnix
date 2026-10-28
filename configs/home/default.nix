@@ -6,7 +6,6 @@
       deno
       nodejs
       julia-bin
-      python3
       tree
     ];
     stateVersion = "26.05";
