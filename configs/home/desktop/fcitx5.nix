@@ -41,6 +41,10 @@
     };
   };
 
+  # Zenzai model for Hazkey. The server looks for it under
+  # $XDG_DATA_HOME/hazkey/zenzai/zenzai.gguf.
+  xdg.dataFile."hazkey/zenzai/zenzai.gguf".source = "${pkgs.zenzai-model}/share/zenzai.gguf";
+
   home.sessionVariables = {
     QT_IM_MODULE = "fcitx";
     XMODIFIERS = "@im=fcitx";

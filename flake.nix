@@ -247,6 +247,7 @@
             ;
         };
         hazkey = pkgs.callPackage ./packages/hazkey.nix { };
+        zenzai-model = pkgs.callPackage ./packages/zenzai-model.nix { };
       });
       homeConfigurations =
         lib.mapAttrs' (hostname: v: homeConfig v |> lib.nameValuePair "${username}@${hostname}")
