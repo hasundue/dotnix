@@ -36,7 +36,7 @@ let
       keyboard-us)
         echo "EN"
         ;;
-      mozc)
+      hazkey)
         echo "JP"
         ;;
       *)

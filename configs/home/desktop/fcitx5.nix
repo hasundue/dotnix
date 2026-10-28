@@ -19,7 +19,7 @@
 
     fcitx5 = {
       addons = with pkgs; [
-        fcitx5-mozc
+        hazkey
         fcitx5-gtk
       ];
       settings = {
@@ -34,7 +34,7 @@
             DefaultIM = "keyboard-us";
           };
           "Groups/0/Items/0".Name = "keyboard-us";
-          "Groups/0/Items/1".Name = "mozc";
+          "Groups/0/Items/1".Name = "hazkey";
         };
       };
       waylandFrontend = true;

@@ -1,0 +1,145 @@
+{
+  "object": {
+    "artifacts": [],
+    "dependencies": [
+      {
+        "basedOn": null,
+        "packageRef": {
+          "identity": "azookeykanakanjiconverter",
+          "kind": "remoteSourceControl",
+          "location": "https://github.com/7ka-hiira/AzooKeyKanaKanjiConverter",
+          "name": "AzooKeyKanaKanjiConverter"
+        },
+        "state": {
+          "checkoutState": {
+            "branch": "8b4befc",
+            "revision": "8b4befc273baafea5964ecf87d3bc36f2bbef68b"
+          },
+          "name": "sourceControlCheckout"
+        },
+        "subpath": "AzooKeyKanaKanjiConverter"
+      },
+      {
+        "basedOn": null,
+        "packageRef": {
+          "identity": "jinja",
+          "kind": "remoteSourceControl",
+          "location": "https://github.com/johnmai-dev/Jinja",
+          "name": "Jinja"
+        },
+        "state": {
+          "checkoutState": {
+            "revision": "31c4dd39bcdc07eaa42a384bdc88ea599022b800",
+            "version": "1.1.2"
+          },
+          "name": "sourceControlCheckout"
+        },
+        "subpath": "Jinja"
+      },
+      {
+        "basedOn": null,
+        "packageRef": {
+          "identity": "swift-algorithms",
+          "kind": "remoteSourceControl",
+          "location": "https://github.com/apple/swift-algorithms",
+          "name": "swift-algorithms"
+        },
+        "state": {
+          "checkoutState": {
+            "revision": "87e50f483c54e6efd60e885f7f5aa946cee68023",
+            "version": "1.2.1"
+          },
+          "name": "sourceControlCheckout"
+        },
+        "subpath": "swift-algorithms"
+      },
+      {
+        "basedOn": null,
+        "packageRef": {
+          "identity": "swift-collections",
+          "kind": "remoteSourceControl",
+          "location": "https://github.com/apple/swift-collections",
+          "name": "swift-collections"
+        },
+        "state": {
+          "checkoutState": {
+            "revision": "8c0c0a8b49e080e54e5e328cc552821ff07cd341",
+            "version": "1.2.1"
+          },
+          "name": "sourceControlCheckout"
+        },
+        "subpath": "swift-collections"
+      },
+      {
+        "basedOn": null,
+        "packageRef": {
+          "identity": "swift-numerics",
+          "kind": "remoteSourceControl",
+          "location": "https://github.com/apple/swift-numerics.git",
+          "name": "swift-numerics"
+        },
+        "state": {
+          "checkoutState": {
+            "revision": "e0ec0f5f3af6f3e4d5e7a19d2af26b481acb6ba8",
+            "version": "1.0.3"
+          },
+          "name": "sourceControlCheckout"
+        },
+        "subpath": "swift-numerics"
+      },
+      {
+        "basedOn": null,
+        "packageRef": {
+          "identity": "swift-protobuf",
+          "kind": "remoteSourceControl",
+          "location": "https://github.com/apple/swift-protobuf.git",
+          "name": "swift-protobuf"
+        },
+        "state": {
+          "checkoutState": {
+            "revision": "102a647b573f60f73afdce5613a51d71349fe507",
+            "version": "1.30.0"
+          },
+          "name": "sourceControlCheckout"
+        },
+        "subpath": "swift-protobuf"
+      },
+      {
+        "basedOn": null,
+        "packageRef": {
+          "identity": "swift-tokenizers",
+          "kind": "remoteSourceControl",
+          "location": "https://github.com/ensan-hcl/swift-tokenizers",
+          "name": "swift-tokenizers"
+        },
+        "state": {
+          "checkoutState": {
+            "revision": "4a606f66e0cc4d7d9f0197649e812f7fc86a4c34",
+            "version": "0.0.1"
+          },
+          "name": "sourceControlCheckout"
+        },
+        "subpath": "swift-tokenizers"
+      },
+      {
+        "basedOn": null,
+        "packageRef": {
+          "identity": "swiftymarisa",
+          "kind": "remoteSourceControl",
+          "location": "https://github.com/ensan-hcl/SwiftyMarisa",
+          "name": "SwiftyMarisa"
+        },
+        "state": {
+          "checkoutState": {
+            "revision": "91acc3cb0e747e0bd4b0e0813d42fb273d10e62f",
+            "version": "0.0.1"
+          },
+          "name": "sourceControlCheckout"
+        },
+        "subpath": "SwiftyMarisa"
+      }
+    ],
+    "prebuilts": []
+  },
+  "version": 7
+}

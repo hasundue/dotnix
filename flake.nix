@@ -246,6 +246,7 @@
             uv2nix
             ;
         };
+        hazkey = pkgs.callPackage ./packages/hazkey.nix { };
       });
       homeConfigurations =
         lib.mapAttrs' (hostname: v: homeConfig v |> lib.nameValuePair "${username}@${hostname}")
