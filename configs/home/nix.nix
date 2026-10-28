@@ -13,17 +13,16 @@
     in
     rec {
       hc = "hydra-check --short --channel nixos-unstable";
-      hm = "home-manager";
-      hms = "${hm} ${opts} switch --flake . ${pipeToNom}";
+      hms = "home-manager ${opts} switch --flake . ${pipeToNom}";
       nd = "nom develop";
       nf = "nix flake";
       nfc = "${nf} check";
       nfs = "${nf} show";
       nfu = "${nf} update";
-      nor = "nixos-rebuild";
-      norb = "${nor} ${opts} boot --flake . ${pipeToNom}";
-      nors = "${nor} ${opts} switch --flake . ${pipeToNom}";
-      nort = "${nor} ${opts} test --flake . ${pipeToNom}";
+      nor = "sudo nixos-rebuild ${opts}";
+      norb = "${nor} boot --flake . ${pipeToNom}";
+      nors = "${nor} switch --flake . ${pipeToNom}";
+      nort = "${nor} test --flake . ${pipeToNom}";
       nr = "nix run";
     };
 }
