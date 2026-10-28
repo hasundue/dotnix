@@ -7,6 +7,7 @@
       ".direnv/"
       ".env"
       ".envrc"
+      ".pi/"
     ];
     settings = {
       fetch.prune = true;
