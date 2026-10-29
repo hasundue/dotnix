@@ -264,10 +264,11 @@
         let
           # Flags recommended by nix-output-monitor for pretty human output
           nomOpts = "--log-format internal-json -v";
-          # Run a nixos-rebuild action as the nixos-{build,test,switch,boot}
-          # apps. The toplevel already includes home-manager (used as a NixOS
+          # Run a nixos-rebuild action as the nixos-{test,switch,boot} apps.
+          # The toplevel already includes home-manager (used as a NixOS
           # module), so one build covers both; activation updates the system
-          # profile, so rollback keeps working. Elevation: as a normal user
+          # profile, so rollback keeps working. Output goes through nom on a
+          # TTY, like the *-build apps. Elevation: as a normal user
           # --elevate=sudo lets sudo prompt at activation time (not at all
           # with a warm timestamp or NOPASSWD). Under `sudo nix run` no flag
           # is passed, so ng neither warns nor asks for the password a second
@@ -281,7 +282,12 @@
               if [ "$(id -u)" -ne 0 ]; then
                 args+=(--elevate=sudo)
               fi
-              exec nixos-rebuild ${action} "''${args[@]}" "$@"
+              if [ -t 1 ] && [ -z "''${NOM_DISABLE:-}" ]; then
+                exec nixos-rebuild ${action} "''${args[@]}" ${nomOpts} "$@" 2>&1 \
+                  | ${pkgs.nix-output-monitor}/bin/nom --json
+              else
+                exec nixos-rebuild ${action} "''${args[@]}" "$@"
+              fi
             '';
           opencodeConfig =
             let
