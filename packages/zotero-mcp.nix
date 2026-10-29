@@ -13,8 +13,8 @@ let
   src = fetchFromGitHub {
     owner = "kujenga";
     repo = "zotero-mcp";
-    rev = "db1aa904b72db4ef645b4a57197883d2e967bd0d";
-    hash = "sha256-+o4LtiSzs6GhU1V8sJFiyoZNWUP9eVO/B+XPOv1+5lA=";
+    rev = "8461cc42d91a8de4190e79a5250a3b0eabfd610b";
+    hash = "sha256-lC6zNCsZJDp3yw+p7IC9Mxyfb/bmVj4c6uJ2Zgh/wdQ=";
   };
   pythonBase = callPackage pyproject-nix.build.packages {
     inherit python;

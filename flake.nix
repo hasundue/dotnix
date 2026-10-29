@@ -132,8 +132,9 @@
           inherit overlays system;
           config = {
             allowUnfree = true;
-            # Zotero still bundles the EOL Firefox ESR 140 runtime; drop this
-            # once nixpkgs switches its Zotero package to a supported ESR.
+            # Zotero 10.x pins the now-EOL Firefox ESR 140 upstream (see
+            # GECKO_VERSION in its app/config.sh). Zotero 11 moves to ESR 153;
+            # drop this once nixpkgs ships a Zotero based on that.
             permittedInsecurePackages = [ "firefox-esr-140-bin-unwrapped-140.17.0esr" ];
           };
         }
