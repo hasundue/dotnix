@@ -1,8 +1,7 @@
 let
-  # Dedicated age identity, kept out of git at ~/.config/age/keys.txt.
-  # Deliberately not the SSH key used for GitHub etc., so that a leak of one
-  # does not compromise the other.
-  x1carbon = "age10z9exudppuev72j9azx3pvjvamtc899p93p7zyft68u2s6w8wsyqv65jah";
+  # The machine's SSH identity. agenix injects it as a decryption identity
+  # automatically, so the CLI and agenix.service work without extra plumbing.
+  x1carbon = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEdXjo4PDOtl3N8XMhNK/bYNrcHvvq/ereNMU+97GEoI";
 
   secrets = [
     "api/brave"
