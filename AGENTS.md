@@ -67,12 +67,13 @@ nix run .#nixos-build
 nix run .#home-build
 ```
 
-Build apps accept passthrough flags (`--impure`, `--show-trace`, etc.). They
-also auto-detect TTY: if non-TTY they skip `nom` for minimal output. Force raw
-even in TTY:
+The `nixos-*` apps accept passthrough flags (`--impure`, `--show-trace`, etc.).
+They pipe output through `nom` when stdout is a TTY, and skip it when non-TTY
+for minimal output. `NOM_DISABLE` forces raw output even in a TTY:
 
 ```bash
 NOM_DISABLE=1 nix run .#nixos-build
+NOM_DISABLE=1 nix run .#nixos-switch
 ```
 
 Apply (NixOS; wraps nixos-rebuild and manages the system profile):
