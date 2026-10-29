@@ -1,5 +1,8 @@
 let
-  x1carbon = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEdXjo4PDOtl3N8XMhNK/bYNrcHvvq/ereNMU+97GEoI";
+  # Dedicated age identity, kept out of git at ~/.config/age/keys.txt.
+  # Deliberately not the SSH key used for GitHub etc., so that a leak of one
+  # does not compromise the other.
+  x1carbon = "age10z9exudppuev72j9azx3pvjvamtc899p93p7zyft68u2s6w8wsyqv65jah";
 
   secrets = [
     "api/brave"

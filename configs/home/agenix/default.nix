@@ -18,7 +18,7 @@ in
 {
   age = {
     inherit secrets;
-    identityPaths = [ "${h}/.ssh/id_ed25519" ];
+    identityPaths = [ "${h}/.config/age/keys.txt" ];
     secretsDir = "${h}/.agenix/secrets";
     secretsMountPoint = "${h}/.agenix/secrets.d";
   };
