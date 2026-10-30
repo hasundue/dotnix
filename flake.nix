@@ -210,6 +210,8 @@
         x1carbon = {
           system = "x86_64-linux";
           modules = with inputs; [
+            # nixos-hardware has no 5th-gen X1 Carbon profile; the X1 Extreme
+            # module is the closest fit (thinkpad + cpu-intel + ssd).
             nixos-hardware.nixosModules.lenovo-thinkpad-x1-extreme
             python-validity.nixosModules."06cb-009a-fingerprint-sensor"
             ./configs/hosts/x1carbon
