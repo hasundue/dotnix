@@ -202,38 +202,51 @@ On WSL, run the same steps after `git pull` and `nix run .#nixos-switch`. If
 
 ## Acceptance criteria
 
-- [ ] `dotnix.live.pi.stable` evaluates to `~/dotnix.live.pi` verify:
+- [x] `dotnix.live.pi.stable` evaluates to `~/dotnix.live.pi` verify:
       `nix eval --raw .#homeConfigurations."hasundue@x1carbon".config.dotnix.live.pi.stable`
-      prints `/home/hasundue/dotnix.live.pi`
-- [ ] The home configuration evaluates and builds verify: `nix run .#home-build`
-      exits 0
-- [ ] `~/.pi/agent/skills` resolves into the dotnix working tree verify:
+      prints `/home/hasundue/dotnix.live.pi` done 2026-10-30 (x1carbon, nixos):
+      prints `/home/hasundue/dotnix.live.pi` on both hosts
+- [x] The home configuration evaluates and builds verify: `nix run .#home-build`
+      exits 0 done 2026-10-30 (x1carbon): exit 0 after the treefmt rewrite,
+      `result-home` ->
+      `/nix/store/p1frm07jgjhhp0zdvw7h3582ljfajbdx-home-manager-generation`
+- [x] `~/.pi/agent/skills` resolves into the dotnix working tree verify:
       `readlink -f ~/.pi/agent/skills` prints
-      `/home/hasundue/dotnix/configs/home/pi/agent/skills`
-- [ ] Editing a file in dotnix reaches pi without a rebuild verify:
+      `/home/hasundue/dotnix/configs/home/pi/agent/skills` done 2026-10-30
+      (x1carbon, nixos): prints that path on both hosts
+- [x] Editing a file in dotnix reaches pi without a rebuild verify:
       `echo '# probe' >> configs/home/pi/agent/skills/agent-skills/SKILL.md`
       then `tail -1 ~/.pi/agent/skills/agent-skills/SKILL.md` prints `# probe`
-      (revert the edit afterwards)
-- [ ] `settings.json` remains a local writable file, and `~/.pi/agent` is no
+      (revert the edit afterwards) done 2026-10-30 (x1carbon): the probe line
+      appeared through the link and was reverted; the tree has no leftover diff
+- [x] `settings.json` remains a local writable file, and `~/.pi/agent` is no
       longer a git checkout verify:
       `test -f ~/.pi/agent/settings.json && ! test -L ~/.pi/agent/settings.json`
-      and `git -C ~/.pi/agent rev-parse --is-inside-work-tree` fails
-- [ ] `dotnix.live.pi.enable = false` falls back to the store copy verify:
+      and `git -C ~/.pi/agent rev-parse --is-inside-work-tree` fails done
+      2026-10-30 (x1carbon): regular file, and `rev-parse` reports
+      `fatal: not a git repository`
+- [x] `dotnix.live.pi.enable = false` falls back to the store copy verify:
       temporarily set it to `false`, run `nix run .#home-build`,
       `nix run .#home-switch`, then `readlink -f ~/.pi/agent/skills` starts with
-      `/nix/store/`; revert afterwards
-- [ ] A missing checkout fails the switch before any link is written, and the
+      `/nix/store/`; revert afterwards done 2026-10-30 (nixos): the link
+      resolved into `/nix/store/`; reverted to the default afterwards
+- [x] A missing checkout fails the switch before any link is written, and the
       previous generation's links survive verify: temporarily set
       `dotnix.live.pi.root = "/nonexistent"`, build, run
       `nix run .#home-switch`; it exits non-zero with a message containing
       `dotnix.live.pi`, and `readlink -f ~/.pi/agent/skills` still prints the
-      pre-failure target; revert afterwards
-- [ ] pi starts with the migrated configuration verify: run `pi`, confirm the
+      pre-failure target; revert afterwards done 2026-10-30 (nixos): activation
+      failed with the `dotnix.live.pi` message and the existing links survived;
+      reverted afterwards
+- [x] pi starts with the migrated configuration verify: run `pi`, confirm the
       skill commands (`/skill:keel`, `/skill:pdf-tools`, ...) are offered and
-      `AGENTS.md` is loaded
-- [ ] The WSL host reaches the same state after `git pull` and
+      `AGENTS.md` is loaded done 2026-10-30 (x1carbon, nixos): the skill
+      commands are offered and `AGENTS.md` is loaded on both hosts
+- [x] The WSL host reaches the same state after `git pull` and
       `nix run .#nixos-switch` verify: the `skills` link and `settings.json`
-      checks above on that host
+      checks above on that host done 2026-10-30 (nixos):
+      `nix run .#nixos-switch` produced the same links and a local
+      `settings.json`
 
 ## Out of scope
 
@@ -288,3 +301,9 @@ On WSL, run the same steps after `git pull` and `nix run .#nixos-switch`. If
   leftovers from an earlier layout and are deleted as part of this work.
 - `programs.pi-coding-agent.configDir` stays at its default, so
   `PI_CODING_AGENT_DIR` is not exported.
+- The WSL host could not activate any home-manager generation until its user's
+  UID was declared: `home.uid` is derived from `users.users.hasundue.uid`, which
+  nixos-wsl defaults to 1000, while the existing user is 1001, and the sanity
+  check in this home-manager version aborts activation. That is a
+  `configs/hosts/*` change, so it is made separately on `main` and not part of
+  this spec.
