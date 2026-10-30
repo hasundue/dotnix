@@ -142,6 +142,12 @@ in
           accel-profile = "adaptive";
           accel-speed = 0.0;
         };
+        # Trackpoints are 1:1 devices; adaptive acceleration makes the cursor
+        # feel steppy at low speeds. The `mouse` section does not apply here.
+        trackpoint = {
+          accel-profile = "flat";
+          accel-speed = 0.3;
+        };
       };
 
       layout = {
