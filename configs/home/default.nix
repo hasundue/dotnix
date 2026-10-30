@@ -16,13 +16,14 @@
     ./fish.nix
     ./git.nix
     ./ketch.nix
+    ./live.nix
     ./syncthing.nix
     ./gh.nix
     ./lazygit.nix
     ./mcp.nix
     ./neovim.nix
     ./nix.nix
-    ./pi.nix
+    ./pi
     ./television.nix
     ./worktrunk.nix
   ];

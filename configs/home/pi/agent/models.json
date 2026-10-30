@@ -1,0 +1,27 @@
+{
+  "$schema": "https://pi.dev/schemas/models.schema.json",
+  "providers": {
+    "opencode-go": {
+      "modelOverrides": {
+        "mimo-v2.6-flash": {
+          "thinkingLevelMap": {
+            "off": "none",
+            "minimal": null,
+            "low": null,
+            "medium": null,
+            "high": "high"
+          }
+        },
+        "mimo-v2.6-pro": {
+          "thinkingLevelMap": {
+            "off": "none",
+            "minimal": null,
+            "low": null,
+            "medium": null,
+            "high": "high"
+          }
+        }
+      }
+    }
+  }
+}
