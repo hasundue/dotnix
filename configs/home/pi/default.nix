@@ -49,7 +49,6 @@ in
     ".pi/agent/APPEND_SYSTEM.md".source = link "APPEND_SYSTEM.md";
     ".pi/agent/models.json".source = link "models.json";
     ".pi/agent/prompts".source = link "prompts";
-    ".pi/agent/themes".source = link "themes";
     ".pi/agent/extensions".source = link "extensions";
     ".pi/agent/skills".source = link "skills";
 
