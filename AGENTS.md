@@ -54,7 +54,7 @@ nix eval .#nixosConfigurations.x1carbon.config.services.openssh
 nix eval .#homeConfigurations."hasundue@x1carbon".config.wayland.windowManager.niri
 ```
 
-Use the right hostname (`x1carbon` or `nixos`) depending on what you're
+Use the right hostname (`x1carbon` or `higame`) depending on what you're
 validating. The output is the config value in Nix notation.
 
 Build:
