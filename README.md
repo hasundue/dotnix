@@ -6,7 +6,7 @@ user environment management.
 ## System Configurations
 
 - **x1carbon** - ThinkPad X1 Carbon laptop configuration
-- **nixos** - NixOS-WSL setup for Windows Subsystem for Linux
+- **higame** - NixOS-WSL setup on the Windows machine `higame`
 
 ## Features
 

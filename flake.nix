@@ -217,12 +217,12 @@
             ./configs/hosts/x1carbon
           ];
         };
-        # NixOS-WSL
-        nixos = {
+        # NixOS-WSL on the Windows machine `higame`
+        higame = {
           system = "x86_64-linux";
           modules = with inputs; [
             nixos-wsl.nixosModules.default
-            ./configs/hosts/wsl
+            ./configs/hosts/higame
           ];
         };
       };
@@ -260,7 +260,7 @@
               system = "x86_64-linux";
               modules = [ ./configs/home/desktop ];
             };
-            nixos.system = "x86_64-linux";
+            higame.system = "x86_64-linux";
           };
       apps = forEachSystem (
         pkgs:
