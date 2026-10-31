@@ -4,11 +4,11 @@
 }:
 
 let
-  # TODO: replace this with the WSL host's `syncthing device-id`. The sentinel
-  # keeps the folder local-only until then, so neither host creates a phantom
-  # device that can never connect.
-  wslDeviceId = "REPLACE-WITH-WSL-DEVICE-ID";
-  wsl = wslDeviceId != "REPLACE-WITH-WSL-DEVICE-ID";
+  # TODO: replace this with the higame host's `syncthing device-id`. The
+  # sentinel keeps the folder local-only until then, so neither host creates a
+  # phantom device that can never connect.
+  higameDeviceId = "REPLACE-WITH-HIGAME-DEVICE-ID";
+  higame = higameDeviceId != "REPLACE-WITH-HIGAME-DEVICE-ID";
 in
 {
   services.syncthing = {
@@ -24,12 +24,12 @@ in
           id = "EW3ELLD-XI2BP2D-M6B5K7L-EAQ74NZ-44YWVPR-VFWHFPF-46F22PH-CPXUJQW";
         };
       }
-      // lib.optionalAttrs wsl {
+      // lib.optionalAttrs higame {
         # The attribute name is only a label; `name` is what peers display.
-        # On WSL this same ID is the local device, so it also names the device.
-        wsl = {
-          id = wslDeviceId;
-          name = "wsl";
+        # On higame this same ID is the local device, so it also names the device.
+        higame = {
+          id = higameDeviceId;
+          name = "higame";
         };
       };
       folders = {
@@ -40,7 +40,7 @@ in
           id = "pi-sessions";
           label = "Pi sessions";
           type = "sendreceive";
-          devices = [ "x1carbon" ] ++ lib.optional wsl "wsl";
+          devices = [ "x1carbon" ] ++ lib.optional higame "higame";
         };
         "~/notes" = {
           id = "notes";
