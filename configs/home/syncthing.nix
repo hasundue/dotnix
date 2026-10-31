@@ -25,8 +25,11 @@ in
         };
       }
       // lib.optionalAttrs wsl {
-        nixos = {
+        # The attribute name is only a label; `name` is what peers display.
+        # On WSL this same ID is the local device, so it also names the device.
+        wsl = {
           id = wslDeviceId;
+          name = "wsl";
         };
       };
       folders = {
@@ -37,7 +40,7 @@ in
           id = "pi-sessions";
           label = "Pi sessions";
           type = "sendreceive";
-          devices = [ "x1carbon" ] ++ lib.optional wsl "nixos";
+          devices = [ "x1carbon" ] ++ lib.optional wsl "wsl";
         };
         "~/notes" = {
           id = "notes";
