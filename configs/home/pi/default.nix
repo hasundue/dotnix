@@ -5,6 +5,7 @@
 }:
 let
   live = config.dotnix.live.pi;
+  opencodeGoKey = config.age.secrets."api/opencode-go".path;
 
   # Every entry of ./agent is served from the live directory, so editing it
   # takes effect without a rebuild. settings.json is deliberately absent: pi
@@ -51,5 +52,20 @@ in
     ".pi/agent/themes".source = link "themes";
     ".pi/agent/extensions".source = link "extensions";
     ".pi/agent/skills".source = link "skills";
+
+    # A key prefixed with `!` makes pi run the command when the provider is
+    # first used, so the plaintext key never reaches disk. The generated file
+    # is read-only in the store: drop this declaration before `/login`-ing a
+    # different provider, or switch to an activation-time merge if those
+    # credentials must coexist with the managed one.
+    ".pi/agent/auth.json" = {
+      force = true;
+      text = builtins.toJSON {
+        "opencode-go" = {
+          type = "api_key";
+          key = "!${pkgs.coreutils}/bin/cat ${opencodeGoKey}";
+        };
+      };
+    };
   };
 }
