@@ -1,16 +1,4 @@
 {
-  lib,
-  ...
-}:
-
-let
-  # TODO: replace this with the higame host's `syncthing device-id`. The
-  # sentinel keeps the folder local-only until then, so neither host creates a
-  # phantom device that can never connect.
-  higameDeviceId = "REPLACE-WITH-HIGAME-DEVICE-ID";
-  higame = higameDeviceId != "REPLACE-WITH-HIGAME-DEVICE-ID";
-in
-{
   services.syncthing = {
     enable = true;
     overrideDevices = true;
@@ -23,12 +11,8 @@ in
         pixel = {
           id = "EW3ELLD-XI2BP2D-M6B5K7L-EAQ74NZ-44YWVPR-VFWHFPF-46F22PH-CPXUJQW";
         };
-      }
-      // lib.optionalAttrs higame {
-        # The attribute name is only a label; `name` is what peers display.
-        # On higame this same ID is the local device, so it also names the device.
         higame = {
-          id = higameDeviceId;
+          id = "FF5LJNU-BIP2O7K-EKJRPFQ-JVZG4NN-NKLLGWE-JHYQPZW-FTHXTVI-HDTF4QS";
           name = "higame";
         };
       };
@@ -40,7 +24,10 @@ in
           id = "pi-sessions";
           label = "Pi sessions";
           type = "sendreceive";
-          devices = [ "x1carbon" ] ++ lib.optional higame "higame";
+          devices = [
+            "x1carbon"
+            "higame"
+          ];
         };
         "~/notes" = {
           id = "notes";
@@ -48,6 +35,7 @@ in
           type = "sendreceive";
           devices = [
             "x1carbon"
+            "higame"
             "pixel"
           ];
           versioning = {
@@ -60,5 +48,4 @@ in
       };
     };
   };
-
 }
