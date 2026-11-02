@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "zotero": {
+      "args": [],
+      "command": "zotero-mcp-web",
+      "description": "Searches the Zotero library over the Web API, with item metadata and indexed PDF text."
+    }
+  }
+}

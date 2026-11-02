@@ -11,6 +11,7 @@ let
     "api/exa"
     "api/gemini"
     "api/opencode-go"
+    "api/zotero"
     "github/claude-code"
   ];
 

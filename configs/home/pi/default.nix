@@ -14,6 +14,8 @@ let
   link = path: config.lib.file.mkOutOfStoreSymlink "${live.stable}/${path}";
 in
 {
+  imports = [ ./zotero.nix ];
+
   # pi itself plus the PDF toolchain, managed here.
   #
   # Policy: use the CLI wherever a binary is enough; keep pure Python only for
@@ -48,6 +50,7 @@ in
     ".pi/agent/AGENTS.md".source = link "AGENTS.md";
     ".pi/agent/APPEND_SYSTEM.md".source = link "APPEND_SYSTEM.md";
     ".pi/agent/models.json".source = link "models.json";
+    ".pi/agent/mcp.json".source = link "mcp.json";
     ".pi/agent/prompts".source = link "prompts";
     ".pi/agent/extensions".source = link "extensions";
     ".pi/agent/skills".source = link "skills";

@@ -1,37 +1,44 @@
 #!/usr/bin/env python3
-"""Find a paper in Zotero and resolve its local PDF, using Zotero's local API.
+"""Resolve a Zotero item to a local PDF file, using the Zotero Web API.
+
+Searching and metadata belong to the `zotero` MCP server (zotero-mcp); this
+script only fetches the attachment bytes, which MCP does not expose, and
+diagnoses the setup.
 
 Subcommands:
-    search QUERY       list matching items with their keys and PDF availability
-    attachments ITEM   list the attachments of an item
-    path ITEM          print the local PDF path (ITEM may be an item or attachment)
-    doctor             report attachments whose file is missing on disk
-    start              run `zotero --headless` and wait for the local API
-    stop               stop the instance this script started
-    info ITEM          metadata and abstract
+    path ITEM          download the PDF if needed and print its local path
+    attachments ITEM   list an item's attachments and whether they are cached
+    doctor             check the API key, the library, and file availability
+    library            print the configured library ("user:<id>" or "group:<id>")
 
-Zotero 7 must be running with "Allow other applications on this computer to
-communicate with Zotero" enabled; the API is read-only.
+No Zotero installation is needed: everything goes through api.zotero.org, so
+this works on any machine with network access and an API key with read access
+to the library. The API is read-only.
 
 Environment:
-    ZOTERO_API         base URL (default http://127.0.0.1:23119/api/users/0)
-    ZOTERO_AUTOSTART   when 1, start Zotero headless if the API is down
-    ZOTERO_CMD         start command (default `zotero --headless`)
-    ZOTERO_LOG         start log file (default /tmp/zotero-headless.log)
+    ZOTERO_API_KEY      API key (takes precedence over ZOTERO_API_KEY_FILE)
+    ZOTERO_API_KEY_FILE file holding the key (default: api_key_file in config)
+    ZOTERO_LIBRARY      "user:<id>" or "group:<id>" (default: derived from the key)
+    ZOTERO_API         base URL (default https://api.zotero.org)
+    ZOTERO_CONFIG      config file (default ~/.config/zotero-pdf/config.json)
+    ZOTERO_CACHE       download cache (default ~/.cache/zotero-pdf)
 
-Exit status: 0 on success, 1 when Zotero is unreachable, the item is missing, or
-no PDF attachment exists.
+The config file holds {"library": "...", "api_key_file": "..."}; both fields are
+optional. Downloads are cached under the cache directory by attachment key and
+reused until the attachment's md5 changes; `path --refresh` forces a new one.
+
+Exit status: 0 on success, 1 on any failure (missing or invalid key, unreachable
+API, missing item, or no downloadable PDF).
 """
 
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import os
 import re
-import shlex
 import shutil
-import subprocess
 import sys
 import time
 import urllib.error
@@ -39,12 +46,16 @@ import urllib.parse
 import urllib.request
 from pathlib import Path
 
-DEFAULT_API = "http://127.0.0.1:23119/api/users/0"
-TIMEOUT = 15
+DEFAULT_API = "https://api.zotero.org"
+API_VERSION = "3"
+TIMEOUT = 30
+MAX_LIMIT = 100
+KEY_SETTINGS_URL = "https://www.zotero.org/settings/keys/new"
 
-
-def api_base() -> str:
-    return os.environ.get("ZOTERO_API", DEFAULT_API).rstrip("/")
+# linkMode values whose bytes Zotero File Storage actually holds. linked_file
+# and linked_url point at something outside the library, so the Web API cannot
+# serve them.
+STORED_LINK_MODES = {"imported_file", "imported_url", "embedded_image"}
 
 
 def die(message: str) -> None:
@@ -52,281 +63,304 @@ def die(message: str) -> None:
     raise SystemExit(1)
 
 
-def api_alive(timeout: float = 3.0) -> bool:
-    try:
-        with urllib.request.urlopen(f"{api_base()}/items?limit=1", timeout=timeout):
-            return True
-    except Exception:  # noqa: BLE001 - any failure means "not usable"
-        return False
+def note(message: str) -> None:
+    print(f"zotero.py: {message}", file=sys.stderr)
 
 
-def api_state() -> tuple[bool, str]:
-    """Return (usable, detail) so 403 and "not running" are not confused."""
-    try:
-        with urllib.request.urlopen(f"{api_base()}/items?limit=1", timeout=3.0):
-            return True, "ok"
-    except urllib.error.HTTPError as exc:
-        if exc.code == 403:
-            return False, (
-                f"Zotero is running but the local API is disabled (HTTP 403); enable "
-                "Settings → Advanced → 'Allow other applications on this computer to "
-                "communicate with Zotero'"
-            )
-        return False, f"Zotero answered HTTP {exc.code}"
-    except Exception:  # noqa: BLE001
-        return False, f"nothing listening at {api_base()}"
+def api_base() -> str:
+    return os.environ.get("ZOTERO_API", DEFAULT_API).rstrip("/")
 
 
-def pid_path() -> Path:
-    runtime = os.environ.get("XDG_RUNTIME_DIR", "/tmp")
-    return Path(runtime) / "zotero-pdf.pid"
+def xdg_dir(variable: str, fallback: str) -> Path:
+    return Path(os.environ.get(variable) or Path.home() / fallback)
 
 
-def _zotero_running() -> bool:
-    for entry in Path("/proc").iterdir():
-        if not entry.name.isdigit():
-            continue
-        try:
-            if "zotero" in (entry / "comm").read_text().strip().lower():
-                return True
-        except OSError:
-            continue
-    return False
+def config_path() -> Path:
+    configured = os.environ.get("ZOTERO_CONFIG")
+    if configured:
+        return Path(configured).expanduser()
+    return xdg_dir("XDG_CONFIG_HOME", ".config") / "zotero-pdf" / "config.json"
 
 
-def cmd_start(args: argparse.Namespace) -> int:
-    usable, detail = api_state()
-    if usable:
-        print(f"Zotero API already reachable at {api_base()}")
-        return 0
-    # A running Zotero that merely has the local API switched off must not be
-    # joined by a second instance: the profile is locked and the newcomer would
-    # either open a window or die.
-    if pids_on_port(api_port()) or _zotero_running():
-        die(
-            f"Zotero is already running but unusable: {detail}. Not starting a "
-            "second instance; fix the running one instead."
-        )
-    command = shlex.split(os.environ.get("ZOTERO_CMD", "zotero --headless"))
-    if not shutil.which(command[0]):
-        die(f"cannot start Zotero: {command[0]} is not on PATH (set ZOTERO_CMD)")
-    if "--headless" not in command:
-        print(
-            "note: ZOTERO_CMD has no --headless; a window will open",
-            file=sys.stderr,
-        )
-    log = Path(os.environ.get("ZOTERO_LOG", "/tmp/zotero-headless.log"))
-    with log.open("ab") as handle:
-        proc = subprocess.Popen(command, stdout=handle, stderr=handle, start_new_session=True)
-    # The launcher may fork, so record the whole group plus the command; stopping
-    # by pid alone leaves the real zotero-bin behind.
-    pid_path().write_text(
-        json.dumps({"pid": proc.pid, "command": command, "log": str(log)})
-    )
-    deadline = time.time() + args.timeout
-    while time.time() < deadline:
-        if api_alive(2.0):
-            print(
-                f"Zotero API reachable at {api_base()} (group {proc.pid}, log {log})\n"
-                "It keeps running; open the Zotero window later if you need it, "
-                "or stop it with `zotero.py stop`."
-            )
-            return 0
-        if proc.poll() is not None and not api_alive(1.0):
-            # the launcher exiting is normal when it forks; only fail when nothing
-            # is listening and the process is really gone
-            if not _matching_pids(command):
-                die(f"Zotero exited ({proc.returncode}); see {log}")
-        time.sleep(1)
-    die(
-        f"Zotero started but {api_base()} did not answer within {args.timeout}s "
-        f"(see {log}); a cold start can take ~1 minute, so retry with "
-        "`--timeout 120`, and check Settings → Advanced for the local API"
-    )
-    return 1
+def cache_dir() -> Path:
+    configured = os.environ.get("ZOTERO_CACHE")
+    if configured:
+        return Path(configured).expanduser()
+    return xdg_dir("XDG_CACHE_HOME", ".cache") / "zotero-pdf"
 
 
-def api_port() -> int:
-    parsed = urllib.parse.urlparse(api_base())
-    return parsed.port or 23119
-
-
-def pids_on_port(port: int) -> list[int]:
-    """PIDs holding a LISTEN socket on `port`, via /proc only."""
-    inodes: set[str] = set()
-    for name in ("/proc/net/tcp", "/proc/net/tcp6"):
-        try:
-            lines = Path(name).read_text().splitlines()[1:]
-        except OSError:
-            continue
-        for line in lines:
-            fields = line.split()
-            if len(fields) < 10 or fields[3] != "0A":  # 0A = LISTEN
-                continue
-            try:
-                local_port = int(fields[1].rsplit(":", 1)[1], 16)
-            except (IndexError, ValueError):
-                continue
-            if local_port == port:
-                inodes.add(fields[9])
-    if not inodes:
-        return []
-    targets = {f"socket:[{inode}]" for inode in inodes}
-    pids: list[int] = []
-    for entry in Path("/proc").iterdir():
-        if not entry.name.isdigit():
-            continue
-        try:
-            for fd in (entry / "fd").iterdir():
-                if os.readlink(fd) in targets:
-                    pids.append(int(entry.name))
-                    break
-        except OSError:
-            continue
-    return pids
-
-
-def _is_zotero(pid: int) -> bool:
-    try:
-        return "zotero" in Path(f"/proc/{pid}/comm").read_text().strip().lower()
-    except OSError:
-        return False
-
-
-def _matching_pids(command: list[str]) -> list[int]:
-    """Zotero processes whose command line matches ours (forked children)."""
-    pids: list[int] = []
-    for entry in Path("/proc").iterdir():
-        if not entry.name.isdigit():
-            continue
-        try:
-            argv = [p.decode(errors="replace") for p in (entry / "cmdline").read_bytes().split(b"\0") if p]
-        except OSError:
-            continue
-        if not argv or "zotero" not in Path(argv[0]).name.lower():
-            continue
-        if all(token in argv for token in command if token != command[0]):
-            pids.append(int(entry.name))
-    return pids
-
-
-def cmd_stop(args: argparse.Namespace) -> int:
-    path = pid_path()
+def read_config() -> dict:
+    path = config_path()
     if not path.exists():
-        print("no pid file; nothing started by this skill", file=sys.stderr)
-        return 1
+        return {}
     try:
-        record = json.loads(path.read_text() or "{}")
-    except json.JSONDecodeError:
-        record = {"pid": int(path.read_text().strip() or 0)}
-    group = int(record.get("pid") or 0)
-    command = record.get("command") or []
-
-    killed: list[int] = []
-    for signum in (15, 9):
-        candidates = set(pids_on_port(api_port()))
-        candidates.update(pid for pid in (_matching_pids(command) if command else []) if _is_zotero(pid))
-        if group:
-            candidates.add(group)
-        for pid in candidates:
-            if not _is_zotero(pid) and pid != group:
-                continue
-            try:
-                os.kill(pid, signum)
-                killed.append(pid)
-            except (ProcessLookupError, PermissionError):
-                pass
-        if group:
-            try:
-                os.killpg(group, signum)
-                killed.append(group)
-            except (ProcessLookupError, PermissionError):
-                pass
-        time.sleep(2)
-        if not api_alive(1.0) and not pids_on_port(api_port()):
-            break
-
-    path.unlink(missing_ok=True)
-    if api_alive(1.0):
-        die("Zotero still answers after stop; it may have been started outside this skill")
-    print(f"stopped Zotero ({', '.join(str(p) for p in sorted(set(killed))) or 'no process'})")
-    return 0
-
-
-def ensure_api() -> None:
-    """Start Zotero on demand when ZOTERO_AUTOSTART is set."""
-    usable, detail = api_state()
-    if usable:
-        return
-    if os.environ.get("ZOTERO_AUTOSTART", "").lower() in {"1", "true", "yes"}:
-        print(f"starting Zotero ({detail})…", file=sys.stderr)
-        cmd_start(argparse.Namespace(timeout=120))
-        return
-    die(
-        f"cannot use Zotero: {detail}. Start it, or set ZOTERO_AUTOSTART=1 to let "
-        "this script run `zotero --headless` on demand"
-    )
-
-
-def get(path: str) -> dict | list:
-    url = f"{api_base()}/{path.lstrip('/')}"
-    try:
-        with urllib.request.urlopen(url, timeout=TIMEOUT) as response:
-            return json.load(response)
-    except urllib.error.HTTPError as exc:
-        if exc.code == 404:
-            die(f"not found: {path}")
-        die(f"Zotero API returned HTTP {exc.code} for {url}")
-    except urllib.error.URLError as exc:
-        die(
-            f"cannot reach Zotero at {api_base()} ({exc.reason}); start Zotero and "
-            "enable Settings → Advanced → 'Allow other applications on this "
-            "computer to communicate with Zotero'"
-        )
-    return {}
-
-
-def item(key: str) -> dict:
-    data = get(f"items/{key}")
+        data = json.loads(path.read_text())
+    except (OSError, json.JSONDecodeError) as exc:
+        die(f"cannot read config {path}: {exc}")
     if not isinstance(data, dict):
-        die(f"unexpected response for item {key}")
+        die(f"config {path} must be a JSON object")
     return data
 
 
-def children(key: str) -> list[dict]:
-    data = get(f"items/{key}/children")
-    return data if isinstance(data, list) else []
+def resolve_key() -> str:
+    key = os.environ.get("ZOTERO_API_KEY", "").strip()
+    if key:
+        return key
+    configured = os.environ.get("ZOTERO_API_KEY_FILE") or read_config().get("api_key_file")
+    path = (
+        Path(configured).expanduser()
+        if configured
+        else config_path().with_name("api-key")
+    )
+    if path.exists():
+        try:
+            key = path.read_text().strip()
+        except OSError as exc:
+            die(f"cannot read the API key from {path}: {exc}")
+        if key:
+            return key
+    die(
+        "no Zotero API key. Set ZOTERO_API_KEY, point ZOTERO_API_KEY_FILE at a file "
+        f"holding the key, or set api_key_file in {config_path()}. Create a key at "
+        f"{KEY_SETTINGS_URL} with library read access and file downloads allowed."
+    )
+    return ""
+
+
+def fingerprint(key: str) -> str:
+    return hashlib.sha256(key.encode()).hexdigest()[:16]
+
+
+def normalize_library(value: str) -> str:
+    text = value.strip().lower()
+    if text.isdigit():
+        return f"user:{text}"
+    match = re.fullmatch(r"(user|users|group|groups)[:/](\d+)", text)
+    if not match:
+        die(f"bad library {value!r}: expected user:<id> or group:<id>")
+    kind = "group" if match.group(1).startswith("group") else "user"
+    return f"{kind}:{match.group(2)}"
+
+
+def library_prefix(library: str) -> str:
+    kind, _, number = library.partition(":")
+    return f"{'groups' if kind == 'group' else 'users'}/{number}"
+
+
+def resolve_library(key: str) -> str:
+    configured = os.environ.get("ZOTERO_LIBRARY") or read_config().get("library")
+    if configured:
+        return normalize_library(str(configured))
+
+    # The numeric userID is not memorable and is visible on the API keys page
+    # only, so derive it from the key and remember it per key.
+    marker = cache_dir() / "library.json"
+    if marker.exists():
+        try:
+            record = json.loads(marker.read_text())
+        except (OSError, json.JSONDecodeError):
+            record = {}
+        if record.get("fingerprint") == fingerprint(key) and record.get("library"):
+            return normalize_library(str(record["library"]))
+
+    info = key_info(key)
+    user_id = info.get("userID")
+    if not user_id:
+        die("cannot determine the library: /keys/<key> returned no userID; set ZOTERO_LIBRARY")
+    library = f"user:{user_id}"
+    try:
+        marker.parent.mkdir(parents=True, exist_ok=True)
+        marker.write_text(json.dumps({"fingerprint": fingerprint(key), "library": library}))
+    except OSError:
+        pass
+    return library
+
+
+class _NoRedirect(urllib.request.HTTPRedirectHandler):
+    def redirect_request(self, req, fp, code, msg, headers, newurl):
+        return None
+
+
+def _request(url: str, key: str | None = None, timeout: float = TIMEOUT, follow: bool = True):
+    request = urllib.request.Request(
+        url,
+        headers={
+            "Zotero-API-Version": API_VERSION,
+            "Accept": "application/json",
+            "User-Agent": "zotero-pdf (pi agent skill)",
+        },
+    )
+    if key:
+        request.add_header("Zotero-API-Key", key)
+    opener = urllib.request.build_opener(*([] if follow else [_NoRedirect()]))
+    try:
+        return opener.open(request, timeout=timeout)
+    except urllib.error.HTTPError as exc:
+        return exc
+    except urllib.error.URLError as exc:
+        die(
+            f"cannot reach the Zotero Web API at {api_base()} ({exc.reason}); "
+            "check the network and retry"
+        )
+    raise AssertionError("unreachable")
+
+
+def status_of(response) -> int:
+    return int(getattr(response, "status", None) or getattr(response, "code", 0))
+
+
+def error_detail(body: bytes) -> str:
+    try:
+        data = json.loads(body.decode("utf-8", "replace"))
+    except (ValueError, AttributeError):
+        return ""
+    if isinstance(data, dict) and data.get("error"):
+        return str(data["error"])
+    return ""
+
+
+def explain(status: int, body: bytes, url: str) -> str:
+    detail = error_detail(body)
+    shown = re.sub(r"key=[^&]+", "key=REDACTED", url)
+    suffix = f" ({detail})" if detail else ""
+    if status == 403:
+        return (
+            "the Zotero Web API answered 403 (forbidden): the API key is invalid, "
+            "expired, or lacks read access to this library. Check the key at "
+            f"{KEY_SETTINGS_URL} and the library setting{suffix}"
+        )
+    if status == 404:
+        return f"not found: {shown}{suffix}"
+    return f"the Zotero Web API answered HTTP {status} for {shown}{suffix}"
+
+
+def retry_delay(headers, attempt: int) -> float:
+    for name in ("Retry-After", "Backoff"):
+        value = headers.get(name) if headers is not None else None
+        if value:
+            try:
+                return min(float(value), 60.0)
+            except ValueError:
+                continue
+    return min(2.0**attempt, 30.0)
+
+
+def get_json(
+    path: str,
+    key: str,
+    params: dict | None = None,
+    want_headers: bool = False,
+):
+    url = path if path.startswith("http") else f"{api_base()}/{path.lstrip('/')}"
+    if params:
+        url += ("&" if "?" in url else "?") + urllib.parse.urlencode(params)
+    for attempt in range(4):
+        response = _request(url, key=key)
+        try:
+            status = status_of(response)
+            body = response.read()
+            headers = response.headers
+        finally:
+            response.close()
+        if status == 200:
+            data = json.loads(body or b"null")
+            return (data, headers) if want_headers else data
+        if status in (429, 503) and attempt < 3:
+            delay = retry_delay(headers, attempt)
+            note(f"rate limited (HTTP {status}); retrying in {delay:.0f}s")
+            time.sleep(delay)
+            continue
+        die(explain(status, body, url))
+    die("the Zotero Web API keeps rate limiting this client; try again later")
+    return None
+
+
+def key_info(key: str) -> dict:
+    data = get_json(f"keys/{urllib.parse.quote(key)}", key)
+    return data if isinstance(data, dict) else {}
+
+
+def has_permission(info: dict, library: str, field: str) -> bool | None:
+    access = info.get("access") or {}
+    kind, _, number = library.partition(":")
+    if kind == "group":
+        entry = (access.get("groups") or {}).get(number)
+    else:
+        entry = access.get("user")
+    if not isinstance(entry, dict):
+        return None
+    return bool(entry.get(field))
+
+
+def item(item_key: str, library: str, key: str) -> dict:
+    data = get_json(f"{library_prefix(library)}/items/{item_key}", key)
+    if not isinstance(data, dict):
+        die(f"unexpected response for item {item_key}")
+    return data
+
+
+def iter_pages(path: str, key: str, params: dict | None = None):
+    start = 0
+    while True:
+        query = dict(params or {})
+        query.update({"limit": MAX_LIMIT, "start": start})
+        chunk = get_json(path, key, query)
+        if not isinstance(chunk, list):
+            die(f"unexpected response from {path}")
+        yield from chunk
+        if len(chunk) < MAX_LIMIT:
+            return
+        start += MAX_LIMIT
+
+
+def total_results(path: str, key: str, params: dict | None = None) -> str:
+    query = dict(params or {})
+    query["limit"] = 1
+    _, headers = get_json(path, key, query, want_headers=True)
+    value = headers.get("Total-Results") if headers is not None else None
+    return str(value) if value else "?"
+
+
+def children(item_key: str, library: str, key: str) -> list[dict]:
+    return list(iter_pages(f"{library_prefix(library)}/items/{item_key}/children", key))
 
 
 def is_pdf(entry: dict) -> bool:
     meta = entry.get("data", {})
-    content_type = (meta.get("contentType") or "").lower()
-    if "pdf" in content_type:
+    if "pdf" in str(meta.get("contentType") or "").lower():
         return True
     name = meta.get("filename") or meta.get("title") or ""
     return str(name).lower().endswith(".pdf")
 
 
-def enclosure_path(entry: dict) -> Path | None:
-    href = (entry.get("links", {}).get("enclosure", {}) or {}).get("href")
-    if not href:
-        return None
-    raw = href[len("file://") :] if href.startswith("file://") else href
-    return Path(urllib.parse.unquote(raw))
+def downloadable(entry: dict) -> bool:
+    mode = entry.get("data", {}).get("linkMode")
+    return mode is None or mode in STORED_LINK_MODES
 
 
-def pdf_of(entry: dict) -> tuple[Path | None, str]:
-    """Resolve the PDF file for an item or attachment entry."""
-    key = entry.get("key", "?")
+def pdf_attachment(entry: dict, library: str, key: str) -> dict | None:
+    """The item's own data if it is a PDF attachment, else its first PDF child."""
     meta = entry.get("data", {})
     if meta.get("itemType") == "attachment":
-        if not is_pdf(entry):
-            return None, f"{key} is an attachment but not a PDF ({meta.get('contentType')})"
-        return enclosure_path(entry), key
-    for child in children(key):
+        return entry if is_pdf(entry) else None
+    for child in children(entry.get("key", ""), library, key):
         if child.get("data", {}).get("itemType") == "attachment" and is_pdf(child):
-            return enclosure_path(child), child.get("key", "?")
-    return None, f"{key} has no PDF attachment"
+            return child
+    return None
+
+
+def unavailable_reason(entry: dict) -> str:
+    meta = entry.get("data", {})
+    att = entry.get("key", "?")
+    mode = meta.get("linkMode")
+    if mode == "linked_file":
+        return (
+            f"{att} is a linked file; its bytes live on the computer that added it, "
+            "so the Web API cannot serve it"
+        )
+    if mode == "linked_url":
+        return f"{att} is a link to a URL ({mode}), not a stored file"
+    return f"{att} has no file stored in Zotero File Storage"
 
 
 def year_of(meta: dict) -> str:
@@ -335,136 +369,71 @@ def year_of(meta: dict) -> str:
 
 
 def first_author(meta: dict) -> str:
-    creators = meta.get("creators") or []
-    for creator in creators:
+    for creator in meta.get("creators") or []:
         name = creator.get("lastName") or creator.get("name")
         if name:
             return str(name)
     return "?"
 
 
-def cmd_search(args: argparse.Namespace) -> int:
-    query = urllib.parse.quote(args.query)
-    # Zotero matches attachment titles too, and the limit applies before we can
-    # drop them, so fetch a wider window than the caller asked for.
-    window = max(args.limit * 4, 20)
-    params = f"items?q={query}&limit={window}"
-    if args.mode:
-        params += f"&qmode={args.mode}"
-    results = get(params)
-    if not isinstance(results, list):
-        die("unexpected search response")
+def safe_name(name: str) -> str:
+    name = Path(str(name)).name
+    name = re.sub(r"[^\w.()\[\] \-]", "_", name, flags=re.UNICODE).strip(" .")
+    return name or "file.pdf"
 
-    rows: list[dict] = []
-    seen: set[str] = set()
-    parents: list[str] = []
-    for entry in results:
-        meta = entry.get("data", {})
-        key = entry.get("key", "")
-        if meta.get("itemType") == "attachment":
-            # remember the parent so a query that only hits attachment titles
-            # ("PDF", "APS Snapshot") can still resolve to the paper
-            parent = meta.get("parentItem")
-            if parent and parent not in parents:
-                parents.append(parent)
-            continue
-        if key and key not in seen:
-            seen.add(key)
-            rows.append(entry)
 
-    if not rows and parents:
-        for parent in parents[: args.limit]:
-            entry = item(parent)
-            key = entry.get("key", "")
-            if key and key not in seen:
-                seen.add(key)
-                rows.append(entry)
+def cached_path(entry: dict) -> Path:
+    meta = entry.get("data", {})
+    name = meta.get("filename") or f"{entry.get('key', 'file')}.pdf"
+    return cache_dir() / "files" / str(entry.get("key", "unknown")) / safe_name(name)
 
-    rows = rows[: args.limit]
-    if not rows:
-        print("no matching items", file=sys.stderr)
-        return 1
-    if args.json:
-        print(json.dumps([{"key": r["key"], **r["data"]} for r in rows], indent=2))
-        return 0
-    for entry in rows:
-        meta = entry["data"]
-        print(
-            f"{entry['key']}  {year_of(meta):<4}  {meta.get('itemType', '?'):<13}  "
-            f"{first_author(meta):<16}  {(meta.get('title') or 'untitled')[:80]}"
+
+def md5_of(path: Path) -> str:
+    digest = hashlib.md5()
+    with path.open("rb") as handle:
+        for chunk in iter(lambda: handle.read(1 << 20), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def download_bytes(url: str, key: str) -> bytes:
+    response = _request(url, key=key, follow=False)
+    try:
+        status = status_of(response)
+        location = response.headers.get("Location")
+        if status in (301, 302, 303, 307, 308) and location:
+            response.close()
+            # Storage redirects to a pre-signed URL: never forward the API key.
+            response = _request(location, key=None, follow=False)
+            status = status_of(response)
+        if status != 200:
+            die(f"cannot download the file: {explain(status, response.read(), url)}")
+        return response.read()
+    finally:
+        response.close()
+
+
+def download(entry: dict, library: str, key: str, refresh: bool = False) -> Path:
+    if not downloadable(entry):
+        die(unavailable_reason(entry))
+    target = cached_path(entry)
+    expected = (entry.get("data", {}).get("md5") or "").lower() or None
+    if target.exists() and not refresh:
+        if expected is None or md5_of(target) == expected:
+            return target
+        note("cached file no longer matches the attachment; downloading again")
+    url = f"{api_base()}/{library_prefix(library)}/items/{entry.get('key')}/file"
+    body = download_bytes(url, key)
+    if expected and hashlib.md5(body).hexdigest() != expected:
+        note(
+            "warning: the downloaded file does not match the attachment's md5 "
+            "(the stored file and its metadata disagree); using it anyway"
         )
-    return 0
-
-
-def cmd_attachments(args: argparse.Namespace) -> int:
-    entry = item(args.item)
-    listing = (
-        [entry]
-        if entry.get("data", {}).get("itemType") == "attachment"
-        else children(args.item)
-    )
-    if not listing:
-        print("no attachments", file=sys.stderr)
-        return 1
-    for child in listing:
-        meta = child.get("data", {})
-        path = enclosure_path(child)
-        print(
-            f"{child.get('key', '?'):8}  {meta.get('contentType') or '?':<16}  "
-            f"{path if path else '(no local file)'}"
-        )
-    return 0
-
-
-def cmd_doctor(args: argparse.Namespace) -> int:
-    """Report attachments whose file is not readable on this disk."""
-    entries: list[dict] = []
-    start = 0
-    while True:
-        chunk = get(f"items?itemType=attachment&limit=100&start={start}")
-        if not isinstance(chunk, list):
-            die("unexpected response while listing attachments")
-        entries.extend(chunk)
-        if len(chunk) < 100:
-            break
-        start += 100
-
-    pdfs = [entry for entry in entries if is_pdf(entry)]
-    present: list[dict] = []
-    missing_file: list[dict] = []
-    no_path: list[dict] = []
-    for entry in pdfs:
-        path = enclosure_path(entry)
-        if path is None:
-            no_path.append(entry)
-        elif path.exists():
-            present.append(entry)
-        else:
-            missing_file.append(entry)
-
-    print(
-        f"attachments: {len(entries)} | pdf: {len(pdfs)} | on disk: {len(present)} | "
-        f"file missing: {len(missing_file)} | no local path: {len(no_path)}"
-    )
-    for entry in missing_file:
-        meta = entry.get("data", {})
-        print(f"\nmissing file  {entry.get('key')}  {(meta.get('title') or '')[:60]}")
-        print(f"  expected at  {enclosure_path(entry)}")
-    for entry in no_path:
-        meta = entry.get("data", {})
-        print(f"\nno local path {entry.get('key')}  {(meta.get('title') or '')[:60]}")
-        print(f"  linkMode     {meta.get('linkMode')}")
-
-    if missing_file or no_path:
-        print(
-            "\nThese are in the library but not readable here. Zotero stores files "
-            "when it saves them, but with on-demand download enabled they arrive "
-            "only after the item is opened: open it once in Zotero, or turn off "
-            "Settings → Sync → 'Download files as needed'.",
-            file=sys.stderr,
-        )
-        return 1
-    return 0
+    target.parent.mkdir(parents=True, exist_ok=True)
+    temporary = target.with_name(target.name + ".part")
+    temporary.write_bytes(body)
+    os.replace(temporary, target)
+    return target
 
 
 def slugify(text: str, limit: int = 60) -> str:
@@ -473,13 +442,40 @@ def slugify(text: str, limit: int = 60) -> str:
     return text[:limit].strip("._") or "paper"
 
 
-def cmd_path(args: argparse.Namespace) -> int:
-    entry = item(args.item)
-    path, source = pdf_of(entry)
-    if path is None:
-        die(source)
-    if not path.exists():
-        die(f"{source} points at {path}, which does not exist (is the file on disk?)")
+def cmd_library(args: argparse.Namespace, library: str, key: str) -> int:
+    print(library)
+    return 0
+
+
+def cmd_attachments(args: argparse.Namespace, library: str, key: str) -> int:
+    entry = item(args.item, library, key)
+    listing = (
+        [entry]
+        if entry.get("data", {}).get("itemType") == "attachment"
+        else children(args.item, library, key)
+    )
+    if not listing:
+        print("no attachments", file=sys.stderr)
+        return 1
+    for child in listing:
+        meta = child.get("data", {})
+        name = meta.get("filename") or meta.get("url") or "-"
+        state = "cached" if cached_path(child).exists() else "not cached"
+        if not downloadable(child):
+            state = "unavailable to the Web API"
+        print(
+            f"{child.get('key', '?'):8}  {str(meta.get('contentType') or '?'):<16}  "
+            f"{str(meta.get('linkMode') or '?'):<13}  {name}  [{state}]"
+        )
+    return 0
+
+
+def cmd_path(args: argparse.Namespace, library: str, key: str) -> int:
+    entry = item(args.item, library, key)
+    attachment = pdf_attachment(entry, library, key)
+    if attachment is None:
+        die(f"{args.item} has no PDF attachment")
+    path = download(attachment, library, key, refresh=args.refresh)
     if not args.copy_to:
         print(path)
         return 0
@@ -496,41 +492,66 @@ def cmd_path(args: argparse.Namespace) -> int:
     return 0
 
 
-def cmd_info(args: argparse.Namespace) -> int:
-    entry = item(args.item)
-    meta = entry.get("data", {})
-    if args.json:
-        print(json.dumps({"key": entry.get("key"), **meta}, indent=2))
-        return 0
-    authors = ", ".join(
-        f"{c.get('firstName', '')} {c.get('lastName', '')}".strip()
-        or c.get("name", "")
-        for c in meta.get("creators") or []
+def cmd_doctor(args: argparse.Namespace, library: str, key: str) -> int:
+    info = key_info(key)
+    access_library = has_permission(info, library, "library")
+    access_files = has_permission(info, library, "files")
+    print(f"api          {api_base()}")
+    print(f"library      {library}")
+    print(
+        f"key          {info.get('key') or '?'}  "
+        f"({info.get('username') or '?'}, user {info.get('userID') or '?'})"
     )
-    fields = [
-        ("key", entry.get("key")),
-        ("type", meta.get("itemType")),
-        ("title", meta.get("title")),
-        ("authors", authors),
-        ("date", meta.get("date")),
-        ("publication", meta.get("publicationTitle") or meta.get("proceedingsTitle")),
-        ("volume", meta.get("volume")),
-        ("pages", meta.get("pages")),
-        ("doi", meta.get("DOI")),
-        ("url", meta.get("url")),
-    ]
-    for label, value in fields:
-        if value:
-            print(f"{label:<12} {value}")
-    abstract = (meta.get("abstractNote") or "").strip()
-    if abstract:
-        print(f"\n{abstract}\n")
-    path, source = pdf_of(entry)
-    if path is None:
-        print(f"pdf          none ({source})")
-    else:
-        state = "ok" if path.exists() else "MISSING ON DISK"
-        print(f"pdf          {path} [{source}, {state}]")
+    print(
+        f"access       library={access_library} files={access_files} "
+        f"write={has_permission(info, library, 'write')}"
+    )
+
+    items_path = f"{library_prefix(library)}/items"
+    print(f"items        {total_results(items_path, key)}")
+    print(f"attachments  {total_results(items_path, key, {'itemType': 'attachment'})}")
+
+    pdfs = 0
+    unavailable: list[dict] = []
+    seen: set[str] = set()
+    for entry in iter_pages(items_path, key, {"itemType": "attachment"}):
+        entry_key = entry.get("key", "")
+        if entry_key in seen or not is_pdf(entry):
+            continue
+        seen.add(entry_key)
+        pdfs += 1
+        if not downloadable(entry):
+            unavailable.append(entry)
+
+    files = cache_dir() / "files"
+    cached = list(files.glob("*/*")) if files.exists() else []
+    size = sum(path.stat().st_size for path in cached if path.is_file())
+    print(f"pdf          {pdfs}")
+    print(f"cached       {len(cached)} file(s), {size / 1e6:.1f} MB in {files}")
+
+    problems = 0
+    for entry in unavailable:
+        meta = entry.get("data", {})
+        print(f"\nnot stored   {entry.get('key')}  {(meta.get('title') or '')[:60]}")
+        print(f"  reason     {unavailable_reason(entry)}")
+        print(f"  linkMode   {meta.get('linkMode')}")
+        problems += 1
+
+    if access_library is False:
+        note("this key cannot read this library; check its permissions at " + KEY_SETTINGS_URL)
+        problems += 1
+    if access_files is False:
+        note("this key cannot download files; enable file access at " + KEY_SETTINGS_URL)
+        problems += 1
+    if unavailable:
+        note(
+            "\nThe Web API can only serve files stored in Zotero File Storage. For "
+            "linked files, open the item on the computer that holds the file, or "
+            "convert the attachment to a stored file."
+        )
+    if problems:
+        return 1
+    print("\nok")
     return 0
 
 
@@ -540,50 +561,30 @@ def main() -> int:
     )
     sub = parser.add_subparsers(dest="command", required=True)
 
-    p = sub.add_parser("search", help="search the library")
-    p.add_argument("query")
-    p.add_argument("--limit", type=int, default=10)
-    p.add_argument(
-        "--mode",
-        choices=("titleCreatorYear", "everything"),
-        default="everything",
-        help="Zotero search mode (default: everything)",
-    )
-    p.add_argument("--json", action="store_true")
-    p.set_defaults(func=cmd_search)
-
-    p = sub.add_parser("attachments", help="list an item's attachments")
-    p.add_argument("item", help="item key")
-    p.set_defaults(func=cmd_attachments)
-
-    p = sub.add_parser("path", help="print the local PDF path")
+    p = sub.add_parser("path", help="download the PDF and print its local path")
     p.add_argument("item", help="item key (journal article) or attachment key")
     p.add_argument(
         "--copy-to",
         metavar="DIR",
         help="copy the PDF into DIR under a clean file name and print that path",
     )
+    p.add_argument("--refresh", action="store_true", help="download even if cached")
     p.set_defaults(func=cmd_path)
 
-    p = sub.add_parser("doctor", help="check which attachments are not readable on disk")
+    p = sub.add_parser("attachments", help="list an item's attachments")
+    p.add_argument("item", help="item key")
+    p.set_defaults(func=cmd_attachments)
+
+    p = sub.add_parser("doctor", help="check the key, the library, and file availability")
     p.set_defaults(func=cmd_doctor)
 
-    p = sub.add_parser("start", help="start Zotero headless in the background")
-    p.add_argument("--timeout", type=int, default=120, help="seconds to wait for the API")
-    p.set_defaults(func=cmd_start)
-
-    p = sub.add_parser("stop", help="stop a Zotero instance this script started")
-    p.set_defaults(func=cmd_stop)
-
-    p = sub.add_parser("info", help="show metadata, abstract, and PDF status")
-    p.add_argument("item", help="item key")
-    p.add_argument("--json", action="store_true")
-    p.set_defaults(func=cmd_info)
+    p = sub.add_parser("library", help="print the configured library")
+    p.set_defaults(func=cmd_library)
 
     args = parser.parse_args()
-    if args.command not in {"start", "stop"}:
-        ensure_api()
-    return args.func(args)
+    key = resolve_key()
+    library = resolve_library(key)
+    return args.func(args, library, key)
 
 
 if __name__ == "__main__":
