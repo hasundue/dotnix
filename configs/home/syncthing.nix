@@ -28,6 +28,12 @@
             "x1carbon"
             "higame"
           ];
+          versioning = {
+            type = "trashcan";
+            params = {
+              cleanoutDays = "30";
+            };
+          };
         };
         "~/notes" = {
           id = "notes";
@@ -39,8 +45,9 @@
             "pixel"
           ];
           versioning = {
-            type = "trashcan";
+            type = "simple";
             params = {
+              keep = "5";
               cleanoutDays = "30";
             };
           };
