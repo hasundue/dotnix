@@ -39,7 +39,26 @@
 
   networking = {
     hostName = "x1carbon";
-    networkmanager.enable = true;
+
+    networkmanager = {
+      enable = true;
+
+      # Without a URI NetworkManager skips connectivity checking and reports an
+      # optimistic "full" whenever a default route exists, so nothing can ever
+      # observe a captive portal. The URI answers 204 with an empty body, and
+      # `response = ""` says exactly that is expected: a redirect or any body
+      # then counts as a portal.
+      #
+      # `interval` is a ceiling, not a fixed rate: the probe starts at one
+      # second after a connection comes up and doubles until it reaches this
+      # value. Joining a network therefore detects a portal immediately, and
+      # 300 keeps the idle traffic to one request every five minutes.
+      settings.connectivity = {
+        uri = "http://connectivity-check.ubuntu.com/";
+        interval = 300;
+        response = "";
+      };
+    };
   };
 
   # The RMI4 PS/2 pass-through (serio2) carries both the TrackPoint motion and
