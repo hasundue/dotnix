@@ -5,14 +5,19 @@ Keep it short -- a note nobody rereads is not a spec.
 
 ## The template
 
+`status` is one of `draft`, `agreed`, `done`, `blocked`. `confirmed` takes the
+date of the user's yes; `pr` and `merge_commit` are filled in after the merge.
+Leave a field empty until it has a value, and do not carry this legend into the
+note.
+
 ```markdown
 ---
 created: <YYYY-MM-DD>
-status: draft # draft | agreed | done | blocked
+status: draft
 branch: <branch the task runs on>
-confirmed: # date of the user's explicit yes
-pr: # set at merge
-merge_commit: # set at merge
+confirmed:
+pr:
+merge_commit:
 ---
 
 # <Short title>
@@ -30,6 +35,8 @@ merge_commit: # set at merge
 <Prior attempts and why they were not enough. Omit if none.>
 
 ## What "fixed" looks like -- in the user's words
+
+<A real quote, or leave this section out. A paraphrase belongs under Design.>
 
 > "<verbatim quote>"
 

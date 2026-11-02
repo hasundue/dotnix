@@ -139,8 +139,9 @@ changed, unknowns remaining) so the note is justified rather than assumed.
 ### 3. Write the problem
 
 Write the problem before the solution, and keep the solution out of it. Use the
-user's words verbatim where you can, in quotes. Include what was tried and why
-it was not enough. If you cannot state the problem without naming an
+user's words verbatim where you can, in quotes. If you only have a paraphrase,
+put it under `## Design`; do not dress it up as a quote. Include what was tried
+and why it was not enough. If you cannot state the problem without naming an
 implementation, you have not found it yet.
 
 Show the note. Let them correct it.
@@ -215,6 +216,7 @@ into the note, then let it continue -- so the next cold run never has to ask.
 - A restate that omits what is out of scope
 - Accepting "whatever you think" as a terminal answer
 - A criterion with no `verify:`
+- A paraphrase presented as a quote under "in the user's words"
 - Writing the spec before the problem
 - Questions with no guess attached -- that is surveying, not interviewing
 - A note only readable by someone who was in the conversation
