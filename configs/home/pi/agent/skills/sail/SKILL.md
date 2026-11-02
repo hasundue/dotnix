@@ -1,62 +1,84 @@
 ---
 name: sail
 description: >
-  Execute an agreed spec. Use after a spec gate such as keel, or whenever
-  ISSUE.md and SPEC.md already define the problem, acceptance criteria, and
-  confirmation. Works through each criterion with its verify step, updates the
-  spec before changing scope, stops on blockers instead of guessing, and reports
-  evidence per criterion. Use when the user says "execute the spec", "implement
-  SPEC.md", "start the work", or hands off an agreed ISSUE.md/SPEC.md.
+  Execute an agreed spec. Use after a spec gate such as keel, or whenever a task
+  note at ~/notes/projects/<project>/<YYYY-MM-DD>-<slug>.md already defines the
+  problem, acceptance criteria, and confirmation. Finds the note from the
+  current branch, works each criterion with its verify step, ticks criteria with
+  evidence, updates the note before changing scope, stops on blockers instead of
+  guessing, and reports evidence per criterion. Use when the user says "execute
+  the spec", "start the work", "implement the plan", or hands off an agreed
+  note.
 ---
 
 # Sail
 
 Keel lays the spec; sail executes it. The agreement is already made. Do not
-reopen the interview, cut a new branch, or rewrite the problem unless the spec
-is actually broken.
+reopen the interview, rewrite the problem, or cut a branch unless the spec or
+the user asks for it.
 
 ## Invariants
 
-1. **Read `ISSUE.md` and `SPEC.md` before touching code.**
+1. **Find and read the task note before touching code.**
 2. **Every acceptance criterion ends with evidence or an explicit unmet
    report.**
-3. **Scope moves in `SPEC.md` first, then gets re-confirmed.**
+3. **Scope moves in the note first, then gets re-confirmed.**
 4. **A blocker is written down and raised, never silently absorbed.**
 
 Everything else -- implementation order, commits, test commands -- follows the
-repo and the spec.
+repo and the note.
 
-## Start
+## Find the note
 
-Read both files. If either is missing or empty, stop and ask. If the spec
-records confirmation (for example `## Confirmed`), check it; if there is no
-explicit sign-off, ask whether the spec is agreed before implementing.
+1. A path the user passed wins.
+2. Otherwise look in `~/notes/projects/<project>/` for a note whose `branch:`
+   matches the current branch and whose `status` is not `done`.
+3. Otherwise list that project's notes with `status != done`, newest first
+   (`ls -t`), and ask which one.
+4. Otherwise ask. Never guess.
 
-Check the current branch and working tree so you know what you are changing. Do
-not push, rewrite history, or discard unrelated work unless the spec or the user
-asks for it.
+The project name comes from git, so worktrees resolve correctly:
 
-If a criterion has no `verify:`, that is a spec defect. Ask for it to be made
-checkable rather than inventing your own success condition.
+```sh
+basename "$(dirname "$(git rev-parse --path-format=absolute --git-common-dir)")"
+# ~/dotnix.pi-workflow -> dotnix
+```
+
+Read the note fully. If it is missing, empty, or has no acceptance criteria,
+stop and ask. If `confirmed:` is empty, ask whether the spec is agreed before
+implementing. If `status: blocked`, read `## Blocker` first. If `status: done`,
+there is nothing to execute.
+
+Then check the current branch and working tree so you know what you are
+changing. Do not push, rewrite history, or discard unrelated work unless the
+note or the user asks for it.
+
+## Branches
+
+Create or switch branches only when the user asks. If the work is on
+`main`/`master` and the user has said nothing, ask instead of branching
+silently. Keep `branch:` in the note in step with the branch actually used.
 
 ## Execute
 
 Work through the acceptance criteria, not through a feeling of doneness. Use
 each criterion's `verify:` to decide what to run or inspect.
 
-- Keep changes inside the spec's scope.
+- Tick each criterion as you verify it, with one line of evidence indented
+  beneath: the command and its result, or what you observed and where.
+- Leave missed criteria unticked and add `unmet: <reason>`. Never tick one to
+  look busy, and never reword one to make it pass.
 - If a criterion is already satisfied, record the evidence instead of changing
-  code to look busy.
+  code.
 - Follow the repository's own rules for tests, formatting, and commits.
-- If the spec is silent on a local implementation detail, use judgment and note
-  it; silence is not permission to change the agreed outcome.
+- If the note is silent on a local implementation detail, use judgment and note
+  it under `## Log`; silence is not permission to change the agreed outcome.
 
 ## Scope changes and blockers
 
-When reality contradicts the spec -- a constraint was wrong, a step is
-impossible, a criterion is incomplete, or the work needs to grow -- update
-`SPEC.md` (and `ISSUE.md` if the problem changed) before acting, then ask for
-re-confirmation. Do not drift silently.
+When reality contradicts the note -- a constraint was wrong, a step is
+impossible, a criterion is incomplete, or the work needs to grow -- update the
+note before acting, then ask for re-confirmation. Do not drift silently.
 
 Stop instead of grinding when:
 
@@ -64,9 +86,9 @@ Stop instead of grinding when:
 - the work needs to touch something outside the spec -- stop;
 - a genuine trade-off needs a human decision -- stop.
 
-Write the situation under `## Blocker` in `SPEC.md`: what was tried, what
-happened, the likely cause, and the options you see. Then ask. A stop without a
-written trace is a failed handoff.
+Write the situation under `## Blocker`: what was tried, what happened, the
+likely cause, and the options you see. Set `status: blocked`. Then ask. A stop
+without a written trace is a failed handoff.
 
 ## Verify and close
 
@@ -75,10 +97,8 @@ command and its result, or what you observed and where. Unmet criteria are
 reported as unmet, not renegotiated after the fact.
 
 Do not call the work done because the diff looks plausible. The criteria decide.
-
-What happens to `ISSUE.md`, `SPEC.md`, and `## Blocker` notes is the user's
-call, case by case: delete them before merging, leave them on the branch, or
-keep them deliberately. Ask; do not archive, move, or delete on your own.
+Set `status: done` only after every criterion is ticked or reported unmet, and
+the user has confirmed the result.
 
 End with a compact report: what changed, which criteria passed with what
 evidence, what is unmet, and what still needs a decision. The next action is the
@@ -93,43 +113,17 @@ Before merging:
 
 - Run the repository's final gates on the branch, typically the formatter check
   and the full test suite.
-- Confirm what happens to `ISSUE.md` and `SPEC.md`. If they should not land on
-  `main`, archive the original branch or tag before creating the squashed
-  history, then remove the files from the merge commit.
 - Follow the repository's merge convention. If there is none, ask whether the
   user wants a single linear commit, a merge commit, or a platform squash merge.
   Do not choose the history shape silently.
 
-A safe default when the user wants one linear commit and the spec should stay
-out of `main`:
+The note is outside the repository, so a squash merge needs no cleanup: no
+files to strip, no archive branch, no guard hook. After the merge, record what
+the note should point at:
 
-```bash
-# 1. Archive the original branch (or create a tag).
-git branch archive/<slug> <branch>
-git push origin archive/<slug>          # if it must survive outside the clone
-
-# 2. Squash the work on a temporary branch from main.
-git switch main
-git switch -c squash/<slug>
-git merge --squash <branch>
-
-# 3. Drop the spec files from the squashed tree if agreed.
-git rm ISSUE.md SPEC.md
-
-# 4. Commit with the repository's message style.
-git commit -m "<repo-style message>"
-
-# 5. Re-run the final gates on the squashed commit, then merge.
-git switch main
-git merge --ff-only squash/<slug>
-
-# 6. Push only if the user asked.
-git push origin main
-
-# 7. Clean up, keeping the archive if it holds the only spec copy.
-git branch -d squash/<slug>
+```yaml
+pr: 123
+merge_commit: abc1234
 ```
 
-If the repository uses pull requests, prefer the platform's squash merge and
-keep the archive branch on the remote. If the user wants a merge commit, use
-`--no-ff` instead. Never rewrite `main` or force-push it.
+Never rewrite `main` or force-push it.

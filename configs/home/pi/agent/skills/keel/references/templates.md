@@ -1,14 +1,23 @@
-# Templates
+# Template
 
-Skeletons for the two files keel writes. The headings are load-bearing; the
-prose under them is not. Keep them short -- a spec nobody rereads is not a spec.
+One note per task. The headings are load-bearing; the prose under them is not.
+Keep it short -- a note nobody rereads is not a spec.
 
-## ISSUE.md -- problem only
+## The template
 
 ```markdown
-# ISSUE -- <short title>
+---
+created: <YYYY-MM-DD>
+status: draft # draft | agreed | done | blocked
+branch: <branch the task runs on>
+confirmed: # date of the user's explicit yes
+pr: # set at merge
+merge_commit: # set at merge
+---
 
-## What's wrong
+# <Short title>
+
+## Problem
 
 <The problem, as plainly as possible. No solution, no implementation.>
 
@@ -24,34 +33,25 @@ prose under them is not. Keep them short -- a spec nobody rereads is not a spec.
 
 > "<verbatim quote>"
 
-## Open questions
-
-- <Anything still unresolved.>
-```
-
-## SPEC.md -- the agreement
-
-```markdown
-# SPEC -- <short title>
-
-## Goal
-
-<One paragraph. What is true after this work that is not true now.>
-
-## Background
+## Current behavior
 
 <What a cold reader needs: paths, current behaviour, prior decisions and why.>
 
-## Acceptance criteria
+## Design
 
-- <observable outcome>
-      verify: `<command>` / <manual step with expected observation>
-- <observable outcome>
-      verify: `<command>`
+<The agreement. One `###` per area: storage, format, discovery, whatever this
+task actually touches.>
 
 ## Out of scope
 
-- [ ] <What we are explicitly not building, and why, if non-obvious.>
+- <What we are explicitly not building, and why, if non-obvious.>
+
+## Acceptance criteria
+
+- [ ] <observable outcome>
+      verify: `<command>` / <manual step with expected observation>
+- [ ] <observable outcome>
+      verify: `<command>`
 
 ## Stop conditions
 
@@ -68,39 +68,66 @@ prose under them is not. Keep them short -- a spec nobody rereads is not a spec.
 
 - <date> -- user: "<their words>"
 
-## Notes
+## Log
 
-<Free-form: research, dead ends, open questions, sketches.>
+<Append-only. Research, dead ends, open questions, sketches.>
 ```
+
+## Checklist rules
+
+- `- [ ]` -- criterion not yet verified.
+- `- [x]` -- verified. One line of evidence indented directly beneath: the
+  command and its result, or what was observed and where.
+- Unmet stays unticked, with `unmet: <reason>` on the evidence line.
+- `## Out of scope` uses plain `-` items, so `[ ]` keeps a single meaning.
+- Ticking is not renegotiation. Changing the text of a criterion is, and needs
+  a fresh confirmation.
+- `status: done` only after every criterion is ticked or reported unmet, and
+  the user has confirmed the result.
 
 ## Filled example (compact)
 
 ```markdown
-# SPEC -- Expire sessions on idle, not on a fixed clock
+---
+created: 2025-11-30
+status: agreed
+branch: idle-timeout
+confirmed: 2025-11-30
+---
 
-## Goal
+# Expire sessions on idle, not on a fixed clock
 
-Sessions end after 30 minutes of inactivity instead of 24 hours after login.
-Active users are no longer logged out mid-task.
+## Problem
 
-## Background
+Users are logged out mid-task after 24 hours, no matter how active they were.
+
+## What "fixed" looks like
+
+> "A session should end because I stopped, not because the clock ran out."
+
+## Current behavior
 
 `src/auth/session.ts` sets `expiresAt = issuedAt + 24h` at login and never
-touches it again. `tests/auth/session.test.ts` asserts the 24h value today, so
-it will need updating.
+touches it again. `tests/auth/session.test.ts` asserts the 24h value today.
 
-## Acceptance criteria
+## Design
 
-- [ ] A request 31 minutes after the last one is rejected with 401 verify:
-      `pnpm test tests/auth/session.test.ts -t idle`
-- [ ] A request 29 minutes after the last one succeeds, and resets the clock
-      verify: same test file, `-t active`
-- [ ] The 24h absolute cap still applies verify: `-t absolute`
+Slide `expiresAt` forward on each authenticated request, leaving the absolute
+cap alone. Update the test to distinguish idle and absolute expiry.
 
 ## Out of scope
 
 - Remember-me, sliding refresh tokens, per-role timeouts
 - Migrating existing sessions (they expire on the old rule)
+
+## Acceptance criteria
+
+- [ ] A request 31 minutes after the last one is rejected with 401
+      verify: `pnpm test tests/auth/session.test.ts -t idle`
+- [ ] A request 29 minutes after the last one succeeds and resets the clock
+      verify: same test file, `-t active`
+- [ ] The 24h absolute cap still applies
+      verify: `-t absolute`
 
 ## Stop conditions
 
