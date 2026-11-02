@@ -7,6 +7,7 @@
     ./firefox.nix
     ./kitty.nix
     ./niri
+    ./portal-login.nix
     ./slack.nix
     ./spotify.nix
     ./vscode.nix
