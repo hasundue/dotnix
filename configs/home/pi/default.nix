@@ -7,10 +7,8 @@ let
   live = config.dotnix.live.pi;
   opencodeGoKey = config.age.secrets."api/opencode-go".path;
 
-  # Every entry of ./agent is served from the live directory, so editing it
-  # takes effect without a rebuild. settings.json is deliberately absent: pi
-  # writes it itself (`/settings`, `pi update`), and it holds values such as
-  # lastChangelogVersion that Nix must not pin.
+  # mcp.json stays writable so pi's `/mcp` changes land in the repository;
+  # settings.json is left to pi and merged through mutableSettings.
   link = path: config.lib.file.mkOutOfStoreSymlink "${live.stable}/${path}";
 in
 {
@@ -23,6 +21,16 @@ in
   # included: both merely shell out to the binaries below.
   programs.pi-coding-agent = {
     enable = true;
+
+    # Keep settings.json writable: pi rewrites it (/model, changelog), so only
+    # the declared keys are merged in.
+    mutableSettings = true;
+    settings.defaultTools = [
+      "+grep"
+      "+find"
+      "+ls"
+    ];
+
     extraPackages = [
       # CLI: rendering, text extraction, OCR, structural edits
       pkgs.poppler-utils # pdftoppm, pdftotext, pdfimages, pdfunite, pdfseparate

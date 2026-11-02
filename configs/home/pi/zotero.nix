@@ -4,14 +4,11 @@
   ...
 }:
 let
-  # Decrypted by agenix at activation. Only this path reaches the store, never
-  # the key itself.
+  # Only the path reaches the store, never the decrypted key.
   keyPath = config.age.secrets."api/zotero".path;
   script = ./agent/skills/zotero-pdf/scripts/zotero.py;
 
-  # zotero-mcp insists on the numeric library ID, which is easy to mistype and
-  # pointless to maintain by hand; derive it from the key through the skill's
-  # lookup, which caches the answer and so works offline afterwards.
+  # zotero-mcp needs a numeric library ID; derive it from the key and cache it.
   zoteroMcp = pkgs.writeShellScriptBin "zotero-mcp-web" ''
     set -eu
     export ZOTERO_API_KEY="$(cat ${keyPath})"
@@ -22,8 +19,7 @@ let
   '';
 in
 {
-  # On PATH so that agent/mcp.json can name it without embedding a store path,
-  # which would go stale in that mutable file after a rebuild or a collection.
+  # On PATH so mcp.json can name it without a store path that would go stale.
   home.packages = [ zoteroMcp ];
 
   home.file.".config/zotero-pdf/config.json".text = builtins.toJSON {
