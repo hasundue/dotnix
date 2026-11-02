@@ -25,11 +25,21 @@ in
     # Keep settings.json writable: pi rewrites it (/model, changelog), so only
     # the declared keys are merged in.
     mutableSettings = true;
-    settings.defaultTools = [
-      "+grep"
-      "+find"
-      "+ls"
-    ];
+    settings = {
+      defaultTools = [
+        "+grep"
+        "+find"
+        "+ls"
+      ];
+      # PDF and Zotero skills are for research only. They stay installed but
+      # hidden from discovery; a project opts in from its .pi/settings.json:
+      #   { "skills": ["~/.pi/agent/skills/pdf-tools", ...] }
+      # Patterns resolve from the agent directory (~/.pi/agent).
+      skills = [
+        "-skills/pdf-tools"
+        "-skills/zotero-pdf"
+      ];
+    };
 
     extraPackages = [
       # CLI: rendering, text extraction, OCR, structural edits
