@@ -52,7 +52,11 @@
 
   programs = {
     swaylock.enable = true;
-    fuzzel.enable = true;
+
+    fuzzel = {
+      enable = true;
+      settings.border.width = 0;
+    };
   };
 
   systemd.user = {
