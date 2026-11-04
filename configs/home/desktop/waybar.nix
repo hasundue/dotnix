@@ -29,6 +29,35 @@ let
     fi
   '';
 
+  # Right-click on the battery icon: arm the 100% override, or disarm it if it
+  # is already armed, so a mistaken click is undone by clicking again. The
+  # polkit rule in configs/hosts/x1carbon/battery.nix lets those two units start
+  # without a password, so the notification is what tells a click from a no-op.
+  battery-toggle = pkgs.writeShellScript "battery-toggle" ''
+    end=$(cat /sys/class/power_supply/BAT0/charge_control_end_threshold 2>/dev/null || echo 90)
+    msg=
+    urgency=low
+
+    if [ "$end" -ge 100 ]; then
+      if ${pkgs.systemd}/bin/systemctl start battery-restore.service; then
+        msg="Back to the 85/90 window."
+      else
+        msg="Restoring the window failed (journalctl -u battery-restore)."
+        urgency=critical
+      fi
+    elif [ "$(cat /sys/class/power_supply/AC/online)" != "1" ]; then
+      msg="Connect the charger first: a full charge needs AC."
+      urgency=normal
+    elif ${pkgs.systemd}/bin/systemctl start battery-fullcharge.service; then
+      msg="Charging to 100%. Right-click again to go back to 85/90."
+    else
+      msg="Starting the full charge failed (journalctl -u battery-fullcharge)."
+      urgency=critical
+    fi
+
+    ${pkgs.libnotify}/bin/notify-send -a battery -u "$urgency" "Battery" "$msg"
+  '';
+
   fcitx5-status = pkgs.writeShellScript "fcitx5-status" ''
     IM=$(${pkgs.fcitx5}/bin/fcitx5-remote -n 2>/dev/null)
 
@@ -209,6 +238,10 @@ in
       battery = {
         bat = "BAT0";
 
+        # The right click changes what the EC is allowed to do, and the resulting
+        # state reaches the bar late enough to feel broken. Poll faster.
+        interval = 5;
+
         states = {
           warning = 20;
           critical = 10;
@@ -230,6 +263,11 @@ in
           "󰁹"
         ];
         format-charging = "󰂄 {capacity}%";
+
+        # Top up to 100% before leaving, or cancel it if already armed (see
+        # battery-toggle above). No password: polkit allows exactly these units,
+        # and the notification reports which way the click went.
+        on-click-right = "${battery-toggle}";
 
         min-length = 6;
         max-length = 6;
