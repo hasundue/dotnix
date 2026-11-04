@@ -68,8 +68,8 @@ nix run .#home-build
 ```
 
 Which pair to use depends on what changed. A change under `configs/home/` only
-needs `home-*`: it builds the standalone `homeConfigurations` against the same
-`pkgs`, needs no sudo, and renders the same files. Anything else
+needs `nix run .#home-switch`, which builds the standalone `homeConfigurations`
+against the same `pkgs` and activates without sudo. Anything else
 (`configs/hosts/`, `configs/nixos/`, the flake itself) needs `nixos-*`, which
 rebuilds home-manager too. Both are safe, but the standalone configuration
 installs packages into the home-manager profile rather than the per-user system
@@ -97,11 +97,13 @@ Run them as a normal user: sudo is requested only for activation, so the
 password is asked at most once (not at all with a cached sudo timestamp).
 Prefixing with `sudo` also works without a second prompt.
 
-Apply (Home Manager only):
+Apply (Home Manager only; builds first, no sudo):
 
 ```bash
 nix run .#home-switch
 ```
 
-Requires a prior build (checks for `result-home` symlink and fails with a clear
-message if missing).
+It runs `home-manager switch --flake .#<user>@<host>`, the same command the
+`hms` alias uses. `nix run .#home-build` still exists for building
+`./result-home` without activating anything. Flake arguments (`--impure`,
+`--refresh`, etc.) go straight through to `home-manager`.
