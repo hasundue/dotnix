@@ -79,6 +79,45 @@ in
 
   config = lib.mkMerge [
     {
+      # One-shot bridges from the waybar click to root. `systemctl start` asks
+      # for a password through polkit, and the rule below answers yes for these
+      # two units and this user, so a click is enough.
+      systemd.services = {
+        # Leaving the house: a full pack matters more than the wear the charge
+        # window avoids.
+        battery-fullcharge = {
+          description = "Charge BAT0 to 100% once, overriding the charge window";
+          serviceConfig = {
+            Type = "oneshot";
+            ExecStart = "${config.services.tlp.package}/sbin/tlp fullcharge";
+          };
+        };
+
+        # Clicked by mistake, or the trip got cancelled: re-apply /etc/tlp.conf,
+        # which puts the window back. `tlp start` writes the thresholds, so the
+        # numbers stay in one place.
+        battery-restore = {
+          description = "Restore the configured BAT0 charge window";
+          serviceConfig = {
+            Type = "oneshot";
+            ExecStart = "${config.services.tlp.package}/sbin/tlp start";
+          };
+        };
+      };
+
+      security.polkit.extraConfig = ''
+        polkit.addRule(function(action, subject) {
+          var unit = action.lookup("unit");
+          if (action.id == "org.freedesktop.systemd1.manage-units"
+              && (unit == "battery-fullcharge.service" || unit == "battery-restore.service")
+              && subject.user == "hasundue") {
+            return polkit.Result.YES;
+          }
+        });
+      '';
+    }
+
+    {
       assertions = [
         {
           assertion =
