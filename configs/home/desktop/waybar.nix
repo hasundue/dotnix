@@ -264,6 +264,11 @@ in
         ];
         format-charging = "󰂄 {capacity}%";
 
+        # The pack sits at the window's stop threshold with AC attached. Waybar
+        # promotes sysfs's "Not charging" to "Plugged" while the adapter is
+        # online, so the key is the promoted name, not the raw status.
+        format-plugged = "󰚥 {capacity}%";
+
         # Top up to 100% before leaving, or cancel it if already armed (see
         # battery-toggle above). No password: polkit allows exactly these units,
         # and the notification reports which way the click went.
