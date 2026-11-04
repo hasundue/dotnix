@@ -95,6 +95,14 @@
     };
 
     hyprpolkitagent.enable = true;
-    mako.enable = true;
+
+    mako = {
+      enable = true;
+      settings = {
+        border-radius = 4;
+        border-size = 0;
+        padding = "10,20";
+      };
+    };
   };
 }
