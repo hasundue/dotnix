@@ -67,6 +67,15 @@ nix run .#nixos-build
 nix run .#home-build
 ```
 
+Which pair to use depends on what changed. A change under `configs/home/` only
+needs `home-*`: it builds the standalone `homeConfigurations` against the same
+`pkgs`, needs no sudo, and renders the same files. Anything else
+(`configs/hosts/`, `configs/nixos/`, the flake itself) needs `nixos-*`, which
+rebuilds home-manager too. Both are safe, but the standalone configuration
+installs packages into the home-manager profile rather than the per-user system
+profile that `useUserPackages` uses, so for a change that touches packages
+rather than config files, trust `nixos-*`.
+
 The `nixos-*` apps accept passthrough flags (`--impure`, `--show-trace`, etc.).
 They pipe output through `nom` when stdout is a TTY, and skip it when non-TTY
 for minimal output. `NOM_DISABLE` forces raw output even in a TTY:
