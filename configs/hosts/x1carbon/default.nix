@@ -23,6 +23,17 @@
     stop = 90;
   };
 
+  # Calibration spans an involuntary power-off, so it is a specialisation
+  # instead of a flag someone has to remember to turn off: the next boot lands
+  # on the base system again. Activate it for good with
+  #
+  #   nix run .#nixos-switch -- --specialisation calibration
+  #
+  # or for the running session only with
+  #
+  #   nix run .#nixos-test -- --specialisation calibration
+  specialisation.calibration.configuration.dotnix.battery.calibration = true;
+
   boot.loader = {
     systemd-boot.enable = true;
     efi.canTouchEfiVariables = true;

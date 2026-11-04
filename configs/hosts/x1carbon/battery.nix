@@ -68,8 +68,12 @@ in
       full charge re-learned the full-charge capacity from 32.62 Wh to
       38.53 Wh, which is the real number: the old one was the 80% stop point.
 
-      Keep it off otherwise. Calibration burns full cycles, and with the action
-      ignored nothing stops the machine before the EC cut-off.
+      Reach it through the `calibration` specialisation declared next to
+      {option}`dotnix.battery.chargeThresholds`: the cycle ends with the machine
+      powering itself off, so booting back into the base system reverts the mode
+      with nobody having to remember. Keep it off in the base system: calibration
+      burns full cycles, and with the action ignored nothing stops the machine
+      before the EC cut-off.
     '';
   };
 
