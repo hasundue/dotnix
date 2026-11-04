@@ -7,11 +7,21 @@
 
 {
   imports = [
+    ./battery.nix
     ./hardware-configuration.nix
 
     ../../nixos
     ../../nixos/desktop
   ];
+
+  # The firmware's 75/80 window kept the pack off a true full charge for years,
+  # so the gauge never relearned the top endpoint and the machine cut power at
+  # twenty-something percent. Keep a window, because it is what slows wear, but
+  # a wider one; run the cycle in ./battery.nix when the gauge drifts again.
+  dotnix.battery.chargeThresholds = {
+    start = 85;
+    stop = 90;
+  };
 
   boot.loader = {
     systemd-boot.enable = true;
