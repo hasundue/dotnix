@@ -47,7 +47,7 @@ let
     pkgs.linkFarm "opencode-config" opencodeFiles;
 in
 {
-  # Build home-manager generation (no sudo)
+  # Build only, for inspection (no sudo; leaves ./result-home)
   "home-build" = {
     type = "app";
     program = "${pkgs.writeShellScriptBin "home-build" ''
@@ -63,16 +63,21 @@ in
     ''}/bin/home-build";
   };
 
-  # Activate previously built home-manager generation (no sudo)
+  # Build and activate the home-manager generation (no sudo). The same command
+  # the `hms` alias runs, so there is no pre-built generation to activate by
+  # mistake.
   "home-switch" = {
     type = "app";
     program = "${pkgs.writeShellScriptBin "home-switch" ''
       set -euo pipefail
-      if [ ! -L ./result-home ]; then
-        echo "error: no result-home symlink found. Run 'nix run .#home-build' first." >&2
-        exit 1
+      flake=".#${username}@$(hostname)"
+      if [ -t 1 ] && [ -z "''${NOM_DISABLE:-}" ]; then
+        exec ${pkgs.home-manager}/bin/home-manager \
+          ${nomOpts} switch --flake "$flake" "$@" \
+          2>&1 | ${pkgs.nix-output-monitor}/bin/nom --json
+      else
+        exec ${pkgs.home-manager}/bin/home-manager switch --flake "$flake" "$@"
       fi
-      exec ./result-home/activate "$@"
     ''}/bin/home-switch";
   };
 
