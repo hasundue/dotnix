@@ -93,5 +93,8 @@
         }
       ];
     };
+
+    hyprpolkitagent.enable = true;
+    mako.enable = true;
   };
 }
