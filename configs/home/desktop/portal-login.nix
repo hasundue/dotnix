@@ -25,7 +25,7 @@ let
       # untouched (online) or when nothing answered at all (offline).
       portal_url() {
         local out code effective
-        out=$(curl --silent --show-error --location --max-time 10 \
+        out=$(curl --silent --location --max-time 10 \
           --output /dev/null --write-out '%{http_code} %{url_effective}' \
           "$probe_uri") || return 1
         code=''${out%% *}
@@ -37,14 +37,17 @@ let
       }
 
       # Resolve through the desktop's default browser rather than naming one:
-      # xdg-open goes through the XDG portal and reads mimeapps.list.
+      # xdg-open goes through the XDG portal and reads mimeapps.list. The portal
+      # starts the browser with its own environment, so this also works when the
+      # service was started before the compositor imported its variables into
+      # the user manager.
       open_portal() {
         local url=$1
-        if [ -z "''${WAYLAND_DISPLAY:-}''${DISPLAY:-}" ]; then
-          printf 'portal-open: no graphical session, would open %s\n' "$url"
-          return 0
+        if xdg-open "$url" >/dev/null 2>&1; then
+          printf 'opened %s\n' "$url"
+        else
+          printf 'could not open %s\n' "$url"
         fi
-        xdg-open "$url" >/dev/null 2>&1 || true
       }
 
       handle() {
