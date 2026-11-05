@@ -1,8 +1,13 @@
 # Note shapes
 
-Three shapes cover what the vault holds. Pick one, then use the heading set for
-the note's language. Headings are load-bearing: a note is found by reading its
-shape, not by remembering where it went.
+Two shapes cover the durable notes in this vault: capture and research. Pick
+one, then use the heading set for the note's language. Headings are
+load-bearing: a note is found by reading its shape, not by remembering where it
+went.
+
+Working notes (`ideas/`, `sf/`) have no shape on purpose. They are fragments in
+their author's own style, and adding a heading set to one is a regression, not
+an improvement. See `## Working notes` in `SKILL.md`.
 
 ## Heading sets
 
@@ -10,7 +15,6 @@ shape, not by remembering where it went.
 | -------- | --------------------------------- | ----------------------------------------------------------- |
 | capture  | 概要 / 議論 / 決定 / 未決 / 関連  | Summary / Discussion / Decisions / Open questions / Related |
 | research | 問い / わかったこと / 出典 / 関連 | Question / Findings / Sources / Related                     |
-| idea     | freeform                          | freeform                                                    |
 
 Use only the sections that have content. A `## 決定` with nothing under it is
 worse than no `## 決定`; the reader cannot tell "not decided" from "not filled
@@ -22,6 +26,7 @@ A conversation that reached a conclusion, or narrowed to a choice.
 
 ```markdown
 ---
+author: pi
 created: <YYYY-MM-DD>
 source: <repo> @ <branch>
 tags: []
@@ -57,6 +62,7 @@ Something was looked up and the answer should survive the session.
 
 ```markdown
 ---
+author: pi
 created: <YYYY-MM-DD>
 source: <url or repo>
 tags: []
@@ -85,15 +91,9 @@ tags: []
 Sources are not decoration: a claim without one is a guess that will be trusted
 later.
 
-## idea
-
-A seed. No template -- freeform, as long as the first lines say what the thing
-is and what makes it interesting. Only `created` in the frontmatter. If the idea
-has grown into work with a goal, say so instead of filing it as an idea.
-
 ## Appending
 
-Appends go at the end of the note, under a dated heading:
+Appends to a durable note go at the end, under a dated heading:
 
 ```markdown
 ## <YYYY-MM-DD>
@@ -104,6 +104,10 @@ Appends go at the end of the note, under a dated heading:
 Never edit the frontmatter to reflect an append -- `created` is the creation
 date. Never renumber or reorder earlier sections.
 
+Appends to a working note are not sections at all: add the line, in the shape of
+the lines above it, and stop. A dated heading in a bullet list of ideas turns
+the note into something it was not.
+
 ## Filled example
 
 Illustrative: the prose shows the register and the level of detail. Identifiers
@@ -112,6 +116,7 @@ that would point at real things -- the repository, the branch, the linked notes
 
 ```markdown
 ---
+author: pi
 created: 2026-11-05
 source: <repo> @ <branch>
 tags: []
