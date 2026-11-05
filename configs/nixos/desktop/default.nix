@@ -37,15 +37,20 @@
     users.hasundue.imports = [ ../../home/desktop ];
   };
 
-  programs.niri.enable = true;
+  programs = {
+    niri.enable = true;
+    thunar.enable = true;
+  };
 
   services = {
+    gvfs.enable = true;
     pipewire = {
       enable = true;
       alsa.enable = true;
       pulse.enable = true;
     };
     pulseaudio.enable = false;
+    tumbler.enable = true;
   };
 
   services.greetd = {

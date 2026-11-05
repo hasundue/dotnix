@@ -33,7 +33,6 @@
       # tools
       networkmanager_dmenu
       slurp
-      thunar
       wl-clipboard
       xdg-utils
     ];
