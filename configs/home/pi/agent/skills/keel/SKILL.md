@@ -26,8 +26,8 @@ should be used better; the invariants should shrink, not grow.
 
 1. **Nothing is implemented before the user's explicit yes.**
 2. **Before that yes, the work is either declared small or has one note with a
-   problem, a spec, and acceptance criteria, `status: agreed`, and
-   `confirmed:` set.**
+   problem, a spec, and acceptance criteria, `status: agreed`, and `confirmed:`
+   set.**
 3. **The restate names what is out of scope.**
 4. **If scope moves mid-work, it moves in the note and gets re-confirmed.**
 
@@ -49,8 +49,8 @@ basename "$(dirname "$(git rev-parse --path-format=absolute --git-common-dir)")"
 # ~/dotnix.pi-workflow -> dotnix
 ```
 
-Not in a git repository? Ask for the project; do not guess. Create the
-directory if it is missing.
+Not in a git repository? Ask for the project; do not guess. Create the directory
+if it is missing.
 
 Pick `<slug>` yourself, in kebab-case, from the task. Do not ask the user to
 name the file: they will rename it if they dislike it, and discovery does not
@@ -154,7 +154,10 @@ Fill the template in `references/templates.md`. Three parts matter most:
   is not a criterion; "an expired token redirects to `/login` and preserves the
   return path" is. Each one gets a `verify:` -- a command, or a manual step. If
   you cannot say how to check it, split it until you can, or drop it. A
-  criterion nobody can check is decoration.
+  criterion nobody can check is decoration. A criterion that ends in the user's
+  judgment (a listen, a look, a preference) states **what to decide**, never how
+  to answer: no reply formats like "reply in one line" or "answer with X". The
+  verify step records the answer in whatever shape the user gives it.
 - **Out of scope** -- non-negotiable. Half of misalignment is silent
   disagreement about what is not being built.
 - **Stop conditions** -- when to stop instead of grinding. Defaults:
@@ -216,6 +219,7 @@ into the note, then let it continue -- so the next cold run never has to ask.
 - A restate that omits what is out of scope
 - Accepting "whatever you think" as a terminal answer
 - A criterion with no `verify:`
+- A criterion that dictates the user's reply format
 - A paraphrase presented as a quote under "in the user's words"
 - Writing the spec before the problem
 - Questions with no guess attached -- that is surveying, not interviewing
@@ -227,8 +231,8 @@ into the note, then let it continue -- so the next cold run never has to ask.
 
 - [ ] The work was judged large before the note was written, or keel exited
       early
-- [ ] The note is under `~/notes/projects/<project>/`; the repo has no
-      working note
+- [ ] The note is under `~/notes/projects/<project>/`; the repo has no working
+      note
 - [ ] The problem section contains no solution
 - [ ] Criteria, each with `verify:`, plus out-of-scope and stop conditions
 - [ ] A restate was written back, including out of scope

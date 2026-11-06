@@ -24,6 +24,7 @@ the user asks for it.
    report.**
 3. **Scope moves in the note first, then gets re-confirmed.**
 4. **A blocker is written down and raised, never silently absorbed.**
+5. **Report in the language of the task note.**
 
 Everything else -- implementation order, commits, test commands -- follows the
 repo and the note.
@@ -100,9 +101,15 @@ Do not call the work done because the diff looks plausible. The criteria decide.
 Set `status: done` only after every criterion is ticked or reported unmet, and
 the user has confirmed the result.
 
-End with a compact report: what changed, which criteria passed with what
-evidence, what is unmet, and what still needs a decision. The next action is the
-user's.
+End with a compact report in the note's language: what changed, which criteria
+passed with what evidence, what is unmet, and what still needs a decision. The
+next action is the user's.
+
+When the next action is the user's judgment -- a listen, a look, a preference --
+ask for the judgment itself, not for a format. Never dictate the shape of the
+user's reply ("in one line", "as a table"); the note's criteria bind what is
+decided, not how the user speaks. Record their answer under `## Log` as they
+gave it, quoting verbatim where it matters.
 
 ## Merge after confirmation
 
@@ -117,9 +124,9 @@ Before merging:
   user wants a single linear commit, a merge commit, or a platform squash merge.
   Do not choose the history shape silently.
 
-The note is outside the repository, so a squash merge needs no cleanup: no
-files to strip, no archive branch, no guard hook. After the merge, record what
-the note should point at:
+The note is outside the repository, so a squash merge needs no cleanup: no files
+to strip, no archive branch, no guard hook. After the merge, record what the
+note should point at:
 
 ```yaml
 pr: 123
