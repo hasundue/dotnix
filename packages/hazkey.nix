@@ -13,6 +13,7 @@
   gettext,
   pkg-config,
   patchelf,
+  perl,
   protobuf,
   fcitx5,
   qt6,
@@ -58,6 +59,7 @@ stdenv.mkDerivation {
     gettext
     pkg-config
     patchelf
+    perl
     protobuf
     qt6.wrapQtAppsHook
   ];
@@ -84,6 +86,25 @@ stdenv.mkDerivation {
     # Also, modern abseil/protobuf headers require C++20.
     substituteInPlace hazkey-settings/CMakeLists.txt \
       --replace-fail 'set(CMAKE_CXX_STANDARD 17)' 'set(CMAKE_CXX_STANDARD 20)'
+
+    # Start every composition from a clean converter cache. AzooKey reuses the
+    # previous lattice for the same reading (or a continuation of it), and that
+    # cache also pins dictionary and learning-memory lookups, so a candidate
+    # learned in this session stays invisible until hazkey-server restarts.
+    # `stopComposition()` is the only public API that drops the cache; hazkey
+    # never calls it. See https://github.com/7ka-Hiira/hazkey/issues/35.
+    perl -0pi -e \
+      's/(func createComposingTextInstanse\(\) -> Hazkey_ResponseEnvelope \{\n\s*)/$1converter.stopComposition()\n        /' \
+      hazkey-server/Sources/hazkey-server/state.swift
+    grep -q 'converter.stopComposition()' \
+      hazkey-server/Sources/hazkey-server/state.swift
+
+    # Keep the context of the text just committed when the application has not
+    # reported its updated surrounding text yet. Without this, the first
+    # composition after a commit can fall back to the previous sentence as the
+    # Zenzai left context. The same patch counts appended text in characters,
+    # which is the unit fcitx5 uses for surrounding-text offsets.
+    patch -p1 < ${./hazkey/context-staleness.patch}
   '';
 
   configurePhase = ''
@@ -112,6 +133,16 @@ stdenv.mkDerivation {
       # copy step needs a writable directory (it creates the destination with the
       # source's mode), so make the package with resources mutable.
       swiftpmMakeMutable AzooKeyKanaKanjiConverter
+
+      # Include temporary (in-session) learning entries whose length equals the
+      # shortest surface of the current lookup. With per-keystroke suggestion
+      # queries the final incremental step only searches full-length surfaces
+      # (minCount == entry length), so the strict `<` drops a candidate learned
+      # a moment ago. See https://github.com/7ka-Hiira/hazkey/issues/35.
+      substituteInPlace \
+        .build/checkouts/AzooKeyKanaKanjiConverter/Sources/KanaKanjiConverterModule/DictionaryManagement/DicdataStore.swift \
+        --replace-fail 'minCount < $0.key + 1 ? $0.value : []' \
+        'minCount <= $0.key + 1 ? $0.value : []'
     )
 
     cmake -B build -G Ninja \
