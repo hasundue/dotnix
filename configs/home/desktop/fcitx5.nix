@@ -25,6 +25,9 @@
       settings = {
         addons = {
           clipboard.globalSection.TriggerKey = ""; # Ctrl+; to disable
+          # Select the next candidate when Space opens the list. The live
+          # conversion already shows the first candidate in the preedit.
+          hazkey.globalSection.advanceOnOpen = true;
         };
         inputMethod = {
           GroupOrder."0" = "Default";

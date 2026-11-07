@@ -105,6 +105,11 @@ stdenv.mkDerivation {
     # Zenzai left context. The same patch counts appended text in characters,
     # which is the unit fcitx5 uses for surrounding-text offsets.
     patch -p1 < ${./hazkey/context-staleness.patch}
+
+    # Add an `advanceOnOpen` addon option: when a live conversion is shown in
+    # the preedit, opening the candidate list with Space selects the next
+    # candidate instead of the one already displayed.
+    patch -p1 < ${./hazkey/candidate-advance.patch}
   '';
 
   configurePhase = ''
