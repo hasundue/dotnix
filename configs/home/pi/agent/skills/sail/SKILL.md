@@ -3,7 +3,7 @@ name: sail
 description: >
   Execute an agreed spec. Use after a spec gate such as keel, or whenever a task
   note at ~/notes/projects/<project>/<YYYY-MM-DD>-<slug>.md already defines the
-  problem, acceptance criteria, and confirmation. Finds the note from the
+  problem, acceptance criteria, and stop conditions. Finds the note from the
   current branch, works each criterion with its verify step, ticks criteria with
   evidence, updates the note before changing scope, stops on blockers instead of
   guessing, and reports evidence per criterion. Use when the user says "execute
@@ -22,9 +22,10 @@ the user asks for it.
 1. **Find and read the task note before touching code.**
 2. **Every acceptance criterion ends with evidence or an explicit unmet
    report.**
-3. **Scope moves in the note first, then gets re-confirmed.**
-4. **A blocker is written down and raised, never silently absorbed.**
-5. **Report in the language of the task note.**
+3. **Closing and merging wait for the user's word; neither is asked for.**
+4. **Scope moves in the note first, then gets re-confirmed.**
+5. **A blocker is written down and raised, never silently absorbed.**
+6. **Report in the language of the task note.**
 
 Everything else -- implementation order, commits, test commands -- follows the
 repo and the note.
@@ -100,8 +101,9 @@ command and its result, or what you observed and where. Unmet criteria are
 reported as unmet, not renegotiated after the fact.
 
 Do not call the work done because the diff looks plausible. The criteria decide.
-Set `status: done` only after every criterion is ticked or reported unmet, and
-the user has confirmed the result.
+Report what passed and what is unmet, then leave the note open: `status: done`
+is set when the user says the task is closed. Do not ask whether to close, and
+do not close it on your own.
 
 End with a compact report in the note's language: what changed, which criteria
 passed with what evidence, what is unmet, and what still needs a decision. The
@@ -113,18 +115,18 @@ user's reply ("in one line", "as a table"); the note's criteria bind what is
 decided, not how the user speaks. Record their answer under `## Log` as they
 gave it, quoting verbatim where it matters.
 
-## Merge after confirmation
+## Merge
 
-Merge only after the user has confirmed the result. Passing tests are evidence,
-not permission to merge.
+Merging waits for the user as well. Do not ask whether to merge: when the work
+is done, say where the branch stands and leave it there. Merge when the user
+says to, and only then.
 
 Before merging:
 
 - Run the repository's final gates on the branch, typically the formatter check
   and the full test suite.
-- Follow the repository's merge convention. If there is none, ask whether the
-  user wants a single linear commit, a merge commit, or a platform squash merge.
-  Do not choose the history shape silently.
+- Follow the repository's merge convention. Where it has none, keep history
+  linear -- no merge commit -- and say which shape you used.
 
 The note is outside the repository, so a squash merge needs no cleanup: no files
 to strip, no archive branch, no guard hook. After the merge, record what the

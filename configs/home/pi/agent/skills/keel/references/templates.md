@@ -90,8 +90,8 @@ task actually touches.>
 - `## Out of scope` uses plain `-` items, so `[ ]` keeps a single meaning.
 - Ticking is not renegotiation. Changing the text of a criterion is, and needs a
   fresh confirmation.
-- `status: done` only after every criterion is ticked or reported unmet, and the
-  user has confirmed the result.
+- `status: done` once every criterion is ticked or reported unmet and the user
+  has said the task is closed. Do not ask whether to close.
 
 ## Filled example (compact)
 
