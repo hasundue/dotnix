@@ -6,9 +6,12 @@ Keep it short -- a note nobody rereads is not a spec.
 ## The template
 
 `status` is one of `draft`, `agreed`, `done`, `blocked`. `confirmed` takes the
-date of the user's yes; `pr` and `merge_commit` are filled in after the merge.
-Leave a field empty until it has a value, and do not carry this legend into the
-note.
+date the user confirmed; a note that is still a draft keeps it empty, which is a
+normal state, not a defect. `pr` and `merge_commit` are filled in after the
+merge. Leave a field empty until it has a value, and do not carry this legend
+into the note.
+
+<!-- deno-fmt-ignore -->
 
 ```markdown
 ---
@@ -87,12 +90,17 @@ task actually touches.>
   command and its result, or what was observed and where.
 - Unmet stays unticked, with `unmet: <reason>` on the evidence line.
 - `## Out of scope` uses plain `-` items, so `[ ]` keeps a single meaning.
-- Ticking is not renegotiation. Changing the text of a criterion is, and needs
-  a fresh confirmation.
-- `status: done` only after every criterion is ticked or reported unmet, and
-  the user has confirmed the result.
+- The template and example fences carry `<!-- deno-fmt-ignore -->`: the Markdown
+  formatter otherwise rewrites `[ ]` items and joins the indented `verify:`
+  lines inside them.
+- Ticking is not renegotiation. Changing the text of a criterion is, and needs a
+  fresh confirmation.
+- `status: done` only after every criterion is ticked or reported unmet, and the
+  user has confirmed the result.
 
 ## Filled example (compact)
+
+<!-- deno-fmt-ignore -->
 
 ```markdown
 ---

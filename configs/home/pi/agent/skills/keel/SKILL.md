@@ -3,9 +3,9 @@ name: keel
 description: >
   Pre-work spec gate for large changes. Agrees on the problem, the spec, and
   the acceptance criteria, records them in one task note in the Obsidian vault
-  (~/notes/projects/<project>/<YYYY-MM-DD>-<slug>.md), and stops until the user
-  says yes. The note lives outside the repository, so a squash merge cannot
-  lose it. Use at the start of a feature, refactor, migration, or any multi-file
+  (~/notes/projects/<project>/<YYYY-MM-DD>-<slug>.md), and hands control back
+  before implementing. The note lives outside the repository, so a squash merge
+  cannot lose it. Use at the start of a feature, refactor, migration, or any multi-file
   change whose shape is not yet agreed; when the user says "spec it out",
   "define the criteria", "before we start", "let's plan"; or when you catch
   yourself about to guess at requirements. When unsure whether a task is large
@@ -15,8 +15,7 @@ description: >
 # Keel
 
 Lay the keel before the hull: agree on the problem, the spec, and the acceptance
-criteria, and write them where a merge cannot lose them. Then stop until the
-user says yes.
+criteria, and write them where a merge cannot lose them. Then hand control back.
 
 Keel is not a mode and not a pipeline. It has four invariants you may not skip
 and a toolbox you use at your discretion. As models get better, the toolbox
@@ -24,15 +23,15 @@ should be used better; the invariants should shrink, not grow.
 
 ## Invariants
 
-1. **Nothing is implemented before the user's explicit yes.**
-2. **Before that yes, the work is either declared small or has one note with a
-   problem, a spec, and acceptance criteria, `status: agreed`, and `confirmed:`
-   set.**
-3. **The restate names what is out of scope.**
-4. **If scope moves mid-work, it moves in the note and gets re-confirmed.**
+1. **Nothing is implemented in the turn that writes the note, and no approval is
+   asked for: hand control back and let the user move first.**
+2. **The work is either declared small or has one note with a problem, a spec,
+   and acceptance criteria.**
+3. **The note names what is out of scope.**
+4. **If scope moves mid-work, it moves in the note before anyone acts on it.**
 
-Everything else -- how many questions, whether to research first, how to phrase
-the restate -- is judgment.
+Everything else -- how many questions, whether to research first, how the note
+is organized -- is judgment.
 
 ## The note
 
@@ -173,31 +172,30 @@ Write the note so it can be read **cold** -- by a session that has none of this
 conversation. No "as discussed", no "the usual place". Paths, current behavior,
 decisions and their reasons, commands. Keel's whole handoff story rests on this.
 
-### 5. Restate and ask for an explicit yes
+### 5. Hand the note over
 
-Restate the agreed outcome, who it is for, why now, what success looks like, the
-binding constraint, and what is out of scope. Use their language and keep it
-tight; do not force it into a fixed template.
+The note already carries the outcome, who it is for, why now, what success looks
+like, the binding constraint, and what is out of scope. Point at it: the path,
+and one or two lines on what it commits to. Do not repeat those sections back in
+chat.
 
-Ask for an explicit yes. These are **not** yes: "whatever you think", "sounds
-good", "sure, let's go", silence followed by "okay, start". They are delegation
-or polite exits. Re-ask with two concrete options instead. If they correct you,
-fold it in and restate.
+Do not ask for approval. Not "does this look right?", not "shall I go?", not
+"confirm and I will start". If the user wants a confirmation step they will ask
+for one; the next move is theirs.
 
-### 6. On yes: record it, then stop the turn
+Then end the turn. Do not start implementing, do not "just scaffold", do not
+open the first file. The gate is the feature; skipping the stop empties it out.
 
-Set `status: agreed`, fill `confirmed:` with the date, and add to
+When the user does confirm -- explicitly, or simply by telling you to go --
+record it: `status: agreed`, `confirmed:` set to the date, and their words under
 `## Confirmed`:
 
 ```markdown
 - 2026-11-02 -- user: "go that way"
 ```
 
-There is nothing to commit: the note is already outside the repository.
-
-Then **end the turn**. Do not start implementing, do not "just scaffold", do not
-open the first file. The gate is the feature; skipping the stop empties it out.
-Hand control back and let the user choose how to proceed.
+Until then the note stays `draft` and there is nothing to record. There is also
+nothing to commit: the note is already outside the repository.
 
 ## Handoff
 
@@ -211,13 +209,14 @@ into the note, then let it continue -- so the next cold run never has to ask.
 
 ## Red flags
 
-- Starting to implement, or "just setting up", in the same turn as the yes
+- Starting to implement, or "just setting up", in the same turn as the note
+- Asking for approval, or re-asking after a vague answer
 - Writing a working note into the repository
 - Cutting a branch on your own initiative
 - Asking the user to name the note
 - Grinding through questions when the answer is already obvious
-- A restate that omits what is out of scope
-- Accepting "whatever you think" as a terminal answer
+- Repeating the note's sections back instead of pointing at it
+- A note that never says what is out of scope
 - A criterion with no `verify:`
 - A criterion that dictates the user's reply format
 - A paraphrase presented as a quote under "in the user's words"
@@ -235,8 +234,8 @@ into the note, then let it continue -- so the next cold run never has to ask.
       note
 - [ ] The problem section contains no solution
 - [ ] Criteria, each with `verify:`, plus out-of-scope and stop conditions
-- [ ] A restate was written back, including out of scope
-- [ ] The user said yes explicitly; "sounds good" was re-asked
-- [ ] `status: agreed` and `confirmed:` record the date and the user's words
-- [ ] The turn ended at the gate; no implementation started
+- [ ] The note says what is out of scope; the handoff did not repeat the note
+- [ ] No approval was requested; `agreed` / `confirmed:` were set only from the
+      user's own confirmation or go
+- [ ] The turn ended at the note; no implementation started
 - [ ] Mid-work scope changes were written to the note before acting

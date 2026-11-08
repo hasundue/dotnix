@@ -46,9 +46,11 @@ basename "$(dirname "$(git rev-parse --path-format=absolute --git-common-dir)")"
 ```
 
 Read the note fully. If it is missing, empty, or has no acceptance criteria,
-stop and ask. If `confirmed:` is empty, ask whether the spec is agreed before
-implementing. If `status: blocked`, read `## Blocker` first. If `status: done`,
-there is nothing to execute.
+stop and ask. If `confirmed:` is empty the note is still a draft; do not ask
+whether it is agreed. The instruction that brought you here is the go: record it
+under `## Confirmed` and set `confirmed:` before implementing. If
+`status: blocked`, read `## Blocker` first. If `status: done`, there is nothing
+to execute.
 
 Then check the current branch and working tree so you know what you are
 changing. Do not push, rewrite history, or discard unrelated work unless the
