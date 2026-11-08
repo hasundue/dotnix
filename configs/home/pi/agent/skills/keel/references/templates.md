@@ -84,9 +84,9 @@ task actually touches.>
 ## Checklist rules
 
 - `- [ ]` -- criterion not yet verified.
-- `- [x]` -- verified. One line of evidence indented directly beneath: the
-  command and its result, or what was observed and where.
-- Unmet stays unticked, with `unmet: <reason>` on the evidence line.
+- `- [x]` -- verified, with what proves it recorded with it: the command and its
+  result, or what was observed and where.
+- Unmet stays unticked, marked `unmet: <reason>`.
 - `## Out of scope` uses plain `-` items, so `[ ]` keeps a single meaning.
 - Ticking is not renegotiation. Changing the text of a criterion is, and needs a
   fresh confirmation.

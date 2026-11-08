@@ -132,8 +132,8 @@ The interview is also the measurement. If a few questions show the change is one
 obvious edit, say so and drop keel: no note, just do the work. That is a
 success, not a bail-out -- the ceremony was avoided, which is the point.
 
-If the work is large, name the evidence in one line (files touched, behaviours
-changed, unknowns remaining) so the note is justified rather than assumed.
+If the work is large, name the evidence (files touched, behaviours changed,
+unknowns remaining) so the note is justified rather than assumed.
 
 ### 3. Write the problem
 
@@ -175,9 +175,8 @@ decisions and their reasons, commands. Keel's whole handoff story rests on this.
 ### 5. Hand the note over
 
 The note already carries the outcome, who it is for, why now, what success looks
-like, the binding constraint, and what is out of scope. Point at it: the path,
-and one or two lines on what it commits to. Do not repeat those sections back in
-chat.
+like, the binding constraint, and what is out of scope. Point at it and say what
+it commits to. Do not repeat those sections back in chat.
 
 Do not ask for approval. Not "does this look right?", not "shall I go?", not
 "confirm and I will start". If the user wants a confirmation step they will ask

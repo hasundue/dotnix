@@ -68,8 +68,8 @@ silently. Keep `branch:` in the note in step with the branch actually used.
 Work through the acceptance criteria, not through a feeling of doneness. Use
 each criterion's `verify:` to decide what to run or inspect.
 
-- Tick each criterion as you verify it, with one line of evidence indented
-  beneath: the command and its result, or what you observed and where.
+- Tick each criterion as you verify it, recording what proves it: the command
+  and its result, or what you observed and where.
 - Leave missed criteria unticked and add `unmet: <reason>`. Never tick one to
   look busy, and never reword one to make it pass.
 - If a criterion is already satisfied, record the evidence instead of changing
@@ -96,17 +96,17 @@ without a written trace is a failed handoff.
 
 ## Verify and close
 
-Walk the acceptance criteria one by one and report evidence per item: the
-command and its result, or what you observed and where. Unmet criteria are
-reported as unmet, not renegotiated after the fact.
+Walk the acceptance criteria one by one and report what proves each: the command
+and its result, or what you observed and where. Unmet criteria are reported as
+unmet, not renegotiated after the fact.
 
 Do not call the work done because the diff looks plausible. The criteria decide.
 Report what passed and what is unmet, then leave the note open: `status: done`
 is set when the user says the task is closed. Do not ask whether to close, and
 do not close it on your own.
 
-End with a compact report in the note's language: what changed, which criteria
-passed with what evidence, what is unmet, and what still needs a decision. The
+End with a report in the note's language: what changed, which criteria passed
+with what evidence, what is unmet, and what still needs a decision. The
 next action is the user's.
 
 When the next action is the user's judgment -- a listen, a look, a preference --

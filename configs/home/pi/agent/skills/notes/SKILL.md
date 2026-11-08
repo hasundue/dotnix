@@ -163,16 +163,8 @@ English -- the vault is user content, not source.
 
 ## Reporting
 
-After writing, say what landed, in one short block:
-
-```
-~/notes/projects/<project>/<YYYY-MM-DD>-<slug>.md
-  One line on what the note says
-  linked: [[<related note>]]
-```
-
-Path, one line on what the note says, and what it links to. Do not paste the
-note back unless asked.
+After writing, say what landed: the path, what the note says, and what it links
+to. Do not paste the note back unless asked.
 
 ## Recall
 
@@ -184,9 +176,9 @@ rg -l -i '<terms>' .
 rg -n -i '<terms>' . | head -40
 ```
 
-Report the path, one line per note on what it says, and the quote or section
-that answers the question. If several notes disagree, say so and give dates --
-the newer one usually wins, and the disagreement is worth knowing.
+Report the path, what each note says, and the quote or section that answers the
+question. If several notes disagree, say so and give dates -- the newer one
+usually wins, and the disagreement is worth knowing.
 
 Zero hits is an answer: say nothing is there, and offer to write the note that
 should have existed.
