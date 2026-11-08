@@ -64,8 +64,8 @@ Project-specific tools are enabled via `opencode.jsonc` in the repository root:
 {
   // Enable NixOS tools for this project only
   "tools": {
-    "nixos*": true
-  }
+    "nixos*": true,
+  },
 }
 ```
 

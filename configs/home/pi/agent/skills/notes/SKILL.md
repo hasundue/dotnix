@@ -108,7 +108,7 @@ Frontmatter:
 ---
 author: pi
 created: <YYYY-MM-DD>
-source: <repo> @ <branch>   # optional: repo, branch, URL, or session
+source: <repo> @ <branch> # optional: repo, branch, URL, or session
 tags: []
 ---
 ```

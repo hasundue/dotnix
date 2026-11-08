@@ -4,13 +4,13 @@
     "plan": {
       "tools": {
         "nixos_*": true,
-        "nixos_darwin_*": false
-      }
-    }
+        "nixos_darwin_*": false,
+      },
+    },
   },
   "permission": {
     "bash": {
-      "nix flake check": "deny"
-    }
-  }
+      "nix flake check": "deny",
+    },
+  },
 }

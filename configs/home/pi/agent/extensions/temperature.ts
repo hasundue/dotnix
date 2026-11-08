@@ -31,8 +31,7 @@ export default function (pi: ExtensionAPI) {
   // ── Commands ─────────────────────────────────────────────────────────────
 
   pi.registerCommand("temperature", {
-    description:
-      "Show or set model temperature (0-2). Usage: /temperature [<n>]",
+    description: "Show or set model temperature (0-2). Usage: /temperature [<n>]",
     handler: async (args: string, ctx) => {
       const trimmed = args.trim();
 

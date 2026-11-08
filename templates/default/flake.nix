@@ -43,8 +43,9 @@
         let
           inherit (pkgs.stdenv.hostPlatform) system;
           treefmt = treefmt-nix.lib.mkWrapper pkgs {
-            programs.nixfmt = {
-              enable = true;
+            programs = {
+              nixfmt.enable = true;
+              oxfmt.enable = true;
             };
           };
           git-hooks = git-hooks-nix.lib.${system}.run {
@@ -61,6 +62,7 @@
           default = pkgs.mkShell {
             packages = with pkgs; [
               nil
+              oxfmt
               treefmt
             ];
             shellHook = git-hooks.shellHook;

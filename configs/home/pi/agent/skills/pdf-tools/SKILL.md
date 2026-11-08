@@ -104,6 +104,7 @@ paths.
   then `read` the PNG. Do this when `info` and the text disagree, when a page is
   a form or slide rather than prose, or when a split cuts a title or swallows a
   paragraph; then pass `--columns N` explicitly.
+
 - **ketch vs local extraction.** For a PDF behind a URL, `ketch scrape <url>` is
   the cheapest first look (no OCR), but its extractor drops inter-word spacing —
   text comes out jammed. When the wording matters, download the file and use
@@ -135,6 +136,7 @@ paths.
   poppler decodes them. Tags such as `(20)`, `(C21a)`, `(1a)`, fullwidth
   `共20兲`, and ASCII substitutes such as `~1a!` are all recognised. The journal
   header year, e.g. `(2007)`, is ignored; header/footer lines are excluded.
+
 - **Adjacent displays can share one crop.** Equations separated by less than a
   line of whitespace are grouped into one image. If you need exactly one
   equation, use `pages --crop` with the coordinates printed by `equations`, or

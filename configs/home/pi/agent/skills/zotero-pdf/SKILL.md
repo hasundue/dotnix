@@ -39,7 +39,9 @@ with `searchTools("zotero")` or `describeNamespace("mcp__zotero")`), and return
 only what the task needs:
 
 ```js
-const res = await tools.mcp__zotero__zotero_search_items({ query: "Siegert pseudostate" });
+const res = await tools.mcp__zotero__zotero_search_items({
+  query: "Siegert pseudostate",
+});
 const text = res.content.map((c) => c.text ?? "").join("\n");
 text(text);
 ```
@@ -61,7 +63,9 @@ instead.
 Either filter inside the codemode script and return only the matching lines:
 
 ```js
-const res = await tools.mcp__zotero__zotero_item_fulltext({ item_key: "BH8XS93N" });
+const res = await tools.mcp__zotero__zotero_item_fulltext({
+  item_key: "BH8XS93N",
+});
 const body = res.content.map((c) => c.text ?? "").join("\n");
 const hits = body.split("\n").filter((line) => /Siegert|pseudostate/.test(line));
 text(hits.slice(0, 40).join("\n"));
