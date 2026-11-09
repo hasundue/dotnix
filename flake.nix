@@ -252,6 +252,7 @@
         hazkey = pkgs.callPackage ./packages/hazkey.nix { };
         hazkey-vulkan = pkgs.callPackage ./packages/hazkey.nix { vulkanSupport = true; };
         zenzai-model = pkgs.callPackage ./packages/zenzai-model.nix { };
+        waku = pkgs.callPackage ./packages/waku.nix { };
       });
       homeConfigurations =
         lib.mapAttrs' (hostname: v: homeConfig v |> lib.nameValuePair "${username}@${hostname}")

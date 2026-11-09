@@ -11,6 +11,7 @@
     ./slack.nix
     ./spotify.nix
     ./vscode.nix
+    ./waku.nix
     ./waybar.nix
     ./xdg.nix
     ./zed
