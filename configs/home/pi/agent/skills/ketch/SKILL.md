@@ -1,10 +1,12 @@
 ---
 name: ketch
 description: >
-  Use the `ketch` CLI for all external research: web pages, real-time search
-  results, source code from a repository, and library docs or API details. Use
-  whenever the answer is not in training data or the local repo — current
-  pages, unfamiliar APIs, or a lookup the user asks for.
+  Fetch and search sources outside the machine with the `ketch` CLI: web pages,
+  real-time search, source code from a repository, and library docs or API
+  details. Use when the answer must come from elsewhere — current pages, an
+  unfamiliar API, a named repository's code — and prefer it over raw `curl` or
+  HTML scraping. Not for local files, the current repo, or anything a dedicated
+  tool or MCP server already covers.
 ---
 
 # Ketch CLI — External Research Tool
