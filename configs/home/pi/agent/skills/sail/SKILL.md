@@ -22,7 +22,7 @@ the user asks for it.
 1. **Find and read the task note before touching code.**
 2. **Every acceptance criterion ends with evidence or an explicit unmet
    report.**
-3. **Closing and merging wait for the user's word; neither is asked for.**
+3. **Merging waits for the user's word; the merge closes the note.**
 4. **Scope moves in the note first, then gets re-confirmed.**
 5. **A blocker is written down and raised, never silently absorbed.**
 6. **Report in the language of the task note.**
@@ -94,20 +94,21 @@ Write the situation under `## Blocker`: what was tried, what happened, the
 likely cause, and the options you see. Set `status: blocked`. Then ask. A stop
 without a written trace is a failed handoff.
 
-## Verify and close
+## Verify and report
 
 Walk the acceptance criteria one by one and report what proves each: the command
 and its result, or what you observed and where. Unmet criteria are reported as
 unmet, not renegotiated after the fact.
 
 Do not call the work done because the diff looks plausible. The criteria decide.
-Report what passed and what is unmet, then leave the note open: `status: done`
-is set when the user says the task is closed. Do not ask whether to close, and
-do not close it on your own.
+Report what passed and what is unmet, then leave the note open: the merge closes
+it (`status: done`). If the task ends without a merge, the user's word closes
+it. Do not ask whether to close, and do not close it before the merge or that
+word.
 
 End with a report in the note's language: what changed, which criteria passed
-with what evidence, what is unmet, and what still needs a decision. The
-next action is the user's.
+with what evidence, what is unmet, and what still needs a decision. The next
+action is the user's.
 
 When the next action is the user's judgment -- a listen, a look, a preference --
 ask for the judgment itself, not for a format. Never dictate the shape of the
@@ -129,12 +130,14 @@ Before merging:
   linear -- no merge commit -- and say which shape you used.
 
 The note is outside the repository, so a squash merge needs no cleanup: no files
-to strip, no archive branch, no guard hook. After the merge, record what the
-note should point at:
+to strip, no archive branch, no guard hook. After the merge, close the note --
+`status: done` -- and record what it should point at:
 
 ```yaml
 pr: 123
 merge_commit: abc1234
 ```
+
+Log the merge and the close.
 
 Never rewrite `main` or force-push it.
