@@ -182,16 +182,9 @@ for one; the next move is theirs.
 Then end the turn. Do not start implementing, do not "just scaffold", do not
 open the first file. The gate is the feature; skipping the stop empties it out.
 
-When the user does confirm -- explicitly, or simply by telling you to go --
-record it: `status: agreed`, `confirmed:` set to the date, and their words under
-`## Confirmed`:
-
-```markdown
-- 2026-11-02 -- user: "go that way"
-```
-
-Until then the note stays `draft` and there is nothing to record. There is also
-nothing to commit: the note is already outside the repository.
+The note stays `draft` until an executor picks it up and marks it `agreed`:
+there is nothing for the gate to record, and nothing to commit, because the note
+is already outside the repository.
 
 ## Handoff
 
@@ -231,7 +224,6 @@ into the note, then let it continue -- so the next cold run never has to ask.
 - [ ] The problem section contains no solution
 - [ ] Criteria, each with `verify:`, plus out-of-scope and stop conditions
 - [ ] The note says what is out of scope; the handoff did not repeat the note
-- [ ] No approval was requested; `agreed` / `confirmed:` were set only from the
-      user's own confirmation or go
+- [ ] No approval was requested, and the note was left `draft` for the executor
 - [ ] The turn ended at the note; no implementation started
 - [ ] Mid-work scope changes were written to the note before acting

@@ -5,18 +5,15 @@ Keep it short -- a note nobody rereads is not a spec.
 
 ## The template
 
-`status` is one of `draft`, `agreed`, `done`, `blocked`. `confirmed` takes the
-date the user confirmed; a note that is still a draft keeps it empty, which is a
-normal state, not a defect. `pr` and `merge_commit` are filled in after the
-merge. Leave a field empty until it has a value, and do not carry this legend
-into the note.
+`status` is one of `draft`, `agreed`, `done`, `blocked`. `pr` and `merge_commit`
+are filled in after the merge. Leave a field empty until it has a value, and do
+not carry this legend into the note.
 
 ```markdown
 ---
 created: <YYYY-MM-DD>
 status: draft
 branch: <branch the task runs on>
-confirmed:
 pr:
 merge_commit:
 ---
@@ -72,10 +69,6 @@ task actually touches.>
 
 - <date> -- <decision> -- <reason>
 
-## Confirmed
-
-- <date> -- user: "<their words>"
-
 ## Log
 
 <Append-only. Research, dead ends, open questions, sketches.>
@@ -100,7 +93,6 @@ task actually touches.>
 created: 2025-11-30
 status: agreed
 branch: idle-timeout
-confirmed: 2025-11-30
 ---
 
 # Expire sessions on idle, not on a fixed clock
@@ -146,8 +138,4 @@ cap alone. Update the test to distinguish idle and absolute expiry.
 
 - 2025-11-30 -- idle timeout only, no absolute cap change -- smaller diff, and
   the cap is a compliance requirement
-
-## Confirmed
-
-- 2025-11-30 -- user: "go that way"
 ```
