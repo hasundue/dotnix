@@ -105,6 +105,10 @@
         border-radius = 4;
         border-size = 0;
         padding = "10,20";
+
+        "app-name=niri" = {
+          default-timeout = 3000;
+        };
       };
     };
   };
