@@ -1,11 +1,10 @@
 ---
 name: agent-skills
 description: >
-  Agent Skills documentation and best practices. Use when the user asks to
-  create, edit, review, or debug a "skill" — including the SKILL.md format,
-  activation mechanism, description optimization, test cases, context
-  efficiency, and bundling scripts. Also use when the user asks about the
-  Agent Skills specification or skill creation workflow.
+  Agent Skills documentation and best practices: the SKILL.md format, the
+  activation mechanism, description optimization, evaluation, and bundled
+  scripts. Use when the user asks to create, edit, review, or debug a skill, or
+  asks about the Agent Skills specification.
 ---
 
 # Agent Skills

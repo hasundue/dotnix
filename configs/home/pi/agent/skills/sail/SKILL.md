@@ -1,14 +1,11 @@
 ---
 name: sail
 description: >
-  Execute an agreed spec. Use after a spec gate such as keel, or whenever a task
-  note at ~/notes/projects/<project>/<YYYY-MM-DD>-<slug>.md already defines the
-  problem, acceptance criteria, and stop conditions. Finds the note from the
-  current branch, works each criterion with its verify step, ticks criteria with
-  evidence, updates the note before changing scope, stops on blockers instead of
-  guessing, and reports evidence per criterion. Use when the user says "execute
-  the spec", "start the work", "implement the plan", or hands off an agreed
-  note.
+  Execute an agreed spec: find its task note from the current branch, work the
+  acceptance criteria with evidence, and stop on blockers instead of guessing.
+  Use after a spec gate such as keel, when a task note already defines the
+  problem and criteria, or when the user says "execute the spec", "start the
+  work", "implement the plan", or hands off an agreed note.
 ---
 
 # Sail

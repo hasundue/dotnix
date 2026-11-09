@@ -1,15 +1,12 @@
 ---
 name: keel
 description: >
-  Pre-work spec gate for large changes. Agrees on the problem, the spec, and
-  the acceptance criteria, records them in one task note in the Obsidian vault
-  (~/notes/projects/<project>/<YYYY-MM-DD>-<slug>.md), and hands control back
-  before implementing. The note lives outside the repository, so a squash merge
-  cannot lose it. Use at the start of a feature, refactor, migration, or any multi-file
-  change whose shape is not yet agreed; when the user says "spec it out",
-  "define the criteria", "before we start", "let's plan"; or when you catch
-  yourself about to guess at requirements. When unsure whether a task is large
-  enough, ask instead of auto-invoking.
+  Pre-work spec gate for large changes: agree the problem, the spec, and the
+  acceptance criteria in one task note, then hand control back before
+  implementing. Use at the start of a feature, refactor, migration, or any
+  multi-file change whose shape is not yet agreed; when the user says "spec it
+  out", "define the criteria", "before we start", "let's plan"; or when you are
+  about to guess at requirements.
 ---
 
 # Keel

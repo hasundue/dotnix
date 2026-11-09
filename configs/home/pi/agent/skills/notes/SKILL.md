@@ -1,12 +1,12 @@
 ---
 name: notes
 description: >
-  Capture, find, and maintain notes in the user's Obsidian vault at ~/notes.
-  Use when the user asks to save, record, write up, or keep part of the
-  conversation as a note for later; when they ask what they already know about a
-  topic, or want an existing note found, read, or updated; and for decisions,
-  research summaries, and ideas that should outlive the session without living
-  in a repository. Not for scratch files inside a repository.
+  Capture, find, and maintain notes in the user's Obsidian vault. Use when the
+  user asks to save, record, or write up part of the conversation for later;
+  when they ask what they already know about a topic or want an existing note
+  found, read, or updated; and for decisions, research summaries, and ideas that
+  should outlive the session without living in a repository. Not for scratch
+  files inside a repository.
 ---
 
 # Notes

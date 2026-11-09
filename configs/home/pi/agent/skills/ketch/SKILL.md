@@ -1,12 +1,10 @@
 ---
 name: ketch
 description: >
-  Use the `ketch` CLI from `bash` for all external research — web pages, OSS
-  code, and library docs. Activates when the user needs information that the
-  agent cannot derive from its training data: current web pages, real-time
-  search results, OSS code snippets with repository context, or library
-  documentation. Also use when the user asks for research, lookups, source
-  code from a specific repository, or library API details.
+  Use the `ketch` CLI for all external research: web pages, real-time search
+  results, source code from a repository, and library docs or API details. Use
+  whenever the answer is not in training data or the local repo — current
+  pages, unfamiliar APIs, or a lookup the user asks for.
 ---
 
 # Ketch CLI — External Research Tool
