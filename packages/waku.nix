@@ -15,7 +15,8 @@
   jetbrains-mono,
   # Optional package of extra faces, added to the app's fontconfig after the
   # families Waku asks for by name. Callers use it to supply whatever the
-  # system does not provide in a form GPUI can render, e.g. a static CJK face.
+  # system does not provide in a form GPUI can render, e.g. the static CJK
+  # faces matching each weight the UI requests.
   fallbackFont ? null,
   version ? "0.1.20",
 }:
@@ -127,8 +128,18 @@ stdenv.mkDerivation {
   # self-update check fails on the name anyway (it is disabled by the store
   # prefix regardless). `WAKU_APP_EXECUTABLE` therefore points at the inner
   # binary, which only matters for OpenCode's synthetic-image path.
+  #
+  # cosmic-text picks its CJK fallback family from sys_locale, which checks
+  # LANGUAGE before LC_ALL/LC_MESSAGES/LANG. The value has to be exactly "ja",
+  # not "ja-JP": cosmic-text matches the locale string verbatim and otherwise
+  # falls through to Noto Sans CJK SC. Waku's own UI language reads
+  # LC_ALL/LC_MESSAGES/LANG and ignores LANGUAGE, so this changes the fallback
+  # without changing the system locale or the app language. Child processes
+  # inherit it, where it only selects gettext message catalogs.
   postFixup = ''
-    wrapProgram $out/bin/waku --set FONTCONFIG_FILE ${fontconfigFile}
+    wrapProgram $out/bin/waku \
+      --set FONTCONFIG_FILE ${fontconfigFile} \
+      --set LANGUAGE ja
   '';
 
   meta = {
