@@ -49,7 +49,19 @@ in
       # Pure Python (no subprocesses of their own): table cells and reading order
       (pkgs.python3.withPackages (ps: [
         ps.pypdf
-        ps.pdfplumber
+        # Skip pdfplumber's install check. Its nativeCheckInputs pull
+        # pandas-stubs -> pyiceberg -> geoarrow-pyarrow -> geopandas, and at the
+        # nixpkgs revision pinned here geopandas' tests fail: shapely is fetched
+        # without git metadata, so shapely.__version__ is "0+unknown" and
+        # geopandas disables its >= 2.0 code paths. The runtime closure
+        # (pdfminer-six, pillow, pypdfium2) is unaffected by the tests.
+        #
+        # doCheck, not doInstallCheck: mk-python-derivation derives
+        # doInstallCheck from doCheck, and only a set doInstallCheck splices
+        # nativeInstallCheckInputs into the derivation inputs.
+        (ps.pdfplumber.overridePythonAttrs (_: {
+          doCheck = false;
+        }))
       ]))
     ];
   };
