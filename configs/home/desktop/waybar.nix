@@ -55,7 +55,14 @@ let
       urgency=critical
     fi
 
-    ${pkgs.libnotify}/bin/notify-send -a battery -u "$urgency" "Battery" "$msg"
+    # Failures stay until dismissed; the rest fade after 3 seconds.
+    if [ "$urgency" = "critical" ]; then
+      timeout=0
+    else
+      timeout=3000
+    fi
+
+    ${pkgs.libnotify}/bin/notify-send -a battery -u "$urgency" -t "$timeout" "Battery" "$msg"
   '';
 
   fcitx5-status = pkgs.writeShellScript "fcitx5-status" ''
