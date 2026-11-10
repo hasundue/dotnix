@@ -1,7 +1,7 @@
 ---
 name: sail
 description: >
-  Execute an agreed spec: find its task note from the current branch, work the
+  Execute an agreed spec from its task note in the notes vault: work the
   acceptance criteria with evidence, and stop on blockers instead of guessing.
   Use after a spec gate such as keel, when a task note already defines the
   problem and criteria, or when the user says "execute the spec", "start the
@@ -29,12 +29,37 @@ repo and the note.
 
 ## Find the note
 
+Free-form wording -- "execute the spec", "start on the idle timeout thing" -- is
+a lookup, not permission to begin. Resolve it to a note before touching code,
+and stop when nothing matches.
+
 1. A path the user passed wins.
-2. Otherwise look in `~/notes/projects/<project>/` for a note whose `branch:`
-   matches the current branch and whose `status` is not `done`.
-3. Otherwise list that project's notes with `status != done`, newest first
-   (`ls -t`), and ask which one.
-4. Otherwise ask. Never guess.
+2. Otherwise search the project's notes for the task's own words as the user
+   gave them, in the title, the problem, and the branch:
+
+   ```sh
+   cd ~/notes/projects/<project>
+   rg -il --glob '*.md' '<terms>' . | while read -r f; do
+     rg -q '^status: done' "$f" || echo "$f"
+   done
+   ```
+
+   Only the open notes are candidates. A title or problem match is strong
+   evidence; a branch match alone is not -- see step 3.
+3. Otherwise look for a note whose `branch:` matches the current branch and
+   whose `status` is not `done`. Branch is the weakest signal of the three: keel
+   does not cut branches, it records the one it ran on, so `main` is the common
+   value, several open notes may claim it, and the note may be recorded on
+   `main` while the work happens on a branch cut later. When the match is
+   ambiguous, treat it as no match.
+4. Otherwise list that project's notes with `status != done`, newest first
+   (`ls -t`), and ask which one -- the filenames are usually enough.
+5. Otherwise say that nothing matches and ask. Never guess, and never start the
+   work without a note.
+
+When several open notes fit about equally, name them and ask which. When the
+note was found rather than handed over, say which one you are taking -- path and
+title -- before starting; that is a report, not a request for approval.
 
 The project name comes from git, so worktrees resolve correctly:
 

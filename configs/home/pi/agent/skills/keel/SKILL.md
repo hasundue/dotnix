@@ -60,11 +60,16 @@ ever committed.
 Before starting a second note for the same task:
 
 1. A path the user passed wins.
-2. Otherwise look in `~/notes/projects/<project>/` for a note whose `branch:`
-   matches the current branch and whose `status` is not `done`.
+2. Otherwise search the project's notes by the task's own words -- title,
+   problem, branch -- with `rg -il` over `~/notes/projects/<project>/`, keeping
+   notes whose `status` is not `done`. Branch is the weakest of the three: keel
+   records the branch it ran on, which is often `main`.
 3. Otherwise list that project's notes with `status != done`, newest first
    (`ls -t`), and ask which one.
 4. Otherwise ask. Never guess.
+
+A person who names a task in passing has not asked for a second note on it. Find
+the first one before you write.
 
 ## Branches
 
