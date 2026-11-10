@@ -1,11 +1,13 @@
-dotnix — NixOS + Home Manager flake for user `hasundue`. ~45 Nix modules, custom
+# dotnix
+
+NixOS + Home Manager flake for user `hasundue`. ~45 Nix modules, custom
 packages, overlays, and dev shells.
 
 You, the coding agent reading this file, and the system you and the user are
 operating on, are likely configured via Nix in this very repository. When asked
 to configure something (including yourself), work on this repository.
 
-Commit Convention:
+## Commit Convention
 
 ```
 scope: imperative summary
@@ -25,12 +27,12 @@ Prepend the parent directory _only_ when the same config name exists under a
 different parent (e.g. both `configs/home/waybar` and `configs/nixos/waybar`
 exist → use `home/waybar` and `nixos/waybar`).
 
-Fixed scopes (exceptions):
+### Fixed scopes
 
 - `agents:` — AGENTS.md
 - `flake:` — flake.nix, flake inputs
 
-Validate:
+## Validate
 
 Quick-check any config option with `nix eval` instead of a full build:
 
@@ -39,7 +41,7 @@ nix eval .#nixosConfigurations.<hostname>.config.<option.path>
 nix eval .#homeConfigurations."<user>@<hostname>".config.<option.path>
 ```
 
-Examples:
+### Examples
 
 ```bash
 # NixOS: SSH config
@@ -52,7 +54,7 @@ nix eval .#homeConfigurations."hasundue@x1carbon".config.wayland.windowManager.n
 Use the right hostname (`x1carbon` or `higame`) depending on what you're
 validating. The output is the config value in Nix notation.
 
-Nix Queries:
+## Nix Queries
 
 Resolve NixOS and home-manager questions against this flake's pinned inputs,
 not the network. Both sources are already in the store:
@@ -70,7 +72,7 @@ nix eval --raw --impure --expr '(builtins.getFlake (toString ./.)).inputs.home-m
 Do not scan `/nix/store` or reach for `nixpkgs search` to answer these; the
 pinned tree answers exactly for the revision being built.
 
-Build:
+## Build
 
 ```bash
 # NixOS + home-manager together (wraps nixos-rebuild; leaves ./result)
@@ -98,7 +100,9 @@ NOM_DISABLE=1 nix run .#nixos-build
 NOM_DISABLE=1 nix run .#nixos-switch
 ```
 
-Apply (NixOS; wraps nixos-rebuild and manages the system profile):
+## Apply (NixOS)
+
+Wraps `nixos-rebuild` and manages the system profile:
 
 ```bash
 nix run .#nixos-test    # Test without making it the default
@@ -110,7 +114,9 @@ Run them as a normal user: sudo is requested only for activation, so the
 password is asked at most once (not at all with a cached sudo timestamp).
 Prefixing with `sudo` also works without a second prompt.
 
-Apply (Home Manager only; builds first, no sudo):
+## Apply (Home Manager)
+
+Builds first and activates without sudo:
 
 ```bash
 nix run .#home-switch
