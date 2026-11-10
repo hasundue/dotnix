@@ -26,6 +26,10 @@ in
     # the declared keys are merged in.
     mutableSettings = true;
     settings = {
+      # `/wt` passthrough with linked-session worktree moves.
+      packages = [
+        "npm:pi-worktrunk"
+      ];
       defaultTools = [
         "+grep"
         "+find"
