@@ -1,18 +1,43 @@
 # Bash tooling
 
-- Use pi's tools rather than the shell equivalents: `read` for files, `grep` for
-  content search, `find` for filename search, `ls` for listings. Each takes any
-  `path`, so scope is no reason to prefer `bash`. Reach for `rg`, `fd`, or `ls`
-  only when pi's tools cannot express the query, such as when the result must
-  feed a pipeline or you need a filter `find` lacks.
-- `read` takes line ranges directly: `sed -n 270,285p FILE` becomes `read` with
-  `offset: 270, limit: 16`. Do not use `sed`, `cat`, `head`, or `tail` for this.
-- Make one tool call per inspection rather than chaining with `echo`, `;`, or
-  `&&`, and let failures surface instead of silencing them with `2>/dev/null`.
-- If the tool you need is missing, say so and ask; do not substitute a shell
-  scan for it.
-- Do not `cd` on every `bash` tool call. Track your current directory from
-  context, and use `pwd` or `cd` only when necessary.
+The bash tool runs in the session's working directory. Do not prefix a command
+with cd to reach a path a tool can take directly, and use the program's own
+directory flag when it has one.
+
+```sh
+rg -n "waku" ~/dotnix/configs         # yes
+cd ~/dotnix && rg -n "waku" configs   # no
+git -C ~/dotnix status                # yes, git's own flag
+cd sub && ./build.sh                  # yes, it writes into its cwd
+```
+
+Use pi's own tools for reading, searching, and listing (read, grep, find, ls)
+instead of their shell equivalents. Each takes any path, so scope is no reason
+to prefer bash. Reach for rg, fd, or ls only when pi's tools cannot express the
+query, such as when the result has to feed a pipeline.
+
+```sh
+rg -n "waku" ~/dotnix/configs   # no, the grep tool takes the same path
+cat ~/.pi/agent/AGENTS.md       # no, read does
+```
+
+Line ranges go straight to the read tool; do not slice a file with sed, cat,
+head, or tail.
+
+```sh
+sed -n 270,285p FILE            # no, read with offset 270 and limit 16
+```
+
+Make one call per inspection instead of chaining commands, and let failures
+surface instead of silencing them.
+
+```sh
+grep a x && grep b y            # no, two grep calls
+rg foo path 2>/dev/null         # no, the error is the point
+```
+
+If the tool you need is missing, say so and ask; do not substitute a shell scan
+for it.
 
 # Language
 
