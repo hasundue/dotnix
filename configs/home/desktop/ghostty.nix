@@ -8,6 +8,7 @@
       mouse-hide-while-typing = true;
       window-padding-x = 10;
       window-padding-y = 10;
+      window-padding-balance = "equal";
 
       # 0xProto implements texture healing with `calt`. Ghostty shapes text
       # runs with HarfBuzz, where `calt` is on by default; keep it explicit so
