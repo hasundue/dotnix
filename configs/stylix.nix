@@ -40,15 +40,15 @@ in
         applications = 12;
         desktop = 12;
         popups = 12;
-        terminal = 12;
+        terminal = 11;
       };
     };
     image = darkenedImage;
     opacity = {
-      applications = 0.9;
-      desktop = 0.9;
-      popups = 0.95;
-      terminal = 0.95;
+      applications = 1;
+      desktop = 0.98;
+      popups = 0.9;
+      terminal = 0.98;
     };
     polarity = "dark";
   };
