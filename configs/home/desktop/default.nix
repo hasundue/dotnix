@@ -5,6 +5,7 @@
     ./chromium.nix
     ./fcitx5.nix
     ./firefox.nix
+    ./ghostty.nix
     ./kitty.nix
     ./mako
     ./niri

@@ -93,6 +93,18 @@ in
             _children = [
               {
                 match._props = {
+                  app-id = "^com.mitchellh.ghostty$";
+                };
+              }
+            ];
+            default-column-display = "tabbed";
+          };
+        }
+        {
+          window-rule = {
+            _children = [
+              {
+                match._props = {
                   app-id = "^dev.zed.Zed$";
                 };
               }
@@ -182,7 +194,7 @@ in
       binds = {
         "Mod+Shift+Slash".show-hotkey-overlay = { };
 
-        "Mod+T".spawn = [ (lib.getExe pkgs.kitty) ];
+        "Mod+T".spawn = [ (lib.getExe pkgs.ghostty) ];
         "Mod+D".spawn = [ "fuzzel" ];
         "Mod+Alt+L".spawn = [ "swaylock" ];
 
