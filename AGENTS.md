@@ -5,11 +5,6 @@ You, the coding agent reading this file, and the system you and the user are
 operating on, are likely configured via Nix in this very repository. When asked
 to configure something (including yourself), work on this repository.
 
-Your Capability:
-
-The `nixos` MCP server should be available for NixOS-related queries. Use it
-instead of web search, `nixpkgs search`, or grep-ing the store.
-
 Commit Convention:
 
 ```
@@ -56,6 +51,24 @@ nix eval .#homeConfigurations."hasundue@x1carbon".config.wayland.windowManager.n
 
 Use the right hostname (`x1carbon` or `higame`) depending on what you're
 validating. The output is the config value in Nix notation.
+
+Nix Queries:
+
+Resolve NixOS and home-manager questions against this flake's pinned inputs,
+not the network. Both sources are already in the store:
+
+```bash
+nix eval --raw .#nixosConfigurations.x1carbon.pkgs.path        # pinned nixpkgs
+nix eval --raw --impure --expr '(builtins.getFlake (toString ./.)).inputs.home-manager.outPath'
+```
+
+- Does package X exist?
+  `nix eval --raw .#nixosConfigurations.x1carbon.pkgs.X.pname`
+- Where is a module or option defined? `grep` the pinned sources above.
+- What is option X set to? `nix eval .#nixosConfigurations.x1carbon.config.X`
+
+Do not scan `/nix/store` or reach for `nixpkgs search` to answer these; the
+pinned tree answers exactly for the revision being built.
 
 Build:
 
