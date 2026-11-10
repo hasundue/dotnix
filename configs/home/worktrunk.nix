@@ -6,7 +6,6 @@
     skip-shell-integration-prompt = true
 
     [merge]
-    remove = false
     commit = false    # --no-commit by default
 
     [post-start]
