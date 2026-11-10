@@ -17,22 +17,34 @@ to prefer bash. Reach for rg, fd, or ls only when pi's tools cannot express the
 query, such as when the result has to feed a pipeline.
 
 ```sh
-rg -n "waku" ~/dotnix/configs   # no, the grep tool takes the same path
-cat ~/.pi/agent/AGENTS.md       # no, read does
+rg -n "waku" ~/dotnix/configs   # no, the `grep` tool takes the same path
+cat ~/.pi/agent/AGENTS.md       # no, `read` does
+find . -name "*.nix"            # no, the `find` tool does
+ls configs/home                 # no, the `ls` tool does
+```
+
+Never pass a script to bash through a heredoc or a long -c string. Write the
+file first, then run it.
+
+```sh
+python3 - <<'PY'                # no, the whole script fills the transcript
+cat > /tmp/m.py <<'EOF'         # no, same
+python3 /tmp/m.py               # yes, write the file with the `write` tool first
+python3 -c 'print(1)'           # yes, when one line is enough
 ```
 
 Line ranges go straight to the read tool; do not slice a file with sed, cat,
 head, or tail.
 
 ```sh
-sed -n 270,285p FILE            # no, read with offset 270 and limit 16
+sed -n 270,285p FILE            # no, `read` with offset 270 and limit 16
 ```
 
 Make one call per inspection instead of chaining commands, and let failures
 surface instead of silencing them.
 
 ```sh
-grep a x && grep b y            # no, two grep calls
+grep a x && grep b y            # no, two `grep` calls
 rg foo path 2>/dev/null         # no, the error is the point
 ```
 
