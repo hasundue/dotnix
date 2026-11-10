@@ -7,6 +7,23 @@ You, the coding agent reading this file, and the system you and the user are
 operating on, are likely configured via Nix in this very repository. When asked
 to configure something (including yourself), work on this repository.
 
+## Worktrees
+
+Make code changes in a worktree, not in the primary checkout at `~/dotnix`.
+`wt list` reports where the current directory sits; when it is already a
+worktree such as `~/dotnix.<branch>`, keep working there and do not nest
+another one.
+
+```bash
+wt switch --create <branch>   # from ~/dotnix, creates ~/dotnix.<branch>
+```
+
+Live configuration is the exception. Where `dotnix.live.<name>.enable` is set
+(`pi` today, with `~/dotnix.live.pi` resolving to
+`~/dotnix/configs/home/pi/agent`), the running system reads the files straight
+out of that checkout, so a worktree copy changes nothing until it merges. Make
+those edits in `~/dotnix` itself, then return to a worktree for the rest.
+
 ## Commit Convention
 
 ```
