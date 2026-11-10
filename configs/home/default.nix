@@ -26,6 +26,7 @@
     ./pi
     ./television.nix
     ./worktrunk.nix
+    ./zellij
   ];
   programs = {
     mcp.enable = true;
@@ -43,6 +44,5 @@
     fd.enable = true;
     jq.enable = true;
     ripgrep.enable = true;
-    zellij.enable = true;
   };
 }
