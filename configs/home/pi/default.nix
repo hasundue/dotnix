@@ -40,8 +40,6 @@ in
       #   { "skills": ["~/.pi/agent/skills/pdf-tools", ...] }
       # Patterns resolve from the agent directory (~/.pi/agent).
       skills = [
-        # Keep the upstream skill in step with the installed CLI.
-        "${pkgs.worktrunk.src}/skills/worktrunk"
         "-skills/pdf-tools"
         "-skills/zotero-pdf"
       ];
