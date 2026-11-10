@@ -2,6 +2,10 @@
   programs.ghostty = {
     enable = true;
 
+    # No Ghostty-level shortcuts (`keybind = clear`); compositor binds such as
+    # `Mod+T` in configs/home/desktop/niri/default.nix still apply.
+    clearDefaultKeybinds = true;
+
     # Colors, font family (0xProto Nerd Font), font size and background
     # opacity all come from stylix (configs/stylix.nix).
     settings = {
