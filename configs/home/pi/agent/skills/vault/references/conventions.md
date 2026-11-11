@@ -69,8 +69,18 @@ it into the English record, once, in place.
    point at a heading the translation renamed. Keep one heading, one criterion,
    one log entry for one; a translation that merges, drops, or improves is not a
    translation.
+
+   Before handing the pair over, run
+   `~/.pi/agent/skills/vault/scripts/check_pair.py <draft>`. It is the
+   translator's own pre-flight: the rules below, executable. Fix what it
+   reports; a clean run does not mean the pair is checked.
+
 2. Someone who did not translate it checks the pair -- another agent, or the
-   user, whoever the user names. Compare mechanically:
+   user, whoever the user names. Start with the same `check_pair.py <draft>`,
+   run yourself: the translator's clean run is evidence of an older state, not
+   of the pair in front of you. It exits non-zero on any mechanical finding.
+   Then read the pair yourself, because it settles only the mechanical half.
+   Compare mechanically:
    - every heading present, in order, with no section merged or dropped
    - every acceptance criterion present: same count, same order, same
      `[ ]` / `[x]` / `unmet:` state
