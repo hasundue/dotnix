@@ -81,46 +81,10 @@ task actually touches.>
 
 ## Language and filenames
 
-A draft is written in the language of the session; the approved note is always
-English. `<note>` is the file name without its extension --
-`<YYYY-MM-DD>-<slug>` for a project note.
-
-| File               | Means                                               |
-| ------------------ | --------------------------------------------------- |
-| `<note>.md`        | the note: an English draft, or any approved note    |
-| `<note>.<lang>.md` | a draft in another language, e.g. `<note>.ja.md`    |
-| `<note>.en.md`     | the English candidate, only while its check is open |
-
-Approval is the moment of change: translate, check, promote. `<note>.en.md`
-becomes `<note>.md`, `translated:` takes the date, and the draft is deleted. The
-candidate keeps `status: draft` until then. A paired copy left behind is a note
-that will drift. From approval on the body is English for life.
-
-## Translation check
-
-Someone who did not write the translation compares the pair, mechanically.
-Inside a code span or a fence is code; everything else is prose, and a heading
-of this note is a name that other lines may point at.
-
-- every heading present, in order, with no section merged or dropped
-- every acceptance criterion present: same count, same order, same
-  `[ ]` / `[x]` / `unmet:` state
-- code identical, character for character: commands, paths, identifiers,
-  versions, numbers, and the contents of every backtick and fence. A command
-  that greps for Japanese labels in the repository stays Japanese.
-- prose translated, `verify:` steps written as sentences included. A verify
-  that still reads Japanese is an untranslated note, not a faithful copy.
-- references resolve: a mention of this note's own heading or criterion moved
-  with its target, backticked or not, and no line points at a heading the
-  translation renamed. Code that would break because a heading moved is
-  reported, not rewritten.
-- no quotation of the user anywhere: restatements carry the same content,
-  attributed
-- the problem still states the same problem -- a translation that reads better
-  but says something else is a finding, not an improvement
-- the log translated one entry for one; it is evidence, not prose to polish
-
-Anything that fails is fixed before the promotion, not after.
+The vault owns these: `../../vault/references/conventions.md`. This template
+only adds `session_lang:`, the conversation's language, and `translated:`, the
+date the note became English. While a translation check is open the candidate
+keeps `status: draft`; after promotion the body is English for life.
 
 ## Checklist rules
 

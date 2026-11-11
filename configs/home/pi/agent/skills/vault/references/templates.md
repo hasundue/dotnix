@@ -7,7 +7,7 @@ went.
 
 Working notes (`ideas/`, `sf/`) have no shape on purpose. They are fragments in
 their author's own style, and adding a heading set to one is a regression, not
-an improvement. See `## Working notes` in `SKILL.md`.
+an improvement. `jot` owns them.
 
 ## Heading sets
 

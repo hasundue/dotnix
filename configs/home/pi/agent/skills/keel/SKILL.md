@@ -60,48 +60,19 @@ ever committed.
 
 ## Language, and the approval act
 
-A draft is argued over in the session's tongue; the approved note is a durable
-artifact and is always English. That gives one bit and one moment.
+Naming, languages, and the approval act are the vault's rules, defined once in
+`../vault/references/conventions.md`. The parts a gate must hold:
 
-What the user said is restated, never quoted. A note records the agreement, not
-the conversation: attribute it -- "the user ruled out X because Y" -- and let
-the criteria and the decisions carry the binding form. Quotation marks around a
-sentence someone spoke do not belong in a note, in any language.
+- a draft in the session's language, when that is not English, is
+  `<note>.ja.md`, with `session_lang:` in the front matter;
+- approval translates it once, has someone who did not translate it check the
+  pair, then promotes the candidate and deletes the draft;
+- from approval on, the note is English for life, and it restates what the user
+  wants rather than quoting them.
 
-- A draft in the session's language, when that is not English, is
-  `<note>.<lang>.md` -- `<lang>` is an ISO 639-1 code, so `<note>.ja.md` -- with
-  `session_lang:` set in the front matter. An English draft is plain
-  `<note>.md`.
-- Approval translates the note once, in place. When the user's word arrives,
-  and not before:
-
-  1. Translate into `<note>.en.md`, next to the draft. The boundary is
-     mechanical: inside a code span or fence is code, copied byte for byte;
-     everything else is prose, translated. That includes a `verify:` step
-     written as a sentence -- "the table in the results note shows ..." is
-     prose. A mention of this note's own heading moves with the heading, even
-     inside backticks. Nothing in it is a quotation, so nothing is left in
-     another language. Keep one heading, one criterion, one log entry for one;
-     a translation that merges, drops, or improves is not a translation.
-  2. Have the pair checked by someone who did not translate it -- another
-     agent, or the user, whoever the user names. The check is mechanical, and
-     `references/templates.md` lists it line by line. Findings get fixed, not
-     waved through.
-  3. Promote: `status: agreed`, `translated: <YYYY-MM-DD>`, rename
-     `<note>.en.md` to `<note>.md`, delete the draft. The original does not
-     survive: a note that exists twice is a note whose wording drifts.
-
-  A draft that is already English needs only step 3.
-
-- From approval on, the note is English for life: later scope changes, log
-  entries, and blocker text included.
-
-Nothing is retrofitted. The vault's Japanese archive is history, not a
-migration backlog; the rule covers notes written from now on, and notes someone
-actually reopens.
-
-Sail carries the same act, because it runs without this skill loaded. Change
-one and change the other.
+Keel writes the draft and stops. Approval belongs to whoever the user hands the
+work to: sail, or this session if the user approves here. When a rule changes,
+change it there -- sail and jot read the same file.
 
 ## Finding an existing note
 

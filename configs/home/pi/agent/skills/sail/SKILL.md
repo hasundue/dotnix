@@ -78,25 +78,15 @@ then implement. If `status: blocked`, read `## Blocker` first. If
 `status: done`, there is nothing to execute.
 
 Agreeing a note that is not English is the one thing that happens before any
-code changes. Keel defines the act; this is it:
+code changes. The rule is the vault's -- `../vault/references/conventions.md`:
+translate into `<note>.en.md`, have someone who did not translate it check the
+pair, then promote -- `status: agreed`, `translated:` set, `<note>.en.md` to
+`<note>.md`, draft deleted.
 
-1. Translate the draft into `<note>.en.md` beside it. Inside a code span or
-   fence is code, copied byte for byte; everything else is prose, translated, a
-   `verify:` step written as a sentence included. References to this note's own
-   headings move with them. Nothing is a quotation, so nothing is left in
-   another language. One heading, one criterion, one log entry for one --
-   nothing merged, dropped, or improved.
-2. Someone who did not translate it checks the pair: another agent, or the
-   user. Same structure, same criterion count, order and tick state, code
-   character for character, no changed meaning, no quotation of the user, and
-   every reference landing on a heading that exists. Findings are fixed.
-3. Promote: `status: agreed`, `translated: <YYYY-MM-DD>`, `<note>.en.md` to
-   `<note>.md`, delete the draft.
-
-If the check needs a party that is not in this session, stop after step 1 and
-say so -- no code changes while the pair is unsettled. A check that fails
-leaves the draft `draft` and discards the candidate. A draft already in English
-needs only step 3.
+If the check needs a party that is not in this session, stop after the
+translation and say so -- no code changes while the pair is unsettled. A check
+that fails leaves the draft `draft` and discards the candidate. A draft already
+in English needs only the promotion.
 
 Then check the current branch and working tree so you know what you are
 changing. Do not push, rewrite history, or discard unrelated work unless the
