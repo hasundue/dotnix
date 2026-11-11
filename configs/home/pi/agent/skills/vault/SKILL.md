@@ -3,11 +3,11 @@ name: vault
 description: >
   Read and maintain the user's Obsidian vault at `~/notes`: find what is already
   there, answer from it, and write durable notes -- decisions, research,
-  handoffs -- under `projects/` and `oss/`. Use when the user asks what they
+  handoffs -- where their subject lives. Use when the user asks what they
   already know about a topic, wants a note found, read, or updated, or wants a
   decision or a piece of research written up. Conventions shared by every note
-  are in `references/conventions.md`; fragments belong to `jot`, and task notes
-  to `keel` and `sail`.
+  are in `references/conventions.md`; fragments belong to `ditty`, and task
+  notes to `keel` and `sail`.
 ---
 
 # Vault
@@ -15,10 +15,9 @@ description: >
 Three kinds of notes share `~/notes`, and they are not held to the same
 standard.
 
-- **Durable notes** (`projects/`, `oss/`) must survive a cold read. This skill
-  writes them.
-- **Working notes** (`ideas/`, `sf/`) are fragments to think with. `jot` owns
-  them.
+- **Durable notes** must survive a cold read: decisions, research, handoffs.
+  This skill writes them.
+- **Working notes** are fragments to think with. `ditty` owns them.
 - **Task notes** (`projects/<project>/`, carrying `status`) are `keel`'s and
   `sail`'s.
 
@@ -135,7 +134,7 @@ question. If several notes disagree, say so and give dates -- the newer one
 usually wins, and the disagreement is worth knowing.
 
 Zero hits is an answer: say nothing is there, and offer to write the note that
-should have existed. A fragment belongs in `jot`, a written-up answer here.
+should have existed. A fragment belongs in `ditty`, a written-up answer here.
 
 ## Hands off
 

@@ -5,9 +5,9 @@ one, then use the heading set for the note's language. Headings are
 load-bearing: a note is found by reading its shape, not by remembering where it
 went.
 
-Working notes (`ideas/`, `sf/`) have no shape on purpose. They are fragments in
-their author's own style, and adding a heading set to one is a regression, not
-an improvement. `jot` owns them.
+Working notes have no shape on purpose. They are fragments in their author's
+own style, and adding a heading set to one is a regression, not an
+improvement. `ditty` owns them.
 
 ## Heading sets
 

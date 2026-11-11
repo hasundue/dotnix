@@ -72,7 +72,7 @@ Naming, languages, and the approval act are the vault's rules, defined once in
 
 Keel writes the draft and stops. Approval belongs to whoever the user hands the
 work to: sail, or this session if the user approves here. When a rule changes,
-change it there -- sail and jot read the same file.
+change it there -- sail and ditty read the same file.
 
 ## Finding an existing note
 

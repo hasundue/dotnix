@@ -1,7 +1,7 @@
 # Vault conventions
 
 Every note in `~/notes` follows these, whichever skill writes it. They are the
-only copy: `vault`, `jot`, `keel`, and `sail` read this file instead of
+only copy: `vault`, `ditty`, `keel`, and `sail` read this file instead of
 restating it.
 
 `<note>` below is a file name without its extension -- `<YYYY-MM-DD>-<slug>` for
@@ -11,27 +11,28 @@ possibly non-ASCII, name, where the note has a title at all.
 
 ## Where a note lives
 
-| What it is                            | Where                  | Filename               |
-| ------------------------------------- | ---------------------- | ---------------------- |
-| Work, decision, or research in a repo | `projects/<project>/`  | `YYYY-MM-DD-<slug>.md` |
-| Third-party OSS or library research   | `oss/<repo>/research/` | `<slug>.md`            |
-| OSS issue write-up                    | `oss/<repo>/issues/`   | `<slug>.md`            |
-| Idea or concept worth keeping         | `ideas/<domain>/`      | `<slug>.md`            |
-| Fiction                               | `sf/<work>/`           | append to the file     |
+One location is load-bearing enough to be named here: `projects/<project>/`,
+where task notes and repo work live, because keel and sail search for them
+there. Resolve `<project>` from git, so worktrees land on the main checkout:
 
-Rules:
+```sh
+basename "$(dirname "$(git rev-parse --path-format=absolute --git-common-dir)")"
+# ~/dotnix.pi-workflow -> dotnix
+```
+
+Every other location is read from the live tree, because a hardcoded map
+drifts:
+
+```sh
+fd -t d -d 2 . ~/notes
+```
 
 - A path the user gave wins over every rule here.
-- Resolve `<project>` from git, so worktrees land on the main checkout:
-  ```sh
-  basename "$(dirname "$(git rev-parse --path-format=absolute --git-common-dir)")"
-  # ~/dotnix.pi-workflow -> dotnix
-  ```
-- `<domain>` and `<repo>` are existing directories. List them before choosing:
-  ```sh
-  fd -t d -d 2 . ~/notes
-  ```
-  If nothing fits, **ask** before creating a top-level directory.
+- A durable note lives with its subject, in the directory the vault already
+  keeps for it. Ask before creating a top-level directory.
+- A fragment lives in a fragment directory. Some hold one file per thought;
+  some hold one file per work and take appends. Read the directory and follow
+  its habit.
 - There is no `inbox/`. A note with no home is a question, not a file.
 
 ## Names and languages
@@ -45,7 +46,7 @@ Rules:
 The vault is user content, not source: a note in Japanese stays Japanese, and
 the repository rule that files are written in English does not reach here. A
 note that is not in English carries its language in the name for as long as it
-lives -- a Japanese idea in `ideas/` stays `<slug>.ja.md`.
+lives.
 
 Nothing is retrofitted. The vault's Japanese archive is history, not a migration
 backlog; the rule covers notes written from now on, and notes someone actually

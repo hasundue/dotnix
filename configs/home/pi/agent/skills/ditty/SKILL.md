@@ -1,23 +1,23 @@
 ---
-name: jot
+name: ditty
 description: >
   Capture a fragment in the user's Obsidian vault -- an idea, a question, a
-  name, a line of thought -- under `ideas/` or `sf/`, or extend one that is
-  already there. Use when the user says to jot something down, when a thought
-  should outlive the session without becoming a written-up note, or when what
-  they said plainly belongs to a fragment that exists. Decisions and research
-  written up for a reader are `vault`; task notes are `keel` and `sail`.
+  name, a line of thought -- or extend one that is already there. Use when the
+  user says to jot something down, when a thought should outlive the session
+  without becoming a written-up note, or when what they said plainly belongs to
+  a fragment that exists. Decisions and research written up for a reader are
+  `vault`; task notes are `keel` and `sail`.
 ---
 
-# Jot
+# Ditty
 
 A fragment, not a note: a bullet, a question, a name, a sentence with no verb.
 The reader is the author, days later. Being readable cold is not the standard
 here, and adding structure to compensate is a regression.
 
-Read `../vault/references/conventions.md` before writing: where a fragment goes,
-what it is called, its language, and who may edit it. This skill is only about
-the shape.
+Read `../vault/references/conventions.md` before writing: where a fragment
+lives, what it is called, its language, and who may edit it. This skill is only
+about the shape.
 
 ## Search first
 
@@ -25,12 +25,13 @@ A fragment that already exists gets a line, not a second file:
 
 ```sh
 cd ~/notes
-rg -l -i '<terms>' ideas sf
-fd -e md . ideas sf | rg -i '<slug words>'
+rg -l -i '<terms>' .
+fd -e md . | rg -i '<slug words>'
 ```
 
-If a hit is close but not the same thought, ask: "add to `X`, or start a new
-one?"
+A hit that has headings, or frontmatter beyond `author: pi`, is a durable note
+or a task note -- not a fragment. Leave it alone. If a hit is close but not the
+same thought, ask: "add to `X`, or start a new one?"
 
 ## Shape
 
@@ -51,9 +52,10 @@ is not reformatted, reordered, or reworded.
 
 ## Hands off
 
+- Anything with a shape -- headings, or frontmatter beyond `author: pi`. It is
+  a `vault` write-up or a `keel`/`sail` task note, not a fragment.
 - `.obsidian/`, `.stfolder/`, `.stversions/` -- Obsidian and Syncthing state
 - `*.sync-conflict-*` -- report it, do not merge or delete
-- `projects/` and `oss/` -- those are `vault`'s notes, not fragments
 - `rpiv/` -- legacy artifacts, read-only unless the user says otherwise
 
 ## Red flags
@@ -67,7 +69,7 @@ is not reformatted, reordered, or reworded.
 
 ## Verification
 
-- [ ] Searched `ideas/` and `sf/` first
+- [ ] Searched the vault for an existing fragment first
 - [ ] Path and filename follow `../vault/references/conventions.md`
 - [ ] No headings, no summary, no tags, no justification
 - [ ] Appended: the diff is the added lines and nothing else
