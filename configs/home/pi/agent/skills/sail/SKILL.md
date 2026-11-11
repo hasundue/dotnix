@@ -22,7 +22,8 @@ the user asks for it.
 3. **Merging waits for the user's word; the merge closes the note.**
 4. **Scope moves in the note first, then gets re-confirmed.**
 5. **A blocker is written down and raised, never silently absorbed.**
-6. **Report in the language of the task note.**
+6. **A note that is not English is translated and checked before any code
+   changes, and a report speaks the language of the conversation.**
 
 Everything else -- implementation order, commits, test commands -- follows the
 repo and the note.
@@ -45,7 +46,9 @@ and stop when nothing matches.
    ```
 
    Only the open notes are candidates. A title or problem match is strong
-   evidence; a branch match alone is not -- see step 3.
+   evidence; a branch match alone is not -- see step 3. A `<note>.ja.md` /
+   `<note>.en.md` pair is one note mid-translation, not two.
+
 3. Otherwise look for a note whose `branch:` matches the current branch and
    whose `status` is not `done`. Branch is the weakest signal of the three: keel
    does not cut branches, it records the one it ran on, so `main` is the common
@@ -70,9 +73,30 @@ basename "$(dirname "$(git rev-parse --path-format=absolute --git-common-dir)")"
 
 Read the note fully. If it is missing, empty, or has no acceptance criteria,
 stop and ask. A note still marked `draft` is normal: the instruction that
-brought you here is the go, so do not ask whether it is agreed -- set
-`status: agreed` and implement. If `status: blocked`, read `## Blocker` first.
-If `status: done`, there is nothing to execute.
+brought you here is the go, so do not ask whether it is agreed -- agree it,
+then implement. If `status: blocked`, read `## Blocker` first. If
+`status: done`, there is nothing to execute.
+
+Agreeing a note that is not English is the one thing that happens before any
+code changes. Keel defines the act; this is it:
+
+1. Translate the draft into `<note>.en.md` beside it. Inside a code span or
+   fence is code, copied byte for byte; everything else is prose, translated, a
+   `verify:` step written as a sentence included. References to this note's own
+   headings move with them. Nothing is a quotation, so nothing is left in
+   another language. One heading, one criterion, one log entry for one --
+   nothing merged, dropped, or improved.
+2. Someone who did not translate it checks the pair: another agent, or the
+   user. Same structure, same criterion count, order and tick state, code
+   character for character, no changed meaning, no quotation of the user, and
+   every reference landing on a heading that exists. Findings are fixed.
+3. Promote: `status: agreed`, `translated: <YYYY-MM-DD>`, `<note>.en.md` to
+   `<note>.md`, delete the draft.
+
+If the check needs a party that is not in this session, stop after step 1 and
+say so -- no code changes while the pair is unsettled. A check that fails
+leaves the draft `draft` and discards the candidate. A draft already in English
+needs only step 3.
 
 Then check the current branch and working tree so you know what you are
 changing. Do not push, rewrite history, or discard unrelated work unless the
@@ -96,6 +120,8 @@ each criterion's `verify:` to decide what to run or inspect.
 - If a criterion is already satisfied, record the evidence instead of changing
   code.
 - Follow the repository's own rules for tests, formatting, and commits.
+- The note is English from approval on: log entries, blockers, and scope
+  changes are written in it. What the user says is restated, never quoted.
 - If the note is silent on a local implementation detail, use judgment and note
   it under `## Log`; silence is not permission to change the agreed outcome.
 
@@ -127,15 +153,19 @@ it (`status: done`). If the task ends without a merge, the user's word closes
 it. Do not ask whether to close, and do not close it before the merge or that
 word.
 
-End with a report in the note's language: what changed, which criteria passed
-with what evidence, what is unmet, and what still needs a decision. The next
+End with a report in the language of the conversation: what changed, which
+criteria passed with what evidence, what is unmet, and what still needs a
+decision. When the session gives no signal -- `/sail <path>` and no prose
+since -- take the note's `session_lang:`. If the user's language later
+disagrees with the field, update the field rather than answering in a language
+nobody asked for; from approval on the body stays English either way. The next
 action is the user's.
 
 When the next action is the user's judgment -- a listen, a look, a preference --
 ask for the judgment itself, not for a format. Never dictate the shape of the
 user's reply ("in one line", "as a table"); the note's criteria bind what is
-decided, not how the user speaks. Record their answer under `## Log` as they
-gave it, quoting verbatim where it matters.
+decided, not how the user speaks. Record the decision under `## Log` in the
+note's language: what was decided and why, restated rather than quoted.
 
 ## Merge
 

@@ -5,14 +5,19 @@ Keep it short -- a note nobody rereads is not a spec.
 
 ## The template
 
-`status` is one of `draft`, `agreed`, `done`, `blocked`. `pr` and `merge_commit`
-are filled in after the merge. Leave a field empty until it has a value, and do
-not carry this legend into the note.
+`status` is one of `draft`, `agreed`, `done`, `blocked`. `session_lang` is the
+language of the conversation as an ISO 639-1 code, so a cold session knows
+which tongue to report in. `translated` is the date the note became English; it
+stays empty for a note written in English from the start. `pr` and
+`merge_commit` are filled in after the merge. Leave a field empty until it has a
+value, and do not carry this legend into the note.
 
 ```markdown
 ---
 created: <YYYY-MM-DD>
 status: draft
+session_lang: <ja | en>
+translated: <YYYY-MM-DD>
 branch: <branch the task runs on>
 pr:
 merge_commit:
@@ -32,11 +37,11 @@ merge_commit:
 
 <Prior attempts and why they were not enough. Omit if none.>
 
-## What "fixed" looks like -- in the user's words
+## What "fixed" looks like
 
-<A real quote, or leave this section out. A paraphrase belongs under Design.>
-
-> "<verbatim quote>"
+<The outcome, restated plainly. Never a quotation of the user: say what they
+want and why, in your own sentence. Omit the section if the criteria already
+say it.>
 
 ## Current behavior
 
@@ -74,6 +79,49 @@ task actually touches.>
 <Append-only. Research, dead ends, open questions, sketches.>
 ```
 
+## Language and filenames
+
+A draft is written in the language of the session; the approved note is always
+English. `<note>` is the file name without its extension --
+`<YYYY-MM-DD>-<slug>` for a project note.
+
+| File               | Means                                               |
+| ------------------ | --------------------------------------------------- |
+| `<note>.md`        | the note: an English draft, or any approved note    |
+| `<note>.<lang>.md` | a draft in another language, e.g. `<note>.ja.md`    |
+| `<note>.en.md`     | the English candidate, only while its check is open |
+
+Approval is the moment of change: translate, check, promote. `<note>.en.md`
+becomes `<note>.md`, `translated:` takes the date, and the draft is deleted. The
+candidate keeps `status: draft` until then. A paired copy left behind is a note
+that will drift. From approval on the body is English for life.
+
+## Translation check
+
+Someone who did not write the translation compares the pair, mechanically.
+Inside a code span or a fence is code; everything else is prose, and a heading
+of this note is a name that other lines may point at.
+
+- every heading present, in order, with no section merged or dropped
+- every acceptance criterion present: same count, same order, same
+  `[ ]` / `[x]` / `unmet:` state
+- code identical, character for character: commands, paths, identifiers,
+  versions, numbers, and the contents of every backtick and fence. A command
+  that greps for Japanese labels in the repository stays Japanese.
+- prose translated, `verify:` steps written as sentences included. A verify
+  that still reads Japanese is an untranslated note, not a faithful copy.
+- references resolve: a mention of this note's own heading or criterion moved
+  with its target, backticked or not, and no line points at a heading the
+  translation renamed. Code that would break because a heading moved is
+  reported, not rewritten.
+- no quotation of the user anywhere: restatements carry the same content,
+  attributed
+- the problem still states the same problem -- a translation that reads better
+  but says something else is a finding, not an improvement
+- the log translated one entry for one; it is evidence, not prose to polish
+
+Anything that fails is fixed before the promotion, not after.
+
 ## Checklist rules
 
 - `- [ ]` -- criterion not yet verified.
@@ -92,6 +140,7 @@ task actually touches.>
 ---
 created: 2025-11-30
 status: agreed
+session_lang: en
 branch: idle-timeout
 ---
 
@@ -103,7 +152,8 @@ Users are logged out mid-task after 24 hours, no matter how active they were.
 
 ## What "fixed" looks like
 
-> "A session should end because I stopped, not because the clock ran out."
+Sessions should end because the user stopped working, not because a clock ran
+out.
 
 ## Current behavior
 

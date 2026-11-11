@@ -38,6 +38,9 @@ One file per task, kept outside the repository:
 ~/notes/projects/<project>/<YYYY-MM-DD>-<slug>.md
 ```
 
+A draft in a language other than English carries that language in its name, as
+the section below spells out.
+
 Resolve the project from git, so worktrees land on the main checkout:
 
 ```sh
@@ -55,6 +58,51 @@ depend on the filename. The date is the creation date, not the last edit.
 The repository gets no copy. No working note belongs in the tree, and none is
 ever committed.
 
+## Language, and the approval act
+
+A draft is argued over in the session's tongue; the approved note is a durable
+artifact and is always English. That gives one bit and one moment.
+
+What the user said is restated, never quoted. A note records the agreement, not
+the conversation: attribute it -- "the user ruled out X because Y" -- and let
+the criteria and the decisions carry the binding form. Quotation marks around a
+sentence someone spoke do not belong in a note, in any language.
+
+- A draft in the session's language, when that is not English, is
+  `<note>.<lang>.md` -- `<lang>` is an ISO 639-1 code, so `<note>.ja.md` -- with
+  `session_lang:` set in the front matter. An English draft is plain
+  `<note>.md`.
+- Approval translates the note once, in place. When the user's word arrives,
+  and not before:
+
+  1. Translate into `<note>.en.md`, next to the draft. The boundary is
+     mechanical: inside a code span or fence is code, copied byte for byte;
+     everything else is prose, translated. That includes a `verify:` step
+     written as a sentence -- "the table in the results note shows ..." is
+     prose. A mention of this note's own heading moves with the heading, even
+     inside backticks. Nothing in it is a quotation, so nothing is left in
+     another language. Keep one heading, one criterion, one log entry for one;
+     a translation that merges, drops, or improves is not a translation.
+  2. Have the pair checked by someone who did not translate it -- another
+     agent, or the user, whoever the user names. The check is mechanical, and
+     `references/templates.md` lists it line by line. Findings get fixed, not
+     waved through.
+  3. Promote: `status: agreed`, `translated: <YYYY-MM-DD>`, rename
+     `<note>.en.md` to `<note>.md`, delete the draft. The original does not
+     survive: a note that exists twice is a note whose wording drifts.
+
+  A draft that is already English needs only step 3.
+
+- From approval on, the note is English for life: later scope changes, log
+  entries, and blocker text included.
+
+Nothing is retrofitted. The vault's Japanese archive is history, not a
+migration backlog; the rule covers notes written from now on, and notes someone
+actually reopens.
+
+Sail carries the same act, because it runs without this skill loaded. Change
+one and change the other.
+
 ## Finding an existing note
 
 Before starting a second note for the same task:
@@ -63,7 +111,8 @@ Before starting a second note for the same task:
 2. Otherwise search the project's notes by the task's own words -- title,
    problem, branch -- with `rg -il` over `~/notes/projects/<project>/`, keeping
    notes whose `status` is not `done`. Branch is the weakest of the three: keel
-   records the branch it ran on, which is often `main`.
+   records the branch it ran on, which is often `main`. A `<note>.ja.md` /
+   `<note>.en.md` pair is one note mid-translation, not two.
 3. Otherwise list that project's notes with `status != done`, newest first
    (`ls -t`), and ask which one.
 4. Otherwise ask. Never guess.
@@ -139,11 +188,12 @@ unknowns remaining) so the note is justified rather than assumed.
 
 ### 3. Write the problem
 
-Write the problem before the solution, and keep the solution out of it. Use the
-user's words verbatim where you can, in quotes. If you only have a paraphrase,
-put it under `## Design`; do not dress it up as a quote. Include what was tried
-and why it was not enough. If you cannot state the problem without naming an
-implementation, you have not found it yet.
+Write the problem before the solution, and keep the solution out of it. State
+it plainly, in the note's language. Nothing is quoted: a transcript is not a
+problem statement, and a translated quote is neither a quote nor a statement.
+Attribute what you know -- "the user wants X before Y" -- and include what was
+tried and why it was not enough. If you cannot state the problem without naming
+an implementation, you have not found it yet.
 
 Show the note. Let them correct it.
 
@@ -187,9 +237,10 @@ for one; the next move is theirs.
 Then end the turn. Do not start implementing, do not "just scaffold", do not
 open the first file. The gate is the feature; skipping the stop empties it out.
 
-The note stays `draft` until an executor picks it up and marks it `agreed`:
-there is nothing for the gate to record, and nothing to commit, because the note
-is already outside the repository.
+The note stays `draft` until approval runs: an executor picking it up performs
+the approval act above, and so does this session if the user approves here.
+There is nothing for the gate to commit, because the note is already outside
+the repository.
 
 ## Handoff
 
@@ -213,11 +264,15 @@ into the note, then let it continue -- so the next cold run never has to ask.
 - A note that never says what is out of scope
 - A criterion with no `verify:`
 - A criterion that dictates the user's reply format
-- A paraphrase presented as a quote under "in the user's words"
+- A quotation of the user, or a line transcribed from the conversation
 - Writing the spec before the problem
 - Questions with no guess attached -- that is surveying, not interviewing
 - A note only readable by someone who was in the conversation
 - Renegotiating a criterion after the work instead of reporting it unmet
+- A note marked `agreed` that is not English
+- A translated note left beside its source (`x.md` + `x.ja.md`)
+- A translation that rewrites code, or renames a heading and leaves its
+  references behind
 - Three or more rounds without your understanding improving
 
 ## Verification
@@ -229,6 +284,11 @@ into the note, then let it continue -- so the next cold run never has to ask.
 - [ ] The problem section contains no solution
 - [ ] Criteria, each with `verify:`, plus out-of-scope and stop conditions
 - [ ] The note says what is out of scope; the handoff did not repeat the note
-- [ ] No approval was requested, and the note was left `draft` for the executor
+- [ ] No approval was requested; the note is `draft`, or the user's own word
+      sent it through the full approval act
 - [ ] The turn ended at the note; no implementation started
 - [ ] Mid-work scope changes were written to the note before acting
+- [ ] The draft's filename and `session_lang:` match the language it is written
+      in
+- [ ] A note approved this turn went translate -> check -> promote, with no copy
+      of the original left behind
