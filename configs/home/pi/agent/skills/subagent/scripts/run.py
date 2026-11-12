@@ -40,6 +40,8 @@ CHILD_FLAGS = (
     "--no-mcp",
     "--no-skills",
     "--no-prompt-templates",
+    "--system-prompt",
+    "--append-system-prompt",
 )
 RESERVED_PI_FLAGS = {
     "--print",
@@ -156,28 +158,68 @@ def read_input(prompt_words: list[str]) -> bytes:
     if not stdin_data.strip() and not task:
         die("no prompt: pass words after `--` or pipe the prompt")
     if stdin_data.strip() and task:
-        prompt = task.encode() + b"\n\n" + stdin_data.strip()
+        prompt = task.encode() + b"\n\n" + stdin_data.lstrip(b"\r\n").rstrip()
     elif task:
         prompt = task.encode()
     else:
-        prompt = stdin_data.strip()
+        prompt = stdin_data.lstrip(b"\r\n").rstrip()
     return prompt
 
 
-def reject_bare_words(pi_flags: list[str]) -> None:
-    """Die on bare words before `--`: pi would take them as extra messages.
+# pi flags that never take a value (verified against pi's cli/args.js in the
+# pinned pi release). Unknown flags are assumed to take one, mirroring pi's
+# own unknown-flag consumption.
+BOOLEAN_PI_FLAGS = frozenset(
+    {
+        "--approve",
+        "--continue",
+        "--help",
+        "--no-approve",
+        "--no-builtin-tools",
+        "--no-context-files",
+        "--no-extensions",
+        "--no-mcp",
+        "--no-prompt-templates",
+        "--no-session",
+        "--no-skills",
+        "--no-themes",
+        "--no-tools",
+        "--offline",
+        "--verbose",
+        "--version",
+        "-a",
+        "-c",
+        "-h",
+        "-na",
+        "-nbt",
+        "-nc",
+        "-ne",
+        "-ns",
+        "-nt",
+        "-np",
+        "-v",
+    }
+)
 
-    Mirrors pi's own unknown-flag consumption: `--flag value` swallows the
-    next token unless it looks like a flag or an `@file`.
+
+def reject_bare_words(pi_flags: list[str]) -> None:
+    """Die on words before `--` that would never become the task.
+
+    Bare words would reach pi as extra messages, and `@file` words as
+    attachments re-read on every `--resume`. Unknown flags are assumed to
+    take a value, mirroring pi's own unknown-flag consumption.
     """
     i = 0
     while i < len(pi_flags):
         tok = pi_flags[i]
         if tok.startswith("@"):
-            i += 1
-            continue
+            die(f"bare {tok!r} before `--` is forwarded to pi as an attachment; name it inside the task instead")
         if tok.startswith("-"):
-            if "=" not in tok and i + 1 < len(pi_flags):
+            if (
+                tok not in BOOLEAN_PI_FLAGS
+                and "=" not in tok
+                and i + 1 < len(pi_flags)
+            ):
                 nxt = pi_flags[i + 1]
                 if not nxt.startswith("-") and not nxt.startswith("@"):
                     i += 1
@@ -376,7 +418,9 @@ def print_provenance(
     eprint("  " + shlex.join(manual))
 
 
-def print_dry_run(command: list[str], system_prompt: str, agent_dir: Path) -> None:
+def print_dry_run(
+    command: list[str], system_prompt: str, agent_dir: Path, prompt: bytes
+) -> None:
     print("# input: piped input follows the task words after `--`")
     print()
     print("# env")
@@ -384,6 +428,13 @@ def print_dry_run(command: list[str], system_prompt: str, agent_dir: Path) -> No
     print()
     print("# command")
     print(shlex.join(command))
+    print()
+    lines = prompt.decode(errors="replace").splitlines()
+    print(f"# prompt: {len(prompt)} bytes, {len(lines)} lines")
+    for line in lines[:20]:
+        print(line)
+    if len(lines) > 20:
+        print(f"# ... ({len(lines) - 20} more lines)")
     print()
     print("# system prompt")
     print(system_prompt, end="" if system_prompt.endswith("\n") else "\n")
@@ -435,14 +486,17 @@ def save_follow_up(run_dir: Path, prompt: bytes) -> Path:
 
 def parse_args(argv: list[str]) -> argparse.Namespace:
     argv, prompt_words = split_argv(list(argv))
+    if "--prompt" in argv or any(a.startswith("--prompt=") for a in argv):
+        die("run.py no longer takes --prompt; pass the task as words after `--`")
     parser = argparse.ArgumentParser(
         prog="run.py",
         description="Run a task in a separate, read-only-by-default pi process.",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         allow_abbrev=False,
         epilog=(
-            "Unrecognized flags and bare words are forwarded to pi, except the\n"
-            "session, mode, trust, and resource-loading flags run.py manages.\n"
+            "Unrecognized flags are forwarded to pi (bare words before `--`\n"
+            "are rejected), except the session, mode, trust, and\n"
+            "resource-loading flags run.py manages.\n"
             "The child is read-only by default (read,grep,find,ls).\n"
             "\n"
             "Write the task as words after `--`, like pi itself; piped input\n"
@@ -539,7 +593,7 @@ def main(argv: list[str] | None = None) -> int:
             system_prompt_path,
         )
         if args.dry_run:
-            print_dry_run(command, system_prompt, agent_dir)
+            print_dry_run(command, system_prompt, agent_dir, prompt)
             return 0
         prepare_agent_dir(agent_dir, source_agent_dir())
         follow_up = save_follow_up(run_dir, prompt)
@@ -560,6 +614,8 @@ def main(argv: list[str] | None = None) -> int:
         return run_child(command, prompt, cwd, agent_dir, args.info)
 
     validate_pi_flags(args.pi_flags)
+    if not has_flag(args.pi_flags, "--model"):
+        die("a new run needs --model")
     cwd = Path.cwd().resolve()
     prompt = read_input(args.prompt_words)
     system_prompt = build_system_prompt()
@@ -585,7 +641,7 @@ def main(argv: list[str] | None = None) -> int:
         system_prompt_path,
     )
     if args.dry_run:
-        print_dry_run(command, system_prompt, agent_dir)
+        print_dry_run(command, system_prompt, agent_dir, prompt)
         return 0
 
     state_dir.mkdir(parents=True, exist_ok=True, mode=0o700)

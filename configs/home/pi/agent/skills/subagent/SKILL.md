@@ -29,7 +29,7 @@ The launcher is `scripts/run.py` in this skill directory; the stable path is
 `~/.pi/agent/skills/subagent/scripts/run.py`. Write the task as words after
 `--`, like `pi` itself; pipe a diff or log when the child needs to see it.
 Name every path or glob the child may read with `@`; a longer brief belongs
-in the vault (or a temp file) and is referenced the same way.
+in a vault note (or a temp file) and is referenced the same way.
 
 If an invocation fails or you need the run's provenance, read
 `references/launcher.md` (`--help` lists the flags).
@@ -56,18 +56,19 @@ A longer brief is referenced with `@`, or fed with `<`:
 ```
 
 When the child needs both a diff and a longer brief, save the diff to a
-temp file and reference it from the brief with `@`:
+temp file and name it from the brief with `@` (the child reads absolute
+paths such as `/tmp` fine):
 
 ```sh
 git diff --cached > /tmp/review.diff
 ```
 
+(where `/tmp/review-brief.md` names `@/tmp/review.diff`):
+
 ```sh
 ~/.pi/agent/skills/subagent/scripts/run.py \
   --model opencode-go/claude-haiku-5-5 < /tmp/review-brief.md
 ```
-
-(where `/tmp/review-brief.md` names `@/tmp/review.diff`).
 
 ```sh
 ~/.pi/agent/skills/subagent/scripts/run.py \
@@ -78,6 +79,13 @@ git diff --cached > /tmp/review.diff
 ```sh
 ~/.pi/agent/skills/subagent/scripts/run.py --resume -- \
   "Review @/path/to/new.patch too."
+```
+
+A named run needs its run ID (from `--info` output):
+
+```sh
+~/.pi/agent/skills/subagent/scripts/run.py --resume <run-id> -- \
+  "Follow-up task."
 ```
 
 ## Rules
