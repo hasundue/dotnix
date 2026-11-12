@@ -39,7 +39,7 @@ and stop when nothing matches.
    gave them, in the title, the problem, and the branch:
 
    ```sh
-   cd ~/notes/projects/<project>
+   cd ~/vault/projects/<project>
    rg -il --glob '*.md' '<terms>' . | while read -r f; do
      rg -q '^status: done' "$f" || echo "$f"
    done

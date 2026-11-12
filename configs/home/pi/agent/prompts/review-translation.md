@@ -16,7 +16,7 @@ Report findings and stop; fixing and promotion are someone else's call.
 - An `.en.md` path is the candidate; its sibling `<note>.<lang>.md` is the
   draft.
 - A `<note>.<lang>.md` path is the draft; the candidate is `<note>.en.md`.
-- No argument: search `~/notes/projects/<project>/` for `*.en.md` with an open
+- No argument: search `~/vault/projects/<project>/` for `*.en.md` with an open
   check, resolve `<project>` from git as the skills do, and ask which one if
   several exist.
 

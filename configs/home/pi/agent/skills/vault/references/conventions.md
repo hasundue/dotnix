@@ -1,6 +1,6 @@
 # Vault conventions
 
-Every note in `~/notes` follows these, whichever skill writes it. They are the
+Every note in `~/vault` follows these, whichever skill writes it. They are the
 only copy: `vault`, `ditty`, `keel`, and `sail` read this file instead of
 restating it.
 
@@ -24,7 +24,7 @@ Every other location is read from the live tree, because a hardcoded map
 drifts:
 
 ```sh
-fd -t d -d 2 . ~/notes
+fd -t d -d 2 . ~/vault
 ```
 
 - A path the user gave wins over every rule here.
@@ -125,7 +125,7 @@ person.
   `status` instead of `author:`, and their owner is the session that agreed
   them.
 - List everything the skills have written:
-  `rg --files-with-matches '^author: pi' ~/notes`
+  `rg --files-with-matches '^author: pi' ~/vault`
 
 ## What the user said
 

@@ -126,7 +126,7 @@ tags: []
 
 ## 概要
 
-A pi skill for reading and writing the Obsidian vault at `~/notes`, so a
+A pi skill for reading and writing the Obsidian vault at `~/vault`, so a
 discussion can be persisted and found again without the user copying it by hand.
 The vault had drifted into a write-only store: five top-level directories, two
 filename conventions, and almost no links between notes.

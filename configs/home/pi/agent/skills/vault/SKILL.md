@@ -1,7 +1,7 @@
 ---
 name: vault
 description: >
-  Read and maintain the user's Obsidian vault at `~/notes`: find what is already
+  Read and maintain the user's Obsidian vault at `~/vault`: find what is already
   there, answer from it, and write durable notes -- decisions, research,
   handoffs -- where their subject lives. Use when the user asks what they
   already know about a topic, wants a note found, read, or updated, or wants a
@@ -12,7 +12,7 @@ description: >
 
 # Vault
 
-Three kinds of notes share `~/notes`, and they are not held to the same
+Three kinds of notes share `~/vault`, and they are not held to the same
 standard.
 
 - **Durable notes** must survive a cold read: decisions, research, handoffs.
@@ -46,7 +46,7 @@ only notes carrying `author: pi`, and never touch a person's note without an
 explicit request. List what the skills wrote:
 
 ```sh
-rg --files-with-matches '^author: pi' ~/notes
+rg --files-with-matches '^author: pi' ~/vault
 ```
 
 ## Search before writing
@@ -54,7 +54,7 @@ rg --files-with-matches '^author: pi' ~/notes
 Never create a note blind. Look for the topic first:
 
 ```sh
-cd ~/notes
+cd ~/vault
 rg -l -i '<terms>' .
 fd -e md . | rg -i '<slug words>'
 ```
@@ -124,7 +124,7 @@ to. Do not paste the note back unless asked.
 Search, then read. Do not answer from filenames alone.
 
 ```sh
-cd ~/notes
+cd ~/vault
 rg -l -i '<terms>' .
 rg -n -i '<terms>' . | head -40
 ```
@@ -142,7 +142,6 @@ should have existed. A fragment belongs in `ditty`, a written-up answer here.
 - `*.sync-conflict-*` -- report it, do not merge or delete
 - Notes outside the request: no retroactive edits to make links resolve. An
   outgoing `[[link]]` is enough; Obsidian shows the backlink.
-- `rpiv/` -- legacy artifacts, read-only unless the user says otherwise
 
 ## Red flags
 

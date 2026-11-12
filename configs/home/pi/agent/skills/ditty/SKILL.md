@@ -24,7 +24,7 @@ about the shape.
 A fragment that already exists gets a line, not a second file:
 
 ```sh
-cd ~/notes
+cd ~/vault
 rg -l -i '<terms>' .
 fd -e md . | rg -i '<slug words>'
 ```
@@ -56,7 +56,6 @@ is not reformatted, reordered, or reworded.
   a `vault` write-up or a `keel`/`sail` task note, not a fragment.
 - `.obsidian/`, `.stfolder/`, `.stversions/` -- Obsidian and Syncthing state
 - `*.sync-conflict-*` -- report it, do not merge or delete
-- `rpiv/` -- legacy artifacts, read-only unless the user says otherwise
 
 ## Red flags
 

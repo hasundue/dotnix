@@ -35,7 +35,7 @@ is organized -- is judgment.
 One file per task, kept outside the repository:
 
 ```
-~/notes/projects/<project>/<YYYY-MM-DD>-<slug>.md
+~/vault/projects/<project>/<YYYY-MM-DD>-<slug>.md
 ```
 
 A draft in a language other than English carries that language in its name, as
@@ -83,7 +83,7 @@ Before starting a second note for the same task:
 
 1. A path the user passed wins.
 2. Otherwise search the project's notes by the task's own words -- title,
-   problem, branch -- with `rg -il` over `~/notes/projects/<project>/`, keeping
+   problem, branch -- with `rg -il` over `~/vault/projects/<project>/`, keeping
    notes whose `status` is not `done`. Branch is the weakest of the three: keel
    records the branch it ran on, which is often `main`. A `<note>.ja.md` /
    `<note>.en.md` pair is one note mid-translation, not two.
@@ -253,7 +253,7 @@ into the note, then let it continue -- so the next cold run never has to ask.
 
 - [ ] The work was judged large before the note was written, or keel exited
       early
-- [ ] The note is under `~/notes/projects/<project>/`; the repo has no working
+- [ ] The note is under `~/vault/projects/<project>/`; the repo has no working
       note
 - [ ] The problem section contains no solution
 - [ ] Criteria, each with `verify:`, plus out-of-scope and stop conditions
