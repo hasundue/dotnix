@@ -134,20 +134,56 @@ def prepare_agent_dir(agent_dir: Path, source: Path) -> None:
         target.chmod(0o600)
 
 
-def read_input(messages: list[str]) -> tuple[bytes, bytes]:
+def split_argv(argv: list[str]) -> tuple[list[str], list[str]]:
+    """Split argv at the first bare `--`: left goes to argparse/pi, right is the prompt."""
+    if "--" in argv:
+        i = argv.index("--")
+        return argv[:i], argv[i + 1 :]
+    return argv, []
+
+
+def read_input(prompt_words: list[str]) -> bytes:
+    """Compose the full prompt run.py delivers to pi.
+
+    Words after `--` are joined with spaces into the task, which comes
+    first; piped input follows. The returned bytes are both the saved record
+    and pi's stdin, so the child sees exactly what the run dir records.
+    """
     stdin_data = b""
     if not sys.stdin.isatty():
         stdin_data = sys.stdin.buffer.read()
-    message_data = "\n\n".join(messages).encode() if messages else b""
-    if not stdin_data.strip() and not message_data.strip():
-        die("no prompt: pass --prompt or pipe stdin")
-    if stdin_data.strip() and message_data.strip():
-        prompt = stdin_data.rstrip(b"\n") + b"\n\n" + message_data
-    elif stdin_data.strip():
-        prompt = stdin_data
+    task = " ".join(prompt_words).strip()
+    if not stdin_data.strip() and not task:
+        die("no prompt: pass words after `--` or pipe the prompt")
+    if stdin_data.strip() and task:
+        prompt = task.encode() + b"\n\n" + stdin_data.strip()
+    elif task:
+        prompt = task.encode()
     else:
-        prompt = message_data
-    return stdin_data, prompt
+        prompt = stdin_data.strip()
+    return prompt
+
+
+def reject_bare_words(pi_flags: list[str]) -> None:
+    """Die on bare words before `--`: pi would take them as extra messages.
+
+    Mirrors pi's own unknown-flag consumption: `--flag value` swallows the
+    next token unless it looks like a flag or an `@file`.
+    """
+    i = 0
+    while i < len(pi_flags):
+        tok = pi_flags[i]
+        if tok.startswith("@"):
+            i += 1
+            continue
+        if tok.startswith("-"):
+            if "=" not in tok and i + 1 < len(pi_flags):
+                nxt = pi_flags[i + 1]
+                if not nxt.startswith("-") and not nxt.startswith("@"):
+                    i += 1
+            i += 1
+            continue
+        die(f"bare word {tok!r} before `--` never becomes the task; put it after `--`")
 
 
 def has_flag(pi_flags: list[str], *names: str) -> bool:
@@ -270,7 +306,6 @@ def build_command(
     pi_flags: list[str],
     system_prompt: Path,
     resume: bool,
-    messages: list[str],
 ) -> list[str]:
     command = ["pi", "--print", "--session-dir", str(session_dir)]
     if resume:
@@ -282,8 +317,6 @@ def build_command(
         command += ["--tools", ",".join(READ_ONLY_TOOLS)]
     command += pi_flags
     command += ["--append-system-prompt", str(system_prompt)]
-    if messages:
-        command += ["--", *messages]
     return command
 
 
@@ -344,7 +377,7 @@ def print_provenance(
 
 
 def print_dry_run(command: list[str], system_prompt: str, agent_dir: Path) -> None:
-    print("# stdin: piped input is prepended; --prompt values are passed to pi")
+    print("# input: piped input follows the task words after `--`")
     print()
     print("# env")
     print(f"PI_CODING_AGENT_DIR={agent_dir}")
@@ -358,7 +391,7 @@ def print_dry_run(command: list[str], system_prompt: str, agent_dir: Path) -> No
 
 def run_child(
     command: list[str],
-    stdin_data: bytes,
+    prompt: bytes,
     cwd: Path,
     agent_dir: Path,
     show_stderr: bool = False,
@@ -370,11 +403,8 @@ def run_child(
         "stdout": subprocess.PIPE,
         "stderr": subprocess.PIPE,
         "env": env,
+        "input": prompt,
     }
-    if stdin_data.strip():
-        kwargs["input"] = stdin_data
-    else:
-        kwargs["stdin"] = subprocess.DEVNULL
     try:
         result = subprocess.run(command, **kwargs)
     except OSError as exc:
@@ -404,20 +434,19 @@ def save_follow_up(run_dir: Path, prompt: bytes) -> Path:
 
 
 def parse_args(argv: list[str]) -> argparse.Namespace:
-    if "--" in argv:
-        die("do not use --; pass the prompt with --prompt")
+    argv, prompt_words = split_argv(list(argv))
     parser = argparse.ArgumentParser(
         prog="run.py",
         description="Run a task in a separate, read-only-by-default pi process.",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         allow_abbrev=False,
         epilog=(
-            "Unrecognized flags are forwarded to pi, except the session, mode,\n"
-            "trust, and resource-loading flags run.py manages. The child is\n"
-            "read-only by default (read,grep,find,ls).\n"
+            "Unrecognized flags and bare words are forwarded to pi, except the\n"
+            "session, mode, trust, and resource-loading flags run.py manages.\n"
+            "The child is read-only by default (read,grep,find,ls).\n"
             "\n"
-            "The prompt is passed with --prompt or on stdin, which is prepended.\n"
-            "--resume without an ID resumes the latest run.\n"
+            "Write the task as words after `--`, like pi itself; piped input\n"
+            "follows the task. --resume without an ID resumes the latest run.\n"
             "\n"
             f"Conventions for prompts, output, and resume: {SKILL_DIR / 'SKILL.md'}\n"
         ),
@@ -449,15 +478,10 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
         action="store_true",
         help="print the command, agent dir, and system prompt without running",
     )
-    parser.add_argument(
-        "--prompt",
-        action="append",
-        default=[],
-        metavar="TEXT",
-        help="prompt text; repeatable; omitted uses stdin",
-    )
     args, pi_flags = parser.parse_known_args(argv)
     args.pi_flags = pi_flags
+    args.prompt_words = prompt_words
+    reject_bare_words(pi_flags)
     return args
 
 
@@ -500,16 +524,13 @@ def main(argv: list[str] | None = None) -> int:
         if not system_prompt_path.is_file():
             die(f"system prompt not found: {system_prompt_path}")
         system_prompt = system_prompt_path.read_text()
-        stdin_data, prompt = read_input(args.prompt)
-        if not prompt.strip():
-            die("prompt is empty")
+        prompt = read_input(args.prompt_words)
         command = build_command(
             session_id,
             session_dir,
             pi_flags,
             system_prompt_path,
             True,
-            args.prompt,
         )
         manual = manual_command(
             session_id,
@@ -536,13 +557,11 @@ def main(argv: list[str] | None = None) -> int:
                 manual,
             )
         write_latest(state_dir, run_id)
-        return run_child(command, stdin_data, cwd, agent_dir, args.info)
+        return run_child(command, prompt, cwd, agent_dir, args.info)
 
     validate_pi_flags(args.pi_flags)
     cwd = Path.cwd().resolve()
-    stdin_data, prompt = read_input(args.prompt)
-    if not prompt.strip():
-        die("prompt is empty")
+    prompt = read_input(args.prompt_words)
     system_prompt = build_system_prompt()
     run_id = validate_run_id(args.run_id) if args.run_id else unique_run_id(state_dir)
     run_dir = state_dir / run_id
@@ -558,7 +577,6 @@ def main(argv: list[str] | None = None) -> int:
         args.pi_flags,
         system_prompt_path,
         False,
-        args.prompt,
     )
     manual = manual_command(
         session_id,
@@ -600,7 +618,7 @@ def main(argv: list[str] | None = None) -> int:
             command,
             manual,
         )
-    code = run_child(command, stdin_data, cwd, agent_dir, args.info)
+    code = run_child(command, prompt, cwd, agent_dir, args.info)
     if args.info:
         files = session_files(run_dir)
         if len(files) == 1:
