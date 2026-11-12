@@ -43,6 +43,13 @@ immediately before switching.
 After the branch is merged into `main` on origin, run `git switch main &&
 git pull --ff-only` in `~/dotnix`.
 
+A plain branch checked out in `~/dotnix` itself is not a worktree: merge it
+with plain git, not `wt merge`. Observed in the primary checkout, `wt merge`
+fast-forwards without squashing when the target is an ancestor of the
+branch, so squash manually first (`git reset --soft` + one commit) when the
+branch must land as one commit. Whether linked worktrees behave the same is
+unverified.
+
 ## Commit Convention
 
 ```
