@@ -27,7 +27,9 @@ co-work. One child at a time.
 
 The launcher is `scripts/run.py` in this skill directory; the stable path is
 `~/.pi/agent/skills/subagent/scripts/run.py`. Write the task as words after
-`--`, like `pi` itself; pipe a diff or log when the child needs to see it.
+`--`, like `pi` itself; with `--prompt FILE` those words become the template's
+arguments (`$@`, `$1`, ...) instead. Pipe a diff or log when the child needs
+to see it.
 Name every path or glob the child may read with `@`; a longer brief belongs
 in a vault note (or a temp file) and is referenced the same way.
 
@@ -46,6 +48,18 @@ git diff --cached | ~/.pi/agent/skills/subagent/scripts/run.py \
 ~/.pi/agent/skills/subagent/scripts/run.py \
   --model opencode-go/claude-haiku-5-5 -- \
   "Review the translation of @doc.ja.md into @doc.en.md per @notes/rules.md."
+```
+
+A template that expects appended output takes it from a pipe (the child
+cannot tell a pipe from typing; `@` words still resolve as attachments).
+Note the `@` marks pi attachments inside the prompt -- the shell command
+itself takes a plain path:
+
+```sh
+~/.pi/agent/skills/vault/scripts/check_pair.py doc.ja.md 2>&1 \
+  | ~/.pi/agent/skills/subagent/scripts/run.py \
+    --model opencode-go/claude-haiku-5-5 \
+    --prompt ~/.pi/agent/prompts/review-translation.md -- @doc.ja.md @doc.en.md
 ```
 
 A longer brief is referenced with `@`, or fed with `<`:
@@ -91,7 +105,8 @@ A named run needs its run ID (from `--info` output):
 ## Rules
 
 - Put the task after `--`. Bare words before it never become the task; the
-  launcher rejects them.
+  launcher rejects them. With `--prompt FILE` the words after `--` are the
+  template's arguments instead.
 - Keep the launcher's read-only default (`read,grep,find,ls`). Do not add
   `write`, `edit`, or `bash`; this skill is for read-only tasks. Use
   `--no-tools` when the child needs no files.

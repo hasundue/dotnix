@@ -144,18 +144,99 @@ def split_argv(argv: list[str]) -> tuple[list[str], list[str]]:
     return argv, []
 
 
-def read_input(prompt_words: list[str]) -> bytes:
+def strip_frontmatter(text: str) -> str:
+    """Remove a leading YAML frontmatter block (`---` ... `---`).
+
+    Prompt templates carry `description`/`argument-hint` for slash-command
+    discovery; the child never needs that header, so `--prompt` drops it
+    at runtime while the file keeps it.
+    """
+    lines = text.splitlines(keepends=True)
+    if not lines or lines[0].strip() != "---":
+        return text
+    for i in range(1, len(lines)):
+        if lines[i].strip() == "---":
+            return "".join(lines[i + 1 :]).lstrip("\n")
+    return text
+
+
+TEMPLATE_RE = re.compile(
+    r"\$\{@:(\d+):(\d+)\}"  # ${@:N:L}
+    r"|\$\{@:(\d+)\}"  # ${@:N}
+    r"|\$\{@:-([^}]*)\}"  # ${@:-default}
+    r"|\$@|\$ARGUMENTS"  # $@
+    r"|\$\{(\d+):-([^}]*)\}"  # ${N:-default}
+    r"|\$(\d+)"  # $N
+)
+
+
+def expand_template(template: str, args: list[str]) -> str:
+    """Expand pi prompt-template substitutions with the words after `--`.
+
+    Mirrors the template syntax pi itself documents (`$1`, `$@`,
+    `${1:-default}`, `${@:N}`, `${@:N:L}`); `@path` words pass through
+    untouched for pi to resolve as attachments.
+    """
+
+    def replace(match: re.Match[str]) -> str:
+        if match.group(0) in ("$@", "$ARGUMENTS"):
+            return " ".join(args)
+        # Position 0 has no meaning here (there is no $0); clamp to 1
+        # rather than letting Python's negative indexing surprise anyone.
+        start, length = match.group(1, 2)
+        if start is not None:
+            n = max(int(start), 1)
+            return " ".join(args[n - 1 : n - 1 + int(length)])
+        only_start = match.group(3)
+        if only_start is not None:
+            return " ".join(args[max(int(only_start), 1) - 1 :])
+        all_default = match.group(4)
+        if all_default is not None:
+            return " ".join(args) if args else all_default
+        num, default = match.group(5, 6)
+        if num is not None:
+            i = max(int(num), 1) - 1
+            return args[i] if 0 <= i < len(args) else (default or "")
+        plain = match.group(7)
+        if plain is not None:
+            i = max(int(plain), 1) - 1
+            return args[i] if 0 <= i < len(args) else ""
+        return match.group(0)
+
+    return TEMPLATE_RE.sub(replace, template)
+
+
+def load_prompt_file(path: str) -> str:
+    file = Path(path).expanduser()
+    try:
+        text = file.read_text(encoding="utf-8")
+    except (OSError, UnicodeDecodeError) as exc:
+        die(f"cannot read --prompt {path}: {exc}")
+    return strip_frontmatter(text).rstrip() + "\n"
+
+
+def read_input(prompt_words: list[str], prompt_path: str | None = None) -> bytes:
     """Compose the full prompt run.py delivers to pi.
 
-    Words after `--` are joined with spaces into the task, which comes
-    first; piped input follows. The returned bytes are both the saved record
-    and pi's stdin, so the child sees exactly what the run dir records.
+    Words after `--` are template arguments when `--prompt` is given
+    (expanded into `$@`/`$1`...), otherwise the task itself. Piped input
+    follows in both cases -- the receiver cannot tell a pipe from typing,
+    so a template that expects appended output (e.g. a checker report)
+    just documents "output appended at the end". The returned bytes are
+    both the saved record and pi's stdin, so the child sees exactly what
+    the run dir records.
     """
     stdin_data = b""
     if not sys.stdin.isatty():
         stdin_data = sys.stdin.buffer.read()
-    task = " ".join(prompt_words).strip()
+    if prompt_path is not None:
+        template = load_prompt_file(prompt_path)
+        task = expand_template(template, prompt_words).strip()
+    else:
+        task = " ".join(prompt_words).strip()
     if not stdin_data.strip() and not task:
+        if prompt_path is not None:
+            die("no prompt: `--prompt` expanded to empty and stdin is empty")
         die("no prompt: pass words after `--` or pipe the prompt")
     if stdin_data.strip() and task:
         prompt = task.encode() + b"\n\n" + stdin_data.lstrip(b"\r\n").rstrip()
@@ -421,7 +502,7 @@ def print_provenance(
 def print_dry_run(
     command: list[str], system_prompt: str, agent_dir: Path, prompt: bytes
 ) -> None:
-    print("# input: piped input follows the task words after `--`")
+    print("# input: piped input is appended at the end of the task")
     print()
     print("# env")
     print(f"PI_CODING_AGENT_DIR={agent_dir}")
@@ -486,8 +567,6 @@ def save_follow_up(run_dir: Path, prompt: bytes) -> Path:
 
 def parse_args(argv: list[str]) -> argparse.Namespace:
     argv, prompt_words = split_argv(list(argv))
-    if "--prompt" in argv or any(a.startswith("--prompt=") for a in argv):
-        die("run.py no longer takes --prompt; pass the task as words after `--`")
     parser = argparse.ArgumentParser(
         prog="run.py",
         description="Run a task in a separate, read-only-by-default pi process.",
@@ -500,10 +579,18 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
             "The child is read-only by default (read,grep,find,ls).\n"
             "\n"
             "Write the task as words after `--`, like pi itself; piped input\n"
-            "follows the task. --resume without an ID resumes the latest run.\n"
+            "follows the task. --prompt FILE expands a prompt template with\n"
+            "the words after `--` as its arguments (`$@`, `$1`, ...; `@path`\n"
+            "words pass through for pi to attach) and still appends piped\n"
+            "input at the end. --resume without an ID resumes the latest run.\n"
             "\n"
             f"Conventions for prompts, output, and resume: {SKILL_DIR / 'SKILL.md'}\n"
         ),
+    )
+    parser.add_argument(
+        "--prompt",
+        metavar="FILE",
+        help="expand a prompt template file with the words after `--` as arguments",
     )
     parser.add_argument(
         "--run-id",
@@ -578,7 +665,7 @@ def main(argv: list[str] | None = None) -> int:
         if not system_prompt_path.is_file():
             die(f"system prompt not found: {system_prompt_path}")
         system_prompt = system_prompt_path.read_text()
-        prompt = read_input(args.prompt_words)
+        prompt = read_input(args.prompt_words, args.prompt)
         command = build_command(
             session_id,
             session_dir,
@@ -617,7 +704,7 @@ def main(argv: list[str] | None = None) -> int:
     if not has_flag(args.pi_flags, "--model"):
         die("a new run needs --model")
     cwd = Path.cwd().resolve()
-    prompt = read_input(args.prompt_words)
+    prompt = read_input(args.prompt_words, args.prompt)
     system_prompt = build_system_prompt()
     run_id = validate_run_id(args.run_id) if args.run_id else unique_run_id(state_dir)
     run_dir = state_dir / run_id

@@ -83,10 +83,27 @@ translate into `<note>.en.md`, have someone who did not translate it check the
 pair, then promote -- `status: agreed`, `translated:` set, `<note>.en.md` to
 `<note>.md`, draft deleted.
 
-If the check needs a party that is not in this session, stop after the
-translation and say so -- no code changes while the pair is unsettled. A check
-that fails leaves the draft `draft` and discards the candidate. A draft already
-in English needs only the promotion.
+Run the check yourself through a subagent -- the translator (you) must not be
+the checker:
+
+```sh
+~/.pi/agent/skills/vault/scripts/check_pair.py <draft> 2>&1 \
+  | ~/.pi/agent/skills/subagent/scripts/run.py \
+    --model opencode-go/claude-haiku-5-5 \
+    --prompt ~/.pi/agent/prompts/review-translation.md -- @<draft> @<candidate>
+```
+
+Use a cheap model different from the translator's. Read the child's last
+line: it must be exactly `VERDICT: promotable` or `VERDICT: not-promotable`.
+Anything else -- missing, doubled, reworded -- counts as not promotable.
+
+- `VERDICT: promotable` -> promote as above; the candidate becomes the note.
+- otherwise -> leave the draft `draft`, discard the candidate, fix the pair
+  yourself and re-run the check (once, then ask).
+- child non-zero exit -> stop and report the exit code and stderr; no code
+  changes while the pair is unsettled.
+
+A draft already in English needs only the promotion.
 
 Then check the current branch and working tree so you know what you are
 changing. Do not push, rewrite history, or discard unrelated work unless the

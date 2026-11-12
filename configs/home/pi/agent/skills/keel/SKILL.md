@@ -71,7 +71,10 @@ Naming, languages, and the approval act are the vault's rules, defined once in
   wants rather than quoting them.
 
 Keel writes the draft and stops. Approval belongs to whoever the user hands the
-work to: sail, or this session if the user approves here. When a rule changes,
+work to: sail, or this session if the user approves here. When the user
+approves here, run the same automated check sail uses -- translate, pipe
+`check_pair.py` output into `run.py --prompt` with the translation-check
+template, and promote only on a `VERDICT: promotable` last line. When a rule changes,
 change it there -- sail and ditty read the same file.
 
 ## Finding an existing note

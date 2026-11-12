@@ -3,7 +3,7 @@ description: Check a task note's draft against its English candidate
 argument-hint: "[path to the draft or the .en.md candidate]"
 ---
 
-Check the translation pair for the task note at `$@`. You are the party who did
+Check the translation pair named in `$@`. You are the party who did
 not translate it: your job is the check in
 `~/.pi/agent/skills/vault/references/conventions.md`, step 2 of "A task note's
 language lifecycle". Read that section first.
@@ -28,7 +28,11 @@ file of the pair is missing, say which one and stop.
 Run `~/.pi/agent/skills/vault/scripts/check_pair.py <draft>`. It compares front
 matter, headings, criteria, code, untranslated prose, quotations, and heading
 references, and exits non-zero on any finding. Treat its output as facts: cite
-what it flags rather than re-deriving it by hand.
+what it flags rather than re-deriving it by hand. When checker output is
+appended at the end of this prompt, that is the run's output -- use it and do
+not re-run anything yourself. When nothing is appended and you have no shell
+to run it, stop and report that the check needs the pair's checker output;
+do not guess at what it would have said.
 
 ## Compare
 
@@ -70,12 +74,21 @@ breaks. Order them by severity: code changed, criterion or heading lost,
 meaning changed, then style. If a category has no findings, one line saying so
 is enough; do not narrate clean comparisons.
 
-End with one verdict:
+End with one verdict line, exactly one of these two, as the last line:
 
-- **promotable** -- the pair is a faithful translation, and promotion is
-  translate -> check -> promote with the draft deleted
-- **not promotable** -- the findings must be fixed first, and the candidate
-  must be rechecked after
+```
+VERDICT: promotable
+```
 
+```
+VERDICT: not-promotable
+```
+
+- `VERDICT: promotable` -- the pair is a faithful translation, and promotion
+  is translate -> check -> promote with the draft deleted
+- `VERDICT: not-promotable` -- the findings must be fixed first, and the
+  candidate must be rechecked after
+
+The verdict line is machine-read: no rewording, no extra verdict lines.
 Neither verdict edits anything, and neither asks whether to go ahead. The next
 move is the user's.
