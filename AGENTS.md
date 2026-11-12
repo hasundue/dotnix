@@ -18,6 +18,10 @@ another one.
 wt switch --create <branch>   # from ~/dotnix, creates ~/dotnix.<branch>
 ```
 
+A new worktree needs `direnv allow` plus one dev-shell entry (`nix develop
+--command true`) before its first commit; that generates the worktree's
+`.pre-commit-config.yaml` so the git hooks run there.
+
 Live configuration is the exception to the worktree rule. Where
 `dotnix.live.<name>.enable` is set (`pi` today, with `~/dotnix.live.pi`
 resolving to `~/dotnix/configs/home/pi/agent`), the running system reads the
