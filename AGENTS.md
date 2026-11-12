@@ -7,7 +7,21 @@ You, the coding agent reading this file, and the system you and the user are
 operating on, are likely configured via Nix in this very repository. When asked
 to configure something (including yourself), work on this repository.
 
-## Worktrees
+## Git Conventions
+
+### Branches
+
+Do the work on a branch. Never commit to `main` without being asked;
+micro-commits on a branch need no separate permission.
+
+Before cutting the branch, run `git fetch origin` in `~/dotnix`. Stop and
+report to the user (do not stash, reset, or switch) unless all of these
+hold: `git status --porcelain` is empty, the current branch is `main`, and
+`git rev-list --left-right --count origin/main...HEAD` prints two zeros.
+The check and the switch are not atomic, so re-run the status check
+immediately before switching.
+
+### Worktrees
 
 Make code changes in a worktree, not in the primary checkout at `~/dotnix`.
 `wt list` reports where the current directory sits; when it is already a
@@ -33,15 +47,7 @@ them working and merge promptly. Make live edits on a branch cut in
 --create`. Keep the live paths present on the branch; builds run from
 `~/dotnix` also build the checked-out branch, not `main`.
 
-Before cutting the branch, run `git fetch origin` in `~/dotnix`. Stop and
-report to the user (do not stash, reset, or switch) unless all of these
-hold: `git status --porcelain` is empty, the current branch is `main`, and
-`git rev-list --left-right --count origin/main...HEAD` prints two zeros.
-The check and the switch are not atomic, so re-run the status check
-immediately before switching.
-
-Never commit to `main` without being asked. Do the work on a branch,
-where micro-commits need no separate permission.
+### Merging
 
 After the branch is merged into `main` on origin, run `git switch main &&
 git pull --ff-only` in `~/dotnix`.
@@ -53,7 +59,7 @@ branch, so squash manually first (`git reset --soft` + one commit) when the
 branch must land as one commit. Whether linked worktrees behave the same is
 unverified.
 
-## Commit Convention
+### Commits
 
 ```
 scope: imperative summary
@@ -73,7 +79,7 @@ Prepend the parent directory _only_ when the same config name exists under a
 different parent (e.g. both `configs/home/waybar` and `configs/nixos/waybar`
 exist → use `home/waybar` and `nixos/waybar`).
 
-### Fixed scopes
+#### Fixed scopes
 
 - `agents:` — AGENTS.md
 - `flake:` — flake.nix, flake inputs
