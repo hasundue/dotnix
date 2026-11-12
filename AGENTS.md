@@ -40,6 +40,9 @@ hold: `git status --porcelain` is empty, the current branch is `main`, and
 The check and the switch are not atomic, so re-run the status check
 immediately before switching.
 
+Never commit to `main` without being asked. Do the work on a branch,
+where micro-commits need no separate permission.
+
 After the branch is merged into `main` on origin, run `git switch main &&
 git pull --ff-only` in `~/dotnix`.
 
