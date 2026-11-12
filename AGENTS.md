@@ -18,11 +18,20 @@ another one.
 wt switch --create <branch>   # from ~/dotnix, creates ~/dotnix.<branch>
 ```
 
-Live configuration is the exception. Where `dotnix.live.<name>.enable` is set
-(`pi` today, with `~/dotnix.live.pi` resolving to
-`~/dotnix/configs/home/pi/agent`), the running system reads the files straight
-out of that checkout, so a worktree copy changes nothing until it merges. Make
-those edits in `~/dotnix` itself, then return to a worktree for the rest.
+Live configuration is the exception to the worktree rule, not to the branch
+rule. Where `dotnix.live.<name>.enable` is set (`pi` today, with
+`~/dotnix.live.pi` resolving to `~/dotnix/configs/home/pi/agent`), the
+running system reads the files straight out of that checkout, so a worktree
+copy changes nothing until it merges. Cut the branch in `~/dotnix` itself
+(e.g. `git switch -c <branch>`), not via `wt switch --create`, then return
+to `main` once merged.
+
+Before cutting a live branch, fetch and stop if another agent may be editing.
+Stop when any of these hold in `~/dotnix`: the working tree is not fully
+clean (`git status --porcelain` is non-empty), the current branch is not
+`main`, or `main` is ahead of `origin/main` (`git rev-list --count
+origin/main..HEAD` is non-zero). Cut only when on `main`, fully clean, and
+in sync with `origin/main`, and restore that state after merging.
 
 ## Commit Convention
 
