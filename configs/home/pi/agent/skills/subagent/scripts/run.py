@@ -2,8 +2,8 @@
 """Run a pi task in a separate, read-only-by-default process.
 
 The launcher owns the run directory and session; it does not write a vault
-artifact. stdout is the child's final text. stderr is provenance and the
-child's stderr.
+artifact. stdout is the child's final text. stderr stays quiet unless the child
+fails or --info is passed.
 """
 
 from __future__ import annotations
@@ -25,6 +25,7 @@ from typing import NoReturn
 SKILL_DIR = Path(__file__).resolve().parent.parent
 CHILD_PROMPT = SKILL_DIR / "references" / "child.md"
 RUN_ID_RE = re.compile(r"^[A-Za-z0-9](?:[A-Za-z0-9._-]*[A-Za-z0-9])?$")
+LATEST_FILE = "latest"
 REQUIRED_META = (
     "schema",
     "run_id",
@@ -159,8 +160,6 @@ def has_flag(pi_flags: list[str], *names: str) -> bool:
 def validate_pi_flags(pi_flags: list[str]) -> None:
     for flag in pi_flags:
         name = flag.split("=", 1)[0]
-        if name == "--":
-            die("do not use --; pass the prompt with --prompt")
         if name in RESERVED_PI_FLAGS:
             die(f"run.py manages {name}; do not pass it to the child")
 
@@ -190,6 +189,23 @@ def meta_pi_flags(meta: dict) -> list[str]:
 
 def make_run_id() -> str:
     return datetime.now().strftime("%Y%m%d-%H%M%S") + "-" + secrets.token_hex(3)
+
+
+def write_latest(state_dir: Path, run_id: str) -> None:
+    atomic_write(state_dir / LATEST_FILE, (run_id + "\n").encode())
+
+
+def resolve_resume_id(state_dir: Path, value: str) -> str:
+    if value != "last":
+        return validate_run_id(value)
+    path = state_dir / LATEST_FILE
+    try:
+        run_id = path.read_text().strip()
+    except OSError:
+        die(f"--resume with no ID needs {path}, which does not exist yet")
+    if not run_id:
+        die(f"{path} is empty")
+    return validate_run_id(run_id)
 
 
 def validate_run_id(run_id: str) -> str:
@@ -341,13 +357,18 @@ def print_dry_run(command: list[str], system_prompt: str, agent_dir: Path) -> No
 
 
 def run_child(
-    command: list[str], stdin_data: bytes, cwd: Path, agent_dir: Path
+    command: list[str],
+    stdin_data: bytes,
+    cwd: Path,
+    agent_dir: Path,
+    show_stderr: bool = False,
 ) -> int:
     env = dict(os.environ)
     env["PI_CODING_AGENT_DIR"] = str(agent_dir)
     kwargs: dict[str, object] = {
         "cwd": str(cwd),
         "stdout": subprocess.PIPE,
+        "stderr": subprocess.PIPE,
         "env": env,
     }
     if stdin_data.strip():
@@ -364,6 +385,9 @@ def run_child(
     code = result.returncode
     if code < 0:
         code = 128 + (-code)
+    if result.stderr and (code != 0 or show_stderr):
+        sys.stderr.buffer.write(result.stderr)
+        sys.stderr.buffer.flush()
     return code
 
 
@@ -380,22 +404,22 @@ def save_follow_up(run_dir: Path, prompt: bytes) -> Path:
 
 
 def parse_args(argv: list[str]) -> argparse.Namespace:
+    if "--" in argv:
+        die("do not use --; pass the prompt with --prompt")
     parser = argparse.ArgumentParser(
         prog="run.py",
         description="Run a task in a separate, read-only-by-default pi process.",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         allow_abbrev=False,
         epilog=(
-            "The prompt is passed with --prompt or on stdin. Any flag\n"
-            "run.py does not recognize is forwarded to pi, so --model, --thinking,\n"
-            "--tools, --no-context-files, etc. behave as they do for pi. run.py\n"
-            "reserves the session, mode, trust, and resource-loading flags. The child\n"
-            "runs in the current directory with a run-local agent dir, so it loads\n"
-            "the project's AGENTS.md or CLAUDE.md unless you pass --no-context-files,\n"
-            "but not your global agent context. Skills, MCP servers, extensions, and\n"
-            "prompt templates stay off. --tools defaults to read,grep,find,ls when\n"
-            "you do not pass one. A follow-up uses --resume <run-id> with --prompt or\n"
-            "stdin; the saved pi flags are reused and cannot be changed.\n"
+            "Unrecognized flags are forwarded to pi, except the session, mode,\n"
+            "trust, and resource-loading flags run.py manages. The child is\n"
+            "read-only by default (read,grep,find,ls).\n"
+            "\n"
+            "The prompt is passed with --prompt or on stdin, which is prepended.\n"
+            "--resume without an ID resumes the latest run.\n"
+            "\n"
+            f"Conventions for prompts, output, and resume: {SKILL_DIR / 'SKILL.md'}\n"
         ),
     )
     parser.add_argument(
@@ -409,9 +433,16 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
         help="run storage; default is ${XDG_STATE_HOME:-~/.local/state}/pi/subagents",
     )
     parser.add_argument(
+        "--info",
+        action="store_true",
+        help="print provenance and the child's stderr; default is the answer alone",
+    )
+    parser.add_argument(
         "--resume",
+        nargs="?",
+        const="last",
         metavar="RUN_ID",
-        help="send a follow-up to an existing run's session",
+        help="send a follow-up to an existing run; default is the most recent",
     )
     parser.add_argument(
         "--dry-run",
@@ -426,7 +457,7 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
         help="prompt text; repeatable; omitted uses stdin",
     )
     args, pi_flags = parser.parse_known_args(argv)
-    args.pi_flags = [flag for flag in pi_flags if flag != "--"]
+    args.pi_flags = pi_flags
     return args
 
 
@@ -446,7 +477,7 @@ def main(argv: list[str] | None = None) -> int:
         if forbidden:
             die("--resume cannot change the run: " + ", ".join(forbidden))
 
-        run_id = validate_run_id(args.resume)
+        run_id = resolve_resume_id(state_dir, args.resume)
         run_dir = state_dir / run_id
         if not run_dir.is_dir():
             die(f"run dir not found: {run_dir}")
@@ -491,19 +522,21 @@ def main(argv: list[str] | None = None) -> int:
             return 0
         prepare_agent_dir(agent_dir, source_agent_dir())
         follow_up = save_follow_up(run_dir, prompt)
-        print_provenance(
-            run_id,
-            run_dir,
-            session_dir,
-            files[0],
-            cwd,
-            agent_dir,
-            pi_flags,
-            follow_up,
-            command,
-            manual,
-        )
-        return run_child(command, stdin_data, cwd, agent_dir)
+        if args.info:
+            print_provenance(
+                run_id,
+                run_dir,
+                session_dir,
+                files[0],
+                cwd,
+                agent_dir,
+                pi_flags,
+                follow_up,
+                command,
+                manual,
+            )
+        write_latest(state_dir, run_id)
+        return run_child(command, stdin_data, cwd, agent_dir, args.info)
 
     validate_pi_flags(args.pi_flags)
     cwd = Path.cwd().resolve()
@@ -553,28 +586,31 @@ def main(argv: list[str] | None = None) -> int:
         "created": now_iso(),
     }
     write_meta(run_dir, meta)
-    print_provenance(
-        run_id,
-        run_dir,
-        session_dir,
-        None,
-        cwd,
-        agent_dir,
-        args.pi_flags,
-        run_dir / "prompt.md",
-        command,
-        manual,
-    )
-    code = run_child(command, stdin_data, cwd, agent_dir)
-    files = session_files(run_dir)
-    if len(files) == 1:
-        eprint(f"session: {files[0]}")
-    elif len(files) > 1:
-        eprint(f"session: multiple files under {session_dir}")
-        for path in files:
-            eprint(f"  {path}")
-    else:
-        eprint(f"session: none created under {session_dir}")
+    write_latest(state_dir, run_id)
+    if args.info:
+        print_provenance(
+            run_id,
+            run_dir,
+            session_dir,
+            None,
+            cwd,
+            agent_dir,
+            args.pi_flags,
+            run_dir / "prompt.md",
+            command,
+            manual,
+        )
+    code = run_child(command, stdin_data, cwd, agent_dir, args.info)
+    if args.info:
+        files = session_files(run_dir)
+        if len(files) == 1:
+            eprint(f"session: {files[0]}")
+        elif len(files) > 1:
+            eprint(f"session: multiple files under {session_dir}")
+            for path in files:
+                eprint(f"  {path}")
+        else:
+            eprint(f"session: none created under {session_dir}")
     return code
 
 

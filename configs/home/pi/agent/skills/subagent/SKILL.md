@@ -35,14 +35,21 @@ Run `~/.pi/agent/skills/subagent/scripts/run.py --help` for the launcher flags.
 The launcher owns the run directory and session. It forwards the flags it does
 not use to `pi`, so `--model`, `--thinking`, `--tools`, and
 `--no-context-files` behave as they do for pi; it reserves session, mode,
-trust, and resource-loading flags. Pass the prompt with `--prompt` or on
-stdin; piped stdin is prepended, and `@file` references are expanded by pi.
+trust, and resource-loading flags.
+
+Match the prompt to its length. A one-line task goes in `--prompt`; anything
+longer belongs in a file that you create with the `write` tool and pipe to
+stdin, `run.py --prompt "<one-line task>" < /tmp/<task>.md`, so the command
+stays readable, the transcript keeps one line, and the run dir records the
+whole brief. Stdin is prepended to `--prompt` and is also how a diff or log
+goes in.
 
 The launcher defaults to read-only tools (`read,grep,find,ls`). `--dry-run`
 prints the assembled command, agent-dir env, and system prompt without
-launching the child. The launcher prints the run ID, run dir, session path,
-prompt path, agent dir, and a manual resume command to stderr; stdout is only
-the child's final text.
+launching the child. stdout is the child's answer alone, and stderr stays
+empty unless the child exits non-zero. `--info` adds the run ID, run dir,
+session and prompt paths, agent dir, the manual resume command, and the
+child's stderr.
 
 ## Examples
 
@@ -51,10 +58,11 @@ Review a staged diff without giving the child bash:
 ```sh
 git diff --cached | ~/.pi/agent/skills/subagent/scripts/run.py \
   --model glm-5.3-flash:max \
-  --prompt "Review this staged diff against the repo."
+  --prompt "Review this staged diff. You may read src/** and tests/**."
 ```
 
-The diff is piped on stdin and prepended to the prompt.
+The diff is piped on stdin and prepended to the prompt. Name the paths or glob
+patterns the child may read; it reports anything it needed but was not given.
 
 Use the model's default thinking level and mention the files to read:
 
@@ -64,12 +72,13 @@ Use the model's default thinking level and mention the files to read:
   --prompt "Review the translation of @doc.ja.md into @doc.en.md per @rules.md."
 ```
 
-Pass a pre-constructed task brief:
+Write a longer brief to a file first, then pipe it in:
 
 ```sh
 ~/.pi/agent/skills/subagent/scripts/run.py \
   --model glm-5.3-flash \
-  --prompt @task.md
+  --prompt "Review the brief on stdin against @src/**." \
+  < /tmp/review-brief.md
 ```
 
 Use `--no-context-files` for a context-independent task:
@@ -81,10 +90,10 @@ Use `--no-context-files` for a context-independent task:
   --prompt "Review the derivation of Eq.(1) in @paper.tex."
 ```
 
-Follow-up:
+Follow-up, on the most recent run or on a named one:
 
 ```sh
-~/.pi/agent/skills/subagent/scripts/run.py --resume <run-id> \
+~/.pi/agent/skills/subagent/scripts/run.py --resume \
   --prompt "Review @/path/to/new.patch too."
 ```
 
@@ -93,20 +102,23 @@ Follow-up:
 - Keep the launcher's read-only default (`read,grep,find,ls`). Do not add
   `write`, `edit`, or `bash`; this skill is for read-only tasks. Use
   `--no-tools` when the child needs no files.
-- The child does not see this session. Make the prompt self-contained and
-  name the files it may read.
-- The path restriction is prompt-only: the child's tools can still read
-  anything the process can. Do not treat the child as a sandbox.
+- The child does not see this session. Make the prompt self-contained, and
+  name every path or glob it may read; a piped diff names its own files. The
+  child does not go looking on its own and reports what the set is missing.
+- The path list is prompt-only: the child's tools can still read anything the
+  process can. Do not treat the child as a sandbox.
 - A new run needs `--model` with the bare model ID. Use either `--thinking` or
   a `:thinking` suffix, not both. If the model is unclear, ask.
-- The prompt is saved in the run dir and sent to the model, so do not include
-  secrets.
+- The prompt, whatever is piped on stdin included, is saved in the run dir and
+  sent to the model; do not include secrets.
 - `--resume` reuses the run's saved pi flags, cwd, and system prompt; start a
   new run to change them.
 - Set the caller's bash tool timeout to at least 300 seconds, longer for a
   review; the launcher has none. A timeout kills the process group, so the
   child dies with it and leaves its run dir behind.
-- Report the run ID from stderr and the child's result. Do not edit the caller's
-  note or create an artifact of your own; the run dir records provenance. On a
-  non-zero exit, stop and report the exit code and stderr. Do not run two
-  children in parallel.
+- Report the child's result. The output is the answer alone, so reach for
+  `--info` when you need the run ID or the resume command; a follow-up to the
+  most recent run needs only `--resume`.
+- Do not edit the caller's note, and leave no artifact of your own in the
+  project; the run dir records provenance. On a non-zero exit, stop and
+  report the exit code and stderr. Do not run two children in parallel.
