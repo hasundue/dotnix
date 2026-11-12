@@ -35,7 +35,7 @@
             };
           };
         };
-        "~/notes" = {
+        "~/vault" = {
           id = "notes";
           label = "Obsidian Vault";
           type = "sendreceive";
