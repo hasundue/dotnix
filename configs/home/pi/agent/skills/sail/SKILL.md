@@ -78,28 +78,17 @@ then implement. If `status: blocked`, read `## Blocker` first. If
 `status: done`, there is nothing to execute.
 
 Agreeing a note that is not English is the one thing that happens before any
-code changes. The rule is the vault's -- `../vault/references/conventions.md`:
-translate into `<note>.en.md`, have someone who did not translate it check the
-pair, then promote -- `status: agreed`, `translated:` set, `<note>.en.md` to
-`<note>.md`, draft deleted.
+code changes. Follow `../vault/references/conventions.md`, "A task note's
+language lifecycle": translate, check, promote.
 
-Run the check yourself through a subagent -- the translator (you) must not be
-the checker:
-
-```sh
-~/.pi/agent/skills/vault/scripts/check_pair.py <draft> 2>&1 \
-  | ~/.pi/agent/skills/subagent/scripts/run.py \
-    --model opencode-go/claude-haiku-5-5 \
-    --prompt ~/.pi/agent/prompts/review-translation.md -- @<draft> @<candidate>
-```
-
-Use a cheap model different from the translator's. Read the child's last
+You are the translator, so you must not be the checker -- delegate the check
+to a subagent. The model, and optionally the thinking level, should be specified by user instructions
+or project conventions -- prefer one different from the translator's. Ask if unsure. Read the child's last
 line: it must be exactly `VERDICT: promotable` or `VERDICT: not-promotable`.
 Anything else -- missing, doubled, reworded -- counts as not promotable.
 
-- `VERDICT: promotable` -> promote as above; the candidate becomes the note.
-- otherwise -> leave the draft `draft`, discard the candidate, fix the pair
-  yourself and re-run the check (once, then ask).
+- `VERDICT: promotable` -> promote per the lifecycle; the candidate becomes the note.
+- otherwise -> leave the draft `draft`, fix per the lifecycle and re-run the check (once, then ask).
 - child non-zero exit -> stop and report the exit code and stderr; no code
   changes while the pair is unsettled.
 

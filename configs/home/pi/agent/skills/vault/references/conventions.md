@@ -75,29 +75,26 @@ it into the English record, once, in place.
    translator's own pre-flight: the rules below, executable. Fix what it
    reports; a clean run does not mean the pair is checked.
 
-2. Someone who did not translate it checks the pair -- another agent, or the
-   user, whoever the user names. Start with the same `check_pair.py <draft>`,
-   run yourself: the translator's clean run is evidence of an older state, not
-   of the pair in front of you. It exits non-zero on any mechanical finding.
-   Then read the pair yourself, because it settles only the mechanical half.
-   Compare mechanically:
-   - every heading present, in order, with no section merged or dropped
-   - every acceptance criterion present: same count, same order, same
-     `[ ]` / `[x]` / `unmet:` state
-   - code identical, character for character: commands, paths, identifiers,
-     versions, numbers, and the contents of every backtick and fence. A command
-     that greps for Japanese labels in the repository stays Japanese.
-   - prose translated, `verify:` steps written as sentences included. A verify
-     that still reads Japanese is an untranslated note, not a faithful copy.
-   - references resolve: a mention of this note's own heading or criterion moved
-     with its target, backticked or not, and no line points at a heading the
-     translation renamed. Code that would break because a heading moved is
-     reported, not rewritten.
-   - no quotation of the user anywhere: restatements carry the same content,
-     attributed
-   - the problem still states the same problem -- a translation that reads
-     better but says something else is a finding, not an improvement
-   - the log translated one entry for one; it is evidence, not prose to polish
+2. Let another agent check the pair. The model, and optionally the thinking level, should be
+   specified by user instructions or project conventions. Ask if unsure:
+
+   ```sh
+   ~/.pi/agent/skills/subagent/scripts/run.py \
+     --model MODEL \
+     --prompt ~/.pi/agent/skills/vault/prompts/review-translation.md -- \
+     @DRAFT @CANDIDATE
+   ```
+
+   If the check fails, fix the candidate in place, re-run `check_pair.py`
+   on the draft, and re-check the pair in full with the same run:
+
+   ```sh
+   ~/.pi/agent/skills/subagent/scripts/run.py --resume -- \
+     "Re-check @CANDIDATE against @DRAFT in full."
+   ```
+
+   A failed check is fixed and re-run once, then ask the user: do not grind
+   through re-checks without them.
 
    Anything that fails is fixed before the promotion, not after.
 

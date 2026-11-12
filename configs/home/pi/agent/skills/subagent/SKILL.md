@@ -36,37 +36,28 @@ in a vault note (or a temp file) and is referenced the same way.
 If an invocation fails or you need the run's provenance, read
 `references/launcher.md` (`--help` lists the flags).
 
+The model, and optionally the thinking level, should be specified by user instructions
+or project conventions. Ask if unsure.
+
 ## Examples
 
 ```sh
 git diff --cached | ~/.pi/agent/skills/subagent/scripts/run.py \
-  --model opencode-go/claude-haiku-5-5 -- \
+  --model MODEL -- \
   "Review the following diff. You may read @src/** and @tests/**."
 ```
 
 ```sh
 ~/.pi/agent/skills/subagent/scripts/run.py \
-  --model opencode-go/claude-haiku-5-5 -- \
-  "Review the translation of @doc.ja.md into @doc.en.md per @notes/rules.md."
-```
-
-A template that expects appended output takes it from a pipe (the child
-cannot tell a pipe from typing; `@` words still resolve as attachments).
-Note the `@` marks pi attachments inside the prompt -- the shell command
-itself takes a plain path:
-
-```sh
-~/.pi/agent/skills/vault/scripts/check_pair.py doc.ja.md 2>&1 \
-  | ~/.pi/agent/skills/subagent/scripts/run.py \
-    --model opencode-go/claude-haiku-5-5 \
-    --prompt ~/.pi/agent/prompts/review-translation.md -- @doc.ja.md @doc.en.md
+  --model MODEL \
+  --prompt ~/.pi/agent/skills/vault/prompts/review-translation.md -- @doc.ja.md @doc.en.md
 ```
 
 A longer brief is referenced with `@`, or fed with `<`:
 
 ```sh
 ~/.pi/agent/skills/subagent/scripts/run.py \
-  --model opencode-go/claude-haiku-5-5 < /tmp/review-brief.md
+  --model MODEL < /tmp/review-brief.md
 ```
 
 When the child needs both a diff and a longer brief, save the diff to a
@@ -81,12 +72,12 @@ git diff --cached > /tmp/review.diff
 
 ```sh
 ~/.pi/agent/skills/subagent/scripts/run.py \
-  --model opencode-go/claude-haiku-5-5 < /tmp/review-brief.md
+  --model MODEL < /tmp/review-brief.md
 ```
 
 ```sh
 ~/.pi/agent/skills/subagent/scripts/run.py \
-  --model opencode-go/claude-haiku-5-5 \
+  --model MODEL \
   --no-context-files -- "Review the derivation of Eq.(1) in @paper.tex."
 ```
 
@@ -98,7 +89,7 @@ git diff --cached > /tmp/review.diff
 A named run needs its run ID (from `--info` output):
 
 ```sh
-~/.pi/agent/skills/subagent/scripts/run.py --resume <run-id> -- \
+~/.pi/agent/skills/subagent/scripts/run.py --resume RUN_ID -- \
   "Follow-up task."
 ```
 
