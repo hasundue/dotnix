@@ -18,20 +18,26 @@ another one.
 wt switch --create <branch>   # from ~/dotnix, creates ~/dotnix.<branch>
 ```
 
-Live configuration is the exception to the worktree rule, not to the branch
-rule. Where `dotnix.live.<name>.enable` is set (`pi` today, with
-`~/dotnix.live.pi` resolving to `~/dotnix/configs/home/pi/agent`), the
-running system reads the files straight out of that checkout, so a worktree
-copy changes nothing until it merges. Cut the branch in `~/dotnix` itself
-(e.g. `git switch -c <branch>`), not via `wt switch --create`, then return
-to `main` once merged.
+Live configuration is the exception to the worktree rule. Where
+`dotnix.live.<name>.enable` is set (`pi` today, with `~/dotnix.live.pi`
+resolving to `~/dotnix/configs/home/pi/agent`), the running system reads the
+files straight out of that checkout (with the default
+`dotnix.live.<name>.root`), so a worktree copy changes nothing until it
+merges. Edits in `~/dotnix` take effect immediately, before merge, so keep
+them working and merge promptly. Make live edits on a branch cut in
+`~/dotnix` itself with `git switch -c <branch>`, never via `wt switch
+--create`. Keep the live paths present on the branch; builds run from
+`~/dotnix` also build the checked-out branch, not `main`.
 
-Before cutting a live branch, fetch and stop if another agent may be editing.
-Stop when any of these hold in `~/dotnix`: the working tree is not fully
-clean (`git status --porcelain` is non-empty), the current branch is not
-`main`, or `main` is ahead of `origin/main` (`git rev-list --count
-origin/main..HEAD` is non-zero). Cut only when on `main`, fully clean, and
-in sync with `origin/main`, and restore that state after merging.
+Before cutting the branch, run `git fetch origin` in `~/dotnix`. Stop and
+report to the user (do not stash, reset, or switch) unless all of these
+hold: `git status --porcelain` is empty, the current branch is `main`, and
+`git rev-list --left-right --count origin/main...HEAD` prints two zeros.
+The check and the switch are not atomic, so re-run the status check
+immediately before switching.
+
+After the branch is merged into `main` on origin, run `git switch main &&
+git pull --ff-only` in `~/dotnix`.
 
 ## Commit Convention
 
