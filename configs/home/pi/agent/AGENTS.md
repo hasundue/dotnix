@@ -5,22 +5,23 @@ with cd to reach a path a tool can take directly, and use the program's own
 directory flag when it has one.
 
 ```sh
-rg -n "waku" ~/dotnix/configs         # yes
-cd ~/dotnix && rg -n "waku" configs   # no
-git -C ~/dotnix status                # yes, git's own flag
-cd sub && ./build.sh                  # yes, it writes into its cwd
+git -C ~/src/app status         # yes, git's own directory flag
+make -C ~/src/app/build         # yes, make's own directory flag
+cd ~/src/app && git status      # no, `-C` takes that path for you
+cd sub && ./build.sh            # yes, the script writes into its cwd
 ```
 
 Use pi's own tools for reading, searching, and listing (read, grep, find, ls)
 instead of their shell equivalents. Each takes any path, so scope is no reason
-to prefer bash. Reach for rg, fd, or ls only when pi's tools cannot express the
-query, such as when the result has to feed a pipeline.
+to prefer bash. Reach for rg, fd, or ls in bash only when a dedicated tool
+cannot express the query, such as when the output has to feed a pipeline.
 
 ```sh
-rg -n "waku" ~/dotnix/configs   # no, the `grep` tool takes the same path
-cat ~/.pi/agent/AGENTS.md       # no, `read` does
-find . -name "*.nix"            # no, the `find` tool does
-ls configs/home                 # no, the `ls` tool does
+rg -n "TODO" src                # no, the `grep` tool takes the same path
+cat NOTES.md                    # no, the `read` tool does
+find . -name "*.py"             # no, the `find` tool does
+ls src                          # no, the `ls` tool does
+fd -e py | xargs wc -l          # yes, the total has to be computed
 ```
 
 Never pass a script to bash through a heredoc or a long -c string. Write the
@@ -45,7 +46,7 @@ surface instead of silencing them.
 
 ```sh
 grep a x && grep b y            # no, two `grep` calls
-rg foo path 2>/dev/null         # no, the error is the point
+git log 2>/dev/null             # no, the error is the point
 ```
 
 If the tool you need is missing, say so and ask; do not substitute a shell scan
