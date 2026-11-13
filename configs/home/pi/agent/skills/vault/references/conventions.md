@@ -124,6 +124,30 @@ person.
 - List everything the skills have written:
   `rg --files-with-matches '^author: pi' ~/vault`
 
+## Deleting and moving notes
+
+Use the Obsidian CLI, never `rm` or `mv`, to delete, rename, or move a note.
+The CLI asks the running Obsidian app to perform the operation, so
+`Automatically update internal links` rewrites `[[wikilink]]` targets. A raw
+filesystem change leaves the old link text behind as an unresolved link.
+
+```sh
+obsidian backlinks file=<note>           # who points at it
+obsidian delete file=<note>              # trash by default (~/vault/.trash/)
+obsidian move file=<note> to=archive/    # rename and move; links follow
+obsidian rename file=<note> name=<new>   # rename in place; links follow
+obsidian unresolved verbose              # verify afterwards
+```
+
+Run these from `~/vault`, or put `vault=<name>` before the command; otherwise
+the CLI targets whichever vault is active. `delete` without `permanent` is the
+only form with recovery; `permanent` needs an explicit request from the user.
+If the CLI is unavailable, leave the note in place instead of deleting it, or
+fix the referring links by hand.
+
+The CLI updating links as part of an operation is not a retroactive edit to
+another note. A person's note is still read-only under Ownership above.
+
 ## What the user said
 
 Vault notes quote sparingly and exactly: the user's words stay verbatim inside
