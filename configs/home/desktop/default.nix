@@ -8,6 +8,7 @@
     ./ghostty.nix
     ./kitty.nix
     ./mako
+    ./mozc.nix
     ./niri
     ./portal-login.nix
     ./slack.nix
