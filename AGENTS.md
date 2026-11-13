@@ -49,8 +49,18 @@ them working and merge promptly. Make live edits on a branch cut in
 
 ### Merging
 
-After the branch is merged into `main` on origin, run `git switch main &&
-git pull --ff-only` in `~/dotnix`.
+Merge on `main` locally and push at once: the running system reads the
+checkout, so the merge is live before it is a backup.
+
+```bash
+git switch main && git merge --ff-only <branch> && git branch -d <branch> && git push
+```
+
+After a branch merged into `main` on origin, run `git switch main && git pull
+--ff-only` in `~/dotnix` instead.
+
+A failed push means origin moved: `git fetch && git pull --ff-only` before
+cutting anything else.
 
 A plain branch checked out in `~/dotnix` itself is not a worktree: merge it
 with plain git, not `wt merge`. Observed in the primary checkout, `wt merge`
@@ -83,6 +93,13 @@ exist → use `home/waybar` and `nixos/waybar`).
 
 - `agents:` — AGENTS.md
 - `flake:` — flake.nix, flake inputs
+
+### Pushing
+
+A commit on a branch is pushed in the same step: `git commit ... && git push`.
+An unpushed commit is unfinished work, not a backup. `push.autoSetupRemote` is
+already set, so a new branch needs no `-u`. Rewrite a pushed commit only on your
+own unmerged branch, with `--force-with-lease`; on `main`, add a fix commit.
 
 ## Validate
 
