@@ -95,14 +95,14 @@ in
     # is read-only in the store: drop this declaration before `/login`-ing a
     # different provider, or switch to an activation-time merge if those
     # credentials must coexist with the managed one.
-    ".pi/agent/auth.json" = {
-      force = true;
-      text = builtins.toJSON {
-        "opencode-go" = {
-          type = "api_key";
-          key = "!${pkgs.coreutils}/bin/cat ${opencodeGoKey}";
-        };
-      };
-    };
+    # ".pi/agent/auth.json" = {
+    #   force = true;
+    #   text = builtins.toJSON {
+    #     "opencode-go" = {
+    #       type = "api_key";
+    #       key = "!${pkgs.coreutils}/bin/cat ${opencodeGoKey}";
+    #     };
+    #   };
+    # };
   };
 }
