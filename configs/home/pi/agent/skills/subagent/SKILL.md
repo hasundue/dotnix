@@ -11,8 +11,10 @@ description: >
 Launch a real `pi --print` child from this session. The child is a separate
 process and does not see this session. It runs in the current directory with a
 run-local agent dir, so it inherits the project's context files but not your
-global `AGENTS.md` or `APPEND_SYSTEM.md`. Skills, MCP servers, extensions,
-prompt templates, and `.pi` trust-gated resources stay off.
+global `AGENTS.md` or `APPEND_SYSTEM.md`. Skill discovery, MCP servers,
+extensions, prompt templates, and `.pi` trust-gated resources stay off. One
+skill can be loaded explicitly with `--skill <path>`; the run records the path
+in `meta.json`, and the child still reads `SKILL.md` itself.
 
 ## When to use
 

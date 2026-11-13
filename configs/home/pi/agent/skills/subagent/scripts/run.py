@@ -63,7 +63,6 @@ RESERVED_PI_FLAGS = {
     "-a",
     "--extension",
     "-e",
-    "--skill",
     "--prompt-template",
 }
 AGENT_FILES = ("auth.json", "models.json", "models-store.json", "settings.json")
