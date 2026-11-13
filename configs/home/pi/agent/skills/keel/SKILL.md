@@ -137,13 +137,14 @@ Open with your current reading of what they want, in your own words, and name
 what is still unclear. Then ask, grouping the questions in whatever way fits the
 user and the uncertainty:
 
-- **Attach your guess to every question.** Reacting is faster than generating,
-  and it exposes your assumptions where the user can correct them.
+- **Phrase every question around your guess, so the user can correct it with
+  one word.** Reacting is faster than generating. Never a label in front of it.
 - Probe sophistication-signaling answers. "Scalable", "clean", "modern", "the
   standard approach" are conventions, not wants. Ask: _"If you didn't have to
   justify this to anyone, what would you actually want?"_
-- Cover, at minimum: who benefits, why now, what success looks like, the binding
-  constraint, and what is explicitly **not** being built.
+- Across the interview, cover at minimum: who benefits, why now, what success
+  looks like, the binding constraint, and what is explicitly **not** being built.
+  The first turn may ask only the most uncertain few.
 
 Stop when you can predict the user's reaction to the next three questions you
 would ask. That is a checkable test, not a vibe. If several rounds pass and your
@@ -239,7 +240,8 @@ into the note, then let it continue -- so the next cold run never has to ask.
 - A criterion that dictates the user's reply format
 - A quotation of the user, or a line transcribed from the conversation
 - Writing the spec before the problem
-- Questions with no guess attached -- that is surveying, not interviewing
+- Questions with no guess inside them, or the same label on every guess -- that
+  is surveying, not interviewing
 - A note only readable by someone who was in the conversation
 - Renegotiating a criterion after the work instead of reporting it unmet
 - A note marked `agreed` that is not English
