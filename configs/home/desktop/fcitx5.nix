@@ -19,15 +19,12 @@
 
     fcitx5 = {
       addons = with pkgs; [
-        hazkey
+        fcitx5-mozc
         fcitx5-gtk
       ];
       settings = {
         addons = {
           clipboard.globalSection.TriggerKey = ""; # Ctrl+; to disable
-          # Select the next candidate when Space opens the list. The live
-          # conversion already shows the first candidate in the preedit.
-          hazkey.globalSection.advanceOnOpen = true;
         };
         inputMethod = {
           GroupOrder."0" = "Default";
@@ -37,22 +34,12 @@
             DefaultIM = "keyboard-us";
           };
           "Groups/0/Items/0".Name = "keyboard-us";
-          "Groups/0/Items/1".Name = "hazkey";
+          "Groups/0/Items/1".Name = "mozc";
         };
       };
       waylandFrontend = true;
     };
   };
-
-  # Zenzai model for Hazkey. The server looks for it under
-  # $XDG_DATA_HOME/hazkey/zenzai/zenzai.gguf.
-  xdg.dataFile."hazkey/zenzai/zenzai.gguf".source = "${pkgs.zenzai-model}/share/zenzai.gguf";
-
-  # Hazkey profile settings. zenzaiInferLimit is lowered from the default 10 to
-  # 3; Zenzai runs one CPU inference per candidate, so this dominates latency on
-  # low-power CPUs. Tune by editing ./hazkey-config.json (changes made in
-  # hazkey-settings cannot be persisted because this file is a read-only symlink).
-  xdg.configFile."hazkey/config.json".source = ./hazkey-config.json;
 
   home.sessionVariables = {
     QT_IM_MODULE = "fcitx";

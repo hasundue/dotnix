@@ -72,7 +72,7 @@ let
       keyboard-us)
         echo "EN"
         ;;
-      hazkey)
+      mozc)
         echo "JP"
         ;;
       *)
