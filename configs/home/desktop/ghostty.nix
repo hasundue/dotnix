@@ -6,13 +6,24 @@
   programs.ghostty = {
     enable = true;
 
-    # No Ghostty-level shortcuts (`keybind = clear`); compositor binds such as
+    # Keep only clipboard and scrollback shortcuts; compositor binds such as
     # `Mod+T` in configs/home/desktop/niri/default.nix still apply.
     clearDefaultKeybinds = true;
 
     # Colors, font family (0xProto Nerd Font), font size and background
     # opacity all come from stylix (configs/stylix.nix).
     settings = {
+      keybind = [
+        "ctrl+insert=copy_to_clipboard:mixed"
+        "shift+insert=paste_from_selection"
+        "ctrl+shift+c=copy_to_clipboard:mixed"
+        "ctrl+shift+v=paste_from_clipboard"
+        "shift+page_up=scroll_page_up"
+        "shift+page_down=scroll_page_down"
+        "shift+home=scroll_to_top"
+        "shift+end=scroll_to_bottom"
+      ];
+
       mouse-hide-while-typing = true;
       window-padding-x = 10;
       window-padding-y = 10;
