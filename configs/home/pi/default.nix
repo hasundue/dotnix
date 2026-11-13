@@ -1,14 +1,16 @@
 {
   config,
+  lib,
   pkgs,
   ...
 }:
 let
   live = config.dotnix.live.pi;
   opencodeGoKey = config.age.secrets."api/opencode-go".path;
+  piAuthFile = "${config.programs.pi-coding-agent.configDir}/auth.json";
 
   # mcp.json stays writable so pi's `/mcp` changes land in the repository;
-  # settings.json is left to pi and merged through mutableSettings.
+  # settings.json and auth.json are writable and receive Nix-managed merges.
   link = path: config.lib.file.mkOutOfStoreSymlink "${live.stable}/${path}";
 in
 {
@@ -70,6 +72,36 @@ in
     ];
   };
 
+  # TEMPORARY: Pi resolves auth.json symlinks before locking, which makes a
+  # Nix-store-backed file fail because the store is read-only. Remove this
+  # workaround once upstream handles that case:
+  # https://github.com/earendil-works/pi/pull/11787#issuecomment-6846777190
+  home.activation.piAuth = lib.hm.dag.entryAfter [ "linkGeneration" ] (
+    lib.hm.generators.mkImpureConfigMerger {
+      inherit pkgs;
+      format = "json";
+      empty = "{}";
+      mode = "600";
+      path = piAuthFile;
+      staticSettings = pkgs.writeText "pi-auth.json" (
+        builtins.toJSON {
+          "opencode-go" = {
+            type = "api_key";
+            key = "!${pkgs.coreutils}/bin/cat ${opencodeGoKey}";
+          };
+        }
+      );
+      # Keep credentials for other providers and runtime-managed fields, while
+      # making the declared opencode-go values authoritative.
+      jqOperation = "$dynamic * $static";
+    }
+    + ''
+      if [[ ! -v DRY_RUN ]]; then
+        ${lib.getExe' pkgs.coreutils "chmod"} 600 ${lib.escapeShellArg piAuthFile}
+      fi
+    ''
+  );
+
   dotnix.live.pi = {
     enable = true;
     path = "configs/home/pi/agent";
@@ -90,19 +122,7 @@ in
     ".pi/agent/extensions".source = link "extensions";
     ".pi/agent/skills".source = link "skills";
 
-    # A key prefixed with `!` makes pi run the command when the provider is
-    # first used, so the plaintext key never reaches disk. The generated file
-    # is read-only in the store: drop this declaration before `/login`-ing a
-    # different provider, or switch to an activation-time merge if those
-    # credentials must coexist with the managed one.
-    # ".pi/agent/auth.json" = {
-    #   force = true;
-    #   text = builtins.toJSON {
-    #     "opencode-go" = {
-    #       type = "api_key";
-    #       key = "!${pkgs.coreutils}/bin/cat ${opencodeGoKey}";
-    #     };
-    #   };
-    # };
+    # auth.json is created as a regular mutable file by home.activation.piAuth:
+    # Pi's lock must be writable, and other providers' credentials may change.
   };
 }
