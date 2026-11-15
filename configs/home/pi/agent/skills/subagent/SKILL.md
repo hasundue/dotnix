@@ -12,9 +12,7 @@ Launch a real `pi --print` child from this session. The child is a separate
 process and does not see this session. It runs in the current directory with a
 run-local agent dir, so it inherits the project's context files but not your
 global `AGENTS.md` or `APPEND_SYSTEM.md`. Skill discovery, MCP servers,
-extensions, prompt templates, and `.pi` trust-gated resources stay off. One
-skill can be loaded explicitly with `--skill <path>`; the run records the path
-in `meta.json`, and the child still reads `SKILL.md` itself.
+extensions, prompt templates, and `.pi` trust-gated resources stay off.
 
 ## When to use
 
@@ -95,17 +93,28 @@ A named run needs its run ID (from `--info` output):
   "Follow-up task."
 ```
 
+To make specific skills available to the child, pass each `SKILL.md` with
+`--skill`, repeated per skill. Skill discovery stays off, so only the named
+skills are listed in the child's `<available_skills>`.
+
+```sh
+~/.pi/agent/skills/subagent/scripts/run.py \
+  --model MODEL \
+  --skill ~/.pi/agent/skills/SKILL_NAME/SKILL.md -- "TASK"
+```
+
 ## Rules
 
-- Put the task after `--`. Bare words before it never become the task; the
-  launcher rejects them. With `--prompt FILE` the words after `--` are the
+- Put the task after `--`. With `--prompt FILE`, the words after `--` are the
   template's arguments instead.
 - Keep the launcher's read-only default (`read,grep,find,ls`). Do not add
   `write`, `edit`, or `bash`; this skill is for read-only tasks. Use
   `--no-tools` when the child needs no files.
 - The child does not see this session. Make the prompt self-contained, and
   name every path or glob it may read; a piped diff names its own files. The
-  child does not go looking on its own and reports what the set is missing.
+  child does not go looking on its own. The exception is a skill listed in the
+  child's `<available_skills>`: it may read that `SKILL.md` when the task
+  matches the skill's description.
 - The path list is prompt-only: the child's tools can still read anything the
   process can. Do not treat the child as a sandbox.
 - A new run needs `--model` with the bare model ID, provider-qualified
@@ -119,8 +128,5 @@ A named run needs its run ID (from `--info` output):
 - Set the caller's bash tool timeout to at least 300 seconds, longer for a
   review; the launcher has none. A timeout kills the process group, so the
   child dies with it and leaves its run dir behind.
-- Report the child's result. A follow-up to the most recent run needs only
-  `--resume`.
-- Do not edit the caller's note, and leave no artifact of your own in the
-  project; the run dir records provenance. On a non-zero exit, stop and
-  report the exit code and stderr. Do not run two children in parallel.
+- Leave no artifact of your own in the project; the run dir records
+  provenance. On a non-zero exit, stop and report the exit code and stderr.

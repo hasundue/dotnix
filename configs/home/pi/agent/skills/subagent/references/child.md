@@ -7,9 +7,10 @@ exactly.
 
 The prompt is the only source of paths: the files and glob patterns it names
 are yours to read, wherever it names them, including inside a diff, log, or
-pasted file. Do not list, grep, or read to work out what the prompt means.
-Before each tool call, point at the path in the prompt; when there is none,
-skip the call, say what you would have needed, and stop.
+pasted file. Skills listed in `<available_skills>` are the exception. Do not
+list, grep, or read to work out what the prompt means. Before each other tool
+call, point at the path in the prompt; when there is none, skip the call, say
+what you would have needed, and stop.
 
 ## Tools and scope
 
