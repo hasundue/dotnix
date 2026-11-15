@@ -79,64 +79,23 @@ in
         {
           window-rule = {
             _children = [
-              {
-                match._props = {
-                  app-id = "^kitty$";
-                };
-              }
+              { match._props.app-id = "^com.mitchellh.ghostty$"; }
             ];
             default-column-display = "tabbed";
+            default-column-width.proportion = 0.5;
           };
         }
         {
           window-rule = {
             _children = [
-              {
-                match._props = {
-                  app-id = "^com.mitchellh.ghostty$";
-                };
-              }
+              { match._props.app-id = "^dev.zed.Zed$"; }
+              { match._props.app-id = "^firefox$"; }
+              { match._props.app-id = "^google-chrome$"; }
+              { match._props.app-id = "^Slack$"; }
+              { match._props.app-id = "^spotify$"; }
+              { match._props.app-id = "^steam$"; }
             ];
-            default-column-display = "tabbed";
-          };
-        }
-        {
-          window-rule = {
-            _children = [
-              {
-                match._props = {
-                  app-id = "^dev.zed.Zed$";
-                };
-              }
-              {
-                match._props = {
-                  app-id = "^firefox$";
-                };
-              }
-              {
-                match._props = {
-                  app-id = "^google-chrome$";
-                };
-              }
-              {
-                match._props = {
-                  app-id = "^Slack$";
-                };
-              }
-              {
-                match._props = {
-                  app-id = "^spotify$";
-                };
-              }
-              {
-                match._props = {
-                  app-id = "^steam$";
-                };
-              }
-            ];
-            default-column-width = {
-              proportion = 0.9;
-            };
+            default-column-width.proportion = 0.9;
           };
         }
       ];
