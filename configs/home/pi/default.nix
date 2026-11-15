@@ -37,11 +37,15 @@ in
         "+find"
         "+ls"
       ];
-      # PDF and Zotero skills are for research only. They stay installed but
-      # hidden from discovery; a project opts in from its .pi/settings.json:
+      # Skills that stay installed but hidden from discovery; a project opts in
+      # from its .pi/settings.json:
       #   { "skills": ["~/.pi/agent/skills/pdf-tools", ...] }
       # Patterns resolve from the agent directory (~/.pi/agent).
       skills = [
+        # Verifying something on screen is a per-task decision, so it is opt-in
+        # instead of part of every session.
+        "-skills/niri"
+        # Research only: nothing needs them until a project reads papers.
         "-skills/pdf-tools"
         "-skills/zotero-pdf"
       ];
