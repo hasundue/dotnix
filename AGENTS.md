@@ -12,7 +12,7 @@ to configure something (including yourself), work on this repository.
 ### Branches
 
 Do the work on a branch. Never commit to `main` without being asked;
-micro-commits on a branch need no separate permission.
+checkpoint commits on a branch need no separate permission.
 
 Before cutting the branch, run `git fetch origin` in `~/dotnix`. Stop and
 report to the user (do not stash, reset, or switch) unless all of these
@@ -41,33 +41,52 @@ Live configuration is the exception to the worktree rule. Where
 resolving to `~/dotnix/configs/home/pi/agent`), the running system reads the
 files straight out of that checkout (with the default
 `dotnix.live.<name>.root`), so a worktree copy changes nothing until it
-merges. Edits in `~/dotnix` take effect immediately, before merge, so keep
-them working and merge promptly. Make live edits on a branch cut in
-`~/dotnix` itself with `git switch -c <branch>`, never via `wt switch
---create`. Keep the live paths present on the branch; builds run from
+merges. Edits in `~/dotnix` take effect immediately, before merge, so try to
+keep them working where practical and merge promptly. For live edits, cut a
+branch in `~/dotnix` with `git switch -c <branch>`, never via `wt switch
+--create`. Try to keep the live paths present on the branch; builds run from
 `~/dotnix` also build the checked-out branch, not `main`.
 
 ### Merging
 
-Merge on `main` locally and push at once: the running system reads the
-checkout, so the merge is live before it is a backup.
+Before merging, inspect the branch. If its commits already follow
+[Granularity](#granularity) and use appropriate scopes, leave them unchanged and
+run relevant validation on the branch tip. Otherwise, propose the `main`-commit
+grouping, scopes, and validation; wait for the user's approval before
+rewriting. After approval, rebase onto the current `main` and reorganize
+checkpoints by outcome in the source branch's checkout. For one outcome, use
+`git reset --soft main` and recommit. For multiple outcomes, use
+`git reset --mixed main`, then stage and commit each outcome by path or patch.
+Run the proposed validation on the branch tip. If the approved rewrite changes
+a branch on `origin`, update it with `git push --force-with-lease` after
+validation.
+
+Before a local merge, verify
+`git -C ~/dotnix merge-base --is-ancestor main <branch>` succeeds before
+switching the primary checkout to `main`. If it does not, stop and propose a
+rebase onto current `main`; wait for approval before rewriting.
+
+Merge and push from the primary checkout so live changes are backed up at
+once:
 
 ```bash
-git switch main && git merge --ff-only <branch> && git branch -d <branch> && git push
+git -C ~/dotnix switch main &&
+  git -C ~/dotnix merge --ff-only <branch> &&
+  git -C ~/dotnix push
 ```
 
-After a branch merged into `main` on origin, run `git switch main && git pull
---ff-only` in `~/dotnix` instead.
+If already merged on origin, fetch and verify local `main` can fast-forward
+before switching: `git -C ~/dotnix fetch origin` and
+`git -C ~/dotnix merge-base --is-ancestor main origin/main`. If the check fails,
+stop and ask. Then run `git -C ~/dotnix switch main && git -C ~/dotnix pull
+--ff-only`. Once `main` is on origin, delete `<branch>` with
+`git push origin --delete <branch>` if it still exists, then remove its local
+worktree or branch with `wt remove <branch>` or
+`git -C ~/dotnix branch -d <branch>`.
 
-A failed push means origin moved: `git fetch && git pull --ff-only` before
-cutting anything else.
-
-A plain branch checked out in `~/dotnix` itself is not a worktree: merge it
-with plain git, not `wt merge`. Observed in the primary checkout, `wt merge`
-fast-forwards without squashing when the target is an ancestor of the
-branch, so squash manually first (`git reset --soft` + one commit) when the
-branch must land as one commit. Whether linked worktrees behave the same is
-unverified.
+If validation fails, do not merge; stop and ask. If a Git operation fails or
+the repository state differs from the plan, stop and ask before attempting a
+recovery.
 
 ### Commits
 
@@ -77,7 +96,8 @@ scope: imperative summary
 
 Always use a scope. Imperative mood, no period at the end.
 
-Derive scope from the **leaf** of the changed config's directory path:
+Use these scope rules as defaults. Use the leaf of the primary config's
+directory as its scope, even when the outcome also requires changes elsewhere:
 
 | Changed path                        | Scope      |
 | ----------------------------------- | ---------- |
@@ -87,12 +107,31 @@ Derive scope from the **leaf** of the changed config's directory path:
 
 Prepend the parent directory _only_ when the same config name exists under a
 different parent (e.g. both `configs/home/waybar` and `configs/nixos/waybar`
-exist → use `home/waybar` and `nixos/waybar`).
+exist → use `home/waybar` and `nixos/waybar`). Use `treewide:` for a cohesive
+outcome that spans multiple config scopes without a clear primary config.
 
 #### Fixed scopes
 
 - `agents:` — AGENTS.md
 - `flake:` — flake.nix, flake inputs
+
+#### Granularity
+
+##### Commits that land on `main`
+
+Use one commit per distinct, independently meaningful outcome. Keep all
+changes needed for one outcome together, even when they touch multiple files
+or configs; keep distinct outcomes in separate commits. Each commit must leave
+the project coherent. Run validation on the branch tip, not at every commit
+boundary.
+
+##### Working-branch checkpoints
+
+Make smaller checkpoint commits as useful while working. Checkpoints may be
+incomplete or temporarily leave the project failing validation. If the branch
+needs restructuring, reorganize checkpoints into one or more commits for
+`main`: combine checkpoints for the same outcome, and preserve separate
+commits for distinct outcomes.
 
 ### Pushing
 
