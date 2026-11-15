@@ -36,6 +36,7 @@ REQUIRED_META = (
 READ_ONLY_TOOLS = ("read", "grep", "find", "ls")
 CHILD_FLAGS = (
     "--no-approve",
+    "--no-context-files",
     "--no-extensions",
     "--no-mcp",
     "--no-skills",

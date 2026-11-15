@@ -10,8 +10,9 @@ description: >
 
 Launch a real `pi --print` child from this session. The child is a separate
 process and does not see this session. It runs in the current directory with a
-run-local agent dir, so it inherits the project's context files but not your
-global `AGENTS.md` or `APPEND_SYSTEM.md`. Skill discovery, MCP servers,
+run-local agent dir and without context files, so project and global
+`AGENTS.md` and `APPEND_SYSTEM.md` are not loaded. Put any convention the child
+needs in the prompt. Skill discovery, MCP servers,
 extensions, prompt templates, and `.pi` trust-gated resources stay off.
 
 ## When to use
@@ -73,12 +74,6 @@ git diff --cached > /tmp/review.diff
 ```sh
 ~/.pi/agent/skills/subagent/scripts/run.py \
   --model MODEL < /tmp/review-brief.md
-```
-
-```sh
-~/.pi/agent/skills/subagent/scripts/run.py \
-  --model MODEL \
-  --no-context-files -- "Review the derivation of Eq.(1) in @paper.tex."
 ```
 
 ```sh
