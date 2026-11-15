@@ -37,28 +37,25 @@ in a vault note (or a temp file) and is referenced the same way.
 If an invocation fails or you need the run's provenance, read
 `references/launcher.md` (`--help` lists the flags).
 
-The model, and optionally the thinking level, should be specified by user instructions
-or project conventions. Ask if unsure.
+A new run uses the parent session's provider and model unless `--model` is
+given. Pass `--model` only when the user names another model.
 
 ## Examples
 
 ```sh
-git diff --cached | ~/.pi/agent/skills/subagent/scripts/run.py \
-  --model MODEL -- \
+git diff --cached | ~/.pi/agent/skills/subagent/scripts/run.py -- \
   "Review the following diff. You may read @src/** and @tests/**."
 ```
 
 ```sh
 ~/.pi/agent/skills/subagent/scripts/run.py \
-  --model MODEL \
   --prompt ~/.pi/agent/skills/vault/prompts/review-translation.md -- @doc.ja.md @doc.en.md
 ```
 
 A longer brief is referenced with `@`, or fed with `<`:
 
 ```sh
-~/.pi/agent/skills/subagent/scripts/run.py \
-  --model MODEL < /tmp/review-brief.md
+~/.pi/agent/skills/subagent/scripts/run.py < /tmp/review-brief.md
 ```
 
 When the child needs both a diff and a longer brief, save the diff to a
@@ -72,8 +69,7 @@ git diff --cached > /tmp/review.diff
 (where `/tmp/review-brief.md` names `@/tmp/review.diff`):
 
 ```sh
-~/.pi/agent/skills/subagent/scripts/run.py \
-  --model MODEL < /tmp/review-brief.md
+~/.pi/agent/skills/subagent/scripts/run.py < /tmp/review-brief.md
 ```
 
 ```sh
@@ -94,7 +90,6 @@ skills are listed in the child's `<available_skills>`.
 
 ```sh
 ~/.pi/agent/skills/subagent/scripts/run.py \
-  --model MODEL \
   --skill ~/.pi/agent/skills/SKILL_NAME/SKILL.md -- "TASK"
 ```
 
@@ -112,10 +107,10 @@ skills are listed in the child's `<available_skills>`.
   matches the skill's description.
 - The path list is prompt-only: the child's tools can still read anything the
   process can. Do not treat the child as a sandbox.
-- A new run needs `--model` with the bare model ID, provider-qualified
-  (e.g. `opencode-go/claude-haiku-5-5`) when the ID is ambiguous across
-  providers. Use either `--thinking` or a `:thinking` suffix, not both. If
-  the model is unclear, ask.
+- `--model` takes the bare model ID, provider-qualified (e.g.
+  `PROVIDER/MODEL_ID`) when the ID is ambiguous across providers.
+  Use either `--thinking` or a `:thinking` suffix, not both. If the user names
+  a model you cannot resolve, ask.
 - The prompt, piped input included, is saved in the run dir and
   sent to the model; do not include secrets.
 - `--resume` reuses the run's saved pi flags, cwd, and system prompt; start a

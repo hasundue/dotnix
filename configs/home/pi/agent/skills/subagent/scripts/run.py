@@ -316,6 +316,15 @@ def has_flag(pi_flags: list[str], *names: str) -> bool:
     return False
 
 
+def parent_model_flags() -> list[str]:
+    """Default `--model` to the parent pi session's provider and model."""
+    model = os.environ.get("PI_MODEL", "").strip()
+    if not model:
+        return []
+    provider = os.environ.get("PI_PROVIDER", "").strip()
+    return ["--model", f"{provider}/{model}" if provider else model]
+
+
 def validate_pi_flags(pi_flags: list[str]) -> None:
     for flag in pi_flags:
         name = flag.split("=", 1)[0]
@@ -702,7 +711,9 @@ def main(argv: list[str] | None = None) -> int:
 
     validate_pi_flags(args.pi_flags)
     if not has_flag(args.pi_flags, "--model"):
-        die("a new run needs --model")
+        args.pi_flags = parent_model_flags() + args.pi_flags
+    if not has_flag(args.pi_flags, "--model"):
+        die("a new run needs --model (PI_MODEL is unset)")
     cwd = Path.cwd().resolve()
     prompt = read_input(args.prompt_words, args.prompt)
     system_prompt = build_system_prompt()
