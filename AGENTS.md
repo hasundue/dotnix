@@ -75,14 +75,15 @@ git -C ~/dotnix switch main &&
   git -C ~/dotnix push
 ```
 
-If already merged on origin, fetch and verify local `main` can fast-forward
-before switching: `git -C ~/dotnix fetch origin` and
-`git -C ~/dotnix merge-base --is-ancestor main origin/main`. If the check fails,
-stop and ask. Then run `git -C ~/dotnix switch main && git -C ~/dotnix pull
---ff-only`. Once `main` is on origin, delete `<branch>` with
-`git push origin --delete <branch>` if it still exists, then remove its local
-worktree or branch with `wt remove <branch>` or
-`git -C ~/dotnix branch -d <branch>`.
+After fetching `origin`, merge the branch into local `main` unless `<branch>`
+is already an ancestor of `origin/main`. If it is, verify local `main` is also
+an ancestor of `origin/main` before switching the live checkout. If not, stop
+and ask; otherwise fast-forward local `main`.
+
+After the local merge or remote fast-forward succeeds, refresh origin's refs.
+Delete the source remote branch only if its current tip is contained in
+`origin/main`; skip deletion if it is already absent, and stop and ask if it is
+not contained. Then remove the local worktree or branch.
 
 If validation fails, do not merge; stop and ask. If a Git operation fails or
 the repository state differs from the plan, stop and ask before attempting a
