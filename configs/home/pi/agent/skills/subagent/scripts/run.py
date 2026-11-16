@@ -3,7 +3,8 @@
 
 The launcher owns the run directory and session; it does not write a vault
 artifact. stdout is the child's final text. stderr stays quiet unless the child
-fails or --info is passed.
+fails or --info is passed. Every run also prints one `run: ID` line to stderr,
+so the caller can name the run for a follow-up.
 """
 
 from __future__ import annotations
@@ -614,7 +615,7 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
     parser.add_argument(
         "--info",
         action="store_true",
-        help="print provenance and the child's stderr; default is the answer alone",
+        help="print full provenance and the child's stderr",
     )
     parser.add_argument(
         "--resume",
@@ -707,6 +708,8 @@ def main(argv: list[str] | None = None) -> int:
                 manual,
             )
         write_latest(state_dir, run_id)
+        if not args.info:
+            eprint(f"run: {run_id}")
         return run_child(command, prompt, cwd, agent_dir, args.info)
 
     validate_pi_flags(args.pi_flags)
@@ -759,6 +762,8 @@ def main(argv: list[str] | None = None) -> int:
     }
     write_meta(run_dir, meta)
     write_latest(state_dir, run_id)
+    if not args.info:
+        eprint(f"run: {run_id}")
     if args.info:
         print_provenance(
             run_id,
