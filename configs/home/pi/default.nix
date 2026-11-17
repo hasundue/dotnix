@@ -28,18 +28,19 @@ in
     # the declared keys are merged in.
     mutableSettings = true;
     settings = {
-      # Both packages stay installed but load no resources, so no `/gpui` or
-      # `/wt` until a session asks for one. A project re-enables one from its
-      # .pi/settings.json by declaring the package without `autoload`, and a
-      # one-off session uses `pi -e npm:pi-gpui`.
+      # Both packages stay installed and their extensions stay discovered but
+      # disabled, so `pi config` lists them and `pi config -l` can switch one on
+      # for a project. `autoload = false` would hide them from `pi config`
+      # entirely; an empty `extensions` filter keeps the entries with
+      # `enabled: false`, which the resource loader skips.
       packages = [
         {
           source = "npm:pi-gpui";
-          autoload = false;
+          extensions = [ ];
         }
         {
           source = "npm:pi-worktrunk";
-          autoload = false;
+          extensions = [ ];
         }
       ];
       defaultTools = [
