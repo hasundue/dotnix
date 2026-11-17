@@ -28,11 +28,19 @@ in
     # the declared keys are merged in.
     mutableSettings = true;
     settings = {
-      # `/gpui` hands this session to Pi GPUI, `/wt` passthrough with
-      # linked-session worktree moves.
+      # Both packages stay installed but load no resources, so no `/gpui` or
+      # `/wt` until a session asks for one. A project re-enables one from its
+      # .pi/settings.json by declaring the package without `autoload`, and a
+      # one-off session uses `pi -e npm:pi-gpui`.
       packages = [
-        "npm:pi-gpui"
-        "npm:pi-worktrunk"
+        {
+          source = "npm:pi-gpui";
+          autoload = false;
+        }
+        {
+          source = "npm:pi-worktrunk";
+          autoload = false;
+        }
       ];
       defaultTools = [
         "+grep"
