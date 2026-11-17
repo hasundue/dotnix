@@ -80,6 +80,77 @@ let
         ;;
     esac
   '';
+
+  # Right-click or click on the microphone/speaker: pick the device from a
+  # dmenu over `wpctl status`, with the current default marked by ▶. The section
+  # name is all that differs between the sink and the source version.
+  switch-audio =
+    name: section:
+    pkgs.writeShellScript "switch-audio-${name}" ''
+      device_list=$(${pkgs.wireplumber}/bin/wpctl status | ${pkgs.gawk}/bin/awk -v want="${section}" '
+        /[├└]─/ { inside = ($0 ~ (want ":")); next }
+        inside && /\./ {
+          gsub(/[│├─└●]/, "")
+          gsub(/^[[:space:]]+/, "")
+
+          is_default = ($0 ~ /^\*/)
+          gsub(/^\*[[:space:]]*/, "")
+
+          id = $1
+          sub(/\.$/, "", id)
+
+          sub(/^[0-9]+\.[[:space:]]*/, "")
+          sub(/[[:space:]]+\[vol:[^\]]*\]/, "")
+          gsub(/[[:space:]]+$/, "")
+
+          prefix = is_default ? " ▶ " : "    "
+          print prefix $0 "\x1f" id
+        }
+      ') || exit 0
+
+      [ -z "$device_list" ] && exit 0
+
+      selected=$(echo "$device_list" | ${pkgs.gawk}/bin/awk -F'\x1f' '{print $1}' | ${pkgs.fuzzel}/bin/fuzzel --dmenu --prompt="  ")
+      [ -z "$selected" ] && exit 0
+
+      id=$(echo "$device_list" | ${pkgs.gawk}/bin/awk -F'\x1f' -v name="$selected" '$1 == name {print $2}')
+      [ -z "$id" ] && exit 1
+
+      ${pkgs.wireplumber}/bin/wpctl set-default "$id"
+    '';
+
+  # The source has no waybar module of its own, so it reports its own JSON: the
+  # icon follows the mute state, the tooltip names the device in use.
+  audio-source-status = pkgs.writeShellScript "audio-source-status" ''
+    wpctl=${pkgs.wireplumber}/bin/wpctl
+
+    vol=$($wpctl get-volume @DEFAULT_AUDIO_SOURCE@ 2>/dev/null) || exit 0
+    name=$($wpctl inspect @DEFAULT_AUDIO_SOURCE@ 2>/dev/null | ${pkgs.gawk}/bin/awk -F' = ' '
+      /node.description/ {
+        gsub(/"/, "", $2)
+        print $2
+        exit
+      }
+    ')
+
+    case "$vol" in
+      *MUTED*)
+        text="󰍭"
+        class="muted"
+        status="muted"
+        ;;
+      *)
+        text="󰍬"
+        class="default"
+        status="active"
+        ;;
+    esac
+
+    ${pkgs.jq}/bin/jq -cn \
+      --arg text "$text" --arg class "$class" \
+      --arg tooltip "Audio Source — $status (''${name:-unknown})" \
+      '{text: $text, class: $class, tooltip: $tooltip}'
+  '';
 in
 {
   programs.waybar = {
@@ -94,6 +165,10 @@ in
         border: none;
       }
       #custom-monitor.inactive {
+        opacity: 0.4;
+      }
+      #custom-audio-source.muted,
+      #pulseaudio.muted {
         opacity: 0.4;
       }
     '';
@@ -115,6 +190,7 @@ in
         "network"
         "memory"
         "pulseaudio"
+        "custom/audio-source"
         "backlight"
         "battery"
         "clock"
@@ -206,7 +282,9 @@ in
           ];
         };
 
-        on-click = "${pkgs.ponymix}/bin/ponymix -t sink toggle";
+        # Left click picks the sink, right click mutes it.
+        on-click = "${switch-audio "sink" "Sinks"}";
+        on-click-right = "${pkgs.wireplumber}/bin/wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle";
         on-scroll-up = "${pkgs.ponymix}/bin/ponymix increase 1";
         on-scroll-down = "${pkgs.ponymix}/bin/ponymix decrease 1";
 
@@ -214,6 +292,20 @@ in
         max-length = 7;
 
         tooltip-format = "{desc}";
+      };
+
+      "custom/audio-source" = {
+        exec = "${audio-source-status}";
+        return-type = "json";
+        interval = 1;
+
+        on-click = "${switch-audio "source" "Sources"}";
+        on-click-right = "${pkgs.wireplumber}/bin/wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle";
+
+        min-length = 3;
+        max-length = 3;
+
+        tooltip = true;
       };
 
       backlight = {
