@@ -75,30 +75,17 @@ it into the English record, once, in place.
    translator's own pre-flight: the rules below, executable. Fix what it
    reports; a clean run does not mean the pair is checked.
 
-2. Let another agent check the pair. The model, and optionally the thinking level, should be
-   specified by user instructions or project conventions. Ask if unsure. The
-   checker has no tools, so attach both files with `--ref` and name them in the
-   brief:
-
-   ```sh
-   ~/.pi/agent/skills/subagent/scripts/run.py \
-     --model MODEL \
-     --prompt ~/.pi/agent/skills/vault/prompts/review-translation.md \
-     --ref DRAFT --ref CANDIDATE -- \
-     "The draft is DRAFT and the candidate is CANDIDATE. Check the pair."
-   ```
+2. Let another agent check the pair. It did not translate the text and has no
+   tools, so hand it both files, say which is which, and give it the
+   translation-check task prompt that the `subagent` skill carries. That skill
+   describes how to launch the check and how to continue the same checker. The
+   model, and optionally the thinking level, come from user instructions or
+   project conventions; ask if unsure.
 
    If the check fails, fix the candidate in place, re-run `check_pair.py`
-   on the draft, and re-check the pair in full with the same run. Attach the
-   files again: the candidate changed on disk, and the run holds the old copy.
-
-   ```sh
-   ~/.pi/agent/skills/subagent/scripts/run.py --resume \
-     --ref DRAFT --ref CANDIDATE -- "Re-check the attached pair in full."
-   ```
-
-   A failed check is fixed and re-run once, then ask the user: do not grind
-   through re-checks without them.
+   on the draft, and re-check the pair in full with the same checker: it holds
+   the old copy of the candidate otherwise. A failed check is fixed and re-run
+   once, then ask the user: do not grind through re-checks without them.
 
    Anything that fails is fixed before the promotion, not after.
 
