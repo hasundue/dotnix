@@ -74,6 +74,10 @@ in
         (ps.pdfplumber.overridePythonAttrs (_: {
           doCheck = false;
         }))
+        # Not a PDF tool: pi bundles no tokenizer for its models, and a
+        # character count is only good to a guess. The BPE file is fetched on
+        # first use, so point TIKTOKEN_CACHE_DIR at a real directory to keep it.
+        ps.tiktoken
       ]))
     ];
   };
