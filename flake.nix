@@ -249,7 +249,7 @@
             uv2nix
             ;
         };
-        waku = pkgs.callPackage ./packages/waku.nix { };
+        pi-gpui = pkgs.callPackage ./packages/pi-gpui.nix { };
       });
       homeConfigurations =
         lib.mapAttrs' (hostname: v: homeConfig v |> lib.nameValuePair "${username}@${hostname}")

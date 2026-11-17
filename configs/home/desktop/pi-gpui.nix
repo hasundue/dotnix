@@ -7,12 +7,12 @@ let
   #
   # cosmic-text's fallback only keeps a static face whose weight is an exact
   # match (`font_weight_diff == 0`) or a variable face whose axis covers the
-  # request. So one static face is not enough: Waku asks for 400 (body), 500
+  # request. So one static face is not enough: Pi GPUI asks for 400 (body), 500
   # (medium labels), 600 (headings and emphasis) and 700 (h1/h2). The static
   # release has no SemiBold face, so relabel its Bold faces as 600; the
   # outlines stay bold, the conventional fallback for semibold.
   cjkFallback =
-    pkgs.runCommandLocal "waku-cjk-fallback"
+    pkgs.runCommandLocal "pi-gpui-cjk-fallback"
       {
         nativeBuildInputs = [ (pkgs.python3.withPackages (ps: [ ps.fonttools ])) ];
       }
@@ -34,5 +34,5 @@ let
       '';
 in
 {
-  home.packages = [ (pkgs.waku.override { fallbackFont = cjkFallback; }) ];
+  home.packages = [ (pkgs.pi-gpui.override { fallbackFont = cjkFallback; }) ];
 }

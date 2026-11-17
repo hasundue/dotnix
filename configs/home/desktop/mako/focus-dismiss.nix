@@ -41,9 +41,6 @@ in
     aliases = lib.mkOption {
       type = lib.types.attrsOf (lib.types.listOf lib.types.str);
       default = { };
-      example = {
-        "sh.waku" = [ "Waku" ];
-      };
       description = ''
         Notification names to accept for a window's `app-id`, for apps that call
         themselves different things on each side. The matcher already ignores

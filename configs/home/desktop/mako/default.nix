@@ -14,10 +14,5 @@
         default-timeout = 3000;
       };
     };
-
-    # niri's `app-id` → the names the app uses for its notifications.
-    focusDismiss.aliases = {
-      "sh.waku" = [ "Waku" ];
-    };
   };
 }

@@ -10,11 +10,11 @@
     ./mako
     ./mozc.nix
     ./niri
+    ./pi-gpui.nix
     ./portal-login.nix
     ./slack.nix
     ./spotify.nix
     ./vscode.nix
-    ./waku.nix
     ./waybar.nix
     ./xdg.nix
     ./zed
