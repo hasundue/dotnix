@@ -2,16 +2,14 @@
  * Session namer — Names a session from its first prompt.
  *
  * Pi only assigns a session name on `/name`, `--name`, or `pi.setSessionName()`,
- * so a session started by a client that sets none keeps an empty name. Pi GPUI
- * then falls back to the first user message for its sidebar (`read_title`,
- * src/sessions.rs), which is how a task ends up labelled with a 54-character
- * sentence for its whole life — and with a full-width Japanese sentence when the
- * prompt is Japanese.
+ * so a session started by a client that sets none keeps an empty name, and
+ * whatever lists sessions falls back to the first user message — which is how a
+ * task ends up labelled with a 54-character sentence for its whole life, and
+ * with a full-width Japanese sentence when the prompt is Japanese.
  *
- * Naming here covers every surface that reads it: Pi exposes the name in
- * `get_state` (`sessionName`) and writes it to the session as a `session_info`
- * entry, and Pi GPUI titles a session from that entry (`read_title`) just as
- * Pi's own `/resume` selector does. A rename in Pi GPUI always beats it.
+ * The name is written where every reader takes it from: Pi's `get_state`
+ * (`sessionName`) and the `session_info` entry in the session file that a
+ * session list and /resume title a session from. A rename made later beats it.
  *
  * One background model call per session, on the prompt alone: the call never
  * enters the transcript and never delays the turn. A name the user set always
@@ -25,9 +23,8 @@ import { uuidv7 } from "@earendil-works/pi-ai";
 import type { ExtensionAPI, ExtensionContext } from "@earendil-works/pi-coding-agent";
 
 /**
- * Pi GPUI's sidebar is 272 px wide and ellipsizes, and a title it reads from
- * the session file is cut at 80 characters; a name longer than this is not an
- * answer.
+ * A session name is a label in a list, shown truncated rather than wrapped;
+ * one longer than this is not an answer.
  */
 const MAX_LENGTH = 48;
 
