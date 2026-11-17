@@ -72,9 +72,10 @@ Naming, languages, and the approval act are the vault's rules, defined once in
 
 Keel writes the draft and stops. Approval belongs to whoever the user hands the
 work to: sail, or this session if the user approves here. When the user
-approves here, run the lifecycle in `../vault/references/conventions.md` -- translate,
-check via subagent, and promote only on a `VERDICT: promotable` last line. When a rule changes,
-change it there -- sail reads the same file.
+approves here, run the lifecycle in
+`../vault/references/conventions.md` -- translate, check via subagent, and
+promote only if the checker concludes that the agreement survived the
+translation. When a rule changes, change it there -- sail reads the same file.
 
 ## Finding an existing note
 

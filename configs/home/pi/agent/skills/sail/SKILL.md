@@ -82,13 +82,14 @@ code changes. Follow `../vault/references/conventions.md`, "A task note's
 language lifecycle": translate, check, promote.
 
 You are the translator, so you must not be the checker -- delegate the check
-to a subagent. The model, and optionally the thinking level, should be specified by user instructions
-or project conventions -- prefer one different from the translator's. Ask if unsure. Read the child's last
-line: it must be exactly `VERDICT: promotable` or `VERDICT: not-promotable`.
-Anything else -- missing, doubled, reworded -- counts as not promotable.
+to a subagent. The model, and optionally the thinking level, should be
+specified by user instructions or project conventions -- prefer one different
+from the translator's. Ask if unsure. Read the child's conclusion. If the
+checker reports no substantive issues and concludes that the agreement was
+preserved, promote per the lifecycle; the candidate becomes the note. Otherwise
+leave the draft `draft`, fix the candidate, and re-check the full pair once. If
+findings remain, or the conclusion is missing or unclear, stop and ask the user.
 
-- `VERDICT: promotable` -> promote per the lifecycle; the candidate becomes the note.
-- otherwise -> leave the draft `draft`, fix per the lifecycle and re-run the check (once, then ask).
 - child non-zero exit -> stop and report the exit code and stderr; no code
   changes while the pair is unsettled.
 

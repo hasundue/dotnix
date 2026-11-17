@@ -61,31 +61,31 @@ A draft is argued over in the session's language, with `session_lang:` in its
 front matter so a cold session knows which tongue to report in. Approval turns
 it into the English record, once, in place.
 
-1. Translate into `<note>.en.md`, next to the draft. The boundary is mechanical:
-   inside a code span or a fence is code, copied byte for byte; everything else
-   is prose, translated. That includes a `verify:` step written as a sentence --
-   "the table in the results note shows ..." is prose. A mention of this note's
-   own heading moves with the heading, even inside backticks, and no line may
-   point at a heading the translation renamed. Keep one heading, one criterion,
-   one log entry for one; a translation that merges, drops, or improves is not a
-   translation.
+1. Translate into `<note>.en.md`, next to the draft. Preserve the agreement's
+   meaning: its problem, scope, decisions, expected outcomes, acceptance
+   criteria, and anything in the log that matters to those. Translate prose,
+   including a `verify:` step written as a sentence. Keep commands, paths, code
+   identifiers, and links usable; update a heading reference if its heading is
+   translated. Backticks alone do not make text immutable. The candidate may
+   clarify or reorganize the note, but must not add, remove, or change an
+   agreed commitment.
 
-   Before handing the pair over, run
-   `~/.pi/agent/skills/vault/scripts/check_pair.py <draft>`. It is the
-   translator's own pre-flight: the rules below, executable. Fix what it
-   reports; a clean run does not mean the pair is checked.
+   A task note records an agreement; it is not a specification to be obeyed to
+   the byte. Read the pair against each other once before handing it over, as a
+   meaning check. Do not write or run a script to compare them. The independent
+   check in step 2 decides whether the agreement survived the translation.
 
 2. Let another agent check the pair. It did not translate the text and has no
-   tools, so hand it both files, say which is which, and give it the
-   translation-check task prompt that the `subagent` skill carries. That skill
-   describes how to launch the check and how to continue the same checker. The
-   model, and optionally the thinking level, come from user instructions or
-   project conventions; ask if unsure.
+   tools, so hand it both files, say which is which, and use
+   `~/.pi/agent/skills/vault/prompts/review-translation.md` as its task prompt.
+   The `subagent` skill describes how to launch the check and continue the same
+   checker. The model, and optionally the thinking level, come from user
+   instructions or project conventions; ask if unsure.
 
-   If the check fails, fix the candidate in place, re-run `check_pair.py`
-   on the draft, and re-check the pair in full with the same checker: it holds
-   the old copy of the candidate otherwise. A failed check is fixed and re-run
-   once, then ask the user: do not grind through re-checks without them.
+   If the check finds a substantive problem, fix the candidate in place and
+   re-check the pair in full with the same checker: it holds the old copy of
+   the candidate otherwise. If the re-check still finds a problem, ask the
+   user rather than grinding through more rounds.
 
    Anything that fails is fixed before the promotion, not after.
 

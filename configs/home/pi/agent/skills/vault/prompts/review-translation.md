@@ -4,9 +4,8 @@ Your task is the independent check of a translated task note: a draft in the
 note's own language and an English candidate. This conversation contains both;
 the user names them. You are the party who did not translate it.
 
-Review only. Do not edit either file, do not promote, do not change `status:`.
-Reporting the findings is the whole task; fixing and promotion are someone
-else's decision.
+Do not promote the candidate or change `status:`; fixing and promotion belong
+to the parent session.
 
 ## The pair
 
@@ -18,50 +17,42 @@ else's decision.
 
 ## Scope
 
-The mechanical check (`check_pair.py`) has already run: front matter,
-headings, criteria, code spans, untranslated prose, quotations, and heading
-references match. Do not re-derive them. Your job is only what no script
-settles, listed under Compare. If you spot a mechanical break the script
-missed, report it as a finding anyway.
+Compare both files in full. The translator read them against each other before
+handing them over; that was their pre-flight, not your check. Nothing has been
+settled mechanically. Check whether the agreement survives, including its
+meaningful decisions, outcomes, constraints, and verification. Structure and
+wording may differ when they preserve that meaning; flag a difference for what
+it changes or loses, not for being different.
 
 ## Compare
 
-Compare the pair directly, both files read in full. The mechanical half is
-settled; yours to decide by reading:
+Read both files in full and decide whether the English candidate carries the
+same agreement in clear, usable English:
 
-- the problem still states the same problem: a translation that reads better
-  but says something else is a finding, not an improvement
-- the prose reads as a translation rather than an improvement
-- restatements carry the same content, attributed: a restatement that quotes
-  the user is a finding
-- the log carries one entry for one: evidence, not prose to polish
+- the problem, intended outcome, scope, decisions, and constraints retain the
+  same meaning; an addition, omission, or change that alters them is a finding
+- acceptance criteria and their verification still express the agreed outcomes;
+  they may be rephrased or reorganized, but not weakened, strengthened, or lost
+- commands, paths, identifiers, and heading links still refer to the intended
+  things and remain usable; do not require incidental formatting or backticks
+  to match
+- restatements keep the same content and attribution; do not introduce a quote
+  of the user where the note calls for a restatement
+- logs retain material decisions, evidence, and unresolved questions; wording
+  and grouping may change without losing that information
 
-A translation that merges, drops, or improves is not a translation. Treat every
-departure as a finding, however good the prose.
+The candidate may improve clarity or reorganize the prose. Report only
+substantive changes, omissions, unsupported additions, or references that no
+longer work -- not differences of wording or structure by themselves.
 
 ## Report
 
 In the user's language, list each finding with both file paths and line
-numbers, the draft text, the candidate text, and which rule above it breaks.
-Order them by severity: a mechanical break the script missed, meaning changed,
-then style. If a category has no findings, one line saying so is enough; do not
-narrate clean comparisons.
+numbers where available, the relevant draft and candidate passages, and what
+meaning, commitment, or reference changed. Order findings by their impact on
+the agreement. If there are no findings, say so briefly; do not narrate clean
+comparisons.
 
-End with one verdict line, exactly one of these two, as the last line:
-
-```
-VERDICT: promotable
-```
-
-```
-VERDICT: not-promotable
-```
-
-- `VERDICT: promotable` -- the pair is a faithful translation, and promotion
-  is translate -> check -> promote with the draft deleted
-- `VERDICT: not-promotable` -- the findings must be fixed first, and the
-  candidate must be rechecked after
-
-The verdict line is machine-read: no rewording, no extra verdict lines.
-Neither verdict edits anything, and neither asks whether to go ahead. The next
-move is the user's.
+Conclude in ordinary prose whether the candidate preserves the agreement well
+enough to promote. If not, state what needs to be fixed. Do not ask whether to
+proceed; this is a report, not an approval request.
