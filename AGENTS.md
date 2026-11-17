@@ -138,8 +138,13 @@ commits for distinct outcomes.
 
 A commit on a branch is pushed in the same step: `git commit ... && git push`.
 An unpushed commit is unfinished work, not a backup. `push.autoSetupRemote` is
-already set, so a new branch needs no `-u`. Rewrite a pushed commit only on your
-own unmerged branch, with `--force-with-lease`; on `main`, add a fix commit.
+already set, so a new branch needs no `-u`.
+
+Do not rewrite a pushed commit on a working branch, and do not amend it to fold
+in a later fix: add a commit. The branch is squashed on merge anyway, and a
+rewrite turns the work into one opaque diff that the user can no longer follow.
+On `main`, add a fix commit. The only rewrite is the approved reorganization
+under [Merging](#merging), with `--force-with-lease`.
 
 ## Validate
 
