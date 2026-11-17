@@ -1,10 +1,17 @@
 #!/usr/bin/env python3
-"""Run a pi task in a separate, read-only-by-default process.
+"""Run a task in a separate pi process, on material the caller supplies.
 
 The launcher owns the run directory and session; it does not write a vault
 artifact. stdout is the child's final text. stderr stays quiet unless the child
 fails or --info is passed. Every run also prints one `run: ID` line to stderr,
 so the caller can name the run for a follow-up.
+
+A run is three things the caller supplies: a task system-prompt file, one
+brief, and ordered --ref files. The launcher prepends the common prompt to the
+task prompt and passes the text, not a path, as pi's --system-prompt. It
+attaches each --ref as a pi @FILE positional argument and sends the brief on
+stdin. The child is read-less (--no-tools): the caller selects the material,
+the child analyzes it.
 """
 
 from __future__ import annotations
@@ -24,17 +31,18 @@ from pathlib import Path
 from typing import NoReturn
 
 SKILL_DIR = Path(__file__).resolve().parent.parent
-CHILD_PROMPT = SKILL_DIR / "references" / "child.md"
+COMMON_PROMPT = SKILL_DIR / "references" / "prompts" / "common.md"
+PROMPTS_DIR = SKILL_DIR / "references" / "prompts"
 RUN_ID_RE = re.compile(r"^[A-Za-z0-9](?:[A-Za-z0-9._-]*[A-Za-z0-9])?$")
 LATEST_FILE = "latest"
+RUN_FORMAT = 2
 REQUIRED_META = (
-    "schema",
     "run_id",
     "session_id",
     "cwd",
     "created",
 )
-READ_ONLY_TOOLS = ("read", "grep", "find", "ls")
+SYSTEM_PROMPT_MARKER = "<composed-system-prompt>"
 CHILD_FLAGS = (
     "--no-approve",
     "--no-context-files",
@@ -42,8 +50,6 @@ CHILD_FLAGS = (
     "--no-mcp",
     "--no-skills",
     "--no-prompt-templates",
-    "--system-prompt",
-    "--append-system-prompt",
 )
 RESERVED_PI_FLAGS = {
     "--print",
@@ -66,6 +72,30 @@ RESERVED_PI_FLAGS = {
     "--extension",
     "-e",
     "--prompt-template",
+    "--system-prompt",
+    "--append-system-prompt",
+    "--skill",
+    "--tools",
+    "-t",
+    "--no-tools",
+    "-nt",
+    "--exclude-tools",
+    "-xt",
+    "--no-builtin-tools",
+    "-nbt",
+}
+PROMPT_AND_TOOL_FLAGS = {
+    "--system-prompt",
+    "--append-system-prompt",
+    "--skill",
+    "--tools",
+    "-t",
+    "--no-tools",
+    "-nt",
+    "--exclude-tools",
+    "-xt",
+    "--no-builtin-tools",
+    "-nbt",
 }
 AGENT_FILES = ("auth.json", "models.json", "models-store.json", "settings.json")
 AGENT_CONTEXT_FILES = (
@@ -138,7 +168,7 @@ def prepare_agent_dir(agent_dir: Path, source: Path) -> None:
 
 
 def split_argv(argv: list[str]) -> tuple[list[str], list[str]]:
-    """Split argv at the first bare `--`: left goes to argparse/pi, right is the prompt."""
+    """Split argv at the first bare `--`: left goes to argparse/pi, right is the brief."""
     if "--" in argv:
         i = argv.index("--")
         return argv[:i], argv[i + 1 :]
@@ -148,9 +178,8 @@ def split_argv(argv: list[str]) -> tuple[list[str], list[str]]:
 def strip_frontmatter(text: str) -> str:
     """Remove a leading YAML frontmatter block (`---` ... `---`).
 
-    Prompt templates carry `description`/`argument-hint` for slash-command
-    discovery; the child never needs that header, so `--prompt` drops it
-    at runtime while the file keeps it.
+    A caller's task prompt may carry a header the model does not need; drop
+    it at runtime while the file keeps it.
     """
     lines = text.splitlines(keepends=True)
     if not lines or lines[0].strip() != "---":
@@ -159,52 +188,6 @@ def strip_frontmatter(text: str) -> str:
         if lines[i].strip() == "---":
             return "".join(lines[i + 1 :]).lstrip("\n")
     return text
-
-
-TEMPLATE_RE = re.compile(
-    r"\$\{@:(\d+):(\d+)\}"  # ${@:N:L}
-    r"|\$\{@:(\d+)\}"  # ${@:N}
-    r"|\$\{@:-([^}]*)\}"  # ${@:-default}
-    r"|\$@|\$ARGUMENTS"  # $@
-    r"|\$\{(\d+):-([^}]*)\}"  # ${N:-default}
-    r"|\$(\d+)"  # $N
-)
-
-
-def expand_template(template: str, args: list[str]) -> str:
-    """Expand pi prompt-template substitutions with the words after `--`.
-
-    Mirrors the template syntax pi itself documents (`$1`, `$@`,
-    `${1:-default}`, `${@:N}`, `${@:N:L}`); `@path` words pass through
-    untouched for pi to resolve as attachments.
-    """
-
-    def replace(match: re.Match[str]) -> str:
-        if match.group(0) in ("$@", "$ARGUMENTS"):
-            return " ".join(args)
-        # Position 0 has no meaning here (there is no $0); clamp to 1
-        # rather than letting Python's negative indexing surprise anyone.
-        start, length = match.group(1, 2)
-        if start is not None:
-            n = max(int(start), 1)
-            return " ".join(args[n - 1 : n - 1 + int(length)])
-        only_start = match.group(3)
-        if only_start is not None:
-            return " ".join(args[max(int(only_start), 1) - 1 :])
-        all_default = match.group(4)
-        if all_default is not None:
-            return " ".join(args) if args else all_default
-        num, default = match.group(5, 6)
-        if num is not None:
-            i = max(int(num), 1) - 1
-            return args[i] if 0 <= i < len(args) else (default or "")
-        plain = match.group(7)
-        if plain is not None:
-            i = max(int(plain), 1) - 1
-            return args[i] if 0 <= i < len(args) else ""
-        return match.group(0)
-
-    return TEMPLATE_RE.sub(replace, template)
 
 
 def load_prompt_file(path: str) -> str:
@@ -216,36 +199,51 @@ def load_prompt_file(path: str) -> str:
     return strip_frontmatter(text).rstrip() + "\n"
 
 
-def read_input(prompt_words: list[str], prompt_path: str | None = None) -> bytes:
-    """Compose the full prompt run.py delivers to pi.
+def compose_system_prompt(prompt_path: str) -> tuple[str, Path]:
+    """Return the combined prompt text and the task prompt it came from."""
+    try:
+        common = COMMON_PROMPT.read_text(encoding="utf-8")
+    except (OSError, UnicodeDecodeError) as exc:
+        die(f"cannot read the common prompt {COMMON_PROMPT}: {exc}")
+    source = Path(prompt_path).expanduser().resolve()
+    return common.rstrip() + "\n\n" + load_prompt_file(str(source)), source
 
-    Words after `--` are template arguments when `--prompt` is given
-    (expanded into `$@`/`$1`...), otherwise the task itself. Piped input
-    follows in both cases -- the receiver cannot tell a pipe from typing,
-    so a template that expects appended output (e.g. a checker report)
-    just documents "output appended at the end". The returned bytes are
-    both the saved record and pi's stdin, so the child sees exactly what
-    the run dir records.
+
+def read_input(brief_words: list[str]) -> bytes:
+    """Compose the one user message: the brief, then any piped text.
+
+    The returned bytes are both the saved record and pi's stdin, so the child
+    sees exactly what the run dir records. References travel as pi @FILE
+    arguments instead; pi groups their contents with this message.
     """
     stdin_data = b""
     if not sys.stdin.isatty():
         stdin_data = sys.stdin.buffer.read()
-    if prompt_path is not None:
-        template = load_prompt_file(prompt_path)
-        task = expand_template(template, prompt_words).strip()
-    else:
-        task = " ".join(prompt_words).strip()
-    if not stdin_data.strip() and not task:
-        if prompt_path is not None:
-            die("no prompt: `--prompt` expanded to empty and stdin is empty")
-        die("no prompt: pass words after `--` or pipe the prompt")
-    if stdin_data.strip() and task:
-        prompt = task.encode() + b"\n\n" + stdin_data.lstrip(b"\r\n").rstrip()
-    elif task:
-        prompt = task.encode()
-    else:
+    brief = " ".join(brief_words).strip()
+    if stdin_data.strip() and brief:
+        prompt = brief.encode() + b"\n\n" + stdin_data.lstrip(b"\r\n").rstrip()
+    elif brief:
+        prompt = brief.encode()
+    elif stdin_data.strip():
         prompt = stdin_data.lstrip(b"\r\n").rstrip()
+    else:
+        die("no brief: pass words after `--` or pipe the brief")
     return prompt
+
+
+def resolve_refs(values: list[str] | None) -> list[Path]:
+    """Resolve --ref values to absolute files, in the order given."""
+    refs: list[Path] = []
+    for value in values or []:
+        path = Path(value).expanduser().resolve()
+        if not path.is_file():
+            die(f"--ref is not a file: {value}")
+        refs.append(path)
+    return refs
+
+
+def ref_args(refs: list[Path]) -> list[str]:
+    return [f"@{path}" for path in refs]
 
 
 # pi flags that never take a value (verified against pi's cli/args.js in the
@@ -285,17 +283,17 @@ BOOLEAN_PI_FLAGS = frozenset(
 
 
 def reject_bare_words(pi_flags: list[str]) -> None:
-    """Die on words before `--` that would never become the task.
+    """Die on words before `--` that would never become the brief.
 
     Bare words would reach pi as extra messages, and `@file` words as
-    attachments re-read on every `--resume`. Unknown flags are assumed to
-    take a value, mirroring pi's own unknown-flag consumption.
+    attachments. Unknown flags are assumed to take a value, mirroring pi's own
+    unknown-flag consumption.
     """
     i = 0
     while i < len(pi_flags):
         tok = pi_flags[i]
         if tok.startswith("@"):
-            die(f"bare {tok!r} before `--` is forwarded to pi as an attachment; name it inside the task instead")
+            die(f"bare {tok!r} before `--` is forwarded to pi as an attachment; use --ref FILE")
         if tok.startswith("-"):
             if (
                 tok not in BOOLEAN_PI_FLAGS
@@ -307,7 +305,7 @@ def reject_bare_words(pi_flags: list[str]) -> None:
                     i += 1
             i += 1
             continue
-        die(f"bare word {tok!r} before `--` never becomes the task; put it after `--`")
+        die(f"bare word {tok!r} before `--` never becomes the brief; put it after `--`")
 
 
 def has_flag(pi_flags: list[str], *names: str) -> bool:
@@ -329,31 +327,20 @@ def parent_model_flags() -> list[str]:
 def validate_pi_flags(pi_flags: list[str]) -> None:
     for flag in pi_flags:
         name = flag.split("=", 1)[0]
+        if name in PROMPT_AND_TOOL_FLAGS:
+            die(
+                f"the child's prompt and tool policy are fixed "
+                f"(--no-tools); do not pass {name}"
+            )
         if name in RESERVED_PI_FLAGS:
             die(f"run.py manages {name}; do not pass it to the child")
 
 
 def meta_pi_flags(meta: dict) -> list[str]:
-    if "pi_flags" in meta:
-        value = meta["pi_flags"]
-        if not isinstance(value, list):
-            die("meta.json pi_flags is not a list")
-        return [str(item) for item in value]
-    flags: list[str] = []
-    if meta.get("model"):
-        flags += ["--model", str(meta["model"])]
-    if meta.get("thinking"):
-        flags += ["--thinking", str(meta["thinking"])]
-    tools = meta.get("tools")
-    if tools == "none":
-        flags.append("--no-tools")
-    elif tools:
-        flags += ["--tools", str(tools)]
-    if meta.get("no_context_files") or meta.get("schema", 1) < 3:
-        flags.append("--no-context-files")
-    if not flags:
+    value = meta.get("pi_flags")
+    if not isinstance(value, list) or not value:
         die("meta.json has no pi_flags to resume from")
-    return flags
+    return [str(item) for item in value]
 
 
 def make_run_id() -> str:
@@ -429,15 +416,27 @@ def load_meta(run_dir: Path) -> dict:
     return meta
 
 
-def build_system_prompt() -> str:
-    return CHILD_PROMPT.read_text().rstrip() + "\n"
+def record_turn(
+    meta: dict, run_dir: Path, brief_file: Path, refs: list[Path]
+) -> None:
+    turns = meta.setdefault("turns", [])
+    if not isinstance(turns, list):
+        die("meta.json turns is not a list")
+    turns.append(
+        {
+            "brief": str(brief_file.relative_to(run_dir)),
+            "refs": [str(path) for path in refs],
+            "created": now_iso(),
+        }
+    )
 
 
 def build_command(
     session_id: str,
     session_dir: Path,
     pi_flags: list[str],
-    system_prompt: Path,
+    system_prompt: str,
+    refs: list[Path],
     resume: bool,
 ) -> list[str]:
     command = ["pi", "--print", "--session-dir", str(session_dir)]
@@ -446,10 +445,11 @@ def build_command(
     else:
         command += ["--session-id", session_id]
     command += CHILD_FLAGS
-    if not has_flag(pi_flags, "--tools", "-t", "--no-tools", "-nt"):
-        command += ["--tools", ",".join(READ_ONLY_TOOLS)]
+    command += ["--no-tools"]
     command += pi_flags
-    command += ["--append-system-prompt", str(system_prompt)]
+    command += ["--system-prompt", system_prompt]
+    if refs:
+        command += ["--"] + ref_args(refs)
     return command
 
 
@@ -457,7 +457,8 @@ def manual_command(
     session_id: str,
     session_dir: Path,
     pi_flags: list[str],
-    system_prompt: Path,
+    system_prompt: str,
+    refs: list[Path],
 ) -> list[str]:
     command = [
         "pi",
@@ -467,10 +468,11 @@ def manual_command(
         session_id,
     ]
     command += CHILD_FLAGS
-    if not has_flag(pi_flags, "--tools", "-t", "--no-tools", "-nt"):
-        command += ["--tools", ",".join(READ_ONLY_TOOLS)]
+    command += ["--no-tools"]
     command += pi_flags
-    command += ["--append-system-prompt", str(system_prompt)]
+    command += ["--system-prompt", system_prompt]
+    if refs:
+        command += ["--"] + ref_args(refs)
     return command
 
 
@@ -490,6 +492,9 @@ def print_provenance(
     agent_dir: Path,
     pi_flags: list[str],
     prompt_path: Path,
+    refs: list[Path],
+    system_prompt_path: Path,
+    task_prompt: str | None,
     command: list[str],
     manual: list[str],
 ) -> None:
@@ -502,7 +507,10 @@ def print_provenance(
     eprint(f"agent-dir: {agent_dir}")
     if pi_flags:
         eprint(f"pi-flags: {shlex.join(pi_flags)}")
-    eprint(f"prompt: {prompt_path}")
+    eprint(f"system-prompt: {system_prompt_path}")
+    eprint(f"task-prompt: {task_prompt or 'run record'}")
+    eprint(f"brief: {prompt_path}")
+    eprint(f"refs: {' '.join(str(path) for path in refs) or 'none'}")
     eprint("command:")
     eprint("  " + shlex.join(command))
     eprint("manual resume:")
@@ -510,24 +518,41 @@ def print_provenance(
 
 
 def print_dry_run(
-    command: list[str], system_prompt: str, agent_dir: Path, prompt: bytes
+    command: list[str],
+    system_prompt: str,
+    agent_dir: Path,
+    prompt: bytes,
+    refs: list[Path],
+    task_prompt: str | None,
 ) -> None:
-    print("# input: piped input is appended at the end of the task")
+    print("# refs (attached in this order)")
+    if refs:
+        for path in refs:
+            print(f"@{path}")
+    else:
+        print("(none)")
     print()
     print("# env")
     print(f"PI_CODING_AGENT_DIR={agent_dir}")
     print()
     print("# command")
-    print(shlex.join(command))
+    print(
+        shlex.join(
+            [
+                SYSTEM_PROMPT_MARKER if item == system_prompt else item
+                for item in command
+            ]
+        )
+    )
     print()
     lines = prompt.decode(errors="replace").splitlines()
-    print(f"# prompt: {len(prompt)} bytes, {len(lines)} lines")
+    print(f"# brief: {len(prompt)} bytes, {len(lines)} lines (sent on stdin)")
     for line in lines[:20]:
         print(line)
     if len(lines) > 20:
         print(f"# ... ({len(lines) - 20} more lines)")
     print()
-    print("# system prompt")
+    print(f"# system prompt: {COMMON_PROMPT} + {task_prompt or 'run record'}")
     print(system_prompt, end="" if system_prompt.endswith("\n") else "\n")
 
 
@@ -576,31 +601,44 @@ def save_follow_up(run_dir: Path, prompt: bytes) -> Path:
 
 
 def parse_args(argv: list[str]) -> argparse.Namespace:
-    argv, prompt_words = split_argv(list(argv))
+    argv, brief_words = split_argv(list(argv))
     parser = argparse.ArgumentParser(
         prog="run.py",
-        description="Run a task in a separate, read-only-by-default pi process.",
+        description=(
+            "Run a task in a separate pi process on material the caller supplies."
+        ),
         formatter_class=argparse.RawDescriptionHelpFormatter,
         allow_abbrev=False,
         epilog=(
+            "A new run takes a task system-prompt file with --prompt FILE,\n"
+            "one brief, and ordered references with repeated --ref FILE. The\n"
+            "launcher prepends the common prompt, passes the composed text as\n"
+            "pi's --system-prompt, and attaches each --ref as a pi @FILE\n"
+            "argument. The child is read-less (--no-tools); --ref takes a\n"
+            "file, not a glob.\n"
+            "\n"
+            "The brief is words after `--`, piped input, or both, joined into\n"
+            "one user message. A resume keeps the run's system prompt and\n"
+            "tool policy and takes a new brief and --ref list.\n"
+            "\n"
             "Unrecognized flags are forwarded to pi (bare words before `--`\n"
-            "are rejected), except the session, mode, trust, and\n"
-            "resource-loading flags run.py manages.\n"
-            "The child is read-only by default (read,grep,find,ls).\n"
+            "are rejected), except the session, mode, trust, tool, prompt,\n"
+            "and resource-loading flags run.py manages.\n"
             "\n"
-            "Write the task as words after `--`, like pi itself; piped input\n"
-            "follows the task. --prompt FILE expands a prompt template with\n"
-            "the words after `--` as its arguments (`$@`, `$1`, ...; `@path`\n"
-            "words pass through for pi to attach) and still appends piped\n"
-            "input at the end. --resume without an ID resumes the latest run.\n"
-            "\n"
+            f"Built-in task prompts: {PROMPTS_DIR}\n"
             f"Conventions for prompts, output, and resume: {SKILL_DIR / 'SKILL.md'}\n"
         ),
     )
     parser.add_argument(
         "--prompt",
         metavar="FILE",
-        help="expand a prompt template file with the words after `--` as arguments",
+        help="task system-prompt file for a new run; the common prompt is prepended",
+    )
+    parser.add_argument(
+        "--ref",
+        metavar="FILE",
+        action="append",
+        help="input file to attach, in order; repeatable, new runs and resumes",
     )
     parser.add_argument(
         "--run-id",
@@ -627,11 +665,11 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
     parser.add_argument(
         "--dry-run",
         action="store_true",
-        help="print the command, agent dir, and system prompt without running",
+        help="print the command, refs, brief, and composed system prompt without running",
     )
     args, pi_flags = parser.parse_known_args(argv)
     args.pi_flags = pi_flags
-    args.prompt_words = prompt_words
+    args.brief_words = brief_words
     reject_bare_words(pi_flags)
     return args
 
@@ -642,21 +680,32 @@ def main(argv: list[str] | None = None) -> int:
         die("pi not found in PATH")
     os.umask(0o077)
     state_dir = resolve_state_dir(args.state_dir)
+    refs = resolve_refs(args.ref)
 
     if args.resume:
         forbidden: list[str] = []
         if args.run_id is not None:
             forbidden.append("--run-id")
+        if args.prompt is not None:
+            forbidden.append("--prompt")
         if args.pi_flags:
             forbidden.append("pi flags")
         if forbidden:
-            die("--resume cannot change the run: " + ", ".join(forbidden))
+            die(
+                "--resume keeps the run's system prompt and tool policy; "
+                "do not pass: " + ", ".join(forbidden)
+            )
 
         run_id = resolve_resume_id(state_dir, args.resume)
         run_dir = state_dir / run_id
         if not run_dir.is_dir():
             die(f"run dir not found: {run_dir}")
         meta = load_meta(run_dir)
+        if str(meta.get("format")) != str(RUN_FORMAT):
+            die(
+                f"run {run_id} uses run format {meta.get('format', 'none')}, "
+                f"not the current format {RUN_FORMAT}; start a new run"
+            )
         if meta["run_id"] != run_id:
             die(f"meta.json run_id does not match {run_id}")
         session_id = str(meta["session_id"])
@@ -675,25 +724,36 @@ def main(argv: list[str] | None = None) -> int:
         if not system_prompt_path.is_file():
             die(f"system prompt not found: {system_prompt_path}")
         system_prompt = system_prompt_path.read_text()
-        prompt = read_input(args.prompt_words, args.prompt)
+        prompt = read_input(args.brief_words)
         command = build_command(
             session_id,
             session_dir,
             pi_flags,
-            system_prompt_path,
+            system_prompt,
+            refs,
             True,
         )
         manual = manual_command(
             session_id,
             session_dir,
             pi_flags,
-            system_prompt_path,
+            system_prompt,
+            refs,
         )
         if args.dry_run:
-            print_dry_run(command, system_prompt, agent_dir, prompt)
+            print_dry_run(
+                command,
+                system_prompt,
+                agent_dir,
+                prompt,
+                refs,
+                str(meta.get("task_prompt") or ""),
+            )
             return 0
         prepare_agent_dir(agent_dir, source_agent_dir())
         follow_up = save_follow_up(run_dir, prompt)
+        record_turn(meta, run_dir, follow_up, refs)
+        write_meta(run_dir, meta)
         if args.info:
             print_provenance(
                 run_id,
@@ -704,6 +764,9 @@ def main(argv: list[str] | None = None) -> int:
                 agent_dir,
                 pi_flags,
                 follow_up,
+                refs,
+                system_prompt_path,
+                str(meta.get("task_prompt") or ""),
                 command,
                 manual,
             )
@@ -713,13 +776,15 @@ def main(argv: list[str] | None = None) -> int:
         return run_child(command, prompt, cwd, agent_dir, args.info)
 
     validate_pi_flags(args.pi_flags)
+    if args.prompt is None:
+        die("a new run needs --prompt FILE (the task system prompt)")
     if not has_flag(args.pi_flags, "--model"):
         args.pi_flags = parent_model_flags() + args.pi_flags
     if not has_flag(args.pi_flags, "--model"):
         die("a new run needs --model (PI_MODEL is unset)")
     cwd = Path.cwd().resolve()
-    prompt = read_input(args.prompt_words, args.prompt)
-    system_prompt = build_system_prompt()
+    prompt = read_input(args.brief_words)
+    system_prompt, task_prompt = compose_system_prompt(args.prompt)
     run_id = validate_run_id(args.run_id) if args.run_id else unique_run_id(state_dir)
     run_dir = state_dir / run_id
     if run_dir.exists():
@@ -732,17 +797,26 @@ def main(argv: list[str] | None = None) -> int:
         session_id,
         session_dir,
         args.pi_flags,
-        system_prompt_path,
+        system_prompt,
+        refs,
         False,
     )
     manual = manual_command(
         session_id,
         session_dir,
         args.pi_flags,
-        system_prompt_path,
+        system_prompt,
+        refs,
     )
     if args.dry_run:
-        print_dry_run(command, system_prompt, agent_dir, prompt)
+        print_dry_run(
+            command,
+            system_prompt,
+            agent_dir,
+            prompt,
+            refs,
+            str(task_prompt),
+        )
         return 0
 
     state_dir.mkdir(parents=True, exist_ok=True, mode=0o700)
@@ -753,13 +827,15 @@ def main(argv: list[str] | None = None) -> int:
     atomic_write(run_dir / "prompt.md", prompt)
     atomic_write(system_prompt_path, system_prompt.encode())
     meta = {
-        "schema": 4,
+        "format": RUN_FORMAT,
         "run_id": run_id,
         "session_id": session_id,
         "cwd": str(cwd),
-        "pi_flags": args.pi_flags,
         "created": now_iso(),
+        "task_prompt": str(task_prompt),
+        "pi_flags": args.pi_flags,
     }
+    record_turn(meta, run_dir, run_dir / "prompt.md", refs)
     write_meta(run_dir, meta)
     write_latest(state_dir, run_id)
     if not args.info:
@@ -774,6 +850,9 @@ def main(argv: list[str] | None = None) -> int:
             agent_dir,
             args.pi_flags,
             run_dir / "prompt.md",
+            refs,
+            system_prompt_path,
+            str(task_prompt),
             command,
             manual,
         )

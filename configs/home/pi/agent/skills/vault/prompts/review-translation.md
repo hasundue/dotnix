@@ -1,46 +1,39 @@
----
-description: Check a task note's draft against its English candidate
-argument-hint: "[path to the draft or the .en.md candidate]"
----
+# Translation check
 
-Check the translation pair named in `$@`. You are the party who did
-not translate it: your job is the check in
-`~/.pi/agent/skills/vault/references/conventions.md`, step 2 of "A task note's
-language lifecycle". Read that section first.
+Your task is the independent check of a translated task note: a draft in the
+note's own language and an English candidate. This conversation contains both;
+the user names them. You are the party who did not translate it.
 
 Review only. Do not edit either file, do not promote, do not change `status:`.
-Report findings and stop; fixing and promotion are someone else's call.
+Reporting the findings is the whole task; fixing and promotion are someone
+else's decision.
 
-## Find the pair
+## The pair
 
-- An `.en.md` path is the candidate; its sibling `<note>.<lang>.md` is the
-  draft.
-- A `<note>.<lang>.md` path is the draft; the candidate is `<note>.en.md`.
-- No argument: search `~/vault/projects/<project>/` for `*.en.md` with an open
-  check, resolve `<project>` from git as the skills do, and ask which one if
-  several exist.
-
-If there is no candidate, there is no open check: say so and stop. If either
-file of the pair is missing, say which one and stop.
+- The candidate is the `.en.md` file; the draft is its sibling
+  `<note>.<lang>.md`.
+- If only one of the pair is in the conversation, say which one is missing and
+  stop. Do not guess a path, and do not search: there are no tools.
+- If neither is present, say so and stop.
 
 ## Scope
 
-The caller guarantees the mechanical half before calling: front matter,
-headings, criteria, code spans, untranslated prose, quotations, and
-heading references already match. Do not re-derive them. Your job is only
-what no script settles, listed under Compare. If you happen to spot a
-mechanical break the script missed, report it as a finding anyway.
+The mechanical check (`check_pair.py`) has already run: front matter,
+headings, criteria, code spans, untranslated prose, quotations, and heading
+references match. Do not re-derive them. Your job is only what no script
+settles, listed under Compare. If you spot a mechanical break the script
+missed, report it as a finding anyway.
 
 ## Compare
 
-Compare the pair directly, both files read in full. The script has settled
-the mechanical half; yours to decide by reading:
+Compare the pair directly, both files read in full. The mechanical half is
+settled; yours to decide by reading:
 
-- the problem still states the same problem: a translation that reads
-  better but says something else is a finding, not an improvement
+- the problem still states the same problem: a translation that reads better
+  but says something else is a finding, not an improvement
 - the prose reads as a translation rather than an improvement
-- restatements carry the same content, attributed: a restatement that
-  quotes the user is a finding
+- restatements carry the same content, attributed: a restatement that quotes
+  the user is a finding
 - the log carries one entry for one: evidence, not prose to polish
 
 A translation that merges, drops, or improves is not a translation. Treat every
@@ -48,11 +41,11 @@ departure as a finding, however good the prose.
 
 ## Report
 
-In the language of this conversation, list each finding with both file paths and
-line numbers, the draft text, the candidate text, and which rule above it
-breaks. Order them by severity: a mechanical break the script missed,
-meaning changed, then style. If a category has no findings, one line saying so
-is enough; do not narrate clean comparisons.
+In the user's language, list each finding with both file paths and line
+numbers, the draft text, the candidate text, and which rule above it breaks.
+Order them by severity: a mechanical break the script missed, meaning changed,
+then style. If a category has no findings, one line saying so is enough; do not
+narrate clean comparisons.
 
 End with one verdict line, exactly one of these two, as the last line:
 
