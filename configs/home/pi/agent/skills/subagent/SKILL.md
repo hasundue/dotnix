@@ -75,10 +75,13 @@ The launcher takes pi's shape: options, then `--` when you need it, then
   `--` ends option parsing as in pi, so a message that starts with a dash goes
   after it: `... -- "--flag-like words"`.
 - A new session uses the parent session's provider and model unless `--model`
-  is given. Pass `--model` only when the user names another model. It takes the
-  bare model ID, provider-qualified (`PROVIDER/MODEL_ID`) when the ID is
-  ambiguous. `--thinking` sets the level, and pi also accepts a `:thinking`
-  suffix on `--model`; when both are given, pi decides.
+  is given. Pass `--model` only when the user names another model. A name given
+  loosely — a family, or a version without a provider — is resolved before use:
+  `pi --list-models <term>` prints the IDs pi knows, and the newest match is
+  the one meant when no version is named. Then pass that ID, bare, or
+  provider-qualified (`PROVIDER/MODEL_ID`) when two providers serve it.
+  `--thinking` sets the level, and pi also accepts a `:thinking` suffix on
+  `--model`; when both are given, pi decides.
 - Nothing is forwarded to pi. A flag the launcher does not know is an error,
   because the child's tool policy is fixed at `--no-tools` and its resource
   loading is off, so no pi flag is left that a caller needs.
