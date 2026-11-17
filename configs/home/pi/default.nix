@@ -28,8 +28,10 @@ in
     # the declared keys are merged in.
     mutableSettings = true;
     settings = {
-      # `/wt` passthrough with linked-session worktree moves.
+      # `/gpui` hands this session to Pi GPUI, `/wt` passthrough with
+      # linked-session worktree moves.
       packages = [
+        "npm:pi-gpui"
         "npm:pi-worktrunk"
       ];
       defaultTools = [
