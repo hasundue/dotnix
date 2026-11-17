@@ -2,16 +2,16 @@
  * Session namer — Names a session from its first prompt.
  *
  * Pi only assigns a session name on `/name`, `--name`, or `pi.setSessionName()`,
- * so a session started by a client that sets none keeps an empty name. Waku
- * then falls back to the truncated first prompt for its sidebar, which is how a
- * task ends up labelled with a 54-character sentence for its whole life — and
- * with a full-width Japanese sentence when the prompt is Japanese.
+ * so a session started by a client that sets none keeps an empty name. Pi GPUI
+ * then falls back to the first user message for its sidebar (`read_title`,
+ * src/sessions.rs), which is how a task ends up labelled with a 54-character
+ * sentence for its whole life — and with a full-width Japanese sentence when the
+ * prompt is Japanese.
  *
- * Naming here covers both surfaces: Pi exposes the name on the RPC stream
- * (`session_info_changed`) and in `get_state` (`sessionName`), which is exactly
- * where Waku's pi driver reads `auto_title` from, and Pi's own `/resume`
- * selector shows it instead of the first message. A rename in Waku always
- * beats it.
+ * Naming here covers every surface that reads it: Pi exposes the name in
+ * `get_state` (`sessionName`) and writes it to the session as a `session_info`
+ * entry, and Pi GPUI titles a session from that entry (`read_title`) just as
+ * Pi's own `/resume` selector does. A rename in Pi GPUI always beats it.
  *
  * One background model call per session, on the prompt alone: the call never
  * enters the transcript and never delays the turn. A name the user set always
@@ -24,7 +24,11 @@ import { readFileSync } from "node:fs";
 import { uuidv7 } from "@earendil-works/pi-ai";
 import type { ExtensionAPI, ExtensionContext } from "@earendil-works/pi-coding-agent";
 
-/** Waku's sidebar truncates anyway; a name longer than this is not an answer. */
+/**
+ * Pi GPUI's sidebar is 272 px wide and ellipsizes, and a title it reads from
+ * the session file is cut at 80 characters; a name longer than this is not an
+ * answer.
+ */
 const MAX_LENGTH = 48;
 
 /** A request is a title, not a document; its head is what names the work. */
