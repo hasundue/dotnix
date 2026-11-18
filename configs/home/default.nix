@@ -46,7 +46,10 @@
     ripgrep.enable = true;
     tmux = {
       enable = true;
+      terminal = "tmux-256color";
       extraConfig = ''
+        set -as terminal-features ",*:RGB"
+
         set -g extended-keys on
         set -g extended-keys-format csi-u
       '';
