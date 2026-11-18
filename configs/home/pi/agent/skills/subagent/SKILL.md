@@ -61,7 +61,13 @@ resolve; the path is the interface.
 ```sh
 ~/.pi/agent/skills/subagent/scripts/run.py \
   --system-prompt ~/.pi/agent/skills/subagent/references/prompts/review.md \
-  @/tmp/review.diff @/tmp/note.md "Review this diff against the note."
+  @src/app.py @design.md \
+  "Review this file against the design notes."
+
+# text that exists only as a command's output goes on stdin
+git diff main...HEAD | ~/.pi/agent/skills/subagent/scripts/run.py \
+  --system-prompt ~/.pi/agent/skills/subagent/references/prompts/review.md \
+  @CONTRIBUTING.md "Review this diff against the conventions in CONTRIBUTING.md."
 ```
 
 The launcher takes pi's shape: options, then `--` when you need it, then
@@ -105,7 +111,7 @@ After each run, check the result before you use it:
 
 ```sh
 ~/.pi/agent/skills/subagent/scripts/run.py --session-id liquid-metal-impurity \
-  @/tmp/new.patch "Check whether the fix in the attached patch answers the finding."
+  @src/app.py "Check whether the fix in the attached file answers the finding."
 ```
 
 - Every run prints `session: ID (new)` or `session: ID (resumed)` to stderr.
@@ -131,8 +137,10 @@ After each run, check the result before you use it:
 - Set the caller's bash tool timeout to at least 300 seconds, longer for a
   review.
 - Redirect stdin from `/dev/null` when it might stay open with no writer.
-- Leave no artifact of your own in the project. The session dir records
-  provenance.
+- Leave no artifact of your own in the project, and none in `/tmp` either:
+  attach files where they live, pipe a diff instead of staging it in a file,
+  and remove the temp file when one was genuinely needed. The session dir
+  records provenance.
 
 ## Gotchas
 
