@@ -63,115 +63,13 @@ the live links dangling until the next activation.
 A dirty `main` is acceptable. Do not commit or push to `main` from that state:
 a mistake would then only be fixable destructively.
 
-### Merging
+### Git workflow
 
-Before merging, inspect the branch. If its commits already follow
-[Granularity](#granularity) and use appropriate scopes, leave them unchanged and
-run relevant validation on the branch tip. Otherwise, propose the `main`-commit
-grouping, scopes, and validation; wait for the user's approval before
-rewriting. After approval, rebase onto the current `main` and reorganize
-checkpoints by outcome in the source branch's checkout. For one outcome, use
-`git reset --soft main` and recommit. For multiple outcomes, use
-`git reset --mixed main`, then stage and commit each outcome by path or patch.
-Run the proposed validation on the branch tip. If the approved rewrite changes
-a branch on `origin`, update it with `git push --force-with-lease` after
-validation.
-
-Before a local merge, verify
-`git -C ~/dotnix merge-base --is-ancestor main <branch>` succeeds before
-switching the primary checkout to `main`. If it does not, stop and propose a
-rebase onto current `main`; wait for approval before rewriting.
-
-Merge and push from the primary checkout so live changes are backed up at
-once:
-
-```bash
-git -C ~/dotnix switch main &&
-  git -C ~/dotnix merge --ff-only <branch> &&
-  git -C ~/dotnix push
-```
-
-After fetching `origin`, merge the branch into local `main` unless `<branch>`
-is already an ancestor of `origin/main`. If it is, verify local `main` is also
-an ancestor of `origin/main` before switching the live checkout. If not, stop
-and ask; otherwise fast-forward local `main`.
-
-After the local merge or remote fast-forward succeeds, refresh origin's refs.
-Delete the source remote branch only if its current tip is contained in
-`origin/main`; skip deletion if it is already absent, and stop and ask if it is
-not contained. Then remove the local worktree or branch.
-
-If validation fails, do not merge; stop and ask. If a Git operation fails or
-the repository state differs from the plan, stop and ask before attempting a
-recovery.
-
-### Commits
-
-```
-scope: imperative summary
-```
-
-Always use a scope. Imperative mood, no period at the end.
-
-Use these scope rules as defaults. The scope is the leaf of the primary
-config's directory, even when the outcome also requires changes elsewhere:
-
-| Changed path                                     | Scope         |
-| ------------------------------------------------ | ------------- |
-| `configs/home/opencode/default.nix`              | `opencode`    |
-| `configs/home/niri/default.nix`                  | `niri`        |
-| `configs/nixos/waybar/default.nix`               | `waybar`      |
-| `configs/home/pi/agent/skills/subagent/SKILL.md` | `pi/subagent` |
-
-Add one parent when the leaf alone does not identify the config:
-
-- The same config exists under several parents: `configs/home/waybar` and
-  `configs/nixos/waybar` → `home/waybar` and `nixos/waybar`.
-- The config lives inside a feature's own data directory, where the leaf is a
-  skill, extension, or prompt that only makes sense under that feature:
-  `configs/home/pi/agent/skills/subagent/` → `pi/subagent`.
-
-Configs that merely sit in directories sharing a name keep the leaf
-(`configs/home/desktop` and `configs/nixos/desktop` → `desktop:`). Use
-`treewide:` for a cohesive outcome that spans multiple config scopes without a
-clear primary config.
-
-#### Fixed scopes
-
-- `agents:` — AGENTS.md
-- `chore:` — files that belong to no feature: `.gitignore`, `.config/wt.toml`,
-  `.github/`
-- `flake:` — flake.nix, flake inputs
-
-#### Granularity
-
-##### Commits that land on `main`
-
-Use one commit per distinct, independently meaningful outcome. Keep all
-changes needed for one outcome together, even when they touch multiple files
-or configs; keep distinct outcomes in separate commits. Each commit must leave
-the project coherent. Run validation on the branch tip, not at every commit
-boundary.
-
-##### Working-branch checkpoints
-
-Make smaller checkpoint commits as useful while working. Checkpoints may be
-incomplete or temporarily leave the project failing validation. If the branch
-needs restructuring, reorganize checkpoints into one or more commits for
-`main`: combine checkpoints for the same outcome, and preserve separate
-commits for distinct outcomes.
-
-### Pushing
-
-A commit on a branch is pushed in the same step: `git commit ... && git push`.
-An unpushed commit is unfinished work, not a backup. `push.autoSetupRemote` is
-already set, so a new branch needs no `-u`.
-
-Do not rewrite a pushed commit on a working branch, and do not amend it to fold
-in a later fix: add a commit. The branch is squashed on merge anyway, and a
-rewrite turns the work into one opaque diff that the user can no longer follow.
-On `main`, add a fix commit. The only rewrite is the approved reorganization
-under [Merging](#merging), with `--force-with-lease`.
+Before committing, amending, rebasing, pushing, merging, deleting a source
+branch, or removing a worktree, read and follow [the project-local Git workflow
+skill](.agents/skills/git-workflow/SKILL.md). Follow its approval,
+validation, and stop conditions; if the skill is unavailable or a precondition
+is unmet, stop and ask rather than proceeding.
 
 ## Validate
 
