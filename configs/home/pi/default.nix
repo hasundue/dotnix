@@ -47,6 +47,7 @@ in
         "+grep"
         "+find"
         "+ls"
+        "+codemode"
       ];
       # Skills that stay installed but hidden from discovery; a project opts in
       # from its .pi/settings.json:
