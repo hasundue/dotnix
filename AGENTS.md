@@ -35,30 +35,14 @@ another one.
 wt switch --create <branch>   # from ~/dotnix, creates ~/dotnix.<branch>
 ```
 
-A new worktree needs `direnv allow` plus one dev-shell entry (`nix develop
---command true`) before its first commit; that generates the worktree's
-`.pre-commit-config.yaml` so the git hooks run there.
-
 ### Live configuration
 
-Live configuration is where a feature writes its own configuration, and it
-follows the checkout whose activation was built. Where
-`dotnix.live.<name>.enable` is set (`pi` today, with `~/dotnix.live.pi`
-resolving to a checkout's `configs/home/pi/agent`), links point into that
-checkout instead of the store. Activation, not the build, decides which
-checkout: `nix run .#home-live` exports `DOTNIX_LIVE_ROOT` and moves the live
-tree to where it ran from -- reads and writes alike -- while `home-switch` and
-the activating `nixos-*` apps (`nixos-test`, `nixos-switch`) put the tree back
-on `~/dotnix`. `home-build`, `nixos-build`, and `nixos-boot` do not activate,
-so they move nothing. A feature that writes its configuration therefore dirties
-the checkout it was activated from.
-
-Removing a worktree that is live is safe: `.config/wt.toml` repoints the live
-link at `~/dotnix` from a `pre-remove` hook before the directory goes away.
-Worktrunk asks once to approve that project command and refuses to run
-non-interactively until it is approved, so ask for the approval rather than
-working around it. A worktree deleted another way, or with `--no-hooks`, leaves
-the live links dangling until the next activation.
+A feature's configuration is live when `dotnix.live.<name>.enable` links it to
+the checkout selected by activation (currently Pi's
+`configs/home/pi/agent`). Before editing those linked files, activating from a
+worktree, or removing a worktree, read [the live configuration
+guide](docs/live-configuration.md). Removal relies on the approved Worktrunk
+`pre-remove` hook; do not bypass its approval.
 
 A dirty `main` is acceptable. Do not commit or push to `main` from that state:
 a mistake would then only be fixable destructively.
@@ -139,33 +123,10 @@ NOM_DISABLE=1 nix run .#nixos-build
 NOM_DISABLE=1 nix run .#nixos-switch
 ```
 
-## Apply (NixOS)
+## Apply
 
-Wraps `nixos-rebuild` and manages the system profile:
-
-```bash
-nix run .#nixos-test    # Test without making it the default
-nix run .#nixos-switch  # Apply permanently
-nix run .#nixos-boot    # Set the boot entry for next reboot
-```
-
-Run them as a normal user: sudo is requested only for activation, so the
-password is asked at most once (not at all with a cached sudo timestamp).
-Prefixing with `sudo` also works without a second prompt.
-
-## Apply (Home Manager)
-
-Builds first and activates without sudo:
-
-```bash
-nix run .#home-switch
-```
-
-It runs `home-manager switch --flake .#<user>@<host>`, the same command the
-`hms` alias uses. `nix run .#home-build` still exists for building
-`./result-home` without activating anything. Flake arguments (`--impure`,
-`--refresh`, etc.) go straight through to `home-manager`.
-
-`nix run .#home-live` is the same activation from the checkout it runs in, with
-`DOTNIX_LIVE_ROOT` exported so the live tree moves there (see [Live
-configuration](#live-configuration)).
+Before running any activation command (`home-switch`, `nixos-test`,
+`nixos-switch`, `nixos-boot`, or `home-live`), read and follow the
+[Nix activation skill](.agents/skills/nix-activation/SKILL.md). This includes
+commands mentioned in the build guidance above. For build-only validation, use
+the build commands there.

@@ -13,6 +13,18 @@ These procedures supplement the always-on branch and worktree rules in
 to `main` unless explicitly asked. Follow every approval gate below. Stop and
 ask if a precondition fails or the repository state differs from the plan.
 
+## Before the first commit in a new worktree
+
+Run these once in a new worktree before its first commit:
+
+```sh
+direnv allow
+nix develop --command true
+```
+
+Entering the dev shell generates the worktree's `.pre-commit-config.yaml` and
+installs its Git hooks.
+
 ## Formatter hook recovery
 
 If a pre-commit hook applies formatting and aborts the commit because files
@@ -83,13 +95,14 @@ Always use a scope. Use imperative mood and no period at the end.
 The scope is the leaf of the primary config's directory, even when the outcome
 also requires changes elsewhere:
 
-| Changed path                                     | Scope          |
-| ------------------------------------------------ | -------------- |
-| `configs/home/opencode/default.nix`              | `opencode`     |
-| `configs/home/niri/default.nix`                  | `niri`         |
-| `configs/nixos/waybar/default.nix`               | `waybar`       |
-| `configs/home/pi/agent/skills/subagent/SKILL.md` | `pi/subagent`  |
-| `.agents/skills/git-workflow/SKILL.md`           | `git-workflow` |
+| Changed path                                     | Scope            |
+| ------------------------------------------------ | ---------------- |
+| `configs/home/opencode/default.nix`              | `opencode`       |
+| `configs/home/niri/default.nix`                  | `niri`           |
+| `configs/nixos/waybar/default.nix`               | `waybar`         |
+| `configs/home/pi/agent/skills/subagent/SKILL.md` | `pi/subagent`    |
+| `.agents/skills/git-workflow/SKILL.md`           | `git-workflow`   |
+| `.agents/skills/nix-activation/SKILL.md`         | `nix-activation` |
 
 Add one parent when the leaf alone does not identify the config:
 
