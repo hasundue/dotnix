@@ -101,6 +101,7 @@ in
       ];
 
       input = {
+        focus-follows-mouse = { };
         keyboard = {
           repeat-delay = 250;
         };
