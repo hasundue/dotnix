@@ -250,6 +250,7 @@
             ;
         };
         pi-gpui = pkgs.callPackage ./packages/pi-gpui.nix { };
+        kero = pkgs.callPackage ./packages/kero.nix { };
       });
       homeConfigurations =
         lib.mapAttrs' (hostname: v: homeConfig v |> lib.nameValuePair "${username}@${hostname}")
