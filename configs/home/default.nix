@@ -25,7 +25,7 @@
     ./nix.nix
     ./pi
     ./television.nix
-    ./worktrunk.nix
+    ./worktrunk
     ./zellij
   ];
   programs = {
