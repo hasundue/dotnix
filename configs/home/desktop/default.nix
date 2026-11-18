@@ -6,6 +6,7 @@
     ./fcitx5.nix
     ./firefox.nix
     ./ghostty.nix
+    ./kero.nix
     ./kitty.nix
     ./mako
     ./mozc.nix
