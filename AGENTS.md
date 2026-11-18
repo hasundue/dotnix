@@ -41,8 +41,8 @@ A feature's configuration is live when `dotnix.live.<name>.enable` links it to
 the checkout selected by activation (currently Pi's
 `configs/home/pi/agent`). Before editing those linked files, activating from a
 worktree, or removing a worktree, read [the live configuration
-guide](docs/live-configuration.md). Removal relies on the approved Worktrunk
-`pre-remove` hook; do not bypass its approval.
+guide](docs/live-configuration.md). Removal relies on the Worktrunk
+`pre-remove` hook; do not bypass it.
 
 A dirty `main` is acceptable. Do not commit or push to `main` from that state:
 a mistake would then only be fixable destructively.
