@@ -126,22 +126,24 @@ in
     path = "configs/home/pi/agent";
   };
 
-  home.file = {
-    # Stable path: the checkout when live, the store copy otherwise. Consumers
-    # below only ever see ~/dotnix.live.pi, never the checkout location.
-    "dotnix.live.pi".source =
-      if live.enable then config.lib.file.mkOutOfStoreSymlink "${live.root}/${live.path}" else ./agent;
+  home.file =
+    lib.optionalAttrs (!live.enable) {
+      # Only when live is off: when it is on, activation points this at the
+      # activated checkout so `DOTNIX_LIVE_ROOT` can move it without touching the
+      # evaluation. The consumers below never see the difference.
+      "dotnix.live.pi".source = ./agent;
+    }
+    // {
+      ".pi/agent/AGENTS.md".source = link "AGENTS.md";
+      ".pi/agent/APPEND_SYSTEM.md".source = link "APPEND_SYSTEM.md";
+      ".pi/agent/models.json".source = link "models.json";
+      ".pi/agent/mcp.json".source = link "mcp.json";
+      ".pi/agent/keybindings.json".source = link "keybindings.json";
+      ".pi/agent/prompts".source = link "prompts";
+      ".pi/agent/extensions".source = link "extensions";
+      ".pi/agent/skills".source = link "skills";
 
-    ".pi/agent/AGENTS.md".source = link "AGENTS.md";
-    ".pi/agent/APPEND_SYSTEM.md".source = link "APPEND_SYSTEM.md";
-    ".pi/agent/models.json".source = link "models.json";
-    ".pi/agent/mcp.json".source = link "mcp.json";
-    ".pi/agent/keybindings.json".source = link "keybindings.json";
-    ".pi/agent/prompts".source = link "prompts";
-    ".pi/agent/extensions".source = link "extensions";
-    ".pi/agent/skills".source = link "skills";
-
-    # auth.json is created as a regular mutable file by home.activation.piAuth:
-    # Pi's lock must be writable, and other providers' credentials may change.
-  };
+      # auth.json is created as a regular mutable file by home.activation.piAuth:
+      # Pi's lock must be writable, and other providers' credentials may change.
+    };
 }
