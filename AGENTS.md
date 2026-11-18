@@ -106,10 +106,13 @@ directory as its scope, even when the outcome also requires changes elsewhere:
 | `configs/home/niri/default.nix`     | `niri`     |
 | `configs/nixos/waybar/default.nix`  | `waybar`   |
 
-Prepend the parent directory _only_ when the same config name exists under a
-different parent (e.g. both `configs/home/waybar` and `configs/nixos/waybar`
-exist → use `home/waybar` and `nixos/waybar`). Use `treewide:` for a cohesive
-outcome that spans multiple config scopes without a clear primary config.
+Prepend the parent directory _only_ when the primary config itself is
+duplicated under another parent (both `configs/home/waybar` and
+`configs/nixos/waybar` are waybar configs → `home/waybar` and `nixos/waybar`).
+Configs that merely sit in directories sharing a name keep the leaf
+(`configs/home/desktop` and `configs/nixos/desktop` → `desktop:`). Use
+`treewide:` for a cohesive outcome that spans multiple config scopes without a
+clear primary config.
 
 #### Fixed scopes
 
