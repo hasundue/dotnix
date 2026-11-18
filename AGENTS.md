@@ -11,23 +11,22 @@ to configure something (including yourself), work on this repository.
 
 ### Branches
 
-Do the work on a branch. Never commit to `main` without being asked;
-checkpoint commits on a branch need no separate permission.
+Do not commit directly to `main` unless explicitly asked.
 
-Before cutting the branch, run `git fetch origin` in `~/dotnix`. Stop and
-report to the user (do not stash, reset, or switch) unless the current branch
-is `main` and `git rev-list --left-right --count origin/main...HEAD` prints two
-zeros. Leave uncommitted changes alone: a dirty working tree is expected. A
-new worktree starts clean from the base branch, so either stash before
-creating it and pop inside (`git stash push --include-untracked`, `wt switch
---create <branch>`, `git stash pop`), or cut the branch in place with `git
-switch -c` and accept that the primary checkout stays on that branch.
-Re-check the branch and its sync immediately before switching, since the check
-and the switch are not atomic.
+Before creating a worktree from `~/dotnix`, fetch `origin` and verify the
+checkout is on `main` and `git rev-list --left-right --count
+origin/main...HEAD` prints two zeros. Otherwise, stop and report. Re-check the
+branch and sync immediately before creating the worktree.
+
+A new worktree starts from committed state; uncommitted changes remain in the
+primary checkout. Do not stash, reset, or otherwise transfer them unless asked.
 
 ### Worktrees
 
-Make code changes in a worktree, not in the primary checkout at `~/dotnix`.
+Make code changes in a linked worktree, not in the primary checkout at
+`~/dotnix`. Do not create a branch in place there with `git switch -c` or
+`git checkout -b`; use `wt switch --create` below.
+
 `wt list` reports where the current directory sits; when it is already a
 worktree such as `~/dotnix.<branch>`, keep working there and do not nest
 another one.
