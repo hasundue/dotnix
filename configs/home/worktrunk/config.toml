@@ -22,3 +22,11 @@ copy-pi-settings = '''
     cp "$source" "$target"
   fi
 '''
+
+# Runs only after Worktrunk has completed the removal: the removed worktree's
+# path is known and the store is untouched when the removal is cancelled or
+# fails. The helper deletes only that worktree's key, so the primary checkout
+# and its sibling worktrees stay trusted. It fails without writing when the
+# trust store cannot be locked or parsed.
+[post-remove]
+cleanup-pi-trust = "pi-trust-cleanup {{ worktree_path }}"
