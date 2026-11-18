@@ -131,6 +131,10 @@ After each run, check the result before you use it:
 
 ## Rules
 
+- Communicate with the child only in English. Write every task prompt and
+  follow-up in English, and require the child to respond in English. When the
+  source material or user's request is in another language, keep it as source
+  material but frame the task and instructions in English.
 - Do not delegate exploration. The child has no tools and cannot be given any.
 - Do not put secrets in the message or an attachment. Both are saved in the
   session dir and sent to the model.
