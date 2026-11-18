@@ -1,5 +1,3 @@
 {
-  "$schema": "https://pi.dev/schemas/keybindings.schema.json",
-  "app.session.tree": "ctrl+t",
-  "app.thinking.toggle": "alt+t"
+  "$schema": "https://pi.dev/schemas/keybindings.schema.json"
 }
