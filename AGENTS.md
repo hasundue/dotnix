@@ -77,14 +77,21 @@ nix eval .#homeConfigurations."hasundue@x1carbon".config.wayland.windowManager.n
 Use the right hostname (`x1carbon` or `higame`) depending on what you're
 validating. The output is the config value in Nix notation.
 
+Do not pass `--impure` when evaluating this repository's flake; impure runs
+have poor cache reuse here and can exhaust available memory. This rule also
+applies to the Nix commands and examples in the sections below, including
+`nix eval` and the `nixos-*` apps' passthrough flags. Use pure flake references
+such as `nix eval .#...`; if a flake query fails in pure mode, stop and ask
+rather than retrying with `--impure`.
+
 ## Nix Queries
 
 Resolve NixOS and home-manager questions against this flake's pinned inputs,
 not the network. Both sources are already in the store:
 
 ```bash
-nix eval --raw .#nixosConfigurations.x1carbon.pkgs.path        # pinned nixpkgs
-nix eval --raw --impure --expr '(builtins.getFlake (toString ./.)).inputs.home-manager.outPath'
+nix eval --raw .#nixosConfigurations.x1carbon.pkgs.path  # pinned nixpkgs
+nix flake archive --json --dry-run .                    # pinned input source paths
 ```
 
 - Does package X exist?
@@ -114,9 +121,10 @@ installs packages into the home-manager profile rather than the per-user system
 profile that `useUserPackages` uses, so for a change that touches packages
 rather than config files, trust `nixos-*`.
 
-The `nixos-*` apps accept passthrough flags (`--impure`, `--show-trace`, etc.).
-They pipe output through `nom` when stdout is a TTY, and skip it when non-TTY
-for minimal output. `NOM_DISABLE` forces raw output even in a TTY:
+The `nixos-*` apps accept passthrough flags such as `--show-trace`. They pipe
+output through `nom` when stdout is a TTY, and skip it when non-TTY for minimal
+output.
+`NOM_DISABLE` forces raw output even in a TTY:
 
 ```bash
 NOM_DISABLE=1 nix run .#nixos-build
