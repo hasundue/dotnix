@@ -114,18 +114,24 @@ scope: imperative summary
 
 Always use a scope. Imperative mood, no period at the end.
 
-Use these scope rules as defaults. Use the leaf of the primary config's
-directory as its scope, even when the outcome also requires changes elsewhere:
+Use these scope rules as defaults. The scope is the leaf of the primary
+config's directory, even when the outcome also requires changes elsewhere:
 
-| Changed path                        | Scope      |
-| ----------------------------------- | ---------- |
-| `configs/home/opencode/default.nix` | `opencode` |
-| `configs/home/niri/default.nix`     | `niri`     |
-| `configs/nixos/waybar/default.nix`  | `waybar`   |
+| Changed path                                     | Scope         |
+| ------------------------------------------------ | ------------- |
+| `configs/home/opencode/default.nix`              | `opencode`    |
+| `configs/home/niri/default.nix`                  | `niri`        |
+| `configs/nixos/waybar/default.nix`               | `waybar`      |
+| `configs/home/pi/agent/skills/subagent/SKILL.md` | `pi/subagent` |
 
-Prepend the parent directory _only_ when the primary config itself is
-duplicated under another parent (both `configs/home/waybar` and
-`configs/nixos/waybar` are waybar configs → `home/waybar` and `nixos/waybar`).
+Add one parent when the leaf alone does not identify the config:
+
+- The same config exists under several parents: `configs/home/waybar` and
+  `configs/nixos/waybar` → `home/waybar` and `nixos/waybar`.
+- The config lives inside a feature's own data directory, where the leaf is a
+  skill, extension, or prompt that only makes sense under that feature:
+  `configs/home/pi/agent/skills/subagent/` → `pi/subagent`.
+
 Configs that merely sit in directories sharing a name keep the leaf
 (`configs/home/desktop` and `configs/nixos/desktop` → `desktop:`). Use
 `treewide:` for a cohesive outcome that spans multiple config scopes without a
@@ -134,6 +140,8 @@ clear primary config.
 #### Fixed scopes
 
 - `agents:` — AGENTS.md
+- `chore:` — files that belong to no feature: `.gitignore`, `.config/wt.toml`,
+  `.github/`
 - `flake:` — flake.nix, flake inputs
 
 #### Granularity
