@@ -48,12 +48,12 @@
 
       # Symbols otherwise scatter across DejaVu, the bundled Noto Emoji and
       # Unifont (✓ ✗ ✦ ⏵ ★ ● …). Pull arrows, geometric shapes and dingbats
-      # from Iosevka so they share one face: it draws them at text weight and
-      # keeps full coverage of the ones TUIs actually use. Later entries win,
+      # from Iosevka so they share one face at text weight. Map ℹ there too,
+      # rather than use its color-emoji fallback. Later entries win,
       # so only emoji large enough to survive 12px stay on Noto Color Emoji;
       # ✔ ✗ ⚙ ⏸ ⏺ ⏏ ▶ are small there and read as coloured squares.
       font-codepoint-map = [
-        "U+2190-U+21FF,U+2300-U+23FF,U+25A0-U+25FF,U+2600-U+27BF,U+2B00-U+2BFF=Iosevka"
+        "U+2139,U+2190-U+21FF,U+2300-U+23FF,U+25A0-U+25FF,U+2600-U+27BF,U+2B00-U+2BFF=Iosevka"
         "U+26A0,U+26A1,U+2705,U+2728,U+274C,U+2B50=Noto Color Emoji"
       ];
     };
