@@ -15,11 +15,15 @@ Do the work on a branch. Never commit to `main` without being asked;
 checkpoint commits on a branch need no separate permission.
 
 Before cutting the branch, run `git fetch origin` in `~/dotnix`. Stop and
-report to the user (do not stash, reset, or switch) unless all of these
-hold: `git status --porcelain` is empty, the current branch is `main`, and
-`git rev-list --left-right --count origin/main...HEAD` prints two zeros.
-The check and the switch are not atomic, so re-run the status check
-immediately before switching.
+report to the user (do not stash, reset, or switch) unless the current branch
+is `main` and `git rev-list --left-right --count origin/main...HEAD` prints two
+zeros. Leave uncommitted changes alone: a dirty working tree is expected. A
+new worktree starts clean from the base branch, so either stash before
+creating it and pop inside (`git stash push --include-untracked`, `wt switch
+--create <branch>`, `git stash pop`), or cut the branch in place with `git
+switch -c` and accept that the primary checkout stays on that branch.
+Re-check the branch and its sync immediately before switching, since the check
+and the switch are not atomic.
 
 ### Worktrees
 
@@ -36,16 +40,29 @@ A new worktree needs `direnv allow` plus one dev-shell entry (`nix develop
 --command true`) before its first commit; that generates the worktree's
 `.pre-commit-config.yaml` so the git hooks run there.
 
-Live configuration is the exception to the worktree rule. Where
+### Live configuration
+
+Live configuration is where a feature writes its own configuration, and it
+follows the checkout whose activation was built. Where
 `dotnix.live.<name>.enable` is set (`pi` today, with `~/dotnix.live.pi`
-resolving to `~/dotnix/configs/home/pi/agent`), the running system reads the
-files straight out of that checkout (with the default
-`dotnix.live.<name>.root`), so a worktree copy changes nothing until it
-merges. Edits in `~/dotnix` take effect immediately, before merge, so try to
-keep them working where practical and merge promptly. For live edits, cut a
-branch in `~/dotnix` with `git switch -c <branch>`, never via `wt switch
---create`. Try to keep the live paths present on the branch; builds run from
-`~/dotnix` also build the checked-out branch, not `main`.
+resolving to a checkout's `configs/home/pi/agent`), links point into that
+checkout instead of the store. Activation, not the build, decides which
+checkout: `nix run .#home-live` exports `DOTNIX_LIVE_ROOT` and moves the live
+tree to where it ran from -- reads and writes alike -- while `home-switch` and
+the activating `nixos-*` apps (`nixos-test`, `nixos-switch`) put the tree back
+on `~/dotnix`. `home-build`, `nixos-build`, and `nixos-boot` do not activate,
+so they move nothing. A feature that writes its configuration therefore dirties
+the checkout it was activated from.
+
+Removing a worktree that is live is safe: `.config/wt.toml` repoints the live
+link at `~/dotnix` from a `pre-remove` hook before the directory goes away.
+Worktrunk asks once to approve that project command and refuses to run
+non-interactively until it is approved, so ask for the approval rather than
+working around it. A worktree deleted another way, or with `--no-hooks`, leaves
+the live links dangling until the next activation.
+
+A dirty `main` is acceptable. Do not commit or push to `main` from that state:
+a mistake would then only be fixable destructively.
 
 ### Merging
 
@@ -243,3 +260,7 @@ It runs `home-manager switch --flake .#<user>@<host>`, the same command the
 `hms` alias uses. `nix run .#home-build` still exists for building
 `./result-home` without activating anything. Flake arguments (`--impure`,
 `--refresh`, etc.) go straight through to `home-manager`.
+
+`nix run .#home-live` is the same activation from the checkout it runs in, with
+`DOTNIX_LIVE_ROOT` exported so the live tree moves there (see [Live
+configuration](#live-configuration)).
