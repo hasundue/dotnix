@@ -23,6 +23,10 @@
         fcitx5-gtk
       ];
       settings = {
+        globalOptions = {
+          Hotkey.EnumerateGroupForwardKeys = "";
+          "Hotkey/TriggerKeys"."0" = "Super+space";
+        };
         addons = {
           clipboard.globalSection.TriggerKey = ""; # Ctrl+; to disable
         };
