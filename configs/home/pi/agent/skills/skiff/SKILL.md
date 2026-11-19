@@ -9,10 +9,9 @@ description: >
 
 # Skiff
 
-A skiff is the small boat you put out from the ship: it carries only what you
-load into it, goes one way, and comes back with an answer. Launch a real
-`pi --print` child from this session. The child is a separate process and does
-not see this session or its context.
+Put out a skiff: launch a real `pi --print` child with the material you load
+into it, and take back nothing but its answer. The child is a separate process
+and does not see this session or its context.
 
 The child has no tools. It cannot read files, run commands, or search, so you
 select the material and attach it: the child analyzes what you gave it and
