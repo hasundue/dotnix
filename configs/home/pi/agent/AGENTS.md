@@ -20,10 +20,12 @@ upstream behaviour — climb these stages and stop at the first that answers:
 Do not open with an experiment. Say when a stage left the question open and you
 are moving to the next one.
 
-# Code comments
+# Comments and prose
 
-- Describe the code as it is now. Do not explain what used to be there, why an
-  earlier approach was worse, or what would break without code that no longer
-  exists.
-- Keep a reason only while the code it justifies is present. Commit messages
-  and git history keep the rest.
+- Describe the code and the documents as they are now. Do not explain what used
+  to be there, why an earlier approach was worse, or what would break without
+  code or text that no longer exists.
+- Keep a reason only while the code or instruction it justifies is present.
+  Commit messages and git history keep the rest.
+- Do not let the conversation leak into files: they must stand alone for a
+  reader who was not part of the dialogue.
