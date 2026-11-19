@@ -92,17 +92,25 @@ scope: imperative summary
 
 Always use a scope. Use imperative mood and no period at the end.
 
-The scope is the leaf of the primary config's directory, even when the outcome
-also requires changes elsewhere:
+The scope names the config that changed — normally the leaf of the primary
+config's directory — even when the outcome also requires changes elsewhere:
 
-| Changed path                                     | Scope            |
-| ------------------------------------------------ | ---------------- |
-| `configs/home/opencode/default.nix`              | `opencode`       |
-| `configs/home/niri/default.nix`                  | `niri`           |
-| `configs/nixos/waybar/default.nix`               | `waybar`         |
-| `configs/home/pi/agent/skills/subagent/SKILL.md` | `pi/subagent`    |
-| `.agents/skills/git-workflow/SKILL.md`           | `git-workflow`   |
-| `.agents/skills/nix-activation/SKILL.md`         | `nix-activation` |
+| Changed path                                           | Scope            |
+| ------------------------------------------------------ | ---------------- |
+| `configs/home/opencode/default.nix`                    | `opencode`       |
+| `configs/home/niri/default.nix`                        | `niri`           |
+| `configs/nixos/waybar/default.nix`                     | `waybar`         |
+| `configs/home/pi/agent/skills/subagent/SKILL.md`       | `pi/subagent`    |
+| `.agents/skills/git-workflow/SKILL.md`                 | `git-workflow`   |
+| `.agents/skills/nix-activation/SKILL.md`               | `nix-activation` |
+| `configs/home/default.nix`, the `programs.tmux` block  | `tmux`           |
+| `configs/home/default.nix`, imports or `home.packages` | `home`           |
+
+When the primary config has no directory of its own — it lives as one block in a
+shared file such as `configs/home/default.nix` — name the block's module instead
+of the file's parent directory: the `programs.tmux` block is `tmux`, not `home`.
+Name the parent (`home`) only when the change concerns the whole file: imports,
+`home.packages`, or several blocks at once (`treewide:` may fit instead).
 
 Add one parent when the leaf alone does not identify the config:
 
