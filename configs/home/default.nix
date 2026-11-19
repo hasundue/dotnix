@@ -1,4 +1,9 @@
-{ pkgs, config, ... }:
+{
+  pkgs,
+  config,
+  lib,
+  ...
+}:
 {
   home = {
     packages = with pkgs; [
@@ -47,12 +52,17 @@
     tmux = {
       enable = true;
       terminal = "tmux-256color";
-      extraConfig = ''
-        set -as terminal-features ",*:RGB"
+      extraConfig = lib.mkMerge [
+        # Stylix sources tinted-tmux's base16 file, which configures the
+        # statusbar only when this variable is in tmux's environment.
+        (lib.mkBefore "set-environment -g TINTED_TMUX_OPTION_STATUSBAR 1")
+        ''
+          set -as terminal-features ",*:RGB"
 
-        set -g extended-keys on
-        set -g extended-keys-format csi-u
-      '';
+          set -g extended-keys on
+          set -g extended-keys-format csi-u
+        ''
+      ];
     };
   };
 }
