@@ -58,16 +58,17 @@ Always use a scope. Use imperative mood and no period at the end.
 The scope names the config that changed — normally the leaf of the primary
 config's directory — even when the outcome also requires changes elsewhere:
 
-| Changed path                                           | Scope            |
-| ------------------------------------------------------ | ---------------- |
-| `configs/home/opencode/default.nix`                    | `opencode`       |
-| `configs/home/niri/default.nix`                        | `niri`           |
-| `configs/nixos/waybar/default.nix`                     | `waybar`         |
-| `configs/home/pi/agent/skills/skiff/SKILL.md`          | `pi/skiff`       |
-| `.agents/skills/git-workflow/SKILL.md`                 | `git-workflow`   |
-| `.agents/skills/nix-activation/SKILL.md`               | `nix-activation` |
-| `configs/home/default.nix`, the `programs.tmux` block  | `tmux`           |
-| `configs/home/default.nix`, imports or `home.packages` | `home`           |
+| Changed path                                           | Scope                   |
+| ------------------------------------------------------ | ----------------------- |
+| `configs/home/opencode/default.nix`                    | `opencode`              |
+| `configs/home/niri/default.nix`                        | `niri`                  |
+| `configs/nixos/waybar/default.nix`                     | `waybar`                |
+| `configs/home/pi/agent/skills/skiff/SKILL.md`          | `pi/skiff`              |
+| `configs/home/pi/agent/AGENTS.md`                      | `pi`                    |
+| `.agents/skills/git-workflow/SKILL.md`                 | `agents/git-workflow`   |
+| `.agents/skills/nix-activation/SKILL.md`               | `agents/nix-activation` |
+| `configs/home/default.nix`, the `programs.tmux` block  | `tmux`                  |
+| `configs/home/default.nix`, imports or `home.packages` | `home`                  |
 
 When the primary config has no directory of its own — it lives as one block in a
 shared file such as `configs/home/default.nix` — name the block's module instead
@@ -90,7 +91,7 @@ clear primary config.
 
 ### Fixed scopes
 
-- `agents:` — `AGENTS.md`
+- `agents:` — the root `AGENTS.md` and `.agents/`
 - `chore:` — files that belong to no feature: `.gitignore`, `.config/wt.toml`,
   `.github/`
 - `flake:` — `flake.nix`, flake inputs
