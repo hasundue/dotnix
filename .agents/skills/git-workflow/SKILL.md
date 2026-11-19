@@ -35,13 +35,15 @@ run relevant validation on the branch tip. Otherwise, propose the `main`-commit
 grouping, scopes, and validation; wait for the user's approval before rewriting.
 After approval, rebase onto the current `main` and reorganize checkpoints by
 outcome in the source branch's checkout, then run the proposed validation on
-the branch tip. Update `origin` if the rewrite changed a pushed branch.
+the branch tip. Do not push the reorganized branch to `origin`. After reorganizing,
+do not run `git push` or `git pull` on the working branch; go straight to validation
+and merge.
 
-Merge with Worktrunk.
+Run the merge with Worktrunk in the source branch's checkout, so the local
+reorganized tip is what gets merged.
 
-Delete the source remote branch only if its current tip is contained in
-`origin/main`; skip deletion if it is already absent, and stop and ask if it is
-not contained.
+Delete the source remote branch after a successful merge; skip deletion if it is
+already absent.
 
 If validation fails, do not merge; stop and ask.
 
@@ -124,5 +126,5 @@ Do not rewrite a pushed commit on a working branch, and do not amend it to fold
 in a later fix: add a commit. The branch is squashed on merge anyway, and a
 rewrite turns the work into one opaque diff that the user can no longer follow.
 For an explicitly authorized change on `main`, add a fix commit. The only
-rewrite is the approved reorganization under [Merging](#merging), with
-`--force-with-lease`.
+exception is the approved local reorganization under [Merging](#merging); never
+push its result.
