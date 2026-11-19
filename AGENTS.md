@@ -13,27 +13,21 @@ to configure something (including yourself), work on this repository.
 
 Do not commit directly to `main` unless explicitly asked.
 
-Before creating a worktree from `~/dotnix`, fetch `origin` and verify the
-checkout is on `main` and `git rev-list --left-right --count
-origin/main...HEAD` prints two zeros. Otherwise, stop and report. Re-check the
-branch and sync immediately before creating the worktree.
+Creating a worktree checks that the primary checkout is on `main` and level with
+`origin`, in the project `pre-start` hook (`.config/wt.toml`). A failure aborts
+the creation; report it instead of working around it.
 
-A new worktree starts from committed state; uncommitted changes remain in the
-primary checkout. Do not stash, reset, or otherwise transfer them unless asked.
+Do not stash, reset, or otherwise transfer uncommitted changes from the primary
+checkout unless asked.
 
 ### Worktrees
 
 Make code changes in a linked worktree, not in the primary checkout at
 `~/dotnix`. Do not create a branch in place there with `git switch -c` or
-`git checkout -b`; use `wt switch --create` below.
+`git checkout -b`; create the worktree with Worktrunk.
 
-`wt list` reports where the current directory sits; when it is already a
-worktree such as `~/dotnix.<branch>`, keep working there and do not nest
-another one.
-
-```bash
-wt switch --create <branch>   # from ~/dotnix, creates ~/dotnix.<branch>
-```
+When the current directory is already a worktree such as `~/dotnix.<branch>`,
+keep working there and do not nest another one.
 
 ### Live configuration
 

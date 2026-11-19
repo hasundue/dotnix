@@ -13,18 +13,6 @@ These procedures supplement the always-on branch and worktree rules in
 to `main` unless explicitly asked. Follow every approval gate below. Stop and
 ask if a precondition fails or the repository state differs from the plan.
 
-## Before the first commit in a new worktree
-
-Run these once in a new worktree before its first commit:
-
-```sh
-direnv allow
-nix develop --command true
-```
-
-Entering the dev shell generates the worktree's `.pre-commit-config.yaml` and
-installs its Git hooks.
-
 ## Formatter hook recovery
 
 If a pre-commit hook applies formatting and aborts the commit because files
