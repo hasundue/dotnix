@@ -63,7 +63,7 @@ config's directory — even when the outcome also requires changes elsewhere:
 | `configs/home/opencode/default.nix`                    | `opencode`       |
 | `configs/home/niri/default.nix`                        | `niri`           |
 | `configs/nixos/waybar/default.nix`                     | `waybar`         |
-| `configs/home/pi/agent/skills/subagent/SKILL.md`       | `pi/subagent`    |
+| `configs/home/pi/agent/skills/skiff/SKILL.md`          | `pi/skiff`       |
 | `.agents/skills/git-workflow/SKILL.md`                 | `git-workflow`   |
 | `.agents/skills/nix-activation/SKILL.md`               | `nix-activation` |
 | `configs/home/default.nix`, the `programs.tmux` block  | `tmux`           |
@@ -81,7 +81,7 @@ Add one parent when the leaf alone does not identify the config:
   `configs/nixos/waybar` → `home/waybar` and `nixos/waybar`.
 - The config lives inside a feature's own data directory, where the leaf is a
   skill, extension, or prompt that only makes sense under that feature:
-  `configs/home/pi/agent/skills/subagent/` → `pi/subagent`.
+  `configs/home/pi/agent/skills/skiff/` → `pi/skiff`.
 
 Configs that merely sit in directories sharing a name keep the leaf
 (`configs/home/desktop` and `configs/nixos/desktop` → `desktop:`). Use

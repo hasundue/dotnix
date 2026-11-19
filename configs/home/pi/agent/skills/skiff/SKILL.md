@@ -1,5 +1,5 @@
 ---
-name: subagent
+name: skiff
 description: >
   Run an analysis task in a separate pi process, on material you supply.
   Use for an independent review or a second opinion, a translation check, and
@@ -7,10 +7,12 @@ description: >
   answer on the same topic.
 ---
 
-# Subagent
+# Skiff
 
-Launch a real `pi --print` child from this session. The child is a separate
-process and does not see this session or its context.
+A skiff is the small boat you put out from the ship: it carries only what you
+load into it, goes one way, and comes back with an answer. Launch a real
+`pi --print` child from this session. The child is a separate process and does
+not see this session or its context.
 
 The child has no tools. It cannot read files, run commands, or search, so you
 select the material and attach it: the child analyzes what you gave it and
@@ -38,9 +40,9 @@ interactive co-work, no implementation.
 A session is described by a task system-prompt file, which you pass with
 `--system-prompt FILE`. Two generic defaults are built in:
 
-- `~/.pi/agent/skills/subagent/references/prompts/review.md` -- an
+- `~/.pi/agent/skills/skiff/references/prompts/review.md` -- an
   independent review of attached material.
-- `~/.pi/agent/skills/subagent/references/prompts/translation-check.md` --
+- `~/.pi/agent/skills/skiff/references/prompts/translation-check.md` --
   a check of a translated text against its original.
 
 They are defaults, not the last word: a text with its own established workflow
@@ -59,14 +61,14 @@ resolve; the path is the interface.
 ## Run it
 
 ```sh
-~/.pi/agent/skills/subagent/scripts/run.py \
-  --system-prompt ~/.pi/agent/skills/subagent/references/prompts/review.md \
+~/.pi/agent/skills/skiff/scripts/run.py \
+  --system-prompt ~/.pi/agent/skills/skiff/references/prompts/review.md \
   @src/app.py @design.md \
   "Review this file against the design notes."
 
 # text that exists only as a command's output goes on stdin
-git diff main...HEAD | ~/.pi/agent/skills/subagent/scripts/run.py \
-  --system-prompt ~/.pi/agent/skills/subagent/references/prompts/review.md \
+git diff main...HEAD | ~/.pi/agent/skills/skiff/scripts/run.py \
+  --system-prompt ~/.pi/agent/skills/skiff/references/prompts/review.md \
   @CONTRIBUTING.md "Review this diff against the conventions in CONTRIBUTING.md."
 ```
 
@@ -97,7 +99,7 @@ The launcher takes pi's shape: options, then `--` when you need it, then
 - stdout is the child's answer alone. stderr carries the `session:` line, a
   blank line before the answer when there is one, any error, and `--info`'s
   provenance; nothing else on success.
-- The stable launcher path is `~/.pi/agent/skills/subagent/scripts/run.py`. Its
+- The stable launcher path is `~/.pi/agent/skills/skiff/scripts/run.py`. Its
   `--help` lists the flags and the stream contract, and its docstring records
   what a session dir holds.
 
@@ -110,7 +112,7 @@ After each run, check the result before you use it:
 ## Resume
 
 ```sh
-~/.pi/agent/skills/subagent/scripts/run.py --session-id liquid-metal-impurity \
+~/.pi/agent/skills/skiff/scripts/run.py --session-id liquid-metal-impurity \
   @src/app.py "Check whether the fix in the attached file answers the finding."
 ```
 

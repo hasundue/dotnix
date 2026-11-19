@@ -82,7 +82,7 @@ code changes. Follow `../vault/references/conventions.md`, "A task note's
 language lifecycle": translate, check, promote.
 
 You are the translator, so you must not be the checker -- delegate the check
-to a subagent. The model, and optionally the thinking level, should be
+to a skiff. The model, and optionally the thinking level, should be
 specified by user instructions or project conventions -- prefer one different
 from the translator's. Ask if unsure. Read the child's conclusion. If the
 checker reports no substantive issues and concludes that the agreement was

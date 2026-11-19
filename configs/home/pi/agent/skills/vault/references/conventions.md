@@ -78,7 +78,7 @@ it into the English record, once, in place.
 2. Let another agent check the pair. It did not translate the text and has no
    tools, so hand it both files, say which is which, and use
    `~/.pi/agent/skills/vault/prompts/review-translation.md` as its task prompt.
-   The `subagent` skill describes how to launch the check and continue the same
+   The `skiff` skill describes how to launch the check and continue the same
    checker. The model, and optionally the thinking level, come from user
    instructions or project conventions; ask if unsure.
 
