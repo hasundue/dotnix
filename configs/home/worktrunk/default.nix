@@ -4,27 +4,12 @@ let
   # they stay out of the user's PATH. The generated config below embeds their
   # store paths in the hook commands, and no hook body is more than one line,
   # which keeps Worktrunk's hook echoes short.
-  #
-  # pi-trust-cleanup removes the removed worktree's entry from Pi's
-  # trust.json when Worktrunk takes a worktree away. It lives with Worktrunk
-  # rather than pi-worktrunk: only Worktrunk knows when a path stops being a
-  # worktree, and the store is Pi's, so the helper is kept out of
-  # pi-worktrunk's approval flow.
-  pi-trust-cleanup = pkgs.writeShellApplication {
-    name = "pi-trust-cleanup";
-    runtimeInputs = with pkgs; [
-      coreutils
-      jq
-    ];
-    text = builtins.readFile ./pi-trust-cleanup.sh;
-  };
 
   # rehome-live repoints dotnix.live.* links away from a worktree being
-  # removed. It is a user hook, not a project hook: the project `.config/wt.toml`
-  # could not reference a store path, and Worktrunk echoes a project hook's
-  # body whenever it runs, so the old inline body was a wall of output. As a
-  # user hook it runs in every repository, where it no-ops on the unmatched
-  # links, and it needs no project approval.
+  # removed. It is a user hook, not a project hook: a store path cannot appear
+  # in the committed `.config/wt.toml`, Worktrunk echoes a project hook's body
+  # whenever it runs, and a user hook needs no project approval. It runs in
+  # every repository, where it no-ops on the unmatched links.
   rehome-live = pkgs.writeShellApplication {
     name = "rehome-live";
     runtimeInputs = [ pkgs.coreutils ];
@@ -66,15 +51,6 @@ let
   + ''
     [pre-remove]
     rehome-live = "${rehome-live}/bin/rehome-live {{ worktree_path }} {{ primary_worktree_path }}"
-  ''
-  # Runs only after Worktrunk has completed the removal: the removed
-  # worktree's path is known and the store is untouched when the removal is
-  # cancelled or fails. The helper deletes only that worktree's key, so the
-  # primary checkout and its sibling worktrees stay trusted. It fails
-  # without writing when the trust store cannot be locked or parsed.
-  + ''
-    [post-remove]
-    cleanup-pi-trust = "${pi-trust-cleanup}/bin/pi-trust-cleanup {{ worktree_path }}"
   '';
 in
 {
