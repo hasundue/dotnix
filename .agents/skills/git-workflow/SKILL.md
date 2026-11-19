@@ -42,45 +42,20 @@ changed:
 ## Merging
 
 Before merging, inspect the branch. If its commits already follow
-[Granularity](#granularity) and use appropriate scopes, leave them unchanged
-and run relevant validation on the branch tip. Otherwise, propose the
-`main`-commit grouping, scopes, and validation; wait for the user's approval
-before rewriting. After approval, rebase onto the current `main` and reorganize
-checkpoints by outcome in the source branch's checkout. For one outcome, use
-`git reset --soft main` and recommit. For multiple outcomes, use
-`git reset --mixed main`, then stage and commit each outcome by path or patch.
-Run the proposed validation on the branch tip. If the approved rewrite changes
-a branch on `origin`, update it with `git push --force-with-lease` after
-validation.
+[Granularity](#granularity) and use appropriate scopes, leave them unchanged and
+run relevant validation on the branch tip. Otherwise, propose the `main`-commit
+grouping, scopes, and validation; wait for the user's approval before rewriting.
+After approval, rebase onto the current `main` and reorganize checkpoints by
+outcome in the source branch's checkout, then run the proposed validation on
+the branch tip. Update `origin` if the rewrite changed a pushed branch.
 
-Before a local merge, verify
-`git -C ~/dotnix merge-base --is-ancestor main <branch>` succeeds before
-switching the primary checkout to `main`. If it does not, stop and propose a
-rebase onto current `main`; wait for approval before rewriting.
+Merge with Worktrunk.
 
-Merge and push from the primary checkout so live changes are backed up at
-once:
-
-```bash
-git -C ~/dotnix switch main &&
-  git -C ~/dotnix merge --ff-only <branch> &&
-  git -C ~/dotnix push
-```
-
-After fetching `origin`, merge the branch into local `main` unless `<branch>`
-is already an ancestor of `origin/main`. If it is, verify local `main` is also
-an ancestor of `origin/main` before switching the live checkout. If not, stop
-and ask; otherwise fast-forward local `main`.
-
-After the local merge or remote fast-forward succeeds, refresh origin's refs.
 Delete the source remote branch only if its current tip is contained in
 `origin/main`; skip deletion if it is already absent, and stop and ask if it is
-not contained. Then remove the local worktree or branch.
+not contained.
 
-If validation fails, do not merge; stop and ask. If a Git operation fails or
-the repository state differs from the plan, stop and ask before attempting a
-recovery, except for the routine formatter-hook retry described in
-[Formatter hook recovery](#formatter-hook-recovery).
+If validation fails, do not merge; stop and ask.
 
 ## Commit messages and scopes
 
