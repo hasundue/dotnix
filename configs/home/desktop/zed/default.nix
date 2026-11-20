@@ -71,9 +71,6 @@
         };
       };
       agent_ui_font_size = 16.0;
-      buffer_font_family = "0xProto Nerd Font Mono";
-      buffer_font_fallbacks = [ "Noto Sans Mono CJK JP" ];
-      buffer_font_size = 14.0;
       buffer_line_height = "comfortable";
       edit_predictions = {
         mode = "subtle";
@@ -89,12 +86,7 @@
       };
       load_direnv = "shell_hook";
       semantic_tokens = "combined";
-      theme = "Kanagawa Wave - No Italics";
-      ui_font_family = "0xProto Nerd Font Propo";
-      ui_font_fallbacks = [ "Noto Sans CJK JP" ];
-      ui_font_size = 16.0;
       vim_mode = true;
     };
   };
-  stylix.targets.zed.enable = false;
 }

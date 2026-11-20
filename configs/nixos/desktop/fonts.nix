@@ -6,17 +6,13 @@
     enableGhostscriptFonts = false;
 
     packages = with pkgs; [
-      # Fallback for monospaced CJK characters
+      # Variable-width Japanese UI, including stylix sans/serif and Zed UI
       noto-fonts-cjk-sans
 
-      # Symbol font for Ghostty's `font-codepoint-map`
-      # (configs/home/desktop/ghostty.nix), so that arrows, geometric shapes
-      # and dingbats all come from one face with full coverage instead of
-      # scattering across DejaVu, Noto Emoji and Unifont.
+      plemoljp-nf
+
+      # Symbol font retained for fallback use
       iosevka
-    ];
-    fontconfig.defaultFonts.monospace = [
-      "Noto Sans Mono CJK JP"
     ];
   };
 }
