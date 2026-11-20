@@ -8,19 +8,55 @@
  * though the conversation is unchanged. Removing the section from the head and
  * appending the same rendered text at the end keeps the cached prefix intact.
  *
- * The payload rewrite assumes an OpenAI-compatible `messages` array; it is
- * intended for opencode-go, which accepts a trailing system message.
+ * The payload rewrite assumes an OpenAI-compatible `messages` array. If that
+ * shape is missing, or two consecutive injected requests get a 4xx response,
+ * the extension notifies once and stops appending for the session.
  */
 
 import { getCurrentSystemMessage } from "@earendil-works/pi-ai";
-import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
+import type { ExtensionAPI, ExtensionContext } from "@earendil-works/pi-coding-agent";
+
+const MARKER = "pi-cwd";
+
+type Payload = { messages?: Array<{ role: string; content: unknown }> };
 
 export default function (pi: ExtensionAPI) {
+  let shapeWarned = false;
+  let failureWarned = false;
+  let consecutiveClientErrors = 0;
+  let injectedThisRequest = false;
+
+  const stop = (ctx: ExtensionContext, message: string) => {
+    ctx.ui.notify(`${MARKER}: ${message}`, "warning");
+  };
+
   pi.on("before_provider_request", (event, ctx) => {
-    const payload = event.payload as { messages?: Array<{ role: string; content: unknown }> };
-    if (!Array.isArray(payload.messages)) return;
+    injectedThisRequest = false;
+    if (failureWarned) return;
+    const payload = event.payload as Payload;
+    if (!Array.isArray(payload.messages)) {
+      if (!shapeWarned) {
+        shapeWarned = true;
+        stop(ctx, "unsupported provider payload; cwd not appended");
+      }
+      return;
+    }
     const cwd = ctx.cwd.replace(/\\/g, "/");
     payload.messages.push({ role: "system", content: `<cwd>\n${cwd}\n</cwd>` });
+    injectedThisRequest = true;
+  });
+
+  pi.on("after_provider_response", (event, ctx) => {
+    if (!injectedThisRequest) return;
+    if (event.status >= 400 && event.status < 500) {
+      consecutiveClientErrors += 1;
+      if (consecutiveClientErrors === 2 && !failureWarned) {
+        failureWarned = true;
+        stop(ctx, "two consecutive 4xx responses; cwd injection stopped");
+      }
+    } else {
+      consecutiveClientErrors = 0;
+    }
   });
 
   pi.on("context_with_system", (event) => {
