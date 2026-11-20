@@ -46,8 +46,10 @@ Keep the source remote branch after a successful merge. It is an archive of the
 last pushed checkpoint tip, not a copy of the merged result: rebasing onto the
 current `main` changes the local commits, and the reorganized tip is never
 pushed. Do not treat the archived branch as current work; branch from `main`.
-Leave its removal to a separate periodic cleanup policy rather than deleting it
-as part of the merge.
+Removal is handled by `.github/workflows/archive-cleanup.yml`, not by the
+merge. Every remote branch older than 30 days is treated as an archive, except
+the default branch, branches listed in the `CLEANUP_PROTECTED` repository
+variable, and open pull request heads.
 
 If validation fails, do not merge; stop and ask.
 
