@@ -81,7 +81,8 @@ task actually touches.>
 
 ## Language and filenames
 
-The vault owns these: `~/vault/AGENTS.md`. This template
+The vault owns filenames and language suffixes: `~/vault/AGENTS.md`. The
+approval lifecycle is `task-note-lifecycle.md` in this directory. This template
 only adds `session_lang:`, the conversation's language, and `translated:`, the
 date the note became English. While a translation check is open the candidate
 keeps `status: draft`; after promotion the body is English for life.
