@@ -8,11 +8,14 @@ on:
       days:
         description: Minimum tip commit age in days
         type: number
-        default: 30
+        default: &archive_days 30
       dry_run:
         description: List branches without deleting
         type: boolean
         default: true
+
+env:
+  ARCHIVE_DAYS: *archive_days
 
 permissions:
   contents: write
@@ -39,9 +42,9 @@ jobs:
       - name: Delete stale archive branches
         run: |
           set -euo pipefail
-          DAYS=30
+          DAYS=$ARCHIVE_DAYS
           if [ "$GITHUB_EVENT_NAME" = workflow_dispatch ]; then
-            DAYS=${INPUT_DAYS:-}
+            DAYS=${INPUT_DAYS:-$ARCHIVE_DAYS}
           fi
           if ! [[ "$DAYS" =~ ^[1-9][0-9]*$ ]]; then
             echo "DAYS must be a positive integer" >&2
