@@ -85,6 +85,11 @@ The launcher takes pi's shape: options, then `--` when you need it, then
   nothing it can use.
   `--` ends option parsing as in pi, so a message that starts with a dash goes
   after it: `... -- "--flag-like words"`.
+- Before writing the message, read `references/prompts/common.md` and the
+  task prompt you pass to `--system-prompt`. Those are already the child's
+  system prompt; do not restate their rules. Use the message for what is
+  specific to this run: the material and its roles, the context behind the
+  request, and the question. Include any constraint the prompts do not give.
 - A new session uses the parent session's provider and model unless `--model`
   is given. Pass `--model` only when the user names another model. A name given
   loosely — a family, or a version without a provider — is resolved before use:
