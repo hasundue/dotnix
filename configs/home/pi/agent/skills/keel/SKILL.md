@@ -60,8 +60,9 @@ ever committed.
 
 ## Language, and the approval act
 
-Naming, languages, and the approval act are the vault's rules, defined once in
-`~/vault/AGENTS.md`. The parts a gate must hold:
+Naming lives in `~/vault/AGENTS.md`; the approval act is this skill's
+procedure, defined in `references/task-note-lifecycle.md`. The parts a gate
+must hold:
 
 - a draft in the session's language, when that is not English, is
   `<note>.ja.md`, with `session_lang:` in the front matter;
@@ -72,10 +73,10 @@ Naming, languages, and the approval act are the vault's rules, defined once in
 
 Keel writes the draft and stops. Approval belongs to whoever the user hands the
 work to: sail, or this session if the user approves here. When the user
-approves here, run the lifecycle in
-`~/vault/AGENTS.md` -- translate, check via skiff, and
-promote only if the checker concludes that the agreement survived the
-translation. When a rule changes, change it there -- sail reads the same file.
+approves here, run `references/task-note-lifecycle.md` -- translate, check via
+skiff, and promote only if the checker concludes that the agreement survived
+the translation. When a rule changes, change it there -- sail reads the same
+file.
 
 ## Finding an existing note
 

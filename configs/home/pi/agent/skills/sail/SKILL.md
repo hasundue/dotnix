@@ -78,8 +78,8 @@ then implement. If `status: blocked`, read `## Blocker` first. If
 `status: done`, there is nothing to execute.
 
 Agreeing a note that is not English is the one thing that happens before any
-code changes. Follow `~/vault/AGENTS.md`, "Task notes": translate, check,
-promote.
+code changes. Follow `../keel/references/task-note-lifecycle.md`: translate,
+check, promote.
 
 You are the translator, so you must not be the checker -- delegate the check
 to a skiff. The model, and optionally the thinking level, should be
