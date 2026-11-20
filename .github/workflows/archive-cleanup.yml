@@ -27,7 +27,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      DAYS: ${{ inputs.days }}
+      INPUT_DAYS: ${{ inputs.days }}
       DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run || false }}
       PROTECTED: ${{ vars.CLEANUP_PROTECTED || '' }}
       DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
@@ -39,7 +39,10 @@ jobs:
       - name: Delete stale archive branches
         run: |
           set -euo pipefail
-          DAYS=${DAYS:-30}
+          DAYS=30
+          if [ "$GITHUB_EVENT_NAME" = workflow_dispatch ]; then
+            DAYS=${INPUT_DAYS:-}
+          fi
           if ! [[ "$DAYS" =~ ^[1-9][0-9]*$ ]]; then
             echo "DAYS must be a positive integer" >&2
             exit 1
