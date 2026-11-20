@@ -19,6 +19,10 @@ let
         enable = true;
         package = treefmt;
       };
+      gitleaks = {
+        enable = true;
+        package = pkgs.gitleaks;
+      };
     };
   };
 in
