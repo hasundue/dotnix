@@ -9,10 +9,10 @@
  * appending the same rendered text at the end keeps the cached prefix intact.
  *
  * The payload rewrite assumes an OpenAI-compatible `messages` array. If that
- * shape is missing, or two consecutive provider responses are 4xx, the
- * extension notifies once and stops appending for the session. Response
- * counting needs no request correlation because it does not depend on which
- * request carried the injection.
+ * shape is missing, the extension skips that request and notifies once;
+ * two consecutive 4xx provider responses stop appending for the session.
+ * Response counting needs no request correlation because it does not depend
+ * on which request carried the injection.
  */
 
 import { getCurrentSystemMessage } from "@earendil-works/pi-ai";
