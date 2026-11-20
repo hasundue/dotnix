@@ -35,7 +35,7 @@ is organized -- is judgment.
 One file per task, kept outside the repository:
 
 ```
-~/vault/projects/<project>/<YYYY-MM-DD>-<slug>.md
+~/vault/development/<project>/<YYYY-MM-DD>-<slug>.md
 ```
 
 A draft in a language other than English carries that language in its name, as
@@ -61,7 +61,7 @@ ever committed.
 ## Language, and the approval act
 
 Naming, languages, and the approval act are the vault's rules, defined once in
-`../vault/references/conventions.md`. The parts a gate must hold:
+`~/vault/AGENTS.md`. The parts a gate must hold:
 
 - a draft in the session's language, when that is not English, is
   `<note>.ja.md`, with `session_lang:` in the front matter;
@@ -73,7 +73,7 @@ Naming, languages, and the approval act are the vault's rules, defined once in
 Keel writes the draft and stops. Approval belongs to whoever the user hands the
 work to: sail, or this session if the user approves here. When the user
 approves here, run the lifecycle in
-`../vault/references/conventions.md` -- translate, check via skiff, and
+`~/vault/AGENTS.md` -- translate, check via skiff, and
 promote only if the checker concludes that the agreement survived the
 translation. When a rule changes, change it there -- sail reads the same file.
 
@@ -83,7 +83,7 @@ Before starting a second note for the same task:
 
 1. A path the user passed wins.
 2. Otherwise search the project's notes by the task's own words -- title,
-   problem, branch -- with `rg -il` over `~/vault/projects/<project>/`, keeping
+   problem, branch -- with `rg -il` over `~/vault/development/<project>/`, keeping
    notes whose `status` is not `done`. Branch is the weakest of the three: keel
    records the branch it ran on, which is often `main`. A `<note>.ja.md` /
    `<note>.en.md` pair is one note mid-translation, not two.
@@ -255,7 +255,7 @@ into the note, then let it continue -- so the next cold run never has to ask.
 
 - [ ] The work was judged large before the note was written, or keel exited
       early
-- [ ] The note is under `~/vault/projects/<project>/`; the repo has no working
+- [ ] The note is under `~/vault/development/<project>/`; the repo has no working
       note
 - [ ] The problem section contains no solution
 - [ ] Criteria, each with `verify:`, plus out-of-scope and stop conditions

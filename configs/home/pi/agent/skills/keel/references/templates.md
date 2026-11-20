@@ -81,7 +81,7 @@ task actually touches.>
 
 ## Language and filenames
 
-The vault owns these: `../../vault/references/conventions.md`. This template
+The vault owns these: `~/vault/AGENTS.md`. This template
 only adds `session_lang:`, the conversation's language, and `translated:`, the
 date the note became English. While a translation check is open the candidate
 keeps `status: draft`; after promotion the body is English for life.
