@@ -9,8 +9,10 @@
  * appending the same rendered text at the end keeps the cached prefix intact.
  *
  * The payload rewrite assumes an OpenAI-compatible `messages` array. If that
- * shape is missing, or two consecutive injected requests get a 4xx response,
- * the extension notifies once and stops appending for the session.
+ * shape is missing, or two consecutive provider responses are 4xx, the
+ * extension notifies once and stops appending for the session. Response
+ * counting needs no request correlation because it does not depend on which
+ * request carried the injection.
  */
 
 import { getCurrentSystemMessage } from "@earendil-works/pi-ai";
@@ -24,17 +26,15 @@ export default function (pi: ExtensionAPI) {
   let shapeWarned = false;
   let failureWarned = false;
   let consecutiveClientErrors = 0;
-  let injectedThisRequest = false;
 
   const stop = (ctx: ExtensionContext, message: string) => {
     ctx.ui.notify(`${MARKER}: ${message}`, "warning");
   };
 
   pi.on("before_provider_request", (event, ctx) => {
-    injectedThisRequest = false;
     if (failureWarned) return;
-    const payload = event.payload as Payload;
-    if (!Array.isArray(payload.messages)) {
+    const payload = event.payload as Payload | null | undefined;
+    if (!payload || typeof payload !== "object" || !Array.isArray(payload.messages)) {
       if (!shapeWarned) {
         shapeWarned = true;
         stop(ctx, "unsupported provider payload; cwd not appended");
@@ -43,11 +43,10 @@ export default function (pi: ExtensionAPI) {
     }
     const cwd = ctx.cwd.replace(/\\/g, "/");
     payload.messages.push({ role: "system", content: `<cwd>\n${cwd}\n</cwd>` });
-    injectedThisRequest = true;
   });
 
   pi.on("after_provider_response", (event, ctx) => {
-    if (!injectedThisRequest) return;
+    if (failureWarned) return;
     if (event.status >= 400 && event.status < 500) {
       consecutiveClientErrors += 1;
       if (consecutiveClientErrors === 2 && !failureWarned) {
