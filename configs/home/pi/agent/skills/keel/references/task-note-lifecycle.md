@@ -2,8 +2,9 @@
 
 A task note is an agreement, not a specification to obey byte for byte. A draft
 is argued in the session's language and carries `session_lang:` so a cold
-session knows which tongue to report in. Approval turns it into the English
-record, once, in place.
+session knows which tongue to report in. Japanese and English drafts are
+supported; ask before inventing another language suffix. Approval turns the
+note into the English record, once, in place.
 
 ## 1. Translate
 
@@ -36,9 +37,15 @@ promotion, not after.
 
 ## 3. Promote
 
-Promote with `status: agreed`, `translated: <YYYY-MM-DD>`, rename
-`<note>.en.md` to `<note>.md`, and delete the draft. The original does not
-survive: a note that exists twice is a note whose wording drifts.
+Promote with `status: agreed`. Set `translated: <YYYY-MM-DD>` when the note was
+translated; leave it empty when it was written in English from the start.
+
+For a translated pair, rename `<note>.en.md` to `<note>.md` and delete the draft
+using the Obsidian CLI (`obsidian rename` / `obsidian delete`), so internal links
+follow; see "Moving and deleting" in `~/vault/AGENTS.md`. The original does not
+survive: a note that exists twice is a note whose wording drifts. For a note
+drafted in English, those rename and delete steps do not apply; promotion is the
+metadata update only.
 
 While the check is open, `<note>.ja.md` and `<note>.en.md` are one note, not
 two. Discovery finds both; treat the pair as one hit. A draft already in

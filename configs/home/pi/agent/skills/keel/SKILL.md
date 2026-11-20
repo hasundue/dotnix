@@ -38,8 +38,9 @@ One file per task, kept outside the repository:
 ~/vault/development/<project>/<YYYY-MM-DD>-<slug>.md
 ```
 
-A draft in a language other than English carries that language in its name, as
-the section below spells out.
+A Japanese session's draft carries `.ja.md`; an English session's draft does
+not. Ask before using another language suffix; the section below spells out the
+lifecycle.
 
 Resolve the project from git, so worktrees land on the main checkout:
 
@@ -64,8 +65,9 @@ Naming lives in `~/vault/AGENTS.md`; the approval act is this skill's
 procedure, defined in `references/task-note-lifecycle.md`. The parts a gate
 must hold:
 
-- a draft in the session's language, when that is not English, is
-  `<note>.ja.md`, with `session_lang:` in the front matter;
+- a Japanese session's draft is `<note>.ja.md` with `session_lang: ja`; an
+  English session's draft is `<note>.md` with `session_lang: en`; ask before
+  inventing another suffix;
 - approval translates it once, has someone who did not translate it check the
   pair, then promotes the candidate and deletes the draft;
 - from approval on, the note is English for life, and it restates what the user
