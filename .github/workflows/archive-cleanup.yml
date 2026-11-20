@@ -1,0 +1,102 @@
+name: Archive cleanup
+
+on:
+  schedule:
+    - cron: "23 4 * * 1"
+  workflow_dispatch:
+    inputs:
+      days:
+        description: Minimum tip commit age in days
+        type: number
+        default: &archive_days 30
+      dry_run:
+        description: List branches without deleting
+        type: boolean
+        default: true
+
+env:
+  ARCHIVE_DAYS: *archive_days
+
+permissions:
+  contents: write
+  pull-requests: read
+
+concurrency:
+  group: archive-cleanup
+  cancel-in-progress: false
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      INPUT_DAYS: ${{ inputs.days }}
+      DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run || false }}
+      PROTECTED: ${{ vars.CLEANUP_PROTECTED || '' }}
+      DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Delete stale archive branches
+        run: |
+          set -euo pipefail
+          DAYS=$ARCHIVE_DAYS
+          if [ "$GITHUB_EVENT_NAME" = workflow_dispatch ]; then
+            DAYS=${INPUT_DAYS:-$ARCHIVE_DAYS}
+          fi
+          if ! [[ "$DAYS" =~ ^[1-9][0-9]*$ ]]; then
+            echo "DAYS must be a positive integer" >&2
+            exit 1
+          fi
+          cutoff=$(date -u -d "-$DAYS days" +%s)
+          open_pr_heads=$(gh api \
+            "repos/$GITHUB_REPOSITORY/pulls?state=open&per_page=100" \
+            --paginate --jq '.[].head.ref')
+
+          git for-each-ref \
+            --format='%(refname:short) %(committerdate:unix) %(objectname)' \
+            refs/remotes/origin |
+          while read -r ref stamp sha; do
+            branch=${ref#origin/}
+            [ "$branch" = HEAD ] && continue
+            [ "$branch" = "$DEFAULT_BRANCH" ] && continue
+            [ "$stamp" -lt "$cutoff" ] || continue
+
+            case ",$PROTECTED," in
+              *,"$branch",*) continue ;;
+            esac
+            if grep -Fxq -- "$branch" <<< "$open_pr_heads"; then
+              continue
+            fi
+            case "$branch" in
+              *'#'*|*'%'*)
+                echo "::warning::skipped unsafe branch name $branch"
+                continue
+                ;;
+            esac
+
+            if [ "$DRY_RUN" = true ]; then
+              echo "would delete $branch"
+              continue
+            fi
+
+            if ! current_sha=$(gh api \
+              "repos/$GITHUB_REPOSITORY/git/refs/heads/$branch" \
+              --jq '.object.sha'); then
+              echo "::warning::skipped $branch (ref disappeared)"
+              continue
+            fi
+            if [ "$current_sha" != "$sha" ]; then
+              echo "::warning::skipped $branch (moved during cleanup)"
+              continue
+            fi
+
+            if gh api -X DELETE \
+              "repos/$GITHUB_REPOSITORY/git/refs/heads/$branch"; then
+              echo "deleted $branch"
+            else
+              echo "::warning::could not delete $branch"
+            fi
+          done
