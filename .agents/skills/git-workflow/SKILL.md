@@ -42,14 +42,10 @@ and merge.
 Run the merge with Worktrunk in the source branch's checkout, so the local
 reorganized tip is what gets merged.
 
-Keep the source remote branch after a successful merge. It is an archive of the
-last pushed checkpoint tip, not a copy of the merged result: rebasing onto the
-current `main` changes the local commits, and the reorganized tip is never
-pushed. Do not treat the archived branch as current work; branch from `main`.
-Removal is handled by `.github/workflows/archive-cleanup.yml`, not by the
-merge. Every remote branch whose tip commit is older than 30 days is treated as
-an archive, except the default branch, branches listed in the
-`CLEANUP_PROTECTED` repository variable, and open pull request heads.
+Keep the source remote branch after a merge as a checkpoint archive; do not
+delete it. Rebased commits are never pushed, so the archive is not the merged
+result. Branch from `main`. Removal is defined in
+`.github/workflows/archive-cleanup.yml`.
 
 If validation fails, do not merge; stop and ask.
 
