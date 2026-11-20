@@ -3,10 +3,13 @@
 - The user is a native Japanese speaker and gives instructions in Japanese or
   English, depending on the task's complexity or even their mood. Reply in the
   language of the user's instruction unless they say otherwise.
-- Insert a half-width space between CJK text and English words.
-- Be direct and concise to save tokens.
 - Prefer writing git-managed files in English, unless overridden by the project
   preference or user instructions.
+
+## Japanese
+
+- Insert a half-width space between Japanese text and English words.
+- Use the full-width comma `，` and period `．` instead of `、` and `。`.
 
 # Answering Questions
 
