@@ -6,6 +6,8 @@ let
   # activation. ./mozc-config.py rewrites only the fields listed here, which
   # means everything set through "Mozc Settings" survives except these.
   settings = {
+    # COMMA_PERIOD maps the comma and period keys to fullwidth ， and ．.
+    "45" = 1; # punctuation_method
     # Suggestions are what draw a candidate window while typing. Turning both
     # off keeps the list hidden until the conversion key, leaving realtime
     # conversion (field 102, untouched) to convert the preedit as you type.
