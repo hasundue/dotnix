@@ -1,4 +1,7 @@
-{ ... }:
+{
+  lib,
+  ...
+}:
 {
   programs.ghostty = {
     enable = true;
@@ -7,8 +10,8 @@
     # `Mod+T` in configs/home/desktop/niri/default.nix still apply.
     clearDefaultKeybinds = true;
 
-    # Colors, font family, font size and background opacity all come from
-    # stylix (configs/stylix.nix).
+    # Colors, font size and background opacity come from stylix
+    # (configs/stylix.nix). Ghostty uses the Text face for its regular weight.
     settings = {
       keybind = [
         "ctrl+insert=copy_to_clipboard:mixed"
@@ -32,6 +35,11 @@
       # 1.4.0 OpenGL renderer and washes out the background color.
       alpha-blending = "linear";
 
+      font-family = lib.mkForce [
+        "PlemolJP35 Console NF Text"
+        "Noto Color Emoji"
+      ];
+      font-family-bold = [ "PlemolJP35 Console NF" ];
     };
   };
 }
