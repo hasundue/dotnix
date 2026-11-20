@@ -79,6 +79,10 @@ The launcher takes pi's shape: options, then `--` when you need it, then
   so name each file in the message by path and role. A glob is not a file:
   select the files yourself. Front or back, the attachments are the same.
 - Bare words are the message. Piped input follows it in the same user message.
+  Name the material in the words by what it is: a diff, a note, a file at
+  `path:line`, not by how it arrived. The child cannot tell a pipe from an
+  `@FILE`, so "the piped input", "stdin", or "the attached material" tells it
+  nothing it can use.
   `--` ends option parsing as in pi, so a message that starts with a dash goes
   after it: `... -- "--flag-like words"`.
 - A new session uses the parent session's provider and model unless `--model`
