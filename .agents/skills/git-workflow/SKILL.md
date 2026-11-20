@@ -42,8 +42,10 @@ and merge.
 Run the merge with Worktrunk in the source branch's checkout, so the local
 reorganized tip is what gets merged.
 
-Delete the source remote branch after a successful merge; skip deletion if it is
-already absent.
+Keep the source remote branch after a merge as a checkpoint archive; do not
+delete it. Rebased commits are never pushed, so the archive is not the merged
+result. Branch from `main`. Removal is defined in
+`.github/workflows/archive-cleanup.yml`.
 
 If validation fails, do not merge; stop and ask.
 
@@ -123,8 +125,9 @@ An unpushed commit is unfinished work, not a backup. `push.autoSetupRemote` is
 already set, so a new branch needs no `-u`.
 
 Do not rewrite a pushed commit on a working branch, and do not amend it to fold
-in a later fix: add a commit. The branch is squashed on merge anyway, and a
-rewrite turns the work into one opaque diff that the user can no longer follow.
+in a later fix: add a commit. A squash merge leaves `main` with one opaque diff,
+and the remote branch keeps the last pushed checkpoint sequence as its archive;
+rewriting pushed commits would desynchronize that archive from what was reviewed.
 For an explicitly authorized change on `main`, add a fix commit. The only
 exception is the approved local reorganization under [Merging](#merging); never
 push its result.
