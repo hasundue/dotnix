@@ -29,8 +29,8 @@ in
         name = "Noto Serif CJK JP";
       };
       monospace = {
-        package = pkgs.nerd-fonts._0xproto;
-        name = "0xProto Nerd Font";
+        package = pkgs.plemoljp-nf;
+        name = "PlemolJP35 Console NF";
       };
       emoji = {
         package = pkgs.noto-fonts-color-emoji;
