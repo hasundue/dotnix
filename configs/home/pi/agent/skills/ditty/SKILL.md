@@ -15,9 +15,9 @@ A fragment, not a note: a bullet, a question, a name, a sentence with no verb.
 The reader is the author, days later. Being readable cold is not the standard
 here, and adding structure to compensate is a regression.
 
-Read `../vault/references/conventions.md` before writing: where a fragment
-lives, what it is called, its language, and who may edit it. This skill is only
-about the shape.
+Read `~/vault/AGENTS.md` before writing: it owns the vault layout and the
+rules for fragment placement and ownership. This skill is only about the
+shape.
 
 ## Search first
 
@@ -69,7 +69,7 @@ is not reformatted, reordered, or reworded.
 ## Verification
 
 - [ ] Searched the vault for an existing fragment first
-- [ ] Path and filename follow `../vault/references/conventions.md`
+- [ ] Path and filename follow `~/vault/AGENTS.md`
 - [ ] No headings, no summary, no tags, no justification
 - [ ] Appended: the diff is the added lines and nothing else
 - [ ] The reply names the path and what it now says

@@ -6,8 +6,8 @@ description: >
   handoffs -- where their subject lives. Use when the user asks what they
   already know about a topic, wants a note found, read, or updated, or wants a
   decision or a piece of research written up. Conventions shared by every note
-  are in `references/conventions.md`; fragments belong to `ditty`, and task
-  notes to `keel` and `sail`.
+  are in `~/vault/AGENTS.md`; fragments belong to `ditty`, and task notes to
+  `keel` and `sail`.
 ---
 
 # Vault
@@ -18,12 +18,12 @@ standard.
 - **Durable notes** must survive a cold read: decisions, research, handoffs.
   This skill writes them.
 - **Working notes** are fragments to think with. `ditty` owns them.
-- **Task notes** (`projects/<project>/`, carrying `status`) are `keel`'s and
+- **Task notes** (`development/<project>/`, carrying `status`) are `keel`'s and
   `sail`'s.
 
-`references/conventions.md` holds what binds all three: paths, filenames,
-languages, ownership, quotes. Read it before writing or renaming anything; the
-rules are not restated here.
+`~/vault/AGENTS.md` holds what binds all three: paths, filenames, languages,
+ownership, quotes. Read it before writing or renaming anything; the rules are
+not restated here.
 
 ## Modes
 
@@ -41,7 +41,7 @@ for it.
 
 ## Ownership
 
-The rule is in `references/conventions.md`; in practice you create freely, edit
+The rule is in `~/vault/AGENTS.md`; in practice you create freely, edit
 only notes carrying `author: pi`, and never touch a person's note without an
 explicit request. List what the skills wrote:
 
@@ -162,7 +162,7 @@ Mark an item N/A rather than ticking it when it does not apply. A tick that was
 never earned hides the failure.
 
 - [ ] Searched the vault before writing
-- [ ] Path and filename follow `references/conventions.md`, or the user's path
+- [ ] Path and filename follow `~/vault/AGENTS.md`, or the user's path
 - [ ] The new note carries `author: pi`; existing `author:` was left alone
 - [ ] A person's note was edited only on an explicit request
 - [ ] Headings follow `references/templates.md`, and the note's language

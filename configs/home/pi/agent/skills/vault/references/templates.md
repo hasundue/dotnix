@@ -152,7 +152,7 @@ A static directory map would drift. Reading the taxonomy at runtime with
 
 ## 未決
 
-- whether task notes and everything else should share `projects/`, or split
+- whether task notes and everything else should share `development/`, or split
 
 ## 関連
 
