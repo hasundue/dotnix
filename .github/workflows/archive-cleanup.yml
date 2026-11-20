@@ -1,0 +1,62 @@
+name: Archive cleanup
+
+on:
+  schedule:
+    - cron: "23 4 * * 1"
+  workflow_dispatch:
+    inputs:
+      days:
+        description: Minimum age in days
+        type: number
+        default: 30
+      dry_run:
+        description: List branches without deleting
+        type: boolean
+        default: true
+
+permissions:
+  contents: write
+
+concurrency:
+  group: archive-cleanup
+  cancel-in-progress: false
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      DAYS: ${{ inputs.days || 30 }}
+      DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run || false }}
+      PROTECTED: ${{ vars.CLEANUP_PROTECTED || '' }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Delete stale archive branches
+        run: |
+          set -euo pipefail
+          cutoff=$(date -u -d "-$DAYS days" +%s)
+
+          git for-each-ref \
+            --format='%(refname:short) %(committerdate:unix)' \
+            refs/remotes/origin |
+          while read -r ref stamp; do
+            branch=${ref#origin/}
+            [ "$branch" = HEAD ] && continue
+            [ "$branch" = main ] && continue
+            [ "$stamp" -lt "$cutoff" ] || continue
+
+            case ",$PROTECTED," in
+              *,"$branch",*) continue ;;
+            esac
+
+            if [ "$DRY_RUN" = true ]; then
+              echo "would delete $branch"
+              continue
+            fi
+
+            echo "deleting $branch"
+            gh api -X DELETE "repos/$GITHUB_REPOSITORY/git/refs/heads/$branch"
+          done
