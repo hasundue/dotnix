@@ -27,6 +27,8 @@
       adjust-cell-height = "10%";
 
       alpha-blending = "linear-corrected";
+      font-style = "Medium";
+      font-style-italic = "Medium Italic";
     };
   };
 }
