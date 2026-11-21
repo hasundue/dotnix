@@ -13,6 +13,8 @@
  * a new one even though A appeared earlier.
  */
 
+import { sep } from "node:path";
+
 import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
 
 const LOCATION_TYPE = "pi-cwd.location";
@@ -22,8 +24,13 @@ const NOTICE =
 
 export default function (pi: ExtensionAPI) {
   pi.on("before_agent_start", (event, ctx) => {
-    const cwd = ctx.cwd.replace(/\\/g, "/");
-    const relative = (path: string) => path.split(`${cwd}/`).join("./");
+    const toPosix = (path: string) => path.split(sep).join("/");
+    const cwd = toPosix(ctx.cwd);
+    const prefix = `${cwd}/`;
+    const relative = (path: string) => {
+      const normalized = toPosix(path);
+      return normalized.startsWith(prefix) ? `./${normalized.slice(prefix.length)}` : path;
+    };
     const options = event.systemPromptOptions;
     options.sections.cwd = NOTICE;
     options.contextFiles = options.contextFiles.map((file) => ({
