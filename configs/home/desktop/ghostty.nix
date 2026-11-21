@@ -25,11 +25,7 @@
       window-padding-y = 10;
       window-padding-balance = "equal";
 
-      # On Linux the default is `linear-corrected`, which dims antialiased
-      # pixels and thins 1px CJK strokes relative to kitty's sRGB blending.
-      # `native` would match kitty's weight but double-encodes sRGB in the
-      # 1.4.0 OpenGL renderer and washes out the background color.
-      alpha-blending = "linear";
+      alpha-blending = "linear-corrected";
     };
   };
 }
