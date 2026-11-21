@@ -24,6 +24,7 @@
       window-padding-x = 10;
       window-padding-y = 10;
       window-padding-balance = "equal";
+      adjust-cell-height = "10%";
 
       alpha-blending = "linear-corrected";
     };
