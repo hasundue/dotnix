@@ -49,10 +49,6 @@
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.flake-compat.follows = "flake-compat";
     };
-    lean4-skills = {
-      url = "github:cameronfreer/lean4-skills";
-      flake = false;
-    };
     rpiv-mono = {
       url = "github:hasundue/rpiv-mono";
       flake = false;
@@ -60,12 +56,6 @@
     mcp-servers-nix = {
       url = "github:natsukium/mcp-servers-nix";
       inputs.nixpkgs.follows = "nixpkgs";
-    };
-    llm-agents-nix = {
-      url = "github:numtide/llm-agents.nix";
-      inputs = {
-        nixpkgs.follows = "nixpkgs";
-      };
     };
     python-validity = {
       url = "github:viktor-grunwaldt/t480-fingerprint-nixos";
@@ -108,7 +98,6 @@
       nixpkgs,
       nixpkgs-master,
       nvim,
-      llm-agents-nix,
       self,
       stylix,
       ...
@@ -119,7 +108,6 @@
         self.overlays.temporal # This must come first
         agenix.overlays.default
         nvim.overlays.default
-        llm-agents-nix.overlays.shared-nixpkgs
       ]
       ++ (self.overlays |> lib.filterAttrs (n: v: n != "temporal") |> lib.attrValues);
       systems = [
@@ -237,9 +225,6 @@
         temporal = import ./overlays/temporal.nix {
           mcp-nixos = inputs.nixpkgs-mcp-nixos;
         };
-        lean4-skills = final: prev: {
-          lean4-skills-src = inputs.lean4-skills;
-        };
       };
       packages = forEachSystem (pkgs: {
         zotero-mcp = pkgs.callPackage ./packages/zotero-mcp.nix {
@@ -265,8 +250,6 @@
         pkgs:
         import ./apps {
           inherit
-            self
-            lib
             pkgs
             username
             ;

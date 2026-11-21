@@ -70,7 +70,6 @@ config's directory — even when the outcome also requires changes elsewhere:
 
 | Changed path                                           | Scope                   |
 | ------------------------------------------------------ | ----------------------- |
-| `configs/home/opencode/default.nix`                    | `opencode`              |
 | `configs/home/niri/default.nix`                        | `niri`                  |
 | `configs/nixos/waybar/default.nix`                     | `waybar`                |
 | `configs/home/pi/agent/skills/skiff/SKILL.md`          | `pi/skiff`              |

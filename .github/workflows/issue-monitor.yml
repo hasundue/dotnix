@@ -63,6 +63,6 @@ jobs:
 
             5. If you found meaningful new signals:
                - Post a comment on that issue summarizing what changed, why it matters, and
-                 any suggested actions for this repo's opencode configuration
+                 any suggested actions for the repository
 
             6. If nothing new: do nothing (no comment needed)

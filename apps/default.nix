@@ -1,9 +1,6 @@
-# Flake apps: nixos-rebuild wrappers, home-manager build/activate, and
-# opencode. `pkgs` is expected to carry the flake's overlays (see `apps` in
-# ../flake.nix).
+# Flake apps: nixos-rebuild wrappers and home-manager build/activate.
+# `pkgs` is expected to carry the flake's overlays (see `apps` in ../flake.nix).
 {
-  self,
-  lib,
   pkgs,
   username,
 }:
@@ -36,15 +33,6 @@ let
       exec nixos-rebuild ${action} "''${args[@]}" "$@"
     '';
 
-  opencodeConfig =
-    let
-      homeConfig = self.homeConfigurations."${username}@x1carbon";
-      opencodeFiles = lib.mapAttrsToList (name: file: {
-        inherit name;
-        path = file.source;
-      }) (lib.filterAttrs (name: _: lib.hasPrefix "opencode/" name) homeConfig.config.xdg.configFile);
-    in
-    pkgs.linkFarm "opencode-config" opencodeFiles;
 in
 {
   # Build only, for inspection (no sudo; leaves ./result-home)
@@ -136,15 +124,5 @@ in
   "nixos-boot" = {
     type = "app";
     program = "${nixosApp "boot"}/bin/nixos-boot";
-  };
-
-  # Run opencode with ephemeral XDG_CONFIG_HOME from flake-tracked config
-  opencode = {
-    type = "app";
-    program = "${pkgs.writeShellScriptBin "opencode" ''
-      export XDG_CONFIG_HOME="$(mktemp -d)"
-      cp -rsf "${opencodeConfig}/"* "$XDG_CONFIG_HOME/"
-      exec ${pkgs.llm-agents.opencode}/bin/opencode "$@"
-    ''}/bin/opencode";
   };
 }

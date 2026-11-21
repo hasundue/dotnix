@@ -63,9 +63,6 @@
       };
       agent_buffer_font_size = 14.0;
       agent_servers = {
-        opencode = {
-          type = "registry";
-        };
         github-copilot-cli = {
           type = "registry";
         };
