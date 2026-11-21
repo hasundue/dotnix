@@ -1,8 +1,4 @@
 {
-  lib,
-  ...
-}:
-{
   programs.ghostty = {
     enable = true;
 
@@ -34,12 +30,6 @@
       # `native` would match kitty's weight but double-encodes sRGB in the
       # 1.4.0 OpenGL renderer and washes out the background color.
       alpha-blending = "linear";
-
-      font-family = lib.mkForce [
-        "PlemolJP35 Console NF Text"
-        "Noto Color Emoji"
-      ];
-      font-family-bold = [ "PlemolJP35 Console NF" ];
     };
   };
 }
