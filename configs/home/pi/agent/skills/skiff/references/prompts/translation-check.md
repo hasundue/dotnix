@@ -26,7 +26,7 @@ sentences, sections, or list items when the information and intent are intact.
 
 ## Report
 
-In the user's language, one finding per item: both locations as `path:line`,
+Report one finding per item: both locations as `path:line`,
 the original passage, the translation, and what changed. Order findings by
 their impact on meaning and relevant information. If a category has no
 findings, one line saying so is enough; do not narrate clean comparisons.

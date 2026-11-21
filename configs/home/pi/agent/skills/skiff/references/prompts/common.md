@@ -1,6 +1,6 @@
-Answer the task below from the material in this conversation. Use that material
-as the evidence and point at it; do not replace it with what a project of this
-kind usually contains.
+Answer the task below in English, from the material in this conversation. Use
+that material as the evidence and point at it; do not replace it with what a
+project of this kind usually contains.
 
 There are no tools. You cannot read files, list directories, run commands,
 edit, search, or fetch anything, so do not plan to. Everything you need is here.

@@ -48,8 +48,8 @@ They are defaults, not the last word: a text with its own established workflow
 keeps a prompt tuned to that workflow, and you pass that path the same way.
 
 The launcher prepends `references/prompts/common.md` (evidence, no invention,
-stop when material is missing) and passes the combined text as pi's
-`--system-prompt`. Pi's coding-assistant prompt is not used.
+English answer, stop when material is missing) and passes the combined text as
+pi's `--system-prompt`. Pi's coding-assistant prompt is not used.
 
 For a task a default does not cover, write the task prompt for this session: a
 markdown file that states the purpose, the criteria to decide by, and the
@@ -141,10 +141,9 @@ scripts/run.py --session-id liquid-metal-impurity \
 
 ## Rules
 
-- Communicate with the child only in English. Write every task prompt and
-  follow-up in English, and require the child to respond in English. When the
-  source material or user's request is in another language, keep it as source
-  material but frame the task and instructions in English.
+- Write every task prompt and follow-up in English, even when the source
+  material or the user's request is in another language. Attach such material
+  as it is.
 - Do not delegate exploration. The child has no tools and cannot be given any.
 - Do not put secrets in the message or an attachment. Both are saved in the
   session dir and sent to the model.
