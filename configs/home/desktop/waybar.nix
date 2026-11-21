@@ -371,7 +371,7 @@ in
 
     style = ''
       * {
-        font-family: "0xProto Nerd Font Propo";
+        font-weight: 500;
       }
       tooltip {
         border: none;
