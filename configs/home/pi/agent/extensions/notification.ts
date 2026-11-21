@@ -226,7 +226,7 @@ export default function (pi: ExtensionAPI) {
       // No body: the title says which session finished, and a fixed line would
       // only repeat that Pi is done. tmux discards a bare OSC, so send it to
       // the client's tty when tmux is in play.
-      const osc = `${OSC}777;notify;${sanitize(name === "" ? "Pi" : `Pi: ${name}`)};${BEL}`;
+      const osc = `${OSC}777;notify;${sanitize(name === "" ? "Pi" : `Pi — ${name}`)};${BEL}`;
       if (tmux?.clientTty === undefined) process.stdout.write(osc);
       else writeFileSync(tmux.clientTty, osc);
     } catch {
