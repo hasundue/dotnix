@@ -6,9 +6,11 @@
  * without mid-conversation system messages then rebuild the leading message,
  * which invalidates the prompt cache even though the conversation is the same.
  * Replacing that section with a fixed notice leaves the head unchanged across
- * moves and keeps the notice in the session file. A hidden custom message
- * supplies the actual path: the most recent location message is authoritative,
- * so moving A → B → A needs a new one even though A appeared earlier.
+ * moves and keeps the notice in the session file. The `project_context` and
+ * `skills` sections also embed the session cwd, so that prefix is rewritten to
+ * `./` before Pi diffs them. A hidden custom message supplies the actual path:
+ * the most recent location message is authoritative, so moving A → B → A needs
+ * a new one even though A appeared earlier.
  */
 
 import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
@@ -20,11 +22,22 @@ const NOTICE =
 
 export default function (pi: ExtensionAPI) {
   pi.on("before_agent_start", (event, ctx) => {
-    event.systemPromptOptions.sections.cwd = NOTICE;
+    const cwd = ctx.cwd.replace(/\\/g, "/");
+    const relative = (path: string) => path.split(`${cwd}/`).join("./");
+    const options = event.systemPromptOptions;
+    options.sections.cwd = NOTICE;
+    options.contextFiles = options.contextFiles.map((file) => ({
+      ...file,
+      path: relative(file.path),
+    }));
+    options.skills = options.skills.map((skill) => ({
+      ...skill,
+      filePath: relative(skill.filePath),
+    }));
 
     if (event.messageType === "custom" && event.message.customType === LOCATION_TYPE) return;
 
-    const content = `Current working directory: ${ctx.cwd.replace(/\\/g, "/")}`;
+    const content = `Current working directory: ${cwd}`;
     let lastContent: unknown;
     for (const entry of ctx.sessionManager.buildContextEntries()) {
       if (entry.type === "custom_message" && entry.customType === LOCATION_TYPE) {

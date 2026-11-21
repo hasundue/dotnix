@@ -25,11 +25,6 @@ upstream behaviour — climb these stages and stop at the first that answers:
 Do not open with an experiment. Say when a stage left the question open and you
 are moving to the next one.
 
-# Tool usage
-
-- Prefer relative paths for tool and command arguments. Use absolute paths
-  only for locations outside the current directory.
-
 # Comments and prose
 
 - Describe the code and the documents as they are now. Do not explain what used
