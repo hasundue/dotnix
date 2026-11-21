@@ -11,7 +11,7 @@
 - Insert a half-width space between Japanese text and English words.
 - Use the full-width comma `，` and period `．` instead of `、` and `。`.
 
-# Answering Questions
+# Answering questions
 
 When asked how something is specified or behaves — a flag, an option, an API,
 upstream behaviour — climb these stages and stop at the first that answers:
@@ -23,6 +23,11 @@ upstream behaviour — climb these stages and stop at the first that answers:
 
 Do not open with an experiment. Say when a stage left the question open and you
 are moving to the next one.
+
+# Tool usage
+
+- Prefer relative paths for tool and command arguments. Use absolute paths
+  only for locations outside the current directory.
 
 # Comments and prose
 
