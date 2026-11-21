@@ -17,9 +17,10 @@ When asked how something is specified or behaves — a flag, an option, an API,
 upstream behaviour — climb these stages and stop at the first that answers:
 
 1. Your own knowledge, for stable facts about well-known tools and standards.
-2. The web: official documentation, specifications, and upstream source. Use the
-   `ketch` skill.
-3. An experiment in this environment: run commands, build, evaluate.
+2. Local help: `--help` output or `man` pages for the tools involved.
+3. Web sources: official documentation, specifications, and upstream source
+   code.
+4. An experiment in this environment: run commands, build, evaluate.
 
 Do not open with an experiment. Say when a stage left the question open and you
 are moving to the next one.
