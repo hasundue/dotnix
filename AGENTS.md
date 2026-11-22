@@ -13,10 +13,6 @@ to configure something (including yourself), work on this repository.
 
 Do not commit directly to `main` unless explicitly asked.
 
-Creating a worktree checks that the primary checkout is on `main` and level with
-`origin`, in the project `pre-start` hook (`.config/wt.toml`). A failure aborts
-the creation; report it instead of working around it.
-
 Do not stash, reset, or otherwise transfer uncommitted changes from the primary
 checkout unless asked.
 
@@ -41,6 +37,9 @@ validation, and stop conditions; if the skill is unavailable or a precondition
 is unmet, stop and ask rather than proceeding.
 
 ## Validate
+
+Format with `nix fmt`, which uses the flake's formatter without entering a dev
+shell.
 
 Quick-check any config option with `nix eval` instead of a full build:
 

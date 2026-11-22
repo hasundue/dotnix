@@ -1,45 +1,47 @@
-{ pkgs, ... }:
+{ ... }:
 let
-  # Hook helpers: store-path binaries, deliberately not in home.packages, so
-  # they stay out of the user's PATH. The generated config below embeds their
-  # store paths in the hook commands, and no hook body is more than one line,
-  # which keeps Worktrunk's hook echoes short.
-
-  # copy-pi-settings gives a new worktree the primary checkout's
-  # .pi/settings.json, which git ignores: without it pi loses the project's
-  # packages (pi-worktrunk, for one). It copies only when the source exists
-  # and the target does not, so a checkout that deliberately dropped its own
-  # copy keeps it.
-  copy-pi-settings = pkgs.writeShellApplication {
-    name = "copy-pi-settings";
-    runtimeInputs = [ pkgs.coreutils ];
-    text = builtins.readFile ./copy-pi-settings.sh;
-  };
-
-  # The user Worktrunk config, generated so hook commands can carry store
-  # paths. The {{ ... }} in hook commands are Worktrunk template variables;
-  # Worktrunk shell-escapes each substituted path, so a hook may quote it.
-  configTOML = ''
-    skip-shell-integration-prompt = true
-
-    [merge]
-    commit = false    # --no-commit by default
-  ''
   # A worktree starts from a commit, so a file git ignores is missing there.
-  # Both helpers work in every repository, so neither asks a repository to
-  # opt in.
-  + ''
-    [post-start]
-    copy-envrc = "test -f {{ primary_worktree_path }}/.envrc && cp {{ primary_worktree_path }}/.envrc {{ worktree_path }}/.envrc"
-    copy-pi-settings = "${copy-pi-settings}/bin/copy-pi-settings {{ primary_worktree_path }}/.pi/settings.json {{ worktree_path }}/.pi/settings.json"
-  '';
+  # Both copy steps work in every repository, so neither asks a repository to
+  # opt in. The second block runs after the copies: direnv needs .envrc, and
+  # git hooks need the config. The {{ ... }} are Worktrunk template variables;
+  # Worktrunk shell-escapes each substituted path.
+  post-start = [
+    {
+      copy-envrc = ''
+        if test -f "{{ primary_worktree_path }}/.envrc"; then
+          cp "{{ primary_worktree_path }}/.envrc" "{{ worktree_path }}/.envrc"
+        fi
+      '';
+      copy-pi-settings = ''
+        if test -f "{{ primary_worktree_path }}/.pi/settings.json" && test ! -e "{{ worktree_path }}/.pi/settings.json"; then
+          mkdir -p "{{ worktree_path }}/.pi"
+          cp "{{ primary_worktree_path }}/.pi/settings.json" "{{ worktree_path }}/.pi/settings.json"
+        fi
+      '';
+    }
+    {
+      setup = ''
+        if test -f .envrc; then
+          direnv allow
+        fi
+        if test -f flake.nix; then
+          config=$(nix eval --raw .#pre-commit-config 2>/dev/null || true)
+          if test -n "$config"; then
+            nix build --no-link .#pre-commit-config
+            ln -sfn "$config" .pre-commit-config.yaml
+          fi
+        fi
+      '';
+    }
+  ];
 in
 {
-  home.packages = [ pkgs.worktrunk ];
-
-  home.file.".config/worktrunk/config.toml".text = configTOML;
-
-  programs.fish.interactiveShellInit = ''
-    ${pkgs.worktrunk}/bin/wt config shell init fish | source
-  '';
+  programs.worktrunk = {
+    enable = true;
+    settings = {
+      "skip-shell-integration-prompt" = true;
+      merge.commit = false; # --no-commit by default
+      inherit post-start;
+    };
+  };
 }

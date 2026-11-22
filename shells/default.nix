@@ -36,3 +36,7 @@ pkgs.mkShellNoCC {
   ];
   shellHook = git-hooks.shellHook;
 }
+// {
+  inherit treefmt;
+  inherit (git-hooks.config) configFile;
+}
