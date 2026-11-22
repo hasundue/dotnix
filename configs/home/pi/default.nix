@@ -5,13 +5,8 @@
   ...
 }:
 let
-  live = config.dotnix.live.pi;
   opencodeGoKey = config.age.secrets."api/opencode-go".path;
   piAuthFile = "${config.programs.pi-coding-agent.configDir}/auth.json";
-
-  # mcp.json stays writable so pi's `/mcp` changes land in the repository;
-  # settings.json and auth.json are writable and receive Nix-managed merges.
-  link = path: config.lib.file.mkOutOfStoreSymlink "${live.stable}/${path}";
 in
 {
   imports = [ ./zotero.nix ];
@@ -122,29 +117,19 @@ in
     ''
   );
 
-  dotnix.live.pi = {
-    enable = true;
-    path = "configs/home/pi/agent";
+  # Store-backed links are read-only: edit the repository and activate to change
+  # any of these files. settings.json and auth.json stay writable (see above).
+  home.file = {
+    ".pi/agent/AGENTS.md".source = ./agent/AGENTS.md;
+    ".pi/agent/APPEND_SYSTEM.md".source = ./agent/APPEND_SYSTEM.md;
+    ".pi/agent/models.json".source = ./agent/models.json;
+    ".pi/agent/mcp.json".source = ./agent/mcp.json;
+    ".pi/agent/keybindings.json".source = ./agent/keybindings.json;
+    ".pi/agent/prompts".source = ./agent/prompts;
+    ".pi/agent/extensions".source = ./agent/extensions;
+    ".pi/agent/skills".source = ./agent/skills;
+
+    # auth.json is created as a regular mutable file by home.activation.piAuth:
+    # Pi's lock must be writable, and other providers' credentials may change.
   };
-
-  home.file =
-    lib.optionalAttrs (!live.enable) {
-      # Only when live is off: when it is on, activation points this at the
-      # activated checkout so `DOTNIX_LIVE_ROOT` can move it without touching the
-      # evaluation. The consumers below never see the difference.
-      "dotnix.live.pi".source = ./agent;
-    }
-    // {
-      ".pi/agent/AGENTS.md".source = link "AGENTS.md";
-      ".pi/agent/APPEND_SYSTEM.md".source = link "APPEND_SYSTEM.md";
-      ".pi/agent/models.json".source = link "models.json";
-      ".pi/agent/mcp.json".source = link "mcp.json";
-      ".pi/agent/keybindings.json".source = link "keybindings.json";
-      ".pi/agent/prompts".source = link "prompts";
-      ".pi/agent/extensions".source = link "extensions";
-      ".pi/agent/skills".source = link "skills";
-
-      # auth.json is created as a regular mutable file by home.activation.piAuth:
-      # Pi's lock must be writable, and other providers' credentials may change.
-    };
 }

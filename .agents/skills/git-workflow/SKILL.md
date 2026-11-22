@@ -42,12 +42,6 @@ and merge.
 Run the merge with Worktrunk in the source branch's checkout, so the local
 reorganized tip is what gets merged.
 
-When the source worktree owns the live tree, treat its removal and the
-`pre-remove` rehoming of live links to the primary checkout as part of the
-merge. Read the live configuration guide before removal and do not bypass the
-hook. Keep the worktree with `--no-remove` only when the user asked to keep it
-or explicitly deferred cleanup.
-
 Keep the source remote branch after a merge as a checkpoint archive; do not
 delete it. Rebased commits are never pushed, so the archive is not the merged
 result. Branch from `main`. Removal is defined in

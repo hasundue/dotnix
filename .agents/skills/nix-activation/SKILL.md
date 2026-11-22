@@ -35,8 +35,3 @@ nix run .#home-switch
 It runs `home-manager switch --flake .#<user>@<host>`, the same command the
 `hms` alias uses. Flake arguments such as `--impure` and `--refresh` go straight
 through to Home Manager.
-
-`nix run .#home-live` performs the same activation from the checkout where it
-runs, with `DOTNIX_LIVE_ROOT` exported. Read
-[`docs/live-configuration.md`](../../../docs/live-configuration.md) before
-using it; that guide explains how activation moves the live tree.

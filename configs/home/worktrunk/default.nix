@@ -5,17 +5,6 @@ let
   # store paths in the hook commands, and no hook body is more than one line,
   # which keeps Worktrunk's hook echoes short.
 
-  # rehome-live repoints dotnix.live.* links away from a worktree being
-  # removed. It is a user hook, not a project hook: a store path cannot appear
-  # in the committed `.config/wt.toml`, Worktrunk echoes a project hook's body
-  # whenever it runs, and a user hook needs no project approval. It runs in
-  # every repository, where it no-ops on the unmatched links.
-  rehome-live = pkgs.writeShellApplication {
-    name = "rehome-live";
-    runtimeInputs = [ pkgs.coreutils ];
-    text = builtins.readFile ./rehome-live.sh;
-  };
-
   # copy-pi-settings gives a new worktree the primary checkout's
   # .pi/settings.json, which git ignores: without it pi loses the project's
   # packages (pi-worktrunk, for one). It copies only when the source exists
@@ -43,14 +32,6 @@ let
     [post-start]
     copy-envrc = "test -f {{ primary_worktree_path }}/.envrc && cp {{ primary_worktree_path }}/.envrc {{ worktree_path }}/.envrc"
     copy-pi-settings = "${copy-pi-settings}/bin/copy-pi-settings {{ primary_worktree_path }}/.pi/settings.json {{ worktree_path }}/.pi/settings.json"
-  ''
-  # Runs in the worktree being removed, before the directory goes away, so
-  # a failure stops the removal. In repositories other than this one no
-  # dotnix.live.* link points into the removed worktree and the helper
-  # no-ops.
-  + ''
-    [pre-remove]
-    rehome-live = "${rehome-live}/bin/rehome-live {{ worktree_path }} {{ primary_worktree_path }}"
   '';
 in
 {
