@@ -193,6 +193,7 @@
           )
         ) (builtins.readDir ./shells)
       );
+      formatter = forEachSystem (pkgs: self.devShells.${pkgs.system}.default.treefmt);
       nixosConfigurations = lib.mapAttrs nixosSystem {
         # Thinkpad X1 Carbon 5th Gen
         x1carbon = {
@@ -236,6 +237,7 @@
         };
         pi-gpui = pkgs.callPackage ./packages/pi-gpui.nix { };
         kero = pkgs.callPackage ./packages/kero.nix { };
+        pre-commit-config = self.devShells.${pkgs.system}.default.configFile;
       });
       homeConfigurations =
         lib.mapAttrs' (hostname: v: homeConfig v |> lib.nameValuePair "${username}@${hostname}")

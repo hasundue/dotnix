@@ -16,6 +16,15 @@ let
     text = builtins.readFile ./copy-pi-settings.sh;
   };
 
+  # install-git-hooks links the repository's pre-commit config into a new
+  # worktree without building the whole dev shell. It no-ops where the flake
+  # has no `pre-commit-config` package.
+  install-git-hooks = pkgs.writeShellApplication {
+    name = "install-git-hooks";
+    runtimeInputs = [ pkgs.nix ];
+    text = builtins.readFile ./install-git-hooks.sh;
+  };
+
   # The user Worktrunk config, generated so hook commands can carry store
   # paths. The {{ ... }} in hook commands are Worktrunk template variables;
   # Worktrunk shell-escapes each substituted path, so a hook may quote it.
@@ -26,12 +35,16 @@ let
     commit = false    # --no-commit by default
   ''
   # A worktree starts from a commit, so a file git ignores is missing there.
-  # Both helpers work in every repository, so neither asks a repository to
-  # opt in.
+  # Both copy helpers work in every repository, so neither asks a repository
+  # to opt in. The second block runs after the copies: direnv needs .envrc,
+  # and git hooks need the config.
   + ''
-    [post-start]
-    copy-envrc = "test -f {{ primary_worktree_path }}/.envrc && cp {{ primary_worktree_path }}/.envrc {{ worktree_path }}/.envrc"
+    [[post-start]]
+    copy-envrc = "if test -f {{ primary_worktree_path }}/.envrc; then cp {{ primary_worktree_path }}/.envrc {{ worktree_path }}/.envrc; fi"
     copy-pi-settings = "${copy-pi-settings}/bin/copy-pi-settings {{ primary_worktree_path }}/.pi/settings.json {{ worktree_path }}/.pi/settings.json"
+
+    [[post-start]]
+    setup = "if test -f .envrc; then direnv allow; fi; ${install-git-hooks}/bin/install-git-hooks"
   '';
 in
 {
