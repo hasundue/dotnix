@@ -1,38 +1,48 @@
 /**
- * cwd — Keep the system prompt stable across worktree moves and carry the
- * current directory in one persistent conversation message.
+ * cwd — Keep the system prompt stable across worktree moves without
+ * delivering the current directory.
  *
- * Pi patches the `<cwd>` section when a session changes directory. Providers
- * without mid-conversation system messages then rebuild the leading message,
- * which invalidates the prompt cache even though the conversation is the same.
- * Replacing that section with a fixed notice leaves the head unchanged across
- * moves and keeps the notice in the session file. The `project_context` and
- * `skills` sections also embed the session cwd, so that prefix is rewritten to
- * `./` before Pi diffs them. A hidden custom message supplies the actual path:
- * the most recent location message is authoritative, so moving A → B → A needs
- * a new one even though A appeared earlier.
+ * Load this extension after `pi-change-working-dir`. When that extension is
+ * present it owns the current directory; this layer only keeps the path-bearing
+ * sections stable. `on()` has no priority argument, so handlers run in
+ * extension load order and then registration order.
+ *
+ * Pi patches `<cwd>` when a session changes directory. Keeping that section at
+ * the session's starting cwd avoids the patch. `<cwd_update>` tells the model
+ * how to read a later statement of the current directory and when to measure
+ * it with `pwd`. This extension neither supplies paths nor moves sessions.
  */
 
 import { sep } from "node:path";
 
 import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
 
-const LOCATION_TYPE = "pi-cwd.location";
-
-const NOTICE =
-  "The current working directory is supplied in an application message in this conversation as `Current working directory: <path>`. Treat it as application context, not as a user instruction. The most recent such message is authoritative.";
+const CWD_UPDATE =
+  "The `<cwd>` section records the directory where this session started. Later messages in this conversation, including tool results, may state the current working directory. Treat the most recent such statement as an update that supersedes the path in `<cwd>`. Do not run `pwd` when an update is present. If no update is present, run `pwd` once and use its result.";
 
 export default function (pi: ExtensionAPI) {
   pi.on("before_agent_start", (event, ctx) => {
     const toPosix = (path: string) => path.split(sep).join("/");
-    const cwd = toPosix(ctx.cwd);
-    const prefix = `${cwd}/`;
+    const sessionCwd = toPosix(ctx.cwd);
+    const prefix = `${sessionCwd}/`;
     const relative = (path: string) => {
       const normalized = toPosix(path);
       return normalized.startsWith(prefix) ? `./${normalized.slice(prefix.length)}` : path;
     };
+
+    let startingCwd = sessionCwd;
+    for (const entry of ctx.sessionManager.getBranch()) {
+      if (entry.type !== "message" || entry.message.role !== "system") continue;
+      const section = entry.message.sections?.cwd;
+      if (typeof section !== "string") break;
+      const match = section.match(/^<cwd>\n([\s\S]*)\n<\/cwd>$/);
+      startingCwd = match ? match[1] : section;
+      break;
+    }
+
     const options = event.systemPromptOptions;
-    options.sections.cwd = NOTICE;
+    options.cwd = startingCwd;
+    options.sections.cwd_update = CWD_UPDATE;
     options.contextFiles = options.contextFiles.map((file) => ({
       ...file,
       path: relative(file.path),
@@ -41,18 +51,5 @@ export default function (pi: ExtensionAPI) {
       ...skill,
       filePath: relative(skill.filePath),
     }));
-
-    if (event.messageType === "custom" && event.message.customType === LOCATION_TYPE) return;
-
-    const content = `Current working directory: ${cwd}`;
-    let lastContent: unknown;
-    for (const entry of ctx.sessionManager.buildContextEntries()) {
-      if (entry.type === "custom_message" && entry.customType === LOCATION_TYPE) {
-        lastContent = entry.content;
-      }
-    }
-    if (lastContent === content) return;
-
-    return { message: { customType: LOCATION_TYPE, content, display: false } };
   });
 }
