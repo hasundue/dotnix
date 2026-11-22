@@ -29,15 +29,6 @@ Make code changes in a linked worktree, not in the primary checkout at
 When the current directory is already a worktree such as `~/dotnix.<branch>`,
 keep working there and do not nest another one.
 
-### Live configuration
-
-A feature's configuration is live when `dotnix.live.<name>.enable` links it to
-the checkout selected by activation (currently Pi's
-`configs/home/pi/agent`). Before editing those linked files, activating from a
-worktree, or removing a worktree, read [the live configuration
-guide](docs/live-configuration.md). Removal relies on the Worktrunk
-`pre-remove` hook; do not bypass it.
-
 A dirty `main` is acceptable. Do not commit or push to `main` from that state:
 a mistake would then only be fixable destructively.
 
@@ -128,7 +119,7 @@ NOM_DISABLE=1 nix run .#nixos-switch
 ## Apply
 
 Before running any activation command (`home-switch`, `nixos-test`,
-`nixos-switch`, `nixos-boot`, or `home-live`), read and follow the
+`nixos-switch`, or `nixos-boot`), read and follow the
 [Nix activation skill](.agents/skills/nix-activation/SKILL.md). This includes
 commands mentioned in the build guidance above. For build-only validation, use
 the build commands there.

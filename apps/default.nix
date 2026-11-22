@@ -69,31 +69,6 @@ in
     ''}/bin/home-switch";
   };
 
-  # Activate from the checkout this app runs in, and point the live tree at it.
-  # `DOTNIX_LIVE_ROOT` is read by the activation hook, not by the evaluation,
-  # so the build stays pure and cached: the live root never enters the store.
-  #
-  # The root comes from `$PWD` rather than the wrapper's own location, so
-  # starting from a subdirectory works. `nix run <path>#home-live` from
-  # elsewhere does not: `$PWD` is still the caller's, so `cd` into the checkout
-  # first.
-  "home-live" = {
-    type = "app";
-    program = "${pkgs.writeShellScriptBin "home-live" ''
-      set -euo pipefail
-      root="$(git -C "$PWD" rev-parse --show-toplevel)"
-      export DOTNIX_LIVE_ROOT="$root"
-      flake="$root#${username}@$(hostname)"
-      if [ -t 1 ] && [ -z "''${NOM_DISABLE:-}" ]; then
-        exec ${pkgs.home-manager}/bin/home-manager \
-          ${nomOpts} switch --flake "$flake" "$@" \
-          2>&1 | ${pkgs.nix-output-monitor}/bin/nom --json
-      else
-        exec ${pkgs.home-manager}/bin/home-manager switch --flake "$flake" "$@"
-      fi
-    ''}/bin/home-live";
-  };
-
   # Build NixOS + home-manager (no sudo; leaves ./result)
   "nixos-build" = {
     type = "app";
