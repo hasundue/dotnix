@@ -29,18 +29,21 @@ changed:
 
 ## Merging
 
-Before merging, inspect the branch. If its commits already follow
-[Granularity](#granularity) and use appropriate scopes, leave them unchanged and
-run relevant validation on the branch tip. Otherwise, propose the `main`-commit
-grouping, scopes, and validation; wait for the user's approval before rewriting.
-After approval, rebase onto the current `main` and reorganize checkpoints by
-outcome in the source branch's checkout, then run the proposed validation on
-the branch tip. Do not push the reorganized branch to `origin`. After reorganizing,
-do not run `git push` or `git pull` on the working branch; go straight to validation
-and merge.
+Before merging, inspect the branch and propose a plan to the user. The plan
+names the `main`-commit grouping, scopes, and validation. If the commits already
+follow [Granularity](#granularity) and use appropriate scopes, the plan keeps
+them unchanged; otherwise it reorganizes them. Either way, wait for the user's
+approval before rewriting or merging. Meeting Granularity does not count as
+approval.
+
+After approval, if the plan reorganizes the branch, rebase onto the current
+`main` and reorganize checkpoints by outcome in the source branch's checkout.
+Do not push the reorganized branch to `origin`, and do not run `git push` or
+`git pull` on the working branch afterward. Then run the approved validation on
+the branch tip and merge.
 
 Run the merge with Worktrunk in the source branch's checkout, so the local
-reorganized tip is what gets merged.
+branch tip is what gets merged.
 
 Keep the source remote branch after a merge as a checkpoint archive; do not
 delete it. Rebased commits are never pushed, so the archive is not the merged
