@@ -29,13 +29,13 @@
         "x86_64-darwin"
         "aarch64-darwin"
       ];
-      packages = lib.genAttrs systems (
+      pkgsFor = lib.genAttrs systems (
         system:
         import nixpkgs {
           inherit system;
         }
       );
-      forEachSystem = f: lib.genAttrs systems (s: f packages.${s});
+      forEachSystem = f: lib.genAttrs systems (system: f pkgsFor.${system});
       perSystem = forEachSystem (
         pkgs:
         let
@@ -52,6 +52,10 @@
               treefmt = {
                 enable = true;
                 package = treefmt;
+              };
+              gitleaks = {
+                enable = true;
+                package = pkgs.gitleaks;
               };
             };
           };
