@@ -29,16 +29,14 @@
         "x86_64-darwin"
         "aarch64-darwin"
       ];
-      packages = lib.genAttrs systems (
+      pkgsFor = lib.genAttrs systems (
         system:
         import nixpkgs {
           inherit system;
         }
       );
-      forEachSystem = f: lib.genAttrs systems (s: f packages.${s});
-    in
-    {
-      devShells = forEachSystem (
+      forEachSystem = f: lib.genAttrs systems (system: f pkgsFor.${system});
+      perSystem = forEachSystem (
         pkgs:
         let
           inherit (pkgs.stdenv.hostPlatform) system;
@@ -55,19 +53,32 @@
                 enable = true;
                 package = treefmt;
               };
+              gitleaks = {
+                enable = true;
+                package = pkgs.gitleaks;
+              };
             };
           };
         in
         {
-          default = pkgs.mkShell {
-            packages = with pkgs; [
-              nil
-              oxfmt
-              treefmt
-            ];
-            shellHook = git-hooks.shellHook;
-          };
+          inherit pkgs treefmt;
+          shellHook = git-hooks.shellHook;
+          configFile = git-hooks.config.configFile;
         }
       );
+    in
+    {
+      devShells = lib.mapAttrs (_: p: {
+        default = p.pkgs.mkShell {
+          packages = with p.pkgs; [
+            nil
+            oxfmt
+            treefmt
+          ];
+          shellHook = p.shellHook;
+        };
+      }) perSystem;
+      formatter = lib.mapAttrs (_: p: p.treefmt) perSystem;
+      packages = lib.mapAttrs (_: p: { pre-commit-config = p.configFile; }) perSystem;
     };
 }
