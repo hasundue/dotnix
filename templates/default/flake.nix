@@ -36,9 +36,7 @@
         }
       );
       forEachSystem = f: lib.genAttrs systems (s: f packages.${s});
-    in
-    {
-      devShells = forEachSystem (
+      perSystem = forEachSystem (
         pkgs:
         let
           inherit (pkgs.stdenv.hostPlatform) system;
@@ -59,15 +57,24 @@
           };
         in
         {
-          default = pkgs.mkShell {
-            packages = with pkgs; [
-              nil
-              oxfmt
-              treefmt
-            ];
-            shellHook = git-hooks.shellHook;
-          };
+          inherit pkgs treefmt;
+          shellHook = git-hooks.shellHook;
+          configFile = git-hooks.config.configFile;
         }
       );
+    in
+    {
+      devShells = lib.mapAttrs (_: p: {
+        default = p.pkgs.mkShell {
+          packages = with p.pkgs; [
+            nil
+            oxfmt
+            treefmt
+          ];
+          shellHook = p.shellHook;
+        };
+      }) perSystem;
+      formatter = lib.mapAttrs (_: p: p.treefmt) perSystem;
+      packages = lib.mapAttrs (_: p: { pre-commit-config = p.configFile; }) perSystem;
     };
 }
