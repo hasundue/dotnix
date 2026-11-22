@@ -123,3 +123,9 @@ Before running any activation command (`home-switch`, `nixos-test`,
 [Nix activation skill](.agents/skills/nix-activation/SKILL.md). This includes
 commands mentioned in the build guidance above. For build-only validation, use
 the build commands there.
+
+NixOS activation commands (`nixos-test`, `nixos-switch`, and `nixos-boot`) need
+sudo, so the user runs them; after each activation, verify the resulting state
+as far as possible here. Use `home-switch` and the build-only commands for
+checks that do not need sudo, and do not ask for a sudo password or add
+non-interactive elevation.
