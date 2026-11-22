@@ -125,6 +125,7 @@ commands mentioned in the build guidance above. For build-only validation, use
 the build commands there.
 
 NixOS activation commands (`nixos-test`, `nixos-switch`, and `nixos-boot`) need
-sudo, so the user runs them and verifies their results. Use `home-switch` and
-the build-only commands for agent-side checks; do not ask for a sudo password
-or add non-interactive elevation.
+sudo, so the user runs them; after each activation, verify the resulting state
+as far as possible here. Use `home-switch` and the build-only commands for
+checks that do not need sudo, and do not ask for a sudo password or add
+non-interactive elevation.
