@@ -56,6 +56,9 @@ in
         "-skills/pdf-tools"
         "-skills/zotero-pdf"
       ];
+      extensions = [
+        ./agent/extensions
+      ];
     };
 
     extraPackages = [
@@ -126,7 +129,6 @@ in
     ".pi/agent/mcp.json".source = ./agent/mcp.json;
     ".pi/agent/keybindings.json".source = ./agent/keybindings.json;
     ".pi/agent/prompts".source = ./agent/prompts;
-    ".pi/agent/extensions".source = ./agent/extensions;
     ".pi/agent/skills".source = ./agent/skills;
 
     # auth.json is created as a regular mutable file by home.activation.piAuth:

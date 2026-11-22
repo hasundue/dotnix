@@ -22,6 +22,7 @@
     ./ketch.nix
     ./syncthing.nix
     ./gh.nix
+    ./herdr.nix
     ./lazygit.nix
     ./mcp.nix
     ./neovim.nix
