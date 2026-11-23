@@ -224,6 +224,7 @@
         };
       };
       overlays = import ./overlays // {
+        # Inputs exposed as-is under pkgs; mostly sources without nixpkgs packages.
         pristine = import ./overlays/pristine.nix {
           inherit (inputs)
             firefox-addons
@@ -233,6 +234,7 @@
             rpiv-mono
             ;
         };
+        # Packages from a pinned nixpkgs revision until nixpkgs catches up.
         temporal = import ./overlays/temporal.nix {
           mcp-nixos = inputs.nixpkgs-mcp-nixos;
         };
