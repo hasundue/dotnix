@@ -5,7 +5,11 @@
   ...
 }:
 let
-  hooks = import ../worktree-hooks { inherit lib; };
+  mkHooks = (import ../worktree-hooks { }).mkHooks;
+  hooks = mkHooks {
+    primary = "$WT_PRIMARY";
+    worktree = "$WT_WORKTREE";
+  };
   pluginId = "local.worktree-hooks";
   pluginDir = "${config.home.homeDirectory}/.config/herdr/plugins/worktree-hooks";
   bash = lib.getExe pkgs.bash;
@@ -17,21 +21,18 @@ let
   script = ''
     set -euo pipefail
 
-    event=$1
     payload=''${HERDR_PLUGIN_EVENT_JSON:?HERDR_PLUGIN_EVENT_JSON is required}
 
     WT_WORKTREE=$(${jq} -er '.data.worktree.path' <<<"$payload")
     WT_PRIMARY=$(${jq} -er '.data.workspace.worktree.repo_root // .data.worktree.path' <<<"$payload")
-    WT_BRANCH=$(${jq} -r '.data.worktree.branch // ""' <<<"$payload")
-    export WT_WORKTREE WT_PRIMARY WT_BRANCH
+    export WT_WORKTREE WT_PRIMARY
     cd "$WT_WORKTREE"
 
-    ${hooks.functions}
+    ${hooks."copy-envrc"}
 
-    case "$event" in
-    ${hooks.cases}
-      *) ;;
-    esac
+    ${hooks."copy-pi-settings"}
+
+    ${hooks.setup}
   '';
 
   manifest = ''
@@ -44,11 +45,7 @@ let
 
     [[events]]
     on = "worktree.created"
-    command = [ "${bash}" "${pluginDir}/hooks.sh" "created" ]
-
-    [[events]]
-    on = "worktree.opened"
-    command = [ "${bash}" "${pluginDir}/hooks.sh" "opened" ]
+    command = [ "${bash}" "${pluginDir}/hooks.sh" ]
   '';
 in
 {
