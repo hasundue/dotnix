@@ -78,6 +78,8 @@ The launcher takes pi's shape: options, then `--` when you need it, then
   reads each file and puts its contents in the same user message as the words,
   so name each file in the message by path and role. A glob is not a file:
   select the files yourself. Front or back, the attachments are the same.
+  Attach only what the question needs: a self-contained change can be reviewed
+  from the diff alone, while other cases need whole files (see Gotchas).
 - Bare words are the message. Piped input follows it in the same user message.
   Name the material in the words by what it is: a diff, a note, a file at
   `path:line`, not by how it arrived. The child cannot tell a pipe from an
@@ -133,6 +135,9 @@ scripts/run.py --session-id liquid-metal-impurity \
 - `--session-id ID` resumes that session, and creates it with that ID when it
   does not exist yet; creating one still needs `--system-prompt`, like any new
   session. It takes a new message and `@FILE` list as one new user message.
+  Earlier attachments remain in the child's context: re-attach only files whose
+  contents changed since they were last sent. If a changed file is not
+  re-attached, the child reviews the stale copy already in context.
 - Resuming keeps the session's composed system prompt and its model. `--model`
   and `--thinking` change the model for this turn and for every later turn;
   `--system-prompt` is refused, because a new task definition means a new
