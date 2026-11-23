@@ -107,13 +107,9 @@ rather than config files, trust `nixos-*`.
 
 The `nixos-*` apps accept passthrough flags such as `--show-trace`. They pipe
 output through `nom` when stdout is a TTY, and skip it when non-TTY for minimal
-output.
-`NOM_DISABLE` forces raw output even in a TTY:
-
-```bash
-NOM_DISABLE=1 nix run .#nixos-build
-NOM_DISABLE=1 nix run .#nixos-switch
-```
+output. `NOM_DISABLE=1` forces raw output even in a TTY. It is for commands you
+run yourself in a TTY; agent bash calls are non-TTY and already skip `nom`.
+Do not add it to commands you ask the user to run, so they keep `nom`'s output.
 
 ## Apply
 
