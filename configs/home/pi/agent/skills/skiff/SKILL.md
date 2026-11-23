@@ -106,7 +106,9 @@ The launcher takes pi's shape: options, then `--` when you need it, then
   the thing you are checking, and when you are unsure what was attached.
 - stdout is the child's answer alone. stderr carries the `session:` line, a
   blank line before the answer when there is one, any error, and `--info`'s
-  provenance; nothing else on success.
+  provenance; nothing else on success. Do not pass `--info` by default: the
+  session line and errors are on stderr without it. Use it only when diagnosing
+  a run or when its provenance is the thing being checked.
 - The stable launcher path is `scripts/run.py` in this skill directory. Its
   `--help` lists the flags and the stream contract, and its docstring records
   what a session dir holds.
