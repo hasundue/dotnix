@@ -1,5 +1,7 @@
 {
   firefox-addons,
+  kanagawa-bat,
+  kanagawa-delta,
   models-dev,
   rpiv-mono,
 }:
@@ -9,6 +11,10 @@ let
 in
 {
   firefox-addons = firefox-addons.packages.${system};
+  kanagawa = {
+    bat = kanagawa-bat;
+    delta = kanagawa-delta;
+  };
   modelsDevSource = models-dev;
   rpivMonoSrc = rpiv-mono;
 }

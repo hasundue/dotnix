@@ -224,15 +224,11 @@
         };
       };
       overlays = import ./overlays // {
-        kanagawa = import ./overlays/kanagawa.nix {
-          inherit (inputs)
-            kanagawa-bat
-            kanagawa-delta
-            ;
-        };
         pristine = import ./overlays/pristine.nix {
           inherit (inputs)
             firefox-addons
+            kanagawa-bat
+            kanagawa-delta
             models-dev
             rpiv-mono
             ;
