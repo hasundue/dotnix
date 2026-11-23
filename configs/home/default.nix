@@ -17,6 +17,7 @@
   };
   imports = [
     ./agenix
+    ./delta.nix
     ./fish.nix
     ./git.nix
     ./ketch.nix
