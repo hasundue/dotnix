@@ -28,9 +28,9 @@ let
     export WT_WORKTREE WT_PRIMARY
     cd "$WT_WORKTREE"
 
-    ${hooks."copy-envrc"}
+    ${hooks.copy."copy-envrc"}
 
-    ${hooks."copy-pi-settings"}
+    ${hooks.copy."copy-pi-settings"}
 
     ${hooks.setup}
   '';

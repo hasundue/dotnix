@@ -1,4 +1,4 @@
-{ lib, ... }:
+{ ... }:
 let
   mkHooks = (import ../worktree-hooks { }).mkHooks;
   hooks = mkHooks {
@@ -12,9 +12,11 @@ in
     settings = {
       "skip-shell-integration-prompt" = true;
       merge.commit = false; # --no-commit by default
-      # One hook per step: Worktrunk runs keys in the same block concurrently,
-      # so setup must not share a block with the copies it depends on.
-      post-start = lib.mapAttrsToList (name: body: { ${name} = body; }) hooks;
+      # Worktrunk runs blocks in order, and keys inside one block concurrently.
+      post-start = [
+        hooks.copy
+        { setup = hooks.setup; }
+      ];
     };
   };
 }
