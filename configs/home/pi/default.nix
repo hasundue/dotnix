@@ -7,6 +7,19 @@
 let
   opencodeGoKey = config.age.secrets."api/opencode-go".path;
   piAuthFile = "${config.programs.pi-coding-agent.configDir}/auth.json";
+  piPackage = config.programs.pi-coding-agent.package;
+  piPackageRoot = pkgs.symlinkJoin {
+    name = "pi-package-root";
+    paths = [
+      "${piPackage}/lib/node_modules/pi-monorepo"
+      (pkgs.linkFarm "pi-source" [
+        {
+          name = "src";
+          path = "${piPackage.src}/packages/coding-agent/src";
+        }
+      ])
+    ];
+  };
 in
 {
   imports = [ ./zotero.nix ];
@@ -134,4 +147,10 @@ in
     # auth.json is created as a regular mutable file by home.activation.piAuth:
     # Pi's lock must be writable, and other providers' credentials may change.
   };
+
+  # Pi resolves its own docs paths from getPackageDir(), which honours
+  # PI_PACKAGE_DIR for Nix/Guix. The joined root also carries the coding-agent
+  # src/, so docs links like ../src/... resolve locally.
+  xdg.dataFile."pi/package".source = piPackageRoot;
+  home.sessionVariables.PI_PACKAGE_DIR = "${config.xdg.dataHome}/pi/package";
 }
