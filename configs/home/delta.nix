@@ -8,7 +8,7 @@ in
   programs.bat = {
     enable = true;
     themes.kanagawa-wave = {
-      src = pkgs.kanagawaBatSrc;
+      src = pkgs.kanagawa.bat;
       file = "themes/kanagawa-wave.tmTheme";
     };
   };
@@ -24,7 +24,7 @@ in
 
   # A delta theme is a git config feature, so include the upstream config.
   xdg.configFile."delta/kanagawa-wave.gitconfig".source =
-    "${pkgs.kanagawaDeltaSrc}/themes/kanagawa-wave.gitconfig";
+    "${pkgs.kanagawa.delta}/themes/kanagawa-wave.gitconfig";
   programs.git.includes = [
     {
       path = "${config.xdg.configHome}/delta/kanagawa-wave.gitconfig";
