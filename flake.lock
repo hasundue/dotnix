@@ -257,6 +257,38 @@
         "type": "github"
       }
     },
+    "kanagawa-bat": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1794519122,
+        "narHash": "sha256-QrHN0FGi7U3B+71EAU1tRIIkiGsen+aeNZLpFF5xmLY=",
+        "owner": "kanagawa-community",
+        "repo": "bat",
+        "rev": "70d2382f6e9679b0b0c36921a198c35961a9507f",
+        "type": "github"
+      },
+      "original": {
+        "owner": "kanagawa-community",
+        "repo": "bat",
+        "type": "github"
+      }
+    },
+    "kanagawa-delta": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1794519136,
+        "narHash": "sha256-NaZmz5DozPKbp4I1CcUmwwxinerZkmckLRdYNBYtCmc=",
+        "owner": "kanagawa-community",
+        "repo": "delta",
+        "rev": "27d780d71a6470a0cb138601d4aaa3b6f143c9c0",
+        "type": "github"
+      },
+      "original": {
+        "owner": "kanagawa-community",
+        "repo": "delta",
+        "type": "github"
+      }
+    },
     "lean-nvim": {
       "flake": false,
       "locked": {
@@ -538,6 +570,8 @@
         "flake-compat": "flake-compat",
         "git-hooks-nix": "git-hooks-nix",
         "home-manager": "home-manager",
+        "kanagawa-bat": "kanagawa-bat",
+        "kanagawa-delta": "kanagawa-delta",
         "mcp-servers-nix": "mcp-servers-nix",
         "models-dev": "models-dev",
         "nixos-hardware": "nixos-hardware",
