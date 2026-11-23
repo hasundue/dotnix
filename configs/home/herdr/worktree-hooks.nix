@@ -6,10 +6,12 @@
 }:
 let
   mkHooks = (import ../worktree-hooks { }).mkHooks;
-  hooks = mkHooks {
+  hookBlocks = mkHooks {
     primary = "$WT_PRIMARY";
     worktree = "$WT_WORKTREE";
   };
+  # Flatten Worktrunk's blocks into one ordered script for the plugin.
+  hooks = lib.concatMap (block: lib.attrValues block) hookBlocks;
   pluginId = "local.worktree-hooks";
   pluginDir = "${config.home.homeDirectory}/.config/herdr/plugins/worktree-hooks";
   bash = lib.getExe pkgs.bash;
@@ -28,11 +30,7 @@ let
     export WT_WORKTREE WT_PRIMARY
     cd "$WT_WORKTREE"
 
-    ${hooks.copy."copy-envrc"}
-
-    ${hooks.copy."copy-pi-settings"}
-
-    ${hooks.setup}
+    ${lib.concatStringsSep "\n\n" hooks}
   '';
 
   manifest = ''
