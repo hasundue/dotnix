@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ config, pkgs, ... }:
 {
   imports = [ ./worktree-hooks.nix ];
 
@@ -16,8 +16,13 @@
     };
   };
 
-  # The Pi skill can be loaded straight from the pinned Herdr package.
-  programs.pi-coding-agent.settings.skills = [ "${pkgs.herdr}/share/skills/herdr/herdr" ];
+  # A raw store path here would change whenever Herdr is rebuilt, which
+  # changes Pi's system prompt and costs a prompt-cache miss. The configured
+  # path stays stable while Home Manager updates the symlink target.
+  programs.pi-coding-agent.settings.skills = [
+    "${config.xdg.dataHome}/herdr/skills/herdr"
+  ];
+  xdg.dataFile."herdr/skills/herdr".source = "${pkgs.herdr}/share/skills/herdr/herdr";
 
   # The extension needs its canonical path for `herdr integration status`.
   home.file.".pi/agent/extensions/herdr-agent-state.ts".source =
