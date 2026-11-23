@@ -60,9 +60,18 @@ in
       set -euo pipefail
       flake=".#${username}@$(hostname)"
       if [ -t 1 ] && [ -z "''${NOM_DISABLE:-}" ]; then
-        exec ${pkgs.home-manager}/bin/home-manager \
+        # Home Manager and the activation script write their chatter to
+        # stdout, while Nix's internal-json log and real errors use stderr.
+        # Keep stderr on screen and capture stdout, replaying it on failure.
+        log="''${XDG_CACHE_HOME:-$HOME/.cache}/home-manager/switch.log"
+        mkdir -p "$(dirname "$log")"
+        if ! ${pkgs.home-manager}/bin/home-manager \
           ${nomOpts} switch --flake "$flake" "$@" \
-          2>&1 | ${pkgs.nix-output-monitor}/bin/nom --json
+          2>&1 1>"$log" | ${pkgs.nix-output-monitor}/bin/nom --json
+        then
+          cat "$log" >&2
+          exit 1
+        fi
       else
         exec ${pkgs.home-manager}/bin/home-manager switch --flake "$flake" "$@"
       fi

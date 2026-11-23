@@ -37,10 +37,13 @@ nix run .#home-switch
 
 It runs `home-manager switch --flake .#<user>@<host>`, the same command the
 `hms` alias uses. Flake arguments such as `--refresh` go straight through to
-Home Manager; do not pass `--impure` (see `AGENTS.md`). `home-switch` pipes
-output through `nom` when stdout is a TTY unless `NOM_DISABLE` has a non-empty
-value; agent bash calls are non-TTY and already skip `nom`. Do not add
-`NOM_DISABLE=1` to commands you ask the user to run.
+Home Manager; do not pass `--impure` (see `AGENTS.md`). On a TTY, `home-switch`
+sends Nix's `internal-json` log and errors through `nom`, while Home Manager's
+and the activation script's stdout goes to
+`${XDG_CACHE_HOME:-$HOME/.cache}/home-manager/switch.log` and is printed only
+if the switch fails. `NOM_DISABLE=1` keeps the fully raw output; agent bash
+calls are non-TTY and already skip this handling. Do not add `NOM_DISABLE=1`
+to commands you ask the user to run.
 
 The standalone configuration installs packages into the home-manager profile
 rather than the per-user system profile that `useUserPackages` uses, so for a
