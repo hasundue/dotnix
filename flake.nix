@@ -44,6 +44,14 @@
       url = "github:anomalyco/models.dev";
       flake = false;
     };
+    kanagawa-bat = {
+      url = "github:kanagawa-community/bat";
+      flake = false;
+    };
+    kanagawa-delta = {
+      url = "github:kanagawa-community/delta";
+      flake = false;
+    };
     git-hooks-nix = {
       url = "github:cachix/git-hooks.nix";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -216,6 +224,12 @@
         };
       };
       overlays = import ./overlays // {
+        kanagawa = import ./overlays/kanagawa.nix {
+          inherit (inputs)
+            kanagawa-bat
+            kanagawa-delta
+            ;
+        };
         pristine = import ./overlays/pristine.nix {
           inherit (inputs)
             firefox-addons
