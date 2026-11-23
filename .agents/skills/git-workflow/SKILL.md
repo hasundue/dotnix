@@ -4,6 +4,7 @@ description: >
   Apply project-local Git conventions for commit messages, pushing, rebasing,
   merging into main, and branch or worktree cleanup. Use before committing,
   rewriting history, pushing, merging, or removing a source branch or worktree.
+disable-model-invocation: true
 ---
 
 # Git workflow
@@ -73,6 +74,7 @@ config's directory — even when the outcome also requires changes elsewhere:
 | `configs/home/pi/agent/AGENTS.md`                      | `pi`                    |
 | `.agents/skills/git-workflow/SKILL.md`                 | `agents/git-workflow`   |
 | `.agents/skills/nix-activation/SKILL.md`               | `agents/nix-activation` |
+| `.agents/skills/nix-build/SKILL.md`                    | `agents/nix-build`      |
 | `configs/home/default.nix`, the `programs.tmux` block  | `tmux`                  |
 | `configs/home/default.nix`, imports or `home.packages` | `home`                  |
 

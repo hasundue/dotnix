@@ -63,10 +63,10 @@ validating. The output is the config value in Nix notation.
 
 Do not pass `--impure` when evaluating this repository's flake; impure runs
 have poor cache reuse here and can exhaust available memory. This rule also
-applies to the Nix commands and examples in the sections below, including
-`nix eval` and the `nixos-*` apps' passthrough flags. Use pure flake references
-such as `nix eval .#...`; if a flake query fails in pure mode, stop and ask
-rather than retrying with `--impure`.
+applies to the Nix commands in this file and in the referenced build and
+activation skills, including `nix eval` and the `nixos-*` apps' passthrough
+flags. Use pure flake references such as `nix eval .#...`; if a flake query
+fails in pure mode, stop and ask rather than retrying with `--impure`.
 
 ## Nix Queries
 
@@ -86,41 +86,15 @@ nix flake archive --json --dry-run .                    # pinned input source pa
 Do not scan `/nix/store` or reach for `nixpkgs search` to answer these; the
 pinned tree answers exactly for the revision being built.
 
-## Build
+## Build and Apply
 
-```bash
-# NixOS + home-manager together (wraps nixos-rebuild; leaves ./result)
-nix run .#nixos-build
-
-# Home Manager only (standalone generation; leaves ./result-home)
-nix run .#home-build
-```
-
-Which pair to use depends on what changed. A change under `configs/home/` only
-needs `nix run .#home-switch`, which builds the standalone `homeConfigurations`
-against the same `pkgs` and activates without sudo. Anything else
-(`configs/hosts/`, `configs/nixos/`, the flake itself) needs `nixos-*`, which
-rebuilds home-manager too. Both are safe, but the standalone configuration
-installs packages into the home-manager profile rather than the per-user system
-profile that `useUserPackages` uses, so for a change that touches packages
-rather than config files, trust `nixos-*`.
-
-The `nixos-*` apps accept passthrough flags such as `--show-trace`. They pipe
-output through `nom` when stdout is a TTY, and skip it when non-TTY for minimal
-output. `NOM_DISABLE=1` forces raw output even in a TTY. It is for commands you
-run yourself in a TTY; agent bash calls are non-TTY and already skip `nom`.
-Do not add it to commands you ask the user to run, so they keep `nom`'s output.
-
-## Apply
+For build-only validation, read and follow the
+[Nix build skill](.agents/skills/nix-build/SKILL.md). A change under
+`configs/home/` only can usually be checked with `home-switch`, which builds and
+activates without sudo; it is an activation command.
 
 Before running any activation command (`home-switch`, `nixos-test`,
 `nixos-switch`, or `nixos-boot`), read and follow the
-[Nix activation skill](.agents/skills/nix-activation/SKILL.md). This includes
-commands mentioned in the build guidance above. For build-only validation, use
-the build commands there.
-
-NixOS activation commands (`nixos-test`, `nixos-switch`, and `nixos-boot`) need
-sudo, so the user runs them; after each activation, verify the resulting state
-as far as possible here. Use `home-switch` and the build-only commands for
-checks that do not need sudo, and do not ask for a sudo password or add
-non-interactive elevation.
+[Nix activation skill](.agents/skills/nix-activation/SKILL.md). The user runs
+commands that need sudo; verify the result afterwards and do not ask for a sudo
+password or add non-interactive elevation.
