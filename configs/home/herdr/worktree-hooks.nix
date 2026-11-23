@@ -5,11 +5,12 @@
   ...
 }:
 let
-  mkHooks = (import ../worktree-hooks { }).mkHooks;
-  hookBlocks = mkHooks {
-    primary = "$WT_PRIMARY";
-    worktree = "$WT_WORKTREE";
-  };
+  mkHooks = (import ../worktrunk/hooks.nix { }).mkHooks;
+  hookBlocks =
+    (mkHooks {
+      primary = "$WT_PRIMARY";
+      worktree = "$WT_WORKTREE";
+    }).post-start;
   # Flatten Worktrunk's blocks into one ordered script for the plugin.
   hooks = lib.concatMap (block: lib.attrValues block) hookBlocks;
   pluginId = "local.worktree-hooks";

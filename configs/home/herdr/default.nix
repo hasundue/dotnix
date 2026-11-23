@@ -1,6 +1,6 @@
 { pkgs, ... }:
 {
-  imports = [ ./herdr/worktree-hooks.nix ];
+  imports = [ ./worktree-hooks.nix ];
 
   programs.herdr = {
     enable = true;
