@@ -13,6 +13,14 @@ let
   # F13 is seen by fcitx5 as Tools, its DeactivateKeys. Deactivation is
   # idempotent, so the command key after the prefix is never eaten as preedit.
   prefix = "(macro F13 C-spc)";
+
+  prefixChords = ''
+    (defchordsv2
+      (caps spc) ${prefix} ${toString chordTimeout} first-release ()
+      (lctl spc) ${prefix} ${toString chordTimeout} first-release ()
+      (rctl spc) ${prefix} ${toString chordTimeout} first-release ()
+    )
+  '';
 in
 {
   services.kanata = {
@@ -54,11 +62,7 @@ in
             spc    spc
           )
 
-          (defchordsv2
-            (caps spc) ${prefix} ${toString chordTimeout} first-release ()
-            (lctl spc) ${prefix} ${toString chordTimeout} first-release ()
-            (rctl spc) ${prefix} ${toString chordTimeout} first-release ()
-          )
+          ${prefixChords}
         '';
       };
 
@@ -85,11 +89,7 @@ in
             spc  spc
           )
 
-          (defchordsv2
-            (caps spc) ${prefix} ${toString chordTimeout} first-release ()
-            (lctl spc) ${prefix} ${toString chordTimeout} first-release ()
-            (rctl spc) ${prefix} ${toString chordTimeout} first-release ()
-          )
+          ${prefixChords}
         '';
       };
     };
