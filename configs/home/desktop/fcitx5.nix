@@ -26,6 +26,14 @@
         globalOptions = {
           Hotkey.EnumerateGroupForwardKeys = "";
           "Hotkey/TriggerKeys"."0" = "Super+space";
+          # Kanata emits F13 (seen as Tools) before the tmux/Herdr prefix.
+          # Shift is in both lists: while active it toggles Mozc off through
+          # AltTriggerKeys, and while inactive ActivateKeys turns it back on
+          # even when Tools performed the deactivation.
+          Hotkey.ConsumeRedundantActivateKeys = true;
+          "Hotkey/DeactivateKeys"."0" = "Tools";
+          "Hotkey/ActivateKeys"."0" = "Shift_L";
+          "Hotkey/AltTriggerKeys"."0" = "Shift_L";
         };
         addons = {
           clipboard.globalSection.TriggerKey = ""; # Ctrl+; to disable
