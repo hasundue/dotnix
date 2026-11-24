@@ -184,6 +184,14 @@ in
 
         "Mod+J".focus-workspace-down = { };
         "Mod+K".focus-workspace-up = { };
+        "Mod+WheelScrollDown" = {
+          _props.cooldown-ms = 150;
+          focus-workspace-down = { };
+        };
+        "Mod+WheelScrollUp" = {
+          _props.cooldown-ms = 150;
+          focus-workspace-up = { };
+        };
         "Mod+Shift+J".move-column-to-workspace-down = { };
         "Mod+Shift+K".move-column-to-workspace-up = { };
 
