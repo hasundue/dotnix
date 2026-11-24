@@ -105,20 +105,20 @@ in
         keyboard = {
           repeat-delay = 250;
         };
+        mouse = {
+          accel-profile = "flat";
+          accel-speed = 0.0;
+        };
         touchpad = {
           dwt = { };
           natural-scroll = { };
           tap = { };
         };
-        mouse = {
-          accel-profile = "adaptive";
-          accel-speed = 0.0;
-        };
-        # Trackpoints are 1:1 devices; adaptive acceleration makes the cursor
-        # feel steppy at low speeds. The `mouse` section does not apply here.
-        trackpoint = {
-          accel-profile = "flat";
+        trackball = {
           accel-speed = 0.3;
+        };
+        trackpoint = {
+          accel-speed = -0.3;
         };
       };
 

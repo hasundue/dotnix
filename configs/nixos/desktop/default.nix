@@ -5,7 +5,7 @@
     ./bluetooth.nix
     ./fonts.nix
     ./kanata.nix
-    ./keyboard.nix
+    ./inputs.nix
     ./steam.nix
   ];
 

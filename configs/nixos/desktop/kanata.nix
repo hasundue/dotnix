@@ -103,7 +103,7 @@ in
     };
   };
 
-  # CapsLock→Ctrl lives in ./keyboard.nix so it survives disabling kanata.
+  # CapsLock→Ctrl lives in ./inputs.nix so it survives disabling kanata.
 
   # Restart kanata when the RK61 reconnects — inotify can miss it after
   # frequent Bluetooth/USB disconnects/reconnects
