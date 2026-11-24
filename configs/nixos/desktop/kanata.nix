@@ -6,7 +6,15 @@
 }:
 
 let
-  rk61DeviceName = "BT5.0 KB Keyboard";
+  # The RK61 identifies itself differently over Bluetooth and USB.
+  rk61DeviceNames = [
+    "BT5.0 KB Keyboard"
+    "SINO WEALTH Gaming KB "
+    "SINO WEALTH Gaming KB  System Control"
+    "SINO WEALTH Gaming KB  Consumer Control"
+    "SINO WEALTH Gaming KB  Keyboard"
+  ];
+  rk61DevCfgNames = lib.concatStringsSep " " (map (name: "\"${name}\"") rk61DeviceNames);
 
   chordTimeout = 200;
 
@@ -34,7 +42,7 @@ in
       rk61 = {
         devices = [ ];
         extraDefCfg = ''
-          linux-dev-names-include ("${rk61DeviceName}")
+          linux-dev-names-include (${rk61DevCfgNames})
           process-unmapped-keys yes
           concurrent-tap-hold yes
         '';
@@ -71,7 +79,7 @@ in
       default = {
         devices = [ ];
         extraDefCfg = ''
-          linux-dev-names-exclude ("${rk61DeviceName}")
+          linux-dev-names-exclude (${rk61DevCfgNames})
           process-unmapped-keys yes
           concurrent-tap-hold yes
         '';
@@ -98,9 +106,10 @@ in
   # CapsLock→Ctrl lives in ./keyboard.nix so it survives disabling kanata.
 
   # Restart kanata when the RK61 reconnects — inotify can miss it after
-  # frequent Bluetooth disconnects/reconnects
+  # frequent Bluetooth/USB disconnects/reconnects
   services.udev.extraRules = ''
-    ACTION=="add", SUBSYSTEM=="input", ATTRS{name}=="${rk61DeviceName}", RUN+="${pkgs.systemd}/bin/systemctl restart kanata-rk61.service"
+    ACTION=="add", SUBSYSTEM=="input", ATTRS{name}=="BT5.0 KB Keyboard", RUN+="${pkgs.systemd}/bin/systemctl restart kanata-rk61.service"
+    ACTION=="add", SUBSYSTEM=="input", ATTRS{name}=="SINO WEALTH Gaming KB*", RUN+="${pkgs.systemd}/bin/systemctl restart kanata-rk61.service"
   '';
 
   # /dev/uinput has ACL restrictions (steam uaccess rule), so DynamicUser
