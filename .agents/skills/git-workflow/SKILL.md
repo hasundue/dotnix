@@ -51,6 +51,13 @@ delete it. Rebased commits are never pushed, so the archive is not the merged
 result. Branch from `main`. Removal is defined in
 `.github/workflows/archive-cleanup.yml`.
 
+Worktrunk's `wt merge` removes the source worktree and its local branch by
+default (`merge.remove` and `remove.delete-branch`); `--no-remove` keeps both.
+It does not touch the source remote branch, so the archive above survives the
+merge. The default pipeline also squashes commits and stages all working-tree
+changes, so keep the source worktree clean and pass `--no-squash` when the
+branch carries more than one outcome.
+
 If validation fails, do not merge; stop and ask.
 
 ## Commit messages and scopes
