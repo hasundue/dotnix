@@ -325,6 +325,23 @@
         "type": "github"
       }
     },
+    "mdroll": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1785580230,
+        "narHash": "sha256-f3rXbLi9WFRid/BG2PcNF0JPWOE3scWhz3Smmohzy5w=",
+        "owner": "tokuhirom",
+        "repo": "mdroll",
+        "rev": "f2bce169dd845dc71ab20fbca5b3b882d1d418b6",
+        "type": "github"
+      },
+      "original": {
+        "owner": "tokuhirom",
+        "ref": "v0.4.2",
+        "repo": "mdroll",
+        "type": "github"
+      }
+    },
     "models-dev": {
       "flake": false,
       "locked": {
@@ -573,6 +590,7 @@
         "kanagawa-bat": "kanagawa-bat",
         "kanagawa-delta": "kanagawa-delta",
         "mcp-servers-nix": "mcp-servers-nix",
+        "mdroll": "mdroll",
         "models-dev": "models-dev",
         "nixos-hardware": "nixos-hardware",
         "nixos-wsl": "nixos-wsl",

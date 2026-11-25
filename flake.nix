@@ -52,6 +52,10 @@
       url = "github:kanagawa-community/delta";
       flake = false;
     };
+    mdroll = {
+      url = "github:tokuhirom/mdroll/v0.4.2";
+      flake = false;
+    };
     git-hooks-nix = {
       url = "github:cachix/git-hooks.nix";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -248,6 +252,9 @@
             ;
         };
         pi-gpui = pkgs.callPackage ./packages/pi-gpui.nix { };
+        mdroll = pkgs.callPackage ./packages/mdroll.nix {
+          mdrollSrc = inputs.mdroll;
+        };
         kero = pkgs.callPackage ./packages/kero.nix { };
         pre-commit-config = self.devShells.${pkgs.system}.default.configFile;
       });

@@ -11,6 +11,7 @@
       nodejs
       julia-bin
       tree
+      mdroll
     ];
     stateVersion = "26.05";
     username = "hasundue";
