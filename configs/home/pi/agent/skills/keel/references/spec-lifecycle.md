@@ -1,27 +1,29 @@
 # Spec lifecycle
 
-The agreement is one `SPEC.md` at the root of a linked worktree, in the language
-of the session that wrote it. There is no language suffix and no translation.
+The agreement is one `SPEC.md` at the root of the branch or worktree that will
+carry the work, in the language of the session that wrote it. There is no
+language suffix and no translation.
 Ask before inventing another file name.
 
 Only the promoted spec is committed, with the work. Drafts stay uncommitted.
 Sail leaves the spec out of the commits that land on `main`.
 
-## Worktree
+## Location
 
-One `SPEC.md` sits at the root of a linked worktree: a worktree maps one-to-one
-to a branch. In the primary checkout, stop and ask the user to switch to one.
-Keel does not create worktrees or branches.
+The spec lives at the root of the branch or worktree where the work will be
+committed, so it needs no branch field. If that means opening a new branch or
+worktree, ask the user to do it; keel does not create one.
 
-Before writing, check for any existing `SPEC*` file, tracked or not. Read it
-and ask before drafting another; never overwrite or rename one on your own.
+Before writing, check for any existing `SPEC*` file, tracked or not, at that
+root. Read it and ask before drafting another; never overwrite or rename one on
+your own.
 
 ```sh
 git rev-parse --path-format=absolute --git-dir --git-common-dir
 git ls-files 'SPEC*'; ls SPEC* 2>/dev/null
 ```
 
-The two `rev-parse` paths differ only in a linked worktree.
+The `rev-parse` paths differ when the work is in a linked worktree.
 
 ## Frontmatter
 
@@ -32,7 +34,7 @@ is deleted uncommitted and never becomes `stale`. There is no language field.
 ## Sections
 
 Templates live in `templates/`, one per session language, and contain only the
-frontmatter and the sections. Copy the matching one into the worktree as
+frontmatter and the sections. Copy the matching one to the work's root as
 `SPEC.md` and fill it in; the template file name is not the spec name. Only
 Japanese and English templates exist, so ask before adding another language.
 Headings stay in the spec's language; a reader finds a section by its position
@@ -51,8 +53,9 @@ Write every section so it can be read cold -- by a session with none of the
 conversation. No "as discussed" or "the usual place". Name paths, current
 behaviour, decisions and their reasons, and commands.
 
-When sail reorganizes the branch for the merge, the problem becomes the body of
-the commit that lands the outcome, so the reason outlives the spec.
+When the work is reorganized into outcome commits for the merge, the problem
+becomes the body of the commit that lands the outcome, so the reason outlives
+the spec.
 
 ## Line width
 
@@ -79,6 +82,8 @@ the writer wraps it.
 - Do not label method lines; that keeps the count of conditions separate from
   the count of checks.
 - Do not add Decisions or Log sections; git and conversation carry that history.
+- A question from a cold executor is a spec defect. Answer it, write the answer
+  into design, out-of-scope, or acceptance criteria, then let it continue.
 - The stop-conditions section holds task-specific limits only; the common ones
   live in sail.
 
