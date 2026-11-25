@@ -14,7 +14,7 @@ When a Pi session inside Herdr creates or moves a worktree through pi-worktrunk,
 - pi-worktrunk owns worktree creation and removal; Herdr only registers workspaces, moves panes, and closes workspaces -- keep ownership split.
 - After pi-worktrunk creates a worktree, register its path with `herdr worktree open --path <path>`. In Herdr 0.9.5 a `workspace` carries `worktree.repo_key` and `is_linked_worktree`, which is what makes it appear nested under its repository in the sidebar. `herdr workspace create --cwd` does not guarantee this metadata, so do not use it.
 - Move the current Pi pane into a tab of that workspace with `herdr pane move <pane_id> --tab <tab_id>`. Read the IDs from the JSON of `herdr worktree open` and `herdr tab list`. A pane move carries the agent name and session path with it.
-- Do not restart with `pi --session-id`. pi-worktrunk's `ctx.switchSession()` moves the conversation to the linked session and continues the turn. `--session-id` opens the current directory's session or creates one, so it does not move history.
+- After pi-worktrunk forks the session, restart Pi in the destination worktree with the forked session's ID. Start the new process from that worktree and pass the ID after `--` to `herdr agent start`; the process cwd, Herdr's `cwd`, `foreground_cwd`, and follow-cwd then all point at the destination. Never pass the pre-move session ID: it would open the old directory's session or create one.
 - Put the general rules in `configs/home/pi/agent/AGENTS.md` and add no steps to the keel or sail skills. AGENTS.md is read in every session; duplicating the same rule in two places lets it drift.
 - Use Herdr CLI only when `HERDR_ENV=1`. Outside Herdr, skip those steps and fall back to plain terminal + tmux + pi-worktrunk.
 - `configs/home/pi/agent/extensions/session-namer.ts` asks the model for two outputs from the first prompt. Keep the longer one as the descriptive session name as before and pass it to `pi.setSessionName()`; use the shorter one as the Herdr border label.
@@ -23,13 +23,13 @@ When a Pi session inside Herdr creates or moves a worktree through pi-worktrunk,
 - Pass `pi --name <Role>` when starting a subagent. session-namer does not overwrite an existing name, so the role becomes the session name and appears in the terminal title too.
 - Keep titles of windows created by a person derived from the running program. The rule of one Pi pane per window is an agent convention only and is not enforced.
 - For cleanup, inspect `herdr pane list --workspace <id>`; if a window created by the user has a running program, ask before closing it. After Worktrunk removes the worktree, the agent closes the workspace with `herdr workspace close <id>`. Use `--force` only after the user agrees.
-- Both files are store-backed links, so apply the edit with `home-switch`.
+- These files are store-backed links, so apply the edits with `home-switch`.
 
 ## Out of scope
 
 - Adding or changing new Pi extensions, Herdr plugins, or worktree hooks
 - Changes to the keel and sail skill documents
-- Migrating to `pi-agent-teleport` or a restart route using `--session-id`
+- Migrating to `pi-agent-teleport`
 - Automatic enforcement of one Pi pane per window, and automatic generation of program-derived titles
 - Automatic detection for cleanup or a dedicated confirmation UI
 - Editing `~/vault/fragments/software/herdr-pi-workflow.md` or existing vault notes
@@ -40,9 +40,8 @@ When a Pi session inside Herdr creates or moves a worktree through pi-worktrunk,
   - [ ] Manual: in Herdr, go from the gate into implementation and inspect `herdr workspace list` and `herdr pane list`. The worktree workspace has `worktree.repo_key` equal to the root's and `is_linked_worktree: true`; the Pi pane's `cwd` is that worktree path and `agent_session` points at the destination session. Ask the agent for the title discussed before the move and get the same answer.
     - Workspace `wH` had `checkout_path` `/home/hasundue/dotnix.herdr-follow-test`, `is_linked_worktree: true`, and `repo_key` `/home/hasundue/dotnix/.git`, matching the root workspace. Pane `wH:p2` had `agent_session` pointing at the linked session under `dotnix.herdr-follow-test`, and the agent recalled the phrase `violet lantern` and kept its session title after the move.
     - unmet: Herdr still reported the pane's `cwd` as `/home/hasundue/dotnix.herdr-pi-workflow` although the agent's `pwd` was the new worktree.
-- The procedure contains no restart that loses conversation history
-  - [x] `rg -n -- '--session-id' configs/home/pi/agent/AGENTS.md configs/home/pi/agent/extensions/session-namer.ts` prints nothing.
-    - Exit status 1 with no output.
+- Restart reopens the forked session and preserves the conversation
+  - [ ] Manual: after the move, start Pi in the destination worktree with the forked session ID, then ask for a title or phrase from before the move and get the same answer. unmet: this restart route has not been carried out yet.
 - session-namer emits a long session name and a short label separately, and the short label appears on the Herdr border
   - [ ] Manual: start two Pi sessions with different topics in the same Herdr session; the terminal titles in `herdr pane list` keep the long session names and each pane border shows a one-word label. Start a third session with a topic whose natural one-word label matches an existing window; the border label has two words.
     - Observed long titles with separate one-word labels: `Create herdr-follow-test worktree`/`worktree`, `Fix CJK font weight regression`/`review`, and two `Compare terminal markdown viewers`/`compare`,`comparison`.
@@ -64,11 +63,9 @@ When a Pi session inside Herdr creates or moves a worktree through pi-worktrunk,
 
 ## Blocker
 
-After a Worktrunk move and the Herdr pane move, Herdr reports the moved Pi pane's `cwd` as the source worktree while Pi's own `pwd` is the destination. The acceptance criterion requires the destination path. The two in-scope files have no way to report a new process cwd to Herdr, and the spec excludes restarting Pi in the new worktree.
+After the worktree move, Herdr reported the pane's `cwd` as the source worktree, so the destination was invisible to labels, follow-cwd, and restore. The criteria now call for reopening the forked session from the destination; implementation and verification are pending. The commit revising the criteria carries the investigation and rationale.
 
-Observed: workspace `wH` had correct worktree metadata, and the pane's agent session and conversation history moved, but `herdr pane get wH:p2` still showed `/home/hasundue/dotnix.herdr-pi-workflow`.
-
-Options: accept the stale Herdr `cwd` and relax that criterion; allow a cwd-reporting change outside the two in-scope files; or permit a restart that reopens the linked session in the new worktree. The test worktree `/home/hasundue/dotnix.herdr-follow-test` on branch `herdr-follow-test` remains on disk; its Herdr workspace was closed.
+The test worktree `/home/hasundue/dotnix.herdr-follow-test` on branch `herdr-follow-test` remains on disk; its Herdr workspace was closed.
 
 ## Stop conditions
 
