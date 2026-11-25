@@ -31,7 +31,8 @@ changed:
 ## Merging
 
 Before merging, inspect the branch and propose a plan to the user. The plan
-names the `main`-commit grouping, scopes, and validation. If the commits already
+names the `main`-commit grouping, the scope and body of each commit, and the
+validation. If the commits already
 follow [Granularity](#granularity) and use appropriate scopes, the plan keeps
 them unchanged; otherwise it reorganizes them. Either way, wait for the user's
 approval before rewriting or merging. Meeting Granularity does not count as
@@ -40,7 +41,8 @@ approval.
 After approval, if the plan reorganizes the branch, rebase onto the current
 `main` and reorganize checkpoints by outcome in the source branch's checkout.
 Do not push the reorganized branch to `origin`, and do not run `git push` or
-`git pull` on the working branch afterward. Then run the approved validation on
+`git pull` on the working branch afterward. The reorganized tip contains no
+`SPEC*` file. Then run the approved validation on
 the branch tip and merge.
 
 Run the merge with Worktrunk in the source branch's checkout, so the local
@@ -54,9 +56,13 @@ result. Branch from `main`. Removal is defined in
 Worktrunk's `wt merge` removes the source worktree and its local branch by
 default (`merge.remove` and `remove.delete-branch`); `--no-remove` keeps both.
 It does not touch the source remote branch, so the archive above survives the
-merge. The default pipeline also squashes commits and stages all working-tree
-changes, so keep the source worktree clean and pass `--no-squash` when the
-branch carries more than one outcome.
+merge.
+
+dotnix sets `merge.commit = false` and `merge.squash = false` in
+`configs/home/worktrunk/default.nix`. So `wt merge` neither commits uncommitted
+changes nor squashes: it merges the branch's commits as they stand. The outcome
+commits are the ones the reorganization above produced, so keep the source
+worktree clean before merging.
 
 If validation fails, do not merge; stop and ask.
 
@@ -119,7 +125,10 @@ Use one commit per distinct, independently meaningful outcome. Keep all
 changes needed for one outcome together, even when they touch multiple files
 or configs; keep distinct outcomes in separate commits. Each commit must leave
 the project coherent. Run validation on the branch tip, not at every commit
-boundary.
+boundary. When the branch carries a spec (`SPEC.md`, written by the keel skill), the
+body of each commit that lands an outcome states the problem that outcome
+resolves, taken from the spec's `## Problem`. The spec file is not part of any
+commit that lands on `main`.
 
 #### Working-branch checkpoints
 

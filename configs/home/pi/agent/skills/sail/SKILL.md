@@ -19,7 +19,7 @@ the user asks for it.
 1. **Find and read the spec before touching code.**
 2. **Every acceptance condition ends with evidence or an explicit unmet
    report.**
-3. **Merging waits for the user's word; the spec is removed before the merge.**
+3. **Merging waits for the user's word; the merge leaves the spec out of `main`.**
 4. **Scope moves in the spec first, then gets re-confirmed.**
 5. **A blocker is written down and raised, never silently absorbed.**
 6. **A spec that is not English is translated and checked before any code
@@ -123,8 +123,8 @@ reported as unmet, not renegotiated after the fact.
 
 Do not call the work done because the diff looks plausible. The conditions
 decide. Report what passed and what is unmet, then leave the spec in place: the
-merge removes it. If the task ends without a merge, the user's word closes it.
-Do not ask whether to close, and do not remove the spec before the merge or that
+merge reorganization leaves it out of `main`. If the task ends without a merge, the user's word closes it.
+Do not ask whether to close, and do not reorganize the branch before the merge or that
 word.
 
 End with a report in the language of the conversation: what changed, which
@@ -151,23 +151,20 @@ Before merging:
 
 - Run the repository's final gates on the branch, typically the formatter check
   and the full test suite.
-- Remove the spec from the branch:
-  1. Confirm the merge target has no spec of its own. `git ls-tree --name-only
-     <target> -- SPEC.md SPEC.ja.md SPEC.en.md` must print nothing. If it does,
-     stop and ask: that file is not this task's.
-  2. Carry the `## Problem` text into the PR body, or into the body of the
-     removal commit in step 3 when there is one, before the spec is removed.
-  3. Remove `SPEC.md`, `SPEC.ja.md`, and `SPEC.en.md` wherever they exist: `git
-     rm` a tracked file, `rm` an untracked one. When a tracked file was removed,
-     commit the removal under the repository's commit conventions.
-  4. Check with `git ls-files 'SPEC*'`, `ls SPEC* 2>/dev/null`, and `git status
-     --short`. The first two must print nothing and the status must be clean. If
-     a `SPEC*` file remains, stop and report it; do not merge with a spec in the
-     tree.
+- Reorganize the branch into outcome commits, as `git-workflow` requires. The
+  plan, which the user approves, shows each commit's scope and body. The body of
+  each commit that lands an outcome states the spec's `## Problem`, so the reason
+  outlives the spec.
+- The reorganized tip must contain no `SPEC*` file. Check that `git ls-tree
+  --name-only HEAD -- SPEC.md SPEC.ja.md SPEC.en.md` prints nothing. Check that
+  the target has no spec of its own with `git ls-tree --name-only <target> --
+  SPEC.md SPEC.ja.md SPEC.en.md`; if it prints anything, stop and ask, because
+  that file is not this task's. Delete any untracked `SPEC*` file left in the
+  worktree, and read `git status --short`: it must be clean.
 - Follow the repository's merge convention. Where it has none, keep history
   linear -- no merge commit -- and say which shape you used.
 
-The removal is part of the branch tip, so the merge brings nothing of the spec
-into the target. Record the outcome in conversation and commit messages.
+The reorganized commits are what `main` receives: outcome commits that carry the
+problem, and no spec file. Record the outcome in conversation and commit messages.
 
 Never rewrite `main` or force-push it.

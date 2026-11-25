@@ -12,6 +12,7 @@ in
     settings = {
       "skip-shell-integration-prompt" = true;
       merge.commit = false; # --no-commit by default
+      merge.squash = false; # merge the branch's commits as they stand
     }
     // hookSettings;
   };

@@ -5,7 +5,7 @@ The agreement is a `SPEC.md` in the linked worktree. A Japanese session drafts
 language suffix.
 
 Only the promoted `SPEC.md` is committed, with the work. Drafts and candidates
-stay uncommitted. Sail removes the spec before the merge.
+stay uncommitted. Sail leaves the spec out of the commits that land on `main`.
 
 ## Heading map
 
