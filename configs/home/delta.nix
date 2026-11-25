@@ -1,7 +1,13 @@
-{ config, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 let
   # Styles come from the kanagawa-wave feature; don't override them on the command line.
   commonArgs = "--paging=never";
+  pager = "${pkgs.python3}/bin/python3 ${config.xdg.configHome}/delta/pager.py";
 in
 {
   # delta reads bat's compiled theme cache, which Home Manager rebuilds on activation.
@@ -31,15 +37,24 @@ in
     }
   ];
 
-  # Let lazygit scroll long diff lines horizontally instead of soft-wrapping
-  # them across delta's line-number gutter.
-  programs.lazygit.settings.gui.wrapLinesInDiffView = false;
+  # Below the side-by-side threshold there is no gutter for a terminal soft
+  # wrap to cross, so line numbers are turned off instead.
+  xdg.configFile."delta/pager.py" = {
+    source = ./delta/pager.py;
+    executable = true;
+  };
+  programs.git.iniContent.pager = {
+    diff = lib.mkForce pager;
+    show = lib.mkForce pager;
+    log = lib.mkForce pager;
+  };
 
+  # lazygit captures delta's output, so pass the view width to the wrapper.
   programs.lazygit.settings.git.diffRenderers = [
     {
-      command = "delta --{{colorScheme}} ${commonArgs} --side-by-side={{if gt .width 140}}true{{else}}false{{end}}";
+      command = "${pager} --{{colorScheme}} ${commonArgs} --width={{width}}";
     }
   ];
 
-  programs.worktrunk.settings.switch.picker.pager = "delta ${commonArgs} --side-by-side=false";
+  programs.worktrunk.settings.switch.picker.pager = "${pager} ${commonArgs}";
 }
