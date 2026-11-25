@@ -1,4 +1,9 @@
-{ config, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 let
   # Styles come from the kanagawa-wave feature; don't override them on the command line.
   commonArgs = "--paging=never";
@@ -22,6 +27,11 @@ in
     };
   };
 
+  # delta does not wrap unified diffs; chop long lines in less instead of
+  # letting the terminal soft-wrap them over the line-number gutter.
+  home.sessionVariables.LESS = "-RS";
+  programs.git.iniContent.pager.log = lib.mkForce "less -R";
+
   # A delta theme is a git config feature, so include the upstream config.
   xdg.configFile."delta/kanagawa-wave.gitconfig".source =
     "${pkgs.kanagawa.delta}/themes/kanagawa-wave.gitconfig";
@@ -31,13 +41,13 @@ in
     }
   ];
 
-  # Let lazygit scroll long diff lines horizontally instead of soft-wrapping
-  # them across delta's line-number gutter.
-  programs.lazygit.settings.gui.wrapLinesInDiffView = false;
+  # Let lazygit wrap diffs itself; without a gutter there is nothing for a
+  # soft wrap to cross.
+  programs.lazygit.settings.gui.wrapLinesInDiffView = true;
 
   programs.lazygit.settings.git.diffRenderers = [
     {
-      command = "delta --{{colorScheme}} ${commonArgs} --side-by-side={{if gt .width 140}}true{{else}}false{{end}}";
+      command = "delta --{{colorScheme}} ${commonArgs} --side-by-side=false --line-numbers=false";
     }
   ];
 
