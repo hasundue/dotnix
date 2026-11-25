@@ -34,7 +34,7 @@ is organized -- is judgment.
 
 One `SPEC.md` sits at the root of a linked worktree. A worktree maps one-to-one
 to a branch, so the spec needs no branch field. Sail commits the promoted spec
-with the work and removes it before the merge.
+with the work and leaves it out of the commits that land on `main`.
 
 Before writing anything, check where you are:
 
@@ -147,9 +147,8 @@ remaining) so the spec is justified rather than assumed.
 The problem is the spec's first section: the reason for the change, in two to
 four lines, with no solution in it. It is what an executor uses to judge a
 trade-off, so state it plainly enough for that. History -- who hit it, what was
-tried -- stays out unless it changes a decision. Sail carries the problem into
-the PR or commit body before the spec is removed, so the reason outlives the
-spec.
+tried -- stays out unless it changes a decision. When sail reorganizes the branch for the merge, the problem becomes the body of the
+commit that lands its outcome, so the reason outlives the spec.
 
 ### 4. Write the design and the criteria
 
