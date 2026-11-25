@@ -31,20 +31,20 @@ status: agreed
 ## 受け入れ条件
 
 - ファイル名が `SPEC.md` に統一され，`SPEC.ja.md` と `SPEC.en.md` が生成されない
-  - [ ] `grep -rn 'SPEC\.ja\.md\|SPEC\.en\.md' configs/home/pi/agent/skills/keel configs/home/pi/agent/skills/sail` が何も出力しない
+  - [x] `grep -rn 'SPEC\.ja\.md\|SPEC\.en\.md' configs/home/pi/agent/skills/keel configs/home/pi/agent/skills/sail` -- 終了コード 1，出力なし
 - 承認時に翻訳と独立チェックが行われない
-  - [ ] `grep -rn 'translation-check\|SPEC\.en\.md' configs/home/pi/agent/skills/keel` が何も出力しない
-  - [ ] `git diff -- configs/home/pi/agent/skills/skiff` が空
+  - [x] `grep -rn 'translation-check\|SPEC\.en\.md' configs/home/pi/agent/skills/keel` -- 終了コード 1，出力なし
+  - [x] `git diff -- configs/home/pi/agent/skills/skiff` -- 出力なし
 - テンプレートが新しいパスにあり，コピーしてそのまま使える
-  - [ ] `configs/home/pi/agent/skills/keel/references/templates/SPEC.ja.md` と `SPEC.en.md` を読む．frontmatter，見出し，プレースホルダ以外の説明文がない
+  - [x] `configs/home/pi/agent/skills/keel/references/templates/SPEC.ja.md` と `SPEC.en.md` を読む -- frontmatter，見出し，プレースホルダのみで，旧パスは `git rm` 済み
 - 運用ルールが spec-lifecycle に集約されている
-  - [ ] `configs/home/pi/agent/skills/keel/references/spec-lifecycle.md` を読む．status，チェックの記録，承認，言語が書かれている
-  - [ ] keel と sail が参照するパスが `references/spec-lifecycle.md` のままである
+  - [x] `configs/home/pi/agent/skills/keel/references/spec-lifecycle.md` を読む -- status，チェックの記録，承認，言語を確認
+  - [x] keel と sail が参照するパスが `references/spec-lifecycle.md` のままである -- keel:55,73,197,239，sail:52
 - `session_lang` が消え，レポート言語が会話から決まる
-  - [ ] `grep -rn 'session_lang' configs/home/pi/agent/skills` が何も出力しない
+  - [x] `grep -rn 'session_lang' configs/home/pi/agent/skills` -- 終了コード 1，出力なし
 - 見出しマップと英語見出しへの直接参照が消えている
-  - [ ] keel，sail，spec-guide を読む．英語の見出し名がテンプレート外に出てこない
+  - [x] `grep -rn '## Problem\|## Design\|## Out of scope\|## Acceptance criteria\|## Stop conditions\|## Blocker' configs/home/pi/agent/skills/keel/SKILL.md configs/home/pi/agent/skills/sail/SKILL.md configs/home/pi/agent/skills/keel/references/spec-lifecycle.md` -- 終了コード 1，出力なし
 - keel と sail に `TODO.md` の扱いが書かれていない
-  - [ ] `grep -rn 'TODO\.md' configs/home/pi/agent/skills/keel configs/home/pi/agent/skills/sail` が何も出力しない
+  - [x] `grep -rn 'TODO\.md' configs/home/pi/agent/skills/keel configs/home/pi/agent/skills/sail` -- 終了コード 1，出力なし
 - 差分に余計な空白がない
-  - [ ] `git diff --check`
+  - [x] `git diff --check` -- 終了コード 0

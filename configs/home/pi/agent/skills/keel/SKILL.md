@@ -51,27 +51,29 @@ git ls-files 'SPEC*'; ls SPEC* 2>/dev/null
 
 The two `rev-parse` lines differ only in a linked worktree.
 
-A Japanese session drafts `SPEC.ja.md`; an English session drafts `SPEC.md`.
-Drafts and candidates stay uncommitted. `references/spec-lifecycle.md` covers
-their translation, check, and promotion. A draft whose work is dropped is
-deleted; `stale` is for a promoted spec only.
+Every session drafts `SPEC.md`, in the language of the conversation. Drafts
+stay uncommitted. `references/spec-lifecycle.md` covers the format, status,
+checks, and promotion. A draft whose work is dropped is deleted; `stale` is for
+a promoted spec only.
 
-A blocker belongs to execution, not to the draft: `## Blocker` appears only with
-`status: blocked`, and sail owns the context and commit rules around it.
+A blocker belongs to execution, not to the draft: the blocker section appears
+only with `status: blocked`, and sail owns the context and commit rules around
+it.
 
 Keel writes no notes into the vault. An old vault note is read only when its
 path is passed explicitly, and is never migrated.
 
 ## Language and the approval act
 
-Use the template matching the session language: `references/templates.ja.md` or
-`references/templates.en.md`. Do not read the other one just to write a draft.
+Use the template matching the session language under `references/templates/`;
+each file is named for its language. Do not read the other one just to write a
+draft.
 
 Keel writes the draft and stops. Approval belongs to whoever the user hands the
 work to: sail, or this session if the user approves here. When the user
-approves here, run `references/spec-lifecycle.md`: translate, check, and
-promote. From approval on, the spec is English for life, and it restates what
-the user wants rather than quoting them.
+approves here, promote the spec as `references/spec-lifecycle.md` describes:
+change the status, with no translation step. The spec keeps its language, and
+it restates what the user wants rather than quoting them.
 
 ## Branches
 
@@ -229,11 +231,11 @@ it continue -- so the next cold run never has to ask.
 
 - [ ] The work was judged large before the spec was written, or the gate ended
       at a small-task conversation
-- [ ] The draft is in a linked worktree, under the name the session language
-      calls for, and no other `SPEC*` file existed there
+- [ ] The draft is `SPEC.md` in a linked worktree, and no other `SPEC*` file
+      existed there
 - [ ] The problem is two to four lines; the design carries decisions with their
       reasons; conditions carry verification methods; out-of-scope is explicit
 - [ ] The handoff did not repeat the spec and did not ask for approval of it
 - [ ] No implementation started in the gate's turn
-- [ ] A spec approved this turn went through `spec-lifecycle.md` with no draft
-      or candidate left behind
+- [ ] A spec approved this turn was promoted through `spec-lifecycle.md`, with
+      no translation or draft left behind
