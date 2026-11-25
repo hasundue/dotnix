@@ -1,18 +1,18 @@
 ---
 name: keel
 description: >
-  Pre-work spec gate for large changes: agree the design and the acceptance
-  criteria in a SPEC.md on the working branch, then hand control back before
-  implementing. Use at the start of a feature, refactor, migration, or any
-  multi-file change whose shape is not yet agreed; when the user says "spec it
-  out", "define the criteria", "before we start", "let's plan"; or when you are
-  about to guess at requirements.
+  Pre-work spec gate for large changes: agree the problem, the design, and the
+  acceptance criteria in a SPEC.md in the linked worktree, then hand control
+  back before implementing. Use at the start of a feature, refactor, migration,
+  or any multi-file change whose shape is not yet agreed; when the user says
+  "spec it out", "define the criteria", "before we start", "let's plan"; or
+  when you are about to guess at requirements.
 ---
 
 # Keel
 
-Lay the keel before the hull: agree on the design and how it will be checked
-where the work will be committed, then hand control back.
+Lay the keel before the hull: agree on the problem, the design, and how it will
+be checked where the work will be committed, then hand control back.
 
 Keel is not a mode and not a pipeline. It has four invariants you may not skip
 and a toolbox you use at your discretion. As models get better, the toolbox
@@ -23,77 +23,57 @@ should be used better; the invariants should shrink, not grow.
 1. **Nothing is implemented in the turn that opens a gate: hand control back
    and let the user move first. Do not put the spec to a vote.**
 2. **The work is either declared small and gated in conversation, or has one
-   `SPEC.md` with a design and acceptance criteria.**
+   `SPEC.md` with a problem, a design, and acceptance criteria.**
 3. **The spec names what is out of scope.**
-4. **If scope moves mid-work, it moves in the agreement before anyone acts on
-   it.**
+4. **If scope moves mid-work, it moves in the spec before anyone acts on it.**
 
 Everything else -- how many questions, whether to research first, how the spec
 is organized -- is judgment.
 
 ## The spec
 
-One `SPEC.md` sits at the root of the working branch or worktree. A worktree
-maps one-to-one to a branch, so no `branch:` field tracks the correspondence.
-The promoted spec is committed with the work and deleted before the merge.
+One `SPEC.md` sits at the root of a linked worktree. A worktree maps one-to-one
+to a branch, so the spec needs no branch field. Sail commits the promoted spec
+with the work and removes it before the merge.
 
-In a Japanese session the draft is `SPEC.ja.md`; at approval `SPEC.en.md` is
-checked and promoted to `SPEC.md`. In an English session `SPEC.md` is the
-draft and promotion only updates its metadata. Drafts and candidates are not
-committed. When the current-behavior section grows, its paths move into
-`SPEC.context.md` in the worktree, which is committed with `SPEC.md` and
-deleted before the merge.
+Before writing anything, check where you are:
 
-Resolve the project from git when the background note needs its location:
+- Work in a linked worktree. In the primary checkout, stop and ask the user to
+  switch to one. Keel does not create worktrees or branches; a worktree is a
+  branch.
+- If any `SPEC*` file already exists there, tracked or not, it is a spec. Read
+  it and ask before drafting another. Never overwrite or rename one on your own.
 
 ```sh
-basename "$(dirname "$(git rev-parse --path-format=absolute --git-common-dir)")"
-# ~/dotnix.pi-workflow -> dotnix
+git rev-parse --path-format=absolute --git-dir --git-common-dir
+git ls-files 'SPEC*'; ls SPEC* 2>/dev/null
 ```
 
-Not in a git repository? Ask for the project; do not guess.
+The two `rev-parse` lines differ only in a linked worktree.
+
+A Japanese session drafts `SPEC.ja.md`; an English session drafts `SPEC.md`.
+Drafts and candidates stay uncommitted. `references/spec-lifecycle.md` covers
+their translation, check, and promotion.
 
 Keel writes no notes into the vault. An old vault note is read only when its
 path is passed explicitly, and is never migrated.
 
 ## Language and the approval act
 
-Use the template matching the session language:
-`references/templates.ja.md` or `references/templates.en.md`. Do not read the
-other one just to write a draft. The approval act lives in
-`references/task-note-lifecycle.md`, which also maps Japanese headings to
-English ones. The parts a gate must hold:
-
-- a Japanese session's draft is `SPEC.ja.md` with `session_lang: ja`; an
-  English session's draft is `SPEC.md` with `session_lang: en`; ask before
-  inventing another suffix;
-- approval translates it once, has someone who did not translate it check the
-  pair, then promotes the candidate and deletes the draft;
-- from approval on, the spec is English for life, and restates what the user
-  wants rather than quoting them.
+Use the template matching the session language: `references/templates.ja.md` or
+`references/templates.en.md`. Do not read the other one just to write a draft.
 
 Keel writes the draft and stops. Approval belongs to whoever the user hands the
 work to: sail, or this session if the user approves here. When the user
-approves here, run `references/task-note-lifecycle.md` -- translate, check via
-skiff, and promote only if the checker concludes that the agreement survived
-the translation. When a rule changes, change it there -- sail reads the same
-file.
-
-## Finding an existing spec
-
-1. A path the user passed wins, including an explicit path to an old vault
-   note; read it, do not migrate it.
-2. Otherwise inspect `SPEC.md`, `SPEC.ja.md`, and `SPEC.en.md` at the root
-   of the working tree. Treat a `.ja.md` / `.en.md` pair as one spec
-   mid-translation.
-3. Otherwise ask. Never guess.
-
-A person who names a task in passing has not asked for a second spec on it.
+approves here, run `references/spec-lifecycle.md`: translate, check, and
+promote. From approval on, the spec is English for life, and it restates what
+the user wants rather than quoting them.
 
 ## Branches
 
-Branches are execution's business, not the gate's. Do not cut one on your own
-initiative. The spec sits on whatever branch the work is on.
+Branches are execution's business, not the gate's. Do not cut one, or create a
+worktree for one, on your own initiative. The spec sits on whatever branch the
+work is on.
 
 ## When to use this
 
@@ -122,10 +102,10 @@ made, do not offer to write one.
 
 A small task ends at a gate in conversation. Confirm what to build, what not to
 build, and how to verify it, then get approval before touching code. The
-conversation is the only artifact: no `SPEC.md`, no vault note, no file to
-commit. Keel is allowed to conclude the task is small and exit. An agent that
-thinks a task is heavy and finds out it is not has learned something useful;
-the cost of that discovery should be a few questions, not a spec.
+conversation is the only artifact: no `SPEC.md`, no note, no file to commit.
+Keel is allowed to conclude the task is small and exit. An agent that thinks a
+task is heavy and finds out it is not has learned something useful; the cost of
+that discovery should be a few questions, not a spec.
 
 ## Flow
 
@@ -162,41 +142,37 @@ one obvious edit, run the small-task gate and drop the spec. If the work is
 large, name the evidence (files touched, behaviours changed, unknowns
 remaining) so the spec is justified rather than assumed.
 
-### 3. Record the background
+### 3. Write the problem
 
-Write the problem, who feels it and when, what was tried, and what fixed looks
-like in `~/vault/research/<project>/<subject>.md`, a durable note. Read it only
-when a non-obvious judgment needs it; do not make it part of every execution.
-The spec keeps only what an executor needs to act.
+The problem is the spec's first section: the reason for the change, in two to
+four lines, with no solution in it. It is what an executor uses to judge a
+trade-off, so state it plainly enough for that. History -- who hit it, what was
+tried -- stays out unless it changes a decision. Sail carries the problem into
+the PR or commit body before the spec is removed, so the reason outlives the
+spec.
 
 ### 4. Write the design and the criteria
 
 Fill the template that matches the session language. Four parts matter most:
 
-- **Current behavior** -- the paths a cold executor reads first, and what they
-  do today. Move them into a worktree `SPEC.context.md` only when this section
-  grows long, and link that file from the end of the section. Update these
-  paths when they change.
 - **Design** -- one line per decision that constrains implementation, with its
-  reason. Link the research note when a non-obvious judgment depends on its
-  background. Do not write Decisions or Log sections; git and conversation
-  carry that history.
-- **Acceptance criteria** -- observable outcomes as plain `-` conditions.
-  Hang verification methods beneath each as tab-indented `- [ ]` lines: a
-  command, or a manual step with the expected observation. "Login works" is
-  not a criterion; "an expired token redirects to `/login` and preserves the
-  return path" is. If you cannot say how to check a condition, split it until
-  you can, or drop it. A condition that ends in the user's judgment states
-  **what to decide**, never how to answer: no reply formats like "reply in one
-  line". The verification step records the answer in whatever shape the user
-  gives it.
-- **Out of scope** -- non-negotiable. Half of misalignment is silent
-  disagreement about what is not being built.
-- **Stop conditions** -- task-specific limits only (attempts, time, files).
-  The common ones -- the same failure twice, work outside the spec, a
-  trade-off needing a human decision -- live in the sail skill. Omit the
-  section when there are none. When work stops, add a `## Blocker` section on
-  demand: what was tried, what happened, the likely cause, and the options.
+  reason. Name the paths a decision depends on in its own line. Do not write
+  Decisions or Log sections; git and conversation carry that history.
+- **Acceptance criteria** -- observable outcomes as plain `-` conditions. Hang
+  verification methods beneath each as two-space-indented `- [ ]` lines: a command, or
+  a manual step with the expected observation. "Login works" is not a criterion;
+  "an expired token redirects to `/login` and preserves the return path" is. If
+  you cannot say how to check a condition, split it until you can, or drop it. A
+  condition that ends in the user's judgment states **what to decide**, never
+  how to answer: no reply formats like "reply in one line". The verification
+  step records the answer in whatever shape the user gives it.
+- **Out of scope** -- non-negotiable. Half of misalignment is silent disagreement
+  about what is not being built.
+- **Stop conditions** -- task-specific limits only (attempts, time, files). The
+  common ones -- the same failure twice, work outside the spec, a trade-off
+  needing a human decision -- live in the sail skill. Omit the section when
+  there are none. When work stops, add a `## Blocker` section on demand: what was
+  tried, what happened, the likely cause, and the options.
 
 Write the spec so it can be read **cold** -- by a session that has none of this
 conversation. No "as discussed", no "the usual place". Paths, current behavior,
@@ -213,11 +189,9 @@ Do not ask for approval. Not "does this look right?", not "shall I go?", not
 Then end the turn. Do not start implementing, do not "just scaffold", do not
 open the first file. The gate is the feature; skipping the stop empties it out.
 
-The spec stays `draft` until approval runs: an executor picking it up performs
-the approval act above, and so does this session if the user approves here. Do
-not commit the draft or the translation candidate; only the promoted
-`SPEC.md`, together with `SPEC.context.md` when present, goes into the work
-commit.
+The spec stays `draft` until approval runs. An executor who picks it up performs
+the approval act, and so does this session if the user approves here. Drafts
+stay uncommitted (see `references/spec-lifecycle.md`).
 
 ## Handoff
 
@@ -235,39 +209,29 @@ it continue -- so the next cold run never has to ask.
 - Starting to implement, or "just setting up", in the turn that opens the gate
 - Asking for approval of the spec (a small task's approval to implement is
   different)
-- Writing a spec into the vault, or migrating an old vault note
-- Cutting a branch on your own initiative
+- Writing a spec or note into the vault, or migrating an old vault note
+- Cutting a branch, or creating a worktree, on your own initiative
+- Writing a draft in the primary checkout, or over an existing `SPEC*` file
 - Offering to write a spec before its need has been decided
 - Grinding through questions when the answer is already obvious
 - Repeating the spec's sections back instead of pointing at it
 - A spec that never says what is out of scope
-- A condition with no way to check it
-- A condition that dictates the user's reply format
+- A condition with no way to check it, or one that dictates the user's reply
+  format
 - A quotation of the user, or a line transcribed from the conversation
-- Writing the spec before the background is recorded
-- Questions with no guess inside them, or the same label on every guess -- that
-  is surveying, not interviewing
-- A spec only readable by someone who was in the conversation
 - Renegotiating a criterion after the work instead of reporting it unmet
-- A draft left beside the promoted `SPEC.md` (`SPEC.ja.md` or `SPEC.en.md`)
-- A translation that rewrites paths or code, or renames a heading and leaves
-  references behind
-- Common stop conditions copied into a spec
+- A spec only readable by someone who was in the conversation
 - Three or more rounds without your understanding improving
 
 ## Verification
 
 - [ ] The work was judged large before the spec was written, or the gate ended
       at a small-task conversation
-- [ ] The promoted spec is `SPEC.md` at the worktree root; no draft or
-      candidate is committed and no working spec is in the vault
-- [ ] Background is in a subject-scoped research note, not in the spec
-- [ ] The design carries decisions and their reasons; conditions carry
-      verification methods; out-of-scope is explicit
+- [ ] The draft is in a linked worktree, under the name the session language
+      calls for, and no other `SPEC*` file existed there
+- [ ] The problem is two to four lines; the design carries decisions with their
+      reasons; conditions carry verification methods; out-of-scope is explicit
 - [ ] The handoff did not repeat the spec and did not ask for approval of it
 - [ ] No implementation started in the gate's turn
-- [ ] Mid-work scope changes were written into the spec before acting
-- [ ] The draft's filename and `session_lang:` match the language it is written
-      in
-- [ ] A spec approved this turn went translate -> check -> promote, with no
-      draft or candidate left behind
+- [ ] A spec approved this turn went through `spec-lifecycle.md` with no draft
+      or candidate left behind

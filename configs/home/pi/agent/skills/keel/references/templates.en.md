@@ -1,48 +1,35 @@
 # Spec template (English)
 
-One `SPEC.md` sits at the root of the working branch or worktree. The
-headings are load-bearing; the prose under them is not. Keep it short -- a spec
-nobody rereads is not a gate.
+One `SPEC.md` sits at the root of a linked worktree. The headings are
+load-bearing; the prose under them is not. Keep it short -- a spec nobody
+rereads is not a gate.
 
 An English session drafts `SPEC.md` directly. A Japanese session drafts
-`SPEC.ja.md`; approval translates it to `SPEC.en.md`, checks it, and promotes
-it to `SPEC.md`. Drafts and candidates are not committed. When
-`SPEC.context.md` exists, commit it with `SPEC.md` and delete both before the
-merge.
+`SPEC.ja.md`; approval follows `spec-lifecycle.md`. Drafts and candidates are not
+committed.
 
-Frontmatter keys stay English. `created` is the creation date; `status` is
-one of `draft`, `agreed`, `done`, `blocked`; `session_lang` is the
-conversation's language code; `translated` is the date the spec became
-English and stays empty for one written in English from the start. Leave a
-field empty until it has a value, and do not carry this legend into the spec.
-There is no `branch:` field and no merge metadata.
+Frontmatter keys stay English. `status` is one of `draft`, `agreed`, `blocked`;
+`session_lang` is the conversation's language code. Do not carry this legend
+into the spec.
 
 ## The template
 
 ```markdown
 ---
-created: <YYYY-MM-DD>
 status: draft
 session_lang: en
-translated:
 ---
 
 # <Short title>
 
-## Current behavior
+## Problem
 
-<Paths a cold executor reads first, and what they do today. Update these paths
-when they change.>
-<Only when this grows long, move the paths into `SPEC.context.md` in the
-worktree and link that file from the end of this section. Commit
-`SPEC.context.md` with `SPEC.md` and delete both before merging.>
+<Why this change is needed, in two to four lines. No solution.>
 
 ## Design
 
-<One line per decision that constrains implementation, with its reason. When a
-non-obvious judgment needs background, link the research note at
-`~/vault/research/<project>/<subject>.md`; do not copy the background here.
-No Decisions or Log section.>
+<One line per decision that constrains implementation, with its reason. Name the
+paths a decision depends on in its own line. No Decisions or Log section.>
 
 ## Out of scope
 
@@ -50,19 +37,18 @@ No Decisions or Log section.>
 
 ## Acceptance criteria
 
-<Write each condition as a plain `-` item. Hang its verification methods
-beneath it as tab-indented `- [ ]` lines: a command, or a manual step with the
-expected observation. A condition ending in the user's judgment states what to
-decide, never how to reply.>
+<Write each condition as a plain `-` item. Hang its verification methods beneath
+it as two-space-indented `- [ ]` lines: a command, or a manual step with the expected
+observation. A condition ending in the user's judgment states what to decide,
+never how to reply.>
 
 - <observable outcome>
-    - [ ] <command, or manual step with expected observation>
+  - [ ] <command, or manual step with expected observation>
 
 ## Stop conditions
 
-<Task-specific limits and conditions only. Omit this section when there are
-none. The common conditions -- the same failure twice, work outside the spec,
-a trade-off needing a human decision -- live in the sail skill.>
+<Task-specific limits and conditions only. Omit the section when there are none.
+The common conditions live in the sail skill.>
 
 ## Blocker
 
@@ -73,16 +59,15 @@ the options.>
 ## Language and promotion
 
 The Japanese-to-English heading map and the translation procedure live in
-`task-note-lifecycle.md` in this directory. Writing an English spec needs
-only this template. From approval on, the spec is English for life, including
-blockers and any scope changes written into it.
+`spec-lifecycle.md` in this directory. Writing an English spec needs only this
+template. From approval on, the spec is English for life, including blockers and
+any scope changes written into it.
 
 ## Checklist rules
 
 - `- [ ]` is a verification method under a condition, not the condition.
-- `- [x] <method> -- <command and result>` records what proves it. Always
-  record the evidence.
-- A check that failed or could not run stays unticked, with `unmet: <reason>`.
+- A method is recorded as `- [x] <method> -- <command and result>`. A failed or
+  unrun one stays unticked, with `unmet: <reason>`.
 - `## Out of scope` uses plain `-` items, so `[ ]` keeps a single meaning.
 - Ticking is not renegotiation. Changing the text of a condition needs a fresh
   confirmation.
@@ -93,24 +78,24 @@ blockers and any scope changes written into it.
 
 ```markdown
 ---
-created: 2025-11-30
 status: draft
 session_lang: en
-translated:
 ---
 
 # Expire sessions on idle, not on a fixed clock
 
-## Current behavior
+## Problem
 
-`src/auth/session.ts` sets `expiresAt = issuedAt + 24h` at login and never
-touches it again. `tests/auth/session.test.ts` asserts the 24h value today.
+Users are logged out in the middle of a task after 24 hours, however active they
+were. Sessions should end when the user stops working, not when a clock runs out.
 
 ## Design
 
-- Slide `expiresAt` forward on each authenticated request, leaving the
-  absolute cap alone -- the cap is a compliance requirement.
-- Update the test to distinguish idle and absolute expiry.
+- Slide `expiresAt` forward on each authenticated request and leave the absolute
+  cap alone -- the cap is a compliance requirement.
+- `src/auth/session.ts` sets `expiresAt = issuedAt + 24h` at login and never
+  touches it again. `tests/auth/session.test.ts` asserts the 24h value; split it
+  into idle and absolute cases.
 
 ## Out of scope
 

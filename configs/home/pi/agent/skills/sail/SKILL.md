@@ -5,7 +5,7 @@ description: >
   acceptance conditions with evidence, and stop on blockers instead of
   guessing. Use after a spec gate such as keel, when a task has an agreed spec,
   or when the user says "execute the spec", "start the work", "implement the
-  plan", or hands off an agreed note.
+  plan", or hands off an agreed spec.
 ---
 
 # Sail
@@ -19,7 +19,7 @@ the user asks for it.
 1. **Find and read the spec before touching code.**
 2. **Every acceptance condition ends with evidence or an explicit unmet
    report.**
-3. **Merging waits for the user's word; the spec is deleted before the merge.**
+3. **Merging waits for the user's word; the spec is removed before the merge.**
 4. **Scope moves in the spec first, then gets re-confirmed.**
 5. **A blocker is written down and raised, never silently absorbed.**
 6. **A spec that is not English is translated and checked before any code
@@ -38,8 +38,7 @@ and stop when nothing matches.
    read as-is; do not migrate it.
 2. Otherwise automatic discovery looks only at the repository: `SPEC.md`,
    `SPEC.ja.md`, and `SPEC.en.md` at the root of the current worktree. Do not
-   search the vault. Treat a `.ja.md` / `.en.md` pair as one spec
-   mid-translation.
+   search the vault. Treat a `.ja.md` / `.en.md` pair as one spec mid-translation.
 3. Otherwise say that nothing matches and ask. Never guess, and never start the
    work without a spec.
 
@@ -53,17 +52,14 @@ brought you here is the go, so do not ask whether it is agreed -- approve it,
 then implement. If `status: blocked`, read `## Blocker` first.
 
 Agreeing a spec that is not English is the one thing that happens before any
-code changes. Follow `../keel/references/task-note-lifecycle.md`: translate,
-check, promote.
-
-You are the translator, so you must not be the checker -- delegate the check
-to a skiff. The model, and optionally the thinking level, should be
-specified by user instructions or project conventions -- prefer one different
-from the translator's. Ask if unsure. Read the child's conclusion. If the
-checker reports no substantive issues and concludes that the agreement was
-preserved, promote per the lifecycle; the candidate becomes the spec. Otherwise
-leave the draft `draft`, fix the candidate, and re-check the full pair once. If
-findings remain, or the conclusion is missing or unclear, stop and ask the user.
+code changes. Follow `../keel/references/spec-lifecycle.md`: translate, check
+through skiff, promote. You translated it, so you are not the checker. Use a
+checker model different from your own when the user or the project names one,
+and ask if unsure. Read the child's conclusion. If it reports no substantive
+issues and concludes that the agreement was preserved, promote. Otherwise leave
+the status `draft`, fix the candidate, and re-check the full pair once with the
+same checker. If findings remain, or the conclusion is missing or unclear, stop
+and ask the user.
 
 - child non-zero exit -> stop and report the exit code and stderr; no code
   changes while the pair is unsettled.
@@ -89,17 +85,18 @@ each condition's `- [ ]` verification methods to decide what to run or inspect.
 - Tick a verification method when you carry it out, recording what proves it:
   the command and its result, or what you observed and where.
 - Leave a method unticked when its condition is unmet and add
-  `unmet: <reason>` to it. Never tick one to look busy, and never reword a
-  condition to make it pass.
+  `unmet: <reason>`. Never tick one to look busy, and never reword a condition
+  to make it pass.
 - If a condition is already satisfied, record the evidence instead of changing
   code.
-- Follow the repository's own rules for tests, formatting, and commits.
-- The spec is English from approval on: scope changes go into its design,
-  out-of-scope, and acceptance-criteria sections, and blockers are written in
-  English. What the user says is restated, never quoted.
+- Follow the repository's own rules for tests, formatting, and commits. Commit
+  the promoted `SPEC.md` with the work; drafts and candidates are never
+  committed.
+- Scope changes go into the spec before acting (see below). The spec is English
+  from approval on, and what the user says is restated, never quoted.
 - If the spec is silent on a local implementation detail, use judgment and keep
-  the detail in conversation or the commit message; the spec has no log
-  section. Silence is not permission to change the agreed outcome.
+  the detail in conversation or the commit message. Silence is not permission to
+  change the agreed outcome.
 
 ## Scope changes and blockers
 
@@ -114,10 +111,9 @@ Stop instead of grinding when:
 - the work needs to touch something outside the spec -- stop;
 - a genuine trade-off needs a human decision -- stop.
 
-Write the situation under a `## Blocker` section on demand: what was tried,
-what happened, the likely cause, and the options you see. Set
-`status: blocked`. Then ask. A stop without a written trace is a failed
-handoff.
+Write the situation under a `## Blocker` section on demand: what was tried, what
+happened, the likely cause, and the options you see. Set `status: blocked`. Then
+ask. A stop without a written trace is a failed handoff.
 
 ## Verify and report
 
@@ -128,16 +124,16 @@ reported as unmet, not renegotiated after the fact.
 Do not call the work done because the diff looks plausible. The conditions
 decide. Report what passed and what is unmet, then leave the spec in place: the
 merge removes it. If the task ends without a merge, the user's word closes it.
-Do not ask whether to close, and do not delete the spec before the merge or
-that word.
+Do not ask whether to close, and do not remove the spec before the merge or that
+word.
 
 End with a report in the language of the conversation: what changed, which
 conditions passed with what evidence, what is unmet, and what still needs a
-decision. When the session gives no signal -- `/sail <path>` and no prose
-since -- take the spec's `session_lang:`. If the user's language later
-disagrees with the field, update the field rather than answering in a language
-nobody asked for; from approval on the body stays English either way. The next
-action is the user's.
+decision. When the session gives no signal -- `/sail <path>` and no prose since --
+take the spec's `session_lang:`. If the user's language later disagrees with the
+field, update the field rather than answering in a language nobody asked for;
+from approval on the body stays English either way. The next action is the
+user's.
 
 When the next action is the user's judgment -- a listen, a look, a preference --
 ask for the judgment itself, not for a format. Never dictate the shape of the
@@ -155,14 +151,23 @@ Before merging:
 
 - Run the repository's final gates on the branch, typically the formatter check
   and the full test suite.
+- Remove the spec from the branch:
+  1. Confirm the merge target has no spec of its own. `git ls-tree --name-only
+     <target> -- SPEC.md SPEC.ja.md SPEC.en.md` must print nothing. If it does,
+     stop and ask: that file is not this task's.
+  2. Carry the `## Problem` text into the PR body, or into the body of the
+     removal commit in step 3 when there is one, before the spec is removed.
+  3. Remove `SPEC.md`, `SPEC.ja.md`, and `SPEC.en.md` wherever they exist: `git
+     rm` a tracked file, `rm` an untracked one. When a tracked file was removed,
+     commit the removal under the repository's commit conventions.
+  4. Check with `git ls-files 'SPEC*'`, `ls SPEC* 2>/dev/null`, and `git status
+     --short`. The first two must print nothing and the status must be clean. If
+     a `SPEC*` file remains, stop and report it; do not merge with a spec in the
+     tree.
 - Follow the repository's merge convention. Where it has none, keep history
   linear -- no merge commit -- and say which shape you used.
-- Delete `SPEC.md` and `SPEC.context.md` when present from the worktree. Run
-  `git status --short` and read the result. Stop and report if a `SPEC.*`
-  file remains; do not merge with the spec still in the tree.
 
-The spec and its context file were committed with the work and are removed
-before the merge: nothing to strip after it, no archive branch, and no guard
-hook. Record the outcome in conversation and commit messages.
+The removal is part of the branch tip, so the merge brings nothing of the spec
+into the target. Record the outcome in conversation and commit messages.
 
 Never rewrite `main` or force-push it.
