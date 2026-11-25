@@ -48,26 +48,3 @@ rather than defending a preferred option.
   Commit messages and git history keep the rest.
 - Do not let the conversation leak into files: they must stand alone for a
   reader who was not part of the dialogue.
-
-# Herdr workspaces
-
-These rules apply when `HERDR_ENV=1`. Outside Herdr, skip every `herdr` step
-and use the plain terminal + tmux + pi-worktrunk flow.
-
-- Worktrunk owns worktree creation and removal. After pi-worktrunk creates a
-  worktree, register the checkout with `herdr worktree open --path <path>`.
-  Read the workspace ID from its JSON, read the tab with
-  `herdr tab list --workspace <id>`, and move the current Pi pane with
-  `herdr pane move "$HERDR_PANE_ID" --tab <tab_id>`. The pane keeps its agent
-  name and session path when it moves into the nested workspace.
-- Do not restart Pi to follow a worktree. The `session-id` restart flag opens
-  the current directory's session instead of moving history; pi-worktrunk's
-  `ctx.switchSession()` moves the conversation.
-- Start subagents with `pi --name <Role>` after `--` in `herdr agent start`, so
-  the role becomes the session name and the terminal title shows it.
-- For cleanup, inspect `herdr pane list --workspace <id>`. If a window created
-  by the user has a running program, ask before closing it. After Worktrunk
-  removes the worktree, close the workspace with `herdr workspace close <id>`.
-  Use `--force` only after the user agrees.
-- Titles of windows created by the user stay derived from the running program.
-  One Pi pane per window is an agent convention, not an enforced rule.

@@ -36,18 +36,14 @@ in
     # the declared keys are merged in.
     mutableSettings = true;
     settings = {
-      # Both packages stay installed and their extensions stay discovered but
-      # disabled, so `pi config` lists them and `pi config -l` can switch one on
-      # for a project. `autoload = false` would hide them from `pi config`
-      # entirely; an empty `extensions` filter keeps the entries with
+      # The package stays installed and its extension stays discovered but
+      # disabled, so `pi config` lists it and `pi config -l` can switch it on
+      # for a project. `autoload = false` would hide it from `pi config`
+      # entirely; an empty `extensions` filter keeps the entry with
       # `enabled: false`, which the resource loader skips.
       packages = [
         {
           source = "npm:pi-gpui";
-          extensions = [ ];
-        }
-        {
-          source = "npm:pi-worktrunk";
           extensions = [ ];
         }
       ];

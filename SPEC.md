@@ -43,7 +43,8 @@ When a Pi session inside Herdr moves into a worktree, Herdr's workspaces and pan
     - Observed long titles with separate one-word labels: `Create herdr-follow-test worktree`/`worktree`, `Fix CJK font weight regression`/`review`, and two `Compare terminal markdown viewers`/`compare`,`comparison`.
     - unmet: no two-word border label was observed; the collision fallback was implemented but not verified.
 - pi-worktrunk is gone and the new extension is Herdr-only
-  - [ ] `rg -n 'HERDR_ENV' configs/home/pi/agent/extensions/herdr-worktree.ts` contains the guard, `rg -n 'pi-worktrunk' configs/home/pi/default.nix .pi/settings.json` prints nothing, and `AGENTS.md` contains no worktree-tool instructions. unmet: the extension and removals do not exist yet.
+  - [x] `rg -n 'HERDR_ENV' configs/home/pi/agent/extensions/herdr-worktree.ts` contains the guard, `rg -n 'pi-worktrunk' configs/home/pi/default.nix .pi/settings.json` prints nothing, and `AGENTS.md` contains no worktree-tool instructions.
+    - Print mode with `HERDR_ENV=1` placed `<project_instructions path="herdr-worktree">` between the global AGENTS.md and `./AGENTS.md`; with `HERDR_ENV` unset, no such entry appeared.
 - A subagent's session name is its role name
   - [ ] Manual: start one with `herdr agent start reviewer --kind pi --pane <pane_id> -- --name Review`; the terminal title in `herdr pane list` is `π - Review - <repo>`. session-namer does not overwrite it.
     - unmet: this case was not started.
