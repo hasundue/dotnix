@@ -220,7 +220,7 @@ export default function (pi: ExtensionAPI) {
       if (!pi.getSessionName()) pi.setSessionName(names.title);
       if (process.env.HERDR_ENV !== "1") return;
 
-      const label = chooseLabel(names.label, await herdrPanes());
+      const label = chooseLabel(names.label, names.title, await herdrPanes());
       await reportLabel(label);
     } catch {
       // A missing name or label is cosmetic; never fail or delay the turn.
@@ -294,15 +294,23 @@ export default function (pi: ExtensionAPI) {
   }
 
   /** Use one word unless another window in this Herdr session carries it. */
-  function chooseLabel(label: string, panes: readonly Pane[]): string {
+  function chooseLabel(label: string, title: string, panes: readonly Pane[]): string {
     const [first, second] = label.split(" ");
-    if (second === undefined || first === undefined) return label;
+    if (first === undefined) return label;
     const texts = panes
       .filter((pane) => pane.pane_id !== process.env.HERDR_PANE_ID)
       .flatMap((pane) => [pane.title, pane.terminal_title, pane.terminal_title_stripped])
       .filter((text): text is string => typeof text === "string");
     const used = new Set(texts.flatMap((text) => text.toLowerCase().split(/[^a-z0-9]+/)));
-    return used.has(first) ? label : first;
+    if (!used.has(first)) return second === undefined ? first : label;
+    if (second !== undefined) return label;
+    // The model offered only its first word; take the clarifying word from
+    // the session name rather than repeat a label another window already uses.
+    const extra = title
+      .toLowerCase()
+      .split(/[^a-z0-9]+/)
+      .find((word) => word !== first && word.length > 2 && !used.has(word));
+    return extra === undefined ? label : `${first} ${extra}`;
   }
 
   async function reportLabel(label: string): Promise<void> {

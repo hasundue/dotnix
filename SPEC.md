@@ -1,5 +1,5 @@
 ---
-status: agreed
+status: blocked
 session_lang: ja
 ---
 
@@ -38,19 +38,37 @@ When a Pi session inside Herdr creates or moves a worktree through pi-worktrunk,
 
 - Entering implementation from a project workspace inside Herdr creates a linked worktree and leaves the Pi pane in a workspace nested under the repository
   - [ ] Manual: in Herdr, go from the gate into implementation and inspect `herdr workspace list` and `herdr pane list`. The worktree workspace has `worktree.repo_key` equal to the root's and `is_linked_worktree: true`; the Pi pane's `cwd` is that worktree path and `agent_session` points at the destination session. Ask the agent for the title discussed before the move and get the same answer.
+    - Workspace `wH` had `checkout_path` `/home/hasundue/dotnix.herdr-follow-test`, `is_linked_worktree: true`, and `repo_key` `/home/hasundue/dotnix/.git`, matching the root workspace. Pane `wH:p2` had `agent_session` pointing at the linked session under `dotnix.herdr-follow-test`, and the agent recalled the phrase `violet lantern` and kept its session title after the move.
+    - unmet: Herdr still reported the pane's `cwd` as `/home/hasundue/dotnix.herdr-pi-workflow` although the agent's `pwd` was the new worktree.
 - The procedure contains no restart that loses conversation history
-  - [x] `rg -n -- '--session-id' configs/home/pi/agent/AGENTS.md configs/home/pi/agent/extensions/session-namer.ts` prints nothing. Evidence: exit status 1 with no output.
+  - [x] `rg -n -- '--session-id' configs/home/pi/agent/AGENTS.md configs/home/pi/agent/extensions/session-namer.ts` prints nothing.
+    - Exit status 1 with no output.
 - session-namer emits a long session name and a short label separately, and the short label appears on the Herdr border
   - [ ] Manual: start two Pi sessions with different topics in the same Herdr session; the terminal titles in `herdr pane list` keep the long session names and each pane border shows a one-word label. Start a third session with a topic whose natural one-word label matches an existing window; the border label has two words.
+    - Observed long titles with separate one-word labels: `Create herdr-follow-test worktree`/`worktree`, `Fix CJK font weight regression`/`review`, and two `Compare terminal markdown viewers`/`compare`,`comparison`.
+    - unmet: no two-word border label was observed; the collision fallback was implemented but not verified.
 - No Herdr CLI is used outside Herdr
-  - [x] `rg -n 'HERDR_ENV' configs/home/pi/agent/AGENTS.md configs/home/pi/agent/extensions/session-namer.ts` contains the check. Evidence: AGENTS.md:40 and session-namer.ts:221,310.
-  - [ ] Manual: with `HERDR_ENV` unset in a plain terminal, have Pi create a worktree; no herdr command is issued and the existing flow continues. unmet: no plain-terminal Pi session was started for this check.
+  - [x] `rg -n 'HERDR_ENV' configs/home/pi/agent/AGENTS.md configs/home/pi/agent/extensions/session-namer.ts` contains the check.
+    - Matches at AGENTS.md:40 and session-namer.ts:221,310.
+  - [ ] Manual: with `HERDR_ENV` unset in a plain terminal, have Pi create a worktree; no herdr command is issued and the existing flow continues.
+    - unmet: no plain-terminal Pi session was started for this check.
 - A subagent's session name is its role name
   - [ ] Manual: start one with `herdr agent start reviewer --kind pi --pane <pane_id> -- --name Review`; the terminal title in `herdr pane list` is `π - Review - <repo>`. session-namer does not overwrite it.
+    - unmet: this case was not started.
 - Cleanup of a worktree with a user window asks for confirmation
   - [ ] Manual: create a user pane running `top` in the worktree workspace and ask for cleanup. A question appears before closing; declining leaves the workspace in place.
+    - unmet: this case was not started.
 - The change passes formatting and checks
-  - [x] After `nix fmt`, `git diff --check` prints nothing. Evidence: `nix fmt` reported 0 files changed; `git diff --check` exited 0.
+  - [x] After `nix fmt`, `git diff --check` prints nothing.
+    - Both `nix fmt` runs reported 0 files changed; both `git diff --check` runs exited 0.
+
+## Blocker
+
+After a Worktrunk move and the Herdr pane move, Herdr reports the moved Pi pane's `cwd` as the source worktree while Pi's own `pwd` is the destination. The acceptance criterion requires the destination path. The two in-scope files have no way to report a new process cwd to Herdr, and the spec excludes restarting Pi in the new worktree.
+
+Observed: workspace `wH` had correct worktree metadata, and the pane's agent session and conversation history moved, but `herdr pane get wH:p2` still showed `/home/hasundue/dotnix.herdr-pi-workflow`.
+
+Options: accept the stale Herdr `cwd` and relax that criterion; allow a cwd-reporting change outside the two in-scope files; or permit a restart that reopens the linked session in the new worktree. The test worktree `/home/hasundue/dotnix.herdr-follow-test` on branch `herdr-follow-test` remains on disk; its Herdr workspace was closed.
 
 ## Stop conditions
 
