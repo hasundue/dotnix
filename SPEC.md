@@ -39,17 +39,18 @@ When a Pi session inside Herdr creates or moves a worktree through pi-worktrunk,
 - Entering implementation from a project workspace inside Herdr creates a linked worktree and leaves the Pi pane in a workspace nested under the repository
   - [ ] Manual: in Herdr, go from the gate into implementation and inspect `herdr workspace list` and `herdr pane list`. The worktree workspace has `worktree.repo_key` equal to the root's and `is_linked_worktree: true`; the Pi pane's `cwd` is that worktree path and `agent_session` points at the destination session. Ask the agent for the title discussed before the move and get the same answer.
 - The procedure contains no restart that loses conversation history
-  - [ ] `rg -n -- '--session-id' configs/home/pi/agent/AGENTS.md configs/home/pi/agent/extensions/session-namer.ts` prints nothing
+  - [x] `rg -n -- '--session-id' configs/home/pi/agent/AGENTS.md configs/home/pi/agent/extensions/session-namer.ts` prints nothing. Evidence: exit status 1 with no output.
 - session-namer emits a long session name and a short label separately, and the short label appears on the Herdr border
   - [ ] Manual: start two Pi sessions with different topics in the same Herdr session; the terminal titles in `herdr pane list` keep the long session names and each pane border shows a one-word label. Start a third session with a topic whose natural one-word label matches an existing window; the border label has two words.
 - No Herdr CLI is used outside Herdr
-  - [ ] `rg -n 'HERDR_ENV' configs/home/pi/agent/AGENTS.md configs/home/pi/agent/extensions/session-namer.ts` contains the check. Manual: with `HERDR_ENV` unset in a plain terminal, have Pi create a worktree; no herdr command is issued and the existing flow continues.
+  - [x] `rg -n 'HERDR_ENV' configs/home/pi/agent/AGENTS.md configs/home/pi/agent/extensions/session-namer.ts` contains the check. Evidence: AGENTS.md:40 and session-namer.ts:221,310.
+  - [ ] Manual: with `HERDR_ENV` unset in a plain terminal, have Pi create a worktree; no herdr command is issued and the existing flow continues. unmet: no plain-terminal Pi session was started for this check.
 - A subagent's session name is its role name
   - [ ] Manual: start one with `herdr agent start reviewer --kind pi --pane <pane_id> -- --name Review`; the terminal title in `herdr pane list` is `π - Review - <repo>`. session-namer does not overwrite it.
 - Cleanup of a worktree with a user window asks for confirmation
   - [ ] Manual: create a user pane running `top` in the worktree workspace and ask for cleanup. A question appears before closing; declining leaves the workspace in place.
 - The change passes formatting and checks
-  - [ ] After `nix fmt`, `git diff --check` prints nothing
+  - [x] After `nix fmt`, `git diff --check` prints nothing. Evidence: `nix fmt` reported 0 files changed; `git diff --check` exited 0.
 
 ## Stop conditions
 
