@@ -28,8 +28,8 @@ before starting; that is a report, not a request for approval.
 Read the spec fully. If it is missing, empty, or has no acceptance criteria,
 stop and ask. A `draft` spec is normal: the instruction here is the go, so
 promote it by updating the status as `../keel/references/spec-authoring.md`
-describes, then implement. If `status: blocked`, read the blocker section first.
-If `status: stale`, stop and ask: the work was dropped.
+describes, then implement. If `status: blocked` or `status: stale`, read
+`references/stops.md` before continuing.
 
 A question from a cold executor is a spec defect. Answer it, write the answer
 into the spec's design, out-of-scope, or acceptance criteria, then continue.
@@ -59,11 +59,7 @@ Create or switch branches only when the user asks. If the work is on
 silently. The spec belongs to where it was written; there is no branch field to
 keep in sync.
 
-## Scope changes and blockers
-
-When reality contradicts the spec, update the design, out-of-scope, or
-acceptance criteria before acting, then ask for re-confirmation. Put why the
-spec moved and what was considered in that commit's body. Do not drift silently.
+## Stop
 
 Stop when:
 
@@ -71,17 +67,7 @@ Stop when:
 - the work needs to touch something outside the spec -- stop;
 - a genuine trade-off needs a human decision -- stop.
 
-When a stop needs a handoff, set `status: blocked`. The blocker section appears
-only with that status; give it a heading in the spec's language that names the
-block, and write the context needed to resume. A commit that only adds the
-status and the section needs no body: the spec holds the context. Then ask.
-
-Only on the user's word does a block clear: set `status: agreed` and move the
-context from the blocker section into that commit's body before removing it. If
-the user drops the work, set `status: stale`, move any blocker context into that
-commit's body, and put why the work was dropped there. Do not resume a stale
-spec without the user's word; on resumption, re-confirm it, set the status to
-`agreed`, and carry the context forward.
+When a stop happens, read `references/stops.md` before acting further.
 
 ## When the work is done
 
