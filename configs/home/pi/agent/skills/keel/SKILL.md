@@ -18,8 +18,8 @@ description: >
   then get approval before touching code. No spec, note, or file to commit.
 - A large task gets a written spec. Name the evidence -- files touched,
   behaviours changed, unknowns remaining -- so the spec is justified.
-- Scope changes move in the spec before anyone acts on them.
-- Point at the spec with explicit stop conditions, then end the turn.
+- Scope changes move in the agreement before anyone acts on them.
+- Point at the agreement with explicit stop conditions, then end the turn.
 
 ## Interview
 
