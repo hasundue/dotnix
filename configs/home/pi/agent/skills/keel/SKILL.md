@@ -16,7 +16,7 @@ description: >
 - Judge the size during the interview. A small task ends at a gate in
   conversation: confirm what to build, what not to build, and how to verify it,
   then get approval before touching code. No spec, note, or file to commit.
-- A large task gets one `SPEC.md`. Name the evidence -- files touched,
+- A large task gets a written spec. Name the evidence -- files touched,
   behaviours changed, unknowns remaining -- so the spec is justified.
 - Scope changes move in the spec before anyone acts on them.
 - Point at the spec and `sail` with explicit stop conditions, then end the turn.
@@ -45,6 +45,6 @@ ask itself may be broken.
 
 ## Spec
 
-One `SPEC.md` sits at the root of the branch or worktree that will carry the
-work, in the language of the session that wrote it. Follow
-`references/spec-authoring.md` for how to place, draft, and promote it.
+A large task carries its agreement in a written spec, in the language of the
+session that wrote it. Its name and location come from the project or the user.
+Follow `references/spec-authoring.md` for how to draft and promote it.

@@ -1,6 +1,6 @@
-# Spec carrier
+# Written spec
 
-Read this when the agreement lives in `SPEC.md`.
+Read this when the agreement lives in a written spec.
 
 ## Promotion
 

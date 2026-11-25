@@ -14,14 +14,14 @@ rewrite the problem, or cut a branch unless the agreement or the user asks.
 ## Find the agreement
 
 The agreement is what the gate settled: what to build, what not to build, and
-how to verify it. Find it in this order: a path the user passed, `SPEC.md` at
-the root of the current worktree, or a completed gate in the live conversation.
-An explicit path to an old vault task note is read as-is; do not migrate it.
-Do not search the vault.
+how to verify it. Find it in the session context: a path the user passed, a
+written spec the project or user points to, or the live conversation. An
+explicit path to an old vault task note is read as-is; do not migrate it. Do
+not search the vault.
 
-A spec carries its own rules in `references/spec-carrier.md`; a cold session
-with no spec has no agreement and stops. If the agreement is missing, empty, or
-has no way to verify, stop and ask.
+A written spec carries its own rules in `references/written-spec.md`; a cold
+session with no agreement in context stops and asks. If the agreement is
+missing, empty, or has no way to verify, stop and ask.
 
 When several choices fit equally, name them and ask which one. If the agreement
 was found rather than handed over, say which one you are taking -- path or gate,

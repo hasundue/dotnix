@@ -1,17 +1,8 @@
 # Spec authoring
 
-The agreement is one `SPEC.md` at the root of the branch or worktree that will
-carry the work, in the language of the session that wrote it. There is no
-language suffix and no translation. Ask before inventing another file name.
-
-## Location
-
-The spec lives at the root of the branch or worktree where the work will be
-committed, so it needs no branch field. If that means opening a new branch or
-worktree, ask the user to do it; keel does not create one.
-
-Before writing, check for any existing `SPEC.md`, tracked or not, at that root.
-Read it and ask before drafting another; never overwrite or rename it.
+One written spec carries the agreement in the language of the session that
+wrote it. Its name and location come from project convention or the user. There
+is no translation.
 
 ## Frontmatter
 
@@ -21,11 +12,11 @@ A dropped draft is deleted uncommitted. There is no language field.
 ## Sections
 
 Templates live in `templates/`, one per session language, and contain only the
-frontmatter and the sections. Copy the matching one to the work's root as
-`SPEC.md` and fill it in; the template file name is not the spec name. Only
-Japanese and English templates exist, so ask before adding another language.
-Headings stay in the spec's language; a reader finds a section by its position
-and content, not by an English heading name.
+frontmatter and the sections. Copy the matching one to the agreed location and
+fill it in; the template file name is not the spec name. Only Japanese and
+English templates exist, so ask before adding another language. Headings stay
+in the spec's language; a reader finds a section by its position and content,
+not by an English heading name.
 
 ## Writing the body
 

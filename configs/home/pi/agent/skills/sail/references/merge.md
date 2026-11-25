@@ -20,12 +20,11 @@ Before merging:
   reorganization. If any of
   this cannot be carried, stop and ask where the context belongs. If the
   repository has no merge procedure, stop and ask.
-- The target must receive no `SPEC.md`. Check that `git ls-tree --name-only
-  HEAD -- SPEC.md` prints nothing. Check that the target has no spec of its own
-  with `git ls-tree --name-only <target> -- SPEC.md`; if it prints anything,
-  stop and ask, because that file is not this task's. Delete any untracked
-  `SPEC.md` left in the worktree, and read `git status --short`: it must be
-  clean.
+- The target must receive no written spec. Use the carrier's path from the
+  session; check `git ls-tree --name-only HEAD -- <path>` and the same command
+  on `<target>`. If either prints anything, stop and ask, because that file is
+  not this task's. Delete any untracked carrier left in the worktree, and read
+  `git status --short`: it must be clean.
 - Follow the repository's merge convention. Where it has none, keep history
   linear -- no merge commit -- and say which shape you used.
 
