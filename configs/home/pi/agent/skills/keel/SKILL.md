@@ -9,9 +9,6 @@ description: >
 
 # Keel
 
-Gate before build: agree the problem, the design, and how the work will be
-checked where it will be committed. Then hand control back.
-
 ## Gate
 
 - Do not implement, scaffold, or open a file in the turn that opens the gate.
@@ -50,4 +47,4 @@ ask itself may be broken.
 
 One `SPEC.md` sits at the root of the branch or worktree that will carry the
 work, in the language of the session that wrote it. Follow
-`references/spec-lifecycle.md` for how to place, draft, and promote it.
+`references/spec-authoring.md` for how to place, draft, and promote it.

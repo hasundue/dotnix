@@ -49,7 +49,7 @@ title -- before starting; that is a report, not a request for approval.
 Read the spec fully. If it is missing, empty, or has no acceptance criteria,
 stop and ask. A spec still marked `draft` is normal: the instruction that
 brought you here is the go, so do not ask whether it is agreed -- promote it by
-updating the status as `../keel/references/spec-lifecycle.md` describes, then
+updating the status as `../keel/references/spec-authoring.md` describes, then
 implement. If `status: blocked`, read the blocker section first. If
 `status: stale`, stop and ask: the work was dropped.
 
@@ -68,6 +68,7 @@ field to keep in sync.
 
 Work through the acceptance conditions, not through a feeling of doneness. Use
 each condition's `- [ ]` verification methods to decide what to run or inspect.
+See `references/spec-execution.md` for spec-record details.
 
 - Tick a verification method when you carry it out, recording what proves it:
   the command and its result, or what you observed and where.
@@ -163,11 +164,11 @@ Before merging:
   reorganization. When no outcome commit keeps that change, stop and ask where
   the context belongs. If the procedure cannot carry either, stop and ask. If
   the repository has no merge procedure, stop and ask.
-- The target must receive no `SPEC*` file. Check that `git ls-tree --name-only
-  HEAD -- 'SPEC*'` prints nothing. Check that the target has no spec of its own
-  with `git ls-tree --name-only <target> -- 'SPEC*'`; if it prints anything,
+- The target must receive no `SPEC.md`. Check that `git ls-tree --name-only
+  HEAD -- SPEC.md` prints nothing. Check that the target has no spec of its own
+  with `git ls-tree --name-only <target> -- SPEC.md`; if it prints anything,
   stop and ask, because that file is not this task's. Delete any untracked
-  `SPEC*` file left in the worktree, and read `git status --short`: it must be
+  `SPEC.md` left in the worktree, and read `git status --short`: it must be
   clean.
 - Follow the repository's merge convention. Where it has none, keep history
   linear -- no merge commit -- and say which shape you used.

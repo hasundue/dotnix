@@ -1,12 +1,8 @@
-# Spec lifecycle
+# Spec authoring
 
 The agreement is one `SPEC.md` at the root of the branch or worktree that will
 carry the work, in the language of the session that wrote it. There is no
-language suffix and no translation.
-Ask before inventing another file name.
-
-Only the promoted spec is committed, with the work. Drafts stay uncommitted.
-Sail leaves the spec out of the commits that land on `main`.
+language suffix and no translation. Ask before inventing another file name.
 
 ## Location
 
@@ -14,22 +10,13 @@ The spec lives at the root of the branch or worktree where the work will be
 committed, so it needs no branch field. If that means opening a new branch or
 worktree, ask the user to do it; keel does not create one.
 
-Before writing, check for any existing `SPEC*` file, tracked or not, at that
-root. Read it and ask before drafting another; never overwrite or rename one on
-your own.
-
-```sh
-git rev-parse --path-format=absolute --git-dir --git-common-dir
-git ls-files 'SPEC*'; ls SPEC* 2>/dev/null
-```
-
-The `rev-parse` paths differ when the work is in a linked worktree.
+Before writing, check for any existing `SPEC.md`, tracked or not, at that root.
+Read it and ask before drafting another; never overwrite or rename it.
 
 ## Frontmatter
 
-Keys stay English. `status` is one of `draft`, `agreed`, `blocked`, `stale`.
-`stale` means a promoted spec's work is no longer being pursued; a dropped draft
-is deleted uncommitted and never becomes `stale`. There is no language field.
+Keys stay English. `status` starts at `draft` and becomes `agreed` on approval.
+A dropped draft is deleted uncommitted. There is no language field.
 
 ## Sections
 
@@ -53,10 +40,6 @@ Write every section so it can be read cold -- by a session with none of the
 conversation. No "as discussed" or "the usual place". Name paths, current
 behaviour, decisions and their reasons, and commands.
 
-When the work is reorganized into outcome commits for the merge, the problem
-becomes the body of the commit that lands the outcome, so the reason outlives
-the spec.
-
 ## Line width
 
 Wrap prose at 80 half-width columns, counting a full-width character as two.
@@ -64,7 +47,7 @@ Keep commands, paths, code identifiers, and links usable; break them only where
 the syntax keeps them copyable. The formatter does not wrap Markdown prose, so
 the writer wraps it.
 
-## Checking work
+## Criteria
 
 - A condition is an observable outcome, not a task. Split it until you can say
   how to check it, or drop it.
@@ -72,33 +55,12 @@ the writer wraps it.
   to answer; the method records the answer in whatever shape the user gives it.
 - Write each condition as a plain `-` item and hang its verification methods
   beneath it as two-space-indented `- [ ]` lines.
-- `- [ ]` is a verification method under a condition, not the condition.
-- A method is recorded as `- [x] <method> -- <command and result>`. A failed or
-  unrun one stays unticked, with `unmet: <reason>`.
 - The out-of-scope section uses plain `-` items, so `[ ]` keeps a single
   meaning.
-- Ticking is not renegotiation. Changing the text of a condition needs a fresh
-  confirmation.
-- Do not label method lines; that keeps the count of conditions separate from
-  the count of checks.
-- Do not add Decisions or Log sections; git and conversation carry that history.
-- A question from a cold executor is a spec defect. Answer it, write the answer
-  into design, out-of-scope, or acceptance criteria, then let it continue.
-- The stop-conditions section holds task-specific limits only; the common ones
-  live in sail.
-
-## When blocked
-
-The blocker section appears only with `status: blocked`. Place it after the
-stop-conditions section, or last if that section is omitted. Give it a heading
-in the spec's language that names the block, and write the context needed to
-resume -- for example, what was tried, what happened, the likely cause, and the
-options. When the status leaves `blocked`, move that context into the commit
-body and remove the section.
 
 ## Approval
 
-Approval is a status change from `draft` to `agreed`. There is no translation
-and no independent check. Write the body in the session language and restate
+Approval is a status change from `draft` to `agreed`. There is no independent
+check. Write the body in the session language and restate
 what the user wants rather than quoting them. Scope changes and blockers follow
 the same language, and the body keeps its language for life.
