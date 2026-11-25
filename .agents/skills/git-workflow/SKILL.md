@@ -41,8 +41,7 @@ approval.
 After approval, if the plan reorganizes the branch, rebase onto the current
 `main` and reorganize checkpoints by outcome in the source branch's checkout.
 Do not push the reorganized branch to `origin`, and do not run `git push` or
-`git pull` on the working branch afterward. The reorganized tip contains no
-`SPEC*` file. Then run the approved validation on
+`git pull` on the working branch afterward. Then run the approved validation on
 the branch tip and merge.
 
 Run the merge with Worktrunk in the source branch's checkout, so the local
@@ -125,10 +124,8 @@ Use one commit per distinct, independently meaningful outcome. Keep all
 changes needed for one outcome together, even when they touch multiple files
 or configs; keep distinct outcomes in separate commits. Each commit must leave
 the project coherent. Run validation on the branch tip, not at every commit
-boundary. When the branch carries a spec (`SPEC.md`, written by the keel skill), the
-body of each commit that lands an outcome states the problem that outcome
-resolves, taken from the spec's `## Problem`. The spec file is not part of any
-commit that lands on `main`.
+boundary. Each commit that lands an outcome on `main` has a body that states the
+problem the outcome resolves, so the reason outlives the branch.
 
 #### Working-branch checkpoints
 

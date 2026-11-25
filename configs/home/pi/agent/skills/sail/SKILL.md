@@ -151,16 +151,17 @@ Before merging:
 
 - Run the repository's final gates on the branch, typically the formatter check
   and the full test suite.
-- Reorganize the branch into outcome commits, as `git-workflow` requires. The
-  plan, which the user approves, shows each commit's scope and body. The body of
-  each commit that lands an outcome states the spec's `## Problem`, so the reason
-  outlives the spec.
-- The reorganized tip must contain no `SPEC*` file. Check that `git ls-tree
-  --name-only HEAD -- SPEC.md SPEC.ja.md SPEC.en.md` prints nothing. Check that
-  the target has no spec of its own with `git ls-tree --name-only <target> --
-  SPEC.md SPEC.ja.md SPEC.en.md`; if it prints anything, stop and ask, because
-  that file is not this task's. Delete any untracked `SPEC*` file left in the
-  worktree, and read `git status --short`: it must be clean.
+- Reorganize the branch into outcome commits by the repository's merge procedure,
+  which `AGENTS.md` points to. The user approves the reorganized form before the
+  merge. The commits that reach the target carry the spec's `## Problem` in their
+  body; if the procedure cannot carry it, stop and ask. If the repository has no
+  merge procedure, stop and ask.
+- The target must receive no `SPEC*` file. Check that `git ls-tree --name-only
+  HEAD -- SPEC.md SPEC.ja.md SPEC.en.md` prints nothing. Check that the target has
+  no spec of its own with `git ls-tree --name-only <target> -- SPEC.md SPEC.ja.md
+  SPEC.en.md`; if it prints anything, stop and ask, because that file is not this
+  task's. Delete any untracked `SPEC*` file left in the worktree, and read `git
+  status --short`: it must be clean.
 - Follow the repository's merge convention. Where it has none, keep history
   linear -- no merge commit -- and say which shape you used.
 
