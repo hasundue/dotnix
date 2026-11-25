@@ -22,6 +22,13 @@ Japanese and English templates exist, so ask before adding another language.
 Headings stay in the spec's language; a reader finds a section by its position
 and content, not by an English heading name.
 
+## Line width
+
+Wrap prose at 80 half-width columns, counting a full-width character as two.
+Keep commands, paths, code identifiers, and links usable; break them only where
+the syntax keeps them copyable. The formatter does not wrap Markdown prose, so
+the writer wraps it.
+
 ## Checking work
 
 - Write each condition as a plain `-` item and hang its verification methods
@@ -29,7 +36,8 @@ and content, not by an English heading name.
 - `- [ ]` is a verification method under a condition, not the condition.
 - A method is recorded as `- [x] <method> -- <command and result>`. A failed or
   unrun one stays unticked, with `unmet: <reason>`.
-- The out-of-scope section uses plain `-` items, so `[ ]` keeps a single meaning.
+- The out-of-scope section uses plain `-` items, so `[ ]` keeps a single
+  meaning.
 - Ticking is not renegotiation. Changing the text of a condition needs a fresh
   confirmation.
 - Do not label method lines; that keeps the count of conditions separate from
@@ -41,15 +49,15 @@ and content, not by an English heading name.
 ## When blocked
 
 The blocker section appears only with `status: blocked`. Place it after the
-stop-conditions section, or last if that section is omitted. Give it a heading in
-the spec's language that names the block, and write the context needed to resume
--- for example, what was tried, what happened, the likely cause, and the options.
-When the status leaves `blocked`, move that context into the commit body and
-remove the section.
+stop-conditions section, or last if that section is omitted. Give it a heading
+in the spec's language that names the block, and write the context needed to
+resume -- for example, what was tried, what happened, the likely cause, and the
+options. When the status leaves `blocked`, move that context into the commit
+body and remove the section.
 
 ## Approval
 
-Approval is a status change from `draft` to `agreed`. There is no translation and
-no independent check. Write the body in the session language and restate what
-the user wants rather than quoting them. Scope changes and blockers follow the
-same language, and the body keeps its language for life.
+Approval is a status change from `draft` to `agreed`. There is no translation
+and no independent check. Write the body in the session language and restate
+what the user wants rather than quoting them. Scope changes and blockers follow
+the same language, and the body keeps its language for life.
