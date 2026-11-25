@@ -53,7 +53,11 @@ The two `rev-parse` lines differ only in a linked worktree.
 
 A Japanese session drafts `SPEC.ja.md`; an English session drafts `SPEC.md`.
 Drafts and candidates stay uncommitted. `references/spec-lifecycle.md` covers
-their translation, check, and promotion.
+their translation, check, and promotion. A draft whose work is dropped is
+deleted; `stale` is for a promoted spec only.
+
+A blocker belongs to execution, not to the draft: `## Blocker` appears only with
+`status: blocked`, and sail owns the context and commit rules around it.
 
 Keel writes no notes into the vault. An old vault note is read only when its
 path is passed explicitly, and is never migrated.
@@ -170,8 +174,7 @@ Fill the template that matches the session language. Four parts matter most:
 - **Stop conditions** -- task-specific limits only (attempts, time, files). The
   common ones -- the same failure twice, work outside the spec, a trade-off
   needing a human decision -- live in the sail skill. Omit the section when
-  there are none. When work stops, add a `## Blocker` section on demand: what was
-  tried, what happened, the likely cause, and the options.
+  there are none.
 
 Write the spec so it can be read **cold** -- by a session that has none of this
 conversation. No "as discussed", no "the usual place". Paths, current behavior,

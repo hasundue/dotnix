@@ -8,9 +8,11 @@ An English session drafts `SPEC.md` directly. A Japanese session drafts
 `SPEC.ja.md`; approval follows `spec-lifecycle.md`. Drafts and candidates are not
 committed.
 
-Frontmatter keys stay English. `status` is one of `draft`, `agreed`, `blocked`;
-`session_lang` is the conversation's language code. Do not carry this legend
-into the spec.
+Frontmatter keys stay English. `status` is one of `draft`, `agreed`, `blocked`,
+`stale`; `stale` means a promoted spec's work is no longer being pursued. A
+dropped draft is deleted uncommitted; it never becomes `stale`. `session_lang`
+is the conversation's language code. `## Blocker` belongs only to `blocked`. Do
+not carry this legend into the spec.
 
 ## The template
 
@@ -49,12 +51,19 @@ never how to reply.>
 
 <Task-specific limits and conditions only. Omit the section when there are none.
 The common conditions live in the sail skill.>
+```
 
+Add `## Blocker` only while `status: blocked`, outside the draft:
+
+```markdown
 ## Blocker
 
-<Add only when work stops: what was tried, what happened, the likely cause, and
-the options.>
+<The context needed to resume -- for example, what was tried, what happened,
+the likely cause, and the options.>
 ```
+
+When the status leaves `blocked`, move that context into the commit body and
+remove the section.
 
 ## Language and promotion
 

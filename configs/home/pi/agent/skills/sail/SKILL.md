@@ -49,7 +49,8 @@ title -- before starting; that is a report, not a request for approval.
 Read the spec fully. If it is missing, empty, or has no acceptance criteria,
 stop and ask. A spec still marked `draft` is normal: the instruction that
 brought you here is the go, so do not ask whether it is agreed -- approve it,
-then implement. If `status: blocked`, read `## Blocker` first.
+then implement. If `status: blocked`, read `## Blocker` first. If `status: stale`,
+stop and ask: the work was dropped.
 
 Agreeing a spec that is not English is the one thing that happens before any
 code changes. Follow `../keel/references/spec-lifecycle.md`: translate, check
@@ -103,7 +104,9 @@ each condition's `- [ ]` verification methods to decide what to run or inspect.
 When reality contradicts the spec -- a constraint was wrong, a step is
 impossible, a criterion is incomplete, or the work needs to grow -- update the
 design, out-of-scope, or acceptance-criteria section before acting, then ask for
-re-confirmation. Do not drift silently.
+re-confirmation. Put the context for the change in that commit's body: why the
+spec moved, and what was considered -- for example, what was tried, what
+happened, the likely cause, and the options. Do not drift silently.
 
 Stop instead of grinding when:
 
@@ -111,9 +114,22 @@ Stop instead of grinding when:
 - the work needs to touch something outside the spec -- stop;
 - a genuine trade-off needs a human decision -- stop.
 
-Write the situation under a `## Blocker` section on demand: what was tried, what
-happened, the likely cause, and the options you see. Set `status: blocked`. Then
-ask. A stop without a written trace is a failed handoff.
+When a stop needs a handoff, set `status: blocked` and write the context under
+`## Blocker` -- the section never appears without that status. Write what is
+needed to resume; for example, what was tried, what happened, the likely cause,
+and the options. A commit that only adds the status and the section needs no
+body: the spec holds the context. A scope change in the same commit still
+carries its own context in the body. Then ask. A blocker without a written
+trace is a failed handoff.
+
+Only on the user's word does a block clear: set `status: agreed` and move the
+context from `## Blocker` into that commit's body before removing the section --
+the spec no longer carries it. If the user drops the work -- blocked or not --
+set `status: stale`. If a `## Blocker` section exists, move its context into that
+commit's body and remove the section; otherwise put why the work was dropped in
+that commit's body. A stale spec is not resumed without the user's word; on
+resumption, re-confirm the spec, set `status: agreed`, and carry the context
+from the stale commit's body into the work.
 
 ## Verify and report
 
@@ -147,6 +163,9 @@ Merging waits for the user as well. Do not ask whether to merge: when the work
 is done, say where the branch stands and leave it there. Merge when the user
 says to, and only then.
 
+A spec marked `stale` has no outcome for `main`; do not merge that branch. If
+the user asks for it anyway, stop and ask where the context belongs.
+
 Before merging:
 
 - Run the repository's final gates on the branch, typically the formatter check
@@ -154,8 +173,12 @@ Before merging:
 - Reorganize the branch into outcome commits by the repository's merge procedure,
   which `AGENTS.md` points to. The user approves the reorganized form before the
   merge. The commits that reach the target carry the spec's `## Problem` in their
-  body; if the procedure cannot carry it, stop and ask. If the repository has no
-  merge procedure, stop and ask.
+  body. They also carry the context recorded in spec-change commit bodies -- why
+  the spec moved, or the context moved out of a cleared blocker -- in the outcome
+  commit that keeps the change; a checkpoint body alone does not survive
+  reorganization. When no outcome commit keeps that change, stop and ask where
+  the context belongs. If the procedure cannot carry either, stop and ask. If
+  the repository has no merge procedure, stop and ask.
 - The target must receive no `SPEC*` file. Check that `git ls-tree --name-only
   HEAD -- SPEC.md SPEC.ja.md SPEC.en.md` prints nothing. Check that the target has
   no spec of its own with `git ls-tree --name-only <target> -- SPEC.md SPEC.ja.md
