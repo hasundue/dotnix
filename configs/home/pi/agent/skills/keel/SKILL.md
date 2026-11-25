@@ -19,7 +19,7 @@ description: >
 - A large task gets a written spec. Name the evidence -- files touched,
   behaviours changed, unknowns remaining -- so the spec is justified.
 - Scope changes move in the spec before anyone acts on them.
-- Point at the spec and `sail` with explicit stop conditions, then end the turn.
+- Point at the spec with explicit stop conditions, then end the turn.
 
 ## Interview
 

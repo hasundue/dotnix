@@ -15,9 +15,7 @@ rewrite the problem, or cut a branch unless the agreement or the user asks.
 
 The agreement is what the gate settled: what to build, what not to build, and
 how to verify it. Find it in the session context: a path the user passed, a
-written spec the project or user points to, or the live conversation. An
-explicit path to an old vault task note is read as-is; do not migrate it. Do
-not search the vault.
+written spec the project or user points to, or the live conversation.
 
 A written spec carries its own rules in `references/written-spec.md`; a cold
 session with no agreement in context stops and asks. If the agreement is

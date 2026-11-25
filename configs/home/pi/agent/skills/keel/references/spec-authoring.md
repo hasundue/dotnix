@@ -1,8 +1,7 @@
 # Spec authoring
 
 One written spec carries the agreement in the language of the session that
-wrote it. Its name and location come from project convention or the user. There
-is no translation.
+wrote it. Its name and location come from project convention or the user.
 
 ## Frontmatter
 
@@ -13,10 +12,7 @@ A dropped draft is deleted uncommitted. There is no language field.
 
 Templates live in `templates/`, one per session language, and contain only the
 frontmatter and the sections. Copy the matching one to the agreed location and
-fill it in; the template file name is not the spec name. Only Japanese and
-English templates exist, so ask before adding another language. Headings stay
-in the spec's language; a reader finds a section by its position and content,
-not by an English heading name.
+fill it in; the template file name is not the spec name.
 
 ## Writing the body
 
