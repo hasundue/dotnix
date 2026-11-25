@@ -13,10 +13,11 @@ Before merging:
   and the full test suite.
 - Reorganize the branch into outcome commits by the repository's merge
   procedure, which `AGENTS.md` points to. The user approves the reorganized form
-  before the merge. Outcome commits carry the spec's problem in their body, and
-  the context recorded in spec-change commit bodies -- why the spec moved, or
-  context moved out of a cleared blocker -- in the outcome commit that keeps the
-  change. A checkpoint body alone does not survive reorganization. If any of
+  before the merge. Outcome commits carry the reason for the change in their
+  body, and the context recorded in agreement-change commit bodies -- why the
+  agreement moved, or context moved out of a cleared blocker -- in the outcome
+  commit that keeps the change. A checkpoint body alone does not survive
+  reorganization. If any of
   this cannot be carried, stop and ask where the context belongs. If the
   repository has no merge procedure, stop and ask.
 - The target must receive no `SPEC.md`. Check that `git ls-tree --name-only
