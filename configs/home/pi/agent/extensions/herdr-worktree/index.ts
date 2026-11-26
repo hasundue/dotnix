@@ -14,6 +14,8 @@ import { Type } from "typebox";
 
 const SOURCE = "herdr:pi-handoff";
 const TOKEN = "old_pane_id";
+const HERDR_NOTICE =
+  "You are running inside Herdr, a terminal multiplexer designed for coding agents, which manages workspaces, tabs, panes, and agent status.";
 
 const moveSchema = Type.Object({
   branch: Type.Optional(
@@ -61,6 +63,7 @@ export default function (pi: ExtensionAPI) {
   let userRequest = "";
 
   pi.on("before_agent_start", (event) => {
+    event.systemPromptOptions.sections.herdr = HERDR_NOTICE;
     if (event.messageType === "user" && typeof event.prompt === "string") {
       userRequest = event.prompt;
     }

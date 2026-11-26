@@ -28,6 +28,9 @@ worktree の場所がワークスペースに表示されず，
 - tool は `promptSnippet` と `promptGuidelines` で，worktree の依頼に
   応じて呼ばれることを 1 行だけモデルに伝える．
   長い手順を context に注入しないため．
+- extension は `before_agent_start` の `sections` に `<herdr>` を足し，
+  Herdr 内で動いていることを静的に告知する．
+  毎回の環境確認をモデルに任せないため．
 - tool は対象を branch または path から解決し，既存なら open，
   無ければ main を base に create する．重複を作らないため．
   main も worktree list の通常のエントリとして扱い，
