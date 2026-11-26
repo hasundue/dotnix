@@ -12,8 +12,7 @@ import { basename, dirname, join, resolve } from "node:path";
 import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
 import { Type } from "typebox";
 
-const SOURCE = "herdr:pi-handoff";
-const TOKEN = "old_pane_id";
+const HANDOFF_FLAG = "herdr-worktree-handoff";
 const HERDR_NOTICE =
   "You are running inside Herdr, a terminal multiplexer designed for coding agents, which manages workspaces, tabs, panes, and agent status.";
 
@@ -61,6 +60,12 @@ export default function (pi: ExtensionAPI) {
 
   const oldPaneId = process.env.HERDR_PANE_ID;
   let userRequest = "";
+  let handoffStarted = false;
+
+  pi.registerFlag(HANDOFF_FLAG, {
+    description: "Old Herdr pane ID for a worktree handoff",
+    type: "string",
+  });
 
   pi.on("before_agent_start", (event) => {
     event.systemPromptOptions.sections.herdr = HERDR_NOTICE;
@@ -70,8 +75,10 @@ export default function (pi: ExtensionAPI) {
   });
 
   pi.on("session_start", (_event, ctx) => {
-    if (!oldPaneId) return;
-    void finishHandoff(oldPaneId, (message) => ctx.ui.notify(message, "warning"));
+    const handoffFrom = pi.getFlag(HANDOFF_FLAG);
+    if (handoffStarted || typeof handoffFrom !== "string" || handoffFrom === "") return;
+    handoffStarted = true;
+    void finishHandoff(handoffFrom, (message) => ctx.ui.notify(message, "warning"));
   });
 
   async function herdr(args: string[], signal?: AbortSignal, timeout = 180000): Promise<any> {
@@ -279,39 +286,7 @@ export default function (pi: ExtensionAPI) {
           throw new Error(`Current pane has no agent session file${leftover()}`);
         }
 
-        const clearToken = () =>
-          herdrQuiet([
-            "pane",
-            "report-metadata",
-            rootPaneId,
-            "--source",
-            SOURCE,
-            "--clear-token",
-            TOKEN,
-          ]);
-
-        await herdr(
-          [
-            "pane",
-            "report-metadata",
-            rootPaneId,
-            "--source",
-            SOURCE,
-            "--token",
-            `${TOKEN}=${oldPaneId}`,
-            "--ttl-ms",
-            "600000",
-          ],
-          signal,
-        );
-
-        let rootBefore: any;
-        try {
-          rootBefore = await herdr(["pane", "get", rootPaneId], signal);
-        } catch (error) {
-          await clearToken();
-          throw error;
-        }
+        const rootBefore = await herdr(["pane", "get", rootPaneId], signal);
         const rootSessionBefore: unknown = rootBefore?.result?.pane?.agent_session?.value;
         const forkStarted = async (): Promise<boolean | undefined> => {
           try {
@@ -357,6 +332,8 @@ export default function (pi: ExtensionAPI) {
               "--timeout",
               "120000",
               "--",
+              `--${HANDOFF_FLAG}`,
+              oldPaneId,
               "-a",
               "--fork",
               sessionFile,
@@ -368,14 +345,10 @@ export default function (pi: ExtensionAPI) {
           const message = error instanceof Error ? error.message : String(error);
           const maybeStarted = /timeout|agent_not_ready/i.test(message);
           const started = await waitForFork(maybeStarted ? 10000 : 2000);
-          if (started !== true) {
-            if (started === false) await clearToken();
-            throw new Error(`${message}${leftover()}`);
-          }
+          if (started !== true) throw new Error(`${message}${leftover()}`);
         }
         const started = await waitForFork(10000);
         if (started !== true) {
-          if (started === false) await clearToken();
           throw new Error(
             `Agent start did not yield a forked session in pane ${rootPaneId}${leftover()}`,
           );
@@ -393,7 +366,7 @@ export default function (pi: ExtensionAPI) {
           content: [
             {
               type: "text" as const,
-              text: `${summary} Forked this session into pane ${rootPaneId}; the handoff token lets the new session retire the old pane when applicable.`,
+              text: `${summary} Forked this session into pane ${rootPaneId}; the old pane ID was passed to the forked session.`,
             },
           ],
           details: {
@@ -413,10 +386,19 @@ export default function (pi: ExtensionAPI) {
     },
   });
 
-  async function finishHandoff(newPane: string, report: (message: string) => void): Promise<void> {
-    const pane = await herdrQuiet(["pane", "get", newPane], 10000);
-    const oldPane = pane?.result?.pane?.tokens?.[TOKEN];
-    if (typeof oldPane !== "string" || oldPane === "") return;
+  async function finishHandoff(oldPane: string, report: (message: string) => void): Promise<void> {
+    try {
+      await herdr(["pane", "get", oldPane], undefined, 10000);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      const workspaceId = oldPane.split(":")[0];
+      const workspaces = await herdrQuiet(["workspace", "list"]);
+      const stillOpen = (workspaces?.result?.workspaces ?? []).some(
+        (workspace: any) => workspace.workspace_id === workspaceId,
+      );
+      if (stillOpen) report(`Handoff source pane ${oldPane} is unavailable: ${message}`);
+      return;
+    }
 
     const deadline = Date.now() + 60000;
     let sawWorking = false;
@@ -440,9 +422,9 @@ export default function (pi: ExtensionAPI) {
 
     if (!settled) {
       report(
-        `Handoff to ${newPane} is unfinished: old pane ${oldPane} did not settle and was left open.`,
+        `Handoff from ${oldPane} is unfinished: the old pane did not settle and was left open.`,
       );
-      return; // Keep the token so a later start can retry before it expires.
+      return;
     }
 
     const old = await herdrQuiet(["pane", "get", oldPane], 10000);
@@ -460,15 +442,5 @@ export default function (pi: ExtensionAPI) {
         report(`Could not close old pane ${oldPane}: ${message}`);
       }
     }
-
-    await herdrQuiet([
-      "pane",
-      "report-metadata",
-      newPane,
-      "--source",
-      SOURCE,
-      "--clear-token",
-      TOKEN,
-    ]);
   }
 }
