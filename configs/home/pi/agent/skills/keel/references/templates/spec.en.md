@@ -24,4 +24,4 @@ paths a decision depends on in its own line.>
 
 ## Stop conditions
 
-<Task-specific limits and conditions only. Omit this section when there are none.>
+<Task-specific conditions only. Omit this section when there are none.>
