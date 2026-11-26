@@ -50,22 +50,11 @@ worktree の場所がワークスペースに表示されず，
 - `configs/home/pi/agent/AGENTS.md` には worktree ツールの指示を置かない．
   環境固有の手順を拡張側に集約するため．
 
-### セッション名とボーダーラベル
+### ウィンドウとサブエージェントの名前
 
-- `configs/home/pi/agent/extensions/session-namer.ts` は
-  長いセッション名と短いボーダーラベルを別に尋ねる．
-  タイトルとボーダー表示で必要な情報が異なるため．
-- 長い名前は `pi.setSessionName()` に渡し，短いラベルは
-  `herdr pane report-metadata "$HERDR_PANE_ID" --source herdr:pi-short-title --agent pi --title <label>`
-  で報告する．両者を別の表示先に出すため．
-- ラベルは既定では英語 1 語とし，命名時に `herdr pane list` を見て
-  他のウィンドウと衝突するときだけ 2 語にする．
-  ボーダー上で区別できるようにするため．
-- Herdr 外ではラベルを設定しない．
-  ボーダー以外にラベルを出す先がないため．
 - サブエージェントは `herdr agent start` の `--` 以降で
-  `pi --name <Role>` として起動する．
-  session-namer が既存の名前を上書きしないため，役割名を保持できる．
+  `pi --name <Role>` として起動する．役割名をセッション名として
+  保持するため．
 - ユーザーが作成したウィンドウのタイトルは
   実行中のプログラムから導出したままにする．
   Herdr の既存の挙動を変えないため．
@@ -87,6 +76,8 @@ worktree の場所がワークスペースに表示されず，
 
 - 設計に挙げた変更以外の Pi 拡張，Herdr プラグイン，worktree hooks
 - keel と sail のスキル文書の変更
+- `configs/home/pi/agent/extensions/session-namer.ts` の変更と，
+  セッション名・ボーダーラベルの検証
 - `pi-agent-teleport` への移行
 - 1 ウィンドウ 1 Pi ペインの自動強制と，プログラム名からのタイトル自動生成
 - クリーンアップの自動検出と確認 UI
@@ -97,31 +88,30 @@ worktree の場所がワークスペースに表示されず，
 - `herdr worktree create` が作った worktree が
   Herdr のワークスペースとして追従し，
   ペイン状態と会話が移動先を指す
-  - [ ] 手動: Herdr で `herdr worktree create` から worktree を作り，
+  - [x] 手動: Herdr で `herdr worktree create` から worktree を作り，
         `herdr workspace list` と `herdr pane list` を確認する．
         worktree ワークスペースの `worktree.repo_key` がルートと同じで
         `is_linked_worktree: true` になる．Pi ペインの `cwd` が
         その worktree のパスで，`agent_session` が
         フォーク後のセッションを指す．移動前に決めたタイトルを
         エージェントに尋ね，同じ答えが返る
-  - [ ] 手動: `herdr worktree create` の後，
+    - `herdr worktree list` で `repo_key` が
+      `/home/hasundue/dotnix/.git`，`is_linked_worktree: true`，
+      `open_workspace_id: wM` を確認．`herdr pane list --workspace wM`
+      で `cwd` が `/home/hasundue/dotnix.handoff-check`，
+      `agent_session` が worktree 配下のフォーク済み session file
+      を指す．フォーク後のエージェントが `amber finch` と回答
+  - [x] 手動: `herdr worktree create` の後，
         `local.worktree-hooks` プラグインが新しい checkout で
         共有 post-start hooks を実行する
-  - [ ] 手動: 新しい root pane で `--fork <current session>` と
+    - 新しい checkout に `.envrc`，`.pi/settings.json`，
+      `.pre-commit-config.yaml` の symlink が作成されていた
+  - [x] 手動: 新しい root pane で `--fork <current session>` と
         ユーザーの依頼を初期プロンプトにして Pi を起動する．
         拡張がチャット上の指示なしに旧ペインを閉じる
-- session-namer が長いセッション名と短いラベルを分けて出し，
-  短いラベルが Herdr のボーダーに表示される
-  - [ ] 手動: 同じ Herdr セッションで話題の異なる Pi セッションを
-        2 つ始める．`herdr pane list` の terminal title は
-        長いセッション名のままで，各ペインのボーダーに
-        1 語のラベルが出る．次に自然な 1 語ラベルが
-        既存ウィンドウと一致する話題で 3 つ目を始めると，
-        ボーダーラベルが 2 語になる
-    - 長いタイトルと別の 1 語ラベルを確認:
-      `Create herdr-follow-test worktree`/`worktree`，
-      `Fix CJK font weight regression`/`review`，
-      `Compare terminal markdown viewers` が `compare` と `comparison`
+    - `wM:p1` がフォーク済みセッションで起動．旧ペイン `wG:pB`
+      への閉鎖指示は出していないが，`herdr pane get wG:pB` は
+      `pane_not_found` を返した
 - pi-worktrunk が設定から消え，新しい拡張が Herdr 専用になっている
   - [x] `rg -n 'HERDR_ENV' configs/home/pi/agent/extensions/herdr-worktree.ts` --
         ガードがある
@@ -136,7 +126,7 @@ worktree の場所がワークスペースに表示されず，
   - [ ] 手動:
         `herdr agent start reviewer --kind pi --pane <pane_id> -- --name Review`
         で起動する．`herdr pane list` の terminal title が
-        `π - Review - <repo>` になり，session-namer が上書きしない
+        `π - Review - <repo>` になる
 - worktree のクリーンアップで，ユーザーウィンドウを閉じる前に
   確認を求める
   - [ ] 手動: worktree ワークスペースで `top` を実行する
@@ -153,13 +143,10 @@ worktree の場所がワークスペースに表示されず，
   `worktree.created` プラグインが共有 post-start hooks を
   実行しなかった場合は，新しい worktree で Pi を起動する前に停止し，
   `herdr workspace create` にフォールバックしない
-- session-namer のモデル応答に長い名前か短いラベルが欠けたら，
-  長い名前のみの挙動に戻し，再試行は最大 1 回とする
 - ユーザーがクリーンアップの質問に答えない場合は停止し，
   ワークスペースを残す
 - 新しいセッションの開始時にハンドオフトークンが欠けていたら，
   旧ペインを開けたまま報告する
 - 必要な変更が `configs/home/pi/agent/AGENTS.md`，
-  `configs/home/pi/agent/extensions/session-namer.ts`，
   `configs/home/pi/agent/extensions/herdr-worktree.ts`，
   `configs/home/pi/default.nix`，`.pi/settings.json` の外に及ぶ場合は停止する

@@ -15,14 +15,11 @@
  * enters the transcript and never delays the turn. A name the user set always
  * wins — `/name` before the first prompt, or a rename while the call is in
  * flight, both suppress the write.
- *
- * Inside Herdr, the same call also returns a short window label. It is
- * reported as display-only pane metadata and never changes session identity.
  */
 
 import { readFileSync } from "node:fs";
 
-import { uuidv7, type AssistantMessage } from "@earendil-works/pi-ai";
+import { uuidv7 } from "@earendil-works/pi-ai";
 import type { ExtensionAPI, ExtensionContext } from "@earendil-works/pi-coding-agent";
 
 /**
@@ -39,9 +36,6 @@ const MAX_WORKFLOW_CHARS = 240;
 
 const REQUEST_TIMEOUT_MS = 20_000;
 
-/** Display-only metadata source for the short label on a Herdr pane border. */
-const SHORT_TITLE_SOURCE = "herdr:pi-short-title";
-
 /**
  * Fixed, not configurable: the cheapest model that answered reliably at flash
  * latency, and the same price for every session. When it is unavailable the
@@ -51,18 +45,6 @@ const SHORT_TITLE_SOURCE = "herdr:pi-short-title";
 const MODEL: readonly [provider: string, modelId: string] = ["opencode-go", "glm-5.3-flash"];
 
 const INSTRUCTIONS =
-  "Name the coding task the user asked for. Reply with exactly two lines and " +
-  "nothing else. Line 1: the session name — 3-6 words, sentence case, always " +
-  "in English whatever the prompt's language, no quotes, no markdown, no " +
-  "labels, no trailing punctuation. Name the concrete work, not the request " +
-  "('Fix CJK font weight', not 'Ask about fonts'). A workflow, when given, is " +
-  "the procedure the session follows, not its subject: take the verb from it " +
-  "and the subject from the request. Line 2: a short English window label — " +
-  "one word by default, optionally with a second word when the first alone " +
-  "would be ambiguous, lowercase, no punctuation.";
-
-/** Used when a response lacks either line: name only, as before. */
-const RETRY_INSTRUCTIONS =
   "Name the coding task the user asked for. Reply with the name only: " +
   "3-6 words, sentence case, always in English whatever the prompt's language, " +
   "no quotes, no markdown, no labels, no trailing punctuation. Name the " +
@@ -184,153 +166,53 @@ export default function (pi: ExtensionAPI) {
       }
 
       const parts = [
+        INSTRUCTIONS,
         ...(workflow === null ? [] : [`Workflow this session follows: ${workflow}`]),
         `Request the user made: ${request === "" ? "(none -- invoked bare)" : request}`,
       ];
-      const ask = (instructions: string) =>
-        ctx.modelRegistry.complete(
-          model,
-          {
-            messages: [
-              {
-                role: "user",
-                content: [instructions, ...parts].join("\n\n"),
-                timestamp: Date.now(),
-              },
-            ],
-          },
-          {
-            cacheRetention: "none",
-            sessionId: uuidv7(),
-            signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
-            reasoningEffort: "none",
-          },
-        );
 
-      const names = parseNames(textOf(await ask(INSTRUCTIONS)));
-      if (names === null) {
-        // One response missing either line falls back to the long-name-only
-        // prompt, once, with no border label.
-        const title = normalizeName(textOf(await ask(RETRY_INSTRUCTIONS)));
-        if (title !== null && !pi.getSessionName()) pi.setSessionName(title);
-        return;
-      }
+      const response = await ctx.modelRegistry.complete(
+        model,
+        {
+          messages: [
+            {
+              role: "user",
+              content: parts.join("\n\n"),
+              timestamp: Date.now(),
+            },
+          ],
+        },
+        {
+          cacheRetention: "none",
+          sessionId: uuidv7(),
+          signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
+          reasoningEffort: "none",
+        },
+      );
 
+      const raw = response.content
+        .filter((block) => block.type === "text")
+        .map((block) => block.text)
+        .join(" ");
+      const title = normalize(raw);
       // The user may have run `/name` while the request was in flight.
-      if (!pi.getSessionName()) pi.setSessionName(names.title);
-      if (process.env.HERDR_ENV !== "1") return;
-
-      const label = chooseLabel(names.label, names.title, await herdrPanes());
-      await reportLabel(label);
+      if (title !== null && !pi.getSessionName()) pi.setSessionName(title);
     } catch {
-      // A missing name or label is cosmetic; never fail or delay the turn.
+      // A missing name is cosmetic; never fail or delay the turn over it.
     }
   }
 
-  function textOf(response: AssistantMessage): string {
-    return response.content
-      .filter((block) => block.type === "text")
-      .map((block) => block.text)
-      .join(" ");
-  }
-
-  /** Two lines from the model: the session name and its short border label. */
-  function parseNames(raw: string): { title: string; label: string } | null {
-    const lines = raw
-      .replace(/```[\s\S]*?```/g, " ")
-      .split(/\r?\n/)
-      .map((line) => line.trim())
-      .filter((line) => line !== "");
-    if (lines.length < 2) return null;
-    const title = normalizeName(lines[0]!);
-    const label = normalizeLabel(lines[1]!);
-    return title === null || label === null ? null : { title, label };
-  }
-
   /** Strip the wrappers a model adds even when told not to. */
-  function normalizeName(raw: string): string | null {
+  function normalize(raw: string): string | null {
     let title = raw
       .replace(/```[\s\S]*?```/g, " ")
       .replace(/\s+/g, " ")
       .trim();
-    title = title.replace(/^(?:session name|title|name)\s*:\s*/i, "");
+    title = title.replace(/^(?:title|name)\s*:\s*/i, "");
     title = title.replace(/^["'“”‘’`]+|["'“”‘’`]+$/g, "").trim();
     title = title.replace(/[.,;:!?。、]+$/u, "").trim();
     if (title === "") return null;
     return clamp(title, MAX_LENGTH);
-  }
-
-  /** A border label is one or two plain English words. */
-  function normalizeLabel(raw: string): string | null {
-    const label = raw
-      .replace(/^(?:label|short label|border label|title)\s*:\s*/i, "")
-      .replace(/^"['“”‘’`]+|["'“”‘’`]+$/g, "")
-      .replace(/[.,;:!?。、]+$/u, "")
-      .replace(/\s+/g, " ")
-      .trim()
-      .toLowerCase();
-    const words = label.split(" ");
-    if (!words.every((word) => /^[a-z][a-z-]*$/.test(word))) return null;
-    if (words.length > 2) return null;
-    return words.join(" ");
-  }
-
-  type Pane = {
-    pane_id?: string;
-    title?: string;
-    terminal_title?: string;
-    terminal_title_stripped?: string;
-  };
-
-  async function herdrPanes(): Promise<Pane[]> {
-    try {
-      const result = await pi.exec("herdr", ["pane", "list"], { timeout: 5000 });
-      if (result.code !== 0) return [];
-      const panes = JSON.parse(result.stdout)?.result?.panes;
-      return Array.isArray(panes) ? (panes as Pane[]) : [];
-    } catch {
-      return [];
-    }
-  }
-
-  /** Use one word unless another window in this Herdr session carries it. */
-  function chooseLabel(label: string, title: string, panes: readonly Pane[]): string {
-    const [first, second] = label.split(" ");
-    if (first === undefined) return label;
-    const texts = panes
-      .filter((pane) => pane.pane_id !== process.env.HERDR_PANE_ID)
-      .flatMap((pane) => [pane.title, pane.terminal_title, pane.terminal_title_stripped])
-      .filter((text): text is string => typeof text === "string");
-    const used = new Set(texts.flatMap((text) => text.toLowerCase().split(/[^a-z0-9]+/)));
-    if (!used.has(first)) return second === undefined ? first : label;
-    if (second !== undefined) return label;
-    // The model offered only its first word; take the clarifying word from
-    // the session name rather than repeat a label another window already uses.
-    const extra = title
-      .toLowerCase()
-      .split(/[^a-z0-9]+/)
-      .find((word) => word !== first && word.length > 2 && !used.has(word));
-    return extra === undefined ? label : `${first} ${extra}`;
-  }
-
-  async function reportLabel(label: string): Promise<void> {
-    const paneId = process.env.HERDR_PANE_ID;
-    if (process.env.HERDR_ENV !== "1" || !paneId) return;
-    await pi.exec(
-      "herdr",
-      [
-        "pane",
-        "report-metadata",
-        paneId,
-        "--source",
-        SHORT_TITLE_SOURCE,
-        "--agent",
-        "pi",
-        "--title",
-        label,
-      ],
-      { timeout: 5000 },
-    );
   }
 
   function collapse(text: string): string {
