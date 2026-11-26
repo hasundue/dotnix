@@ -45,13 +45,13 @@ worktree の場所がワークスペースに表示されず，
 - main へ戻るときは worktree メタデータから workspace ID を得て，その
   workspace に新しい tab を作り，その root pane でセッションをフォークする．
   既存 root pane が agent に占有されていても起動できるようにするため．
-- tool は `before_agent_start` で保持したユーザー要求を `--fork` の
-  初期プロンプトとして渡す．要求の再入力をモデルに任せないため．
+- tool は `--fork` に初期プロンプトを渡さない．fork 先は flag を見て
+  非表示の continuation message で移動完了を通知し，元の作業を続ける．
+  履歴の最後の移動要求にもとづいて再ハンドオフしないため．
 - tool は既に target worktree の cwd なら何もしない．
   フォーク先が再ハンドオフしないため．
-- tool は main へのフォーク後，旧 worktree workspace を
-  `herdr workspace close` で閉じる．checkout は残し，
-  `wt` での削除タイミングをユーザーに残すため．
+- main 復帰時に旧 worktree workspace を閉じる処理は fork 先に委ねる．
+  tool が先に閉じると fork 先が旧 session file の場所を読めなくなるため．
 - `local.worktree-hooks` プラグインは `worktree.created` で
   共有 post-start hooks を実行する．
   新しい checkout でも既存の初期化を欠かさないため．
@@ -63,10 +63,12 @@ worktree の場所がワークスペースに表示されず，
   一般の fork と区別し，Herdr の metadata に依存せず ID を届けるため．
 - `session_start` で flag の値から旧ペイン ID を読み，値が無ければ何もしない．
   一般の fork と通常セッションを巻き込まないため．
-- 得た旧ペイン ID について，対象エージェントの起動が落ち着くまで待ち，
-  ワークスペースの最後のペインでもユーザー作成ペインでも
-  なければ旧ペインを閉じる．
-  フォーク後の旧ペインを自動で整理するため．
+- 旧ペインがまだある間に `herdr pane get` で旧 session file の場所を読み，
+  対象エージェントの起動が落ち着くまで待つ．
+- 旧ペインを必ず `herdr pane close` で閉じ，その後で旧 session file を
+  削除する．セッションファイルが乱立しないようにするため．
+- main 復帰では旧ペインを閉じた後，旧 worktree workspace を
+  `herdr workspace close` で閉じる．checkout と branch は残す．
 - `configs/home/pi/agent/AGENTS.md` には worktree ツールの指示を置かない．
   環境固有の手順を tool に集約するため．
 
@@ -85,8 +87,7 @@ worktree の場所がワークスペースに表示されず，
 
 - 明示的な削除は `herdr worktree remove --workspace <id>` を使い，
   `--force` はユーザーが同意した後にだけ使う．
-- main へ戻る際の workspace 終了は `herdr workspace close` とし，
-  checkout と branch は残す．
+- main へ戻る際の workspace 終了は fork 先が行い，checkout と branch は残す．
 
 ### テスト
 
@@ -133,10 +134,11 @@ worktree の場所がワークスペースに表示されず，
         新しい checkout で共有 post-start hooks を実行する
     - `.envrc` と `.pi/settings.json` の copy と，
       `.pre-commit-config.yaml` の symlink を確認
-  - [x] 1 つ目のセッションで，フォーク先がユーザー要求を初期プロンプトとして
-        持ち，旧ペインがチャット指示なしに閉じる
-    - フォーク先の先頭 user message が「新しい worktree で作業して」．
-      旧ペイン `wG:pP` は `pane_not_found` で，チャット指示は出していない
+  - [ ] フォーク先が非表示 continuation で移動完了を認識し，元の作業を
+        続けて再ハンドオフしない
+  - [x] 旧ペインがチャット指示なしに閉じる
+    - 旧ペイン `wG:pP` は `pane_not_found` で，チャット指示は出していない
+  - [ ] 旧 session file が削除され，`herdr agent list` に旧セッションが残らない
 - main 復帰時は workspace に新しい tab が作られ，その root pane で fork が
   起動する
   - [x] 既存 root pane が agent に占有されていても `agent_pane_busy` と
