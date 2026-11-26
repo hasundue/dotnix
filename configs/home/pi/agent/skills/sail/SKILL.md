@@ -26,8 +26,6 @@ before starting; that is a report, not a request for approval.
 Work through the agreed conditions. Use each condition's verification method to
 decide what to run or inspect.
 
-- Report only what decides a condition: the observed value, count, or state.
-  If the agreement already says it, add nothing.
 - An unmet condition stays unmet. Do not call it met to look busy, or reword it
   to make it pass.
 - If the agreement is silent on a local detail, use judgment. Silence is not
@@ -43,4 +41,6 @@ If the agreement must change, update it before acting.
 ## Report
 
 Report what changed, what passed with evidence, and what is unmet when the work
-is done.
+is done. Evidence is the observed value that decides a condition, not a
+restatement of it: a count for a count, a state for a state. If the agreement
+already says it, add nothing.

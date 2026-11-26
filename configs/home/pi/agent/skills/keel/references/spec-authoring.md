@@ -48,6 +48,6 @@ the writer wraps it.
 ## Approval
 
 Approval is a status change from `draft` to `agreed`. There is no independent
-check. Write the body in the session language and restate
-what the user wants rather than quoting them. Scope changes and blockers follow
-the same language, and the body keeps its language for life.
+check. Write the body in the session language and restate what the user wants
+rather than quoting them. Scope changes and blockers follow the same language,
+and the body keeps its language for life.
