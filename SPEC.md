@@ -55,12 +55,14 @@ worktree の場所がワークスペースに表示されず，
 
 ### ハンドオフ
 
-- tool はフォーク前に `old_pane_id` トークンを root pane に報告する．
-  新しいセッションが起動時に読めるようにするため．
-- `session_start` で自身のペインから `old_pane_id` トークンを読み，
-  対象エージェントの起動が落ち着くまで待ち，
+- tool は `herdr-worktree-handoff` の string flag を登録し，フォーク先の
+  起動引数に旧ペイン ID を値として渡す．
+  一般の fork と区別し，Herdr の metadata に依存せず ID を届けるため．
+- `session_start` で flag の値から旧ペイン ID を読み，値が無ければ何もしない．
+  一般の fork と通常セッションを巻き込まないため．
+- 得た旧ペイン ID について，対象エージェントの起動が落ち着くまで待ち，
   ワークスペースの最後のペインでもユーザー作成ペインでも
-  なければ旧ペインを閉じてトークンを消す．
+  なければ旧ペインを閉じる．
   フォーク後の旧ペインを自動で整理するため．
 - `configs/home/pi/agent/AGENTS.md` には worktree ツールの指示を置かない．
   環境固有の手順を tool に集約するため．
@@ -94,7 +96,9 @@ worktree の場所がワークスペースに表示されず，
   installed 版との二重登録を避けるため．
 - herdr-worktree のパスは Extension 自身の `import.meta.url` から取り，
   フォーク先にも同じ `-e` を渡す．これは開発用の分岐で，テスト終了後は
-  通常の `herdr agent start ... --fork ... -- "<request>"` に戻す．
+  通常の
+  `herdr agent start ... -- --herdr-worktree-handoff <old_pane_id> -a --fork <session> "<request>"`
+  に戻す．
 - 開発中の反復はこの起動引数を使う．
 
 ## 対象外
@@ -141,10 +145,12 @@ worktree の場所がワークスペースに表示されず，
   - [x] 同じフォーク先の transcript を読み，`herdr_worktree_move` が
         1 回だけ呼ばれていることを確認する
     - 旧セッションで 1 回実行し，フォーク先では新規呼び出しなし
-- 旧ペインのトークンが新しいペインで消える
-  - [x] ハンドオフ後に `herdr pane get <new_pane_id>` を確認し，
-        `tokens.old_pane_id` が無い
-    - `wQ:p1` と main 復帰先の `wK:p1` の token は null
+- 旧ペイン ID が flag で渡り，一般 fork には flag が無い
+  - [ ] ハンドオフ先の起動引数に `herdr-worktree-handoff` があり，
+        その値が旧ペイン ID であることを確認する
+  - [ ] 一般の `pi --fork` では flag が無く，旧ペインが閉じられないことを
+        確認する
+    - 既存の [x] はトークン方式での検証で，flag 方式では再検証が必要
 - pi-worktrunk が設定から消え，新しい拡張が Herdr 専用になっている
   - [x] `rg -n 'HERDR_ENV' configs/home/pi/agent/extensions/herdr-worktree/index.ts` --
         ガードがある
@@ -181,8 +187,9 @@ worktree の場所がワークスペースに表示されず，
   `worktree.created` プラグインが共有 post-start hooks を
   実行しなかった場合は，新しい worktree で Pi を起動する前に停止し，
   `herdr workspace create` にフォールバックしない
-- 新しいセッションの開始時にハンドオフトークンが欠けていたら，
-  旧ペインを開けたまま報告する
+- 新しいセッションの開始時にハンドオフ flag の値が空，または既存の
+  ペイン ID として読めない場合は，旧ペインを開けたまま報告する．
+  flag が無い一般 fork は対象外とする
 - 必要な変更が `configs/home/pi/agent/AGENTS.md`，
   `configs/home/pi/agent/extensions/herdr-worktree/index.ts`，
   `configs/home/pi/default.nix`，`.pi/settings.json` の外に及ぶ場合は停止する

@@ -7,7 +7,7 @@
  */
 
 import { existsSync, realpathSync } from "node:fs";
-import { basename, dirname, resolve } from "node:path";
+import { basename, dirname, join, resolve } from "node:path";
 
 import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
 import { Type } from "typebox";
@@ -69,13 +69,14 @@ export default function (pi: ExtensionAPI) {
     }
   });
 
-  pi.on("session_start", () => {
+  pi.on("session_start", (_event, ctx) => {
     if (!oldPaneId) return;
-    void finishHandoff(oldPaneId);
+    void finishHandoff(oldPaneId, (message) => ctx.ui.notify(message, "warning"));
   });
 
-  async function herdr(args: string[], signal?: AbortSignal): Promise<any> {
-    const result = await pi.exec("herdr", args, { signal, timeout: 60000 });
+  async function herdr(args: string[], signal?: AbortSignal, timeout = 180000): Promise<any> {
+    // `agent start` may wait 120 s for the forked agent to become ready.
+    const result = await pi.exec("herdr", args, { signal, timeout });
     if (result.code !== 0) {
       throw new Error(result.stderr.trim() || `herdr ${args.join(" ")} failed`);
     }
@@ -87,12 +88,41 @@ export default function (pi: ExtensionAPI) {
     }
   }
 
-  async function herdrQuiet(args: string[]): Promise<any | null> {
+  async function herdrQuiet(args: string[], timeout = 180000): Promise<any | null> {
     try {
-      return await herdr(args);
+      return await herdr(args, undefined, timeout);
     } catch {
       return null;
     }
+  }
+
+  async function verifyWorktreeHooks(
+    since: number,
+    repoRoot: string,
+    checkout: string,
+  ): Promise<void> {
+    const deadline = Date.now() + 30000;
+    for (;;) {
+      const logs = await herdrQuiet(["plugin", "log", "list"], 10000);
+      const ran = (logs?.result?.logs ?? []).some(
+        (log: any) =>
+          log.plugin_id === "local.worktree-hooks" &&
+          log.event === "worktree.created" &&
+          log.status === "succeeded" &&
+          typeof log.finished_unix_ms === "number" &&
+          log.finished_unix_ms >= since - 1000,
+      );
+      // The log is global; check that this checkout received the copied files.
+      const copied = [".envrc", ".pi/settings.json"].every(
+        (relative) => !existsSync(join(repoRoot, relative)) || existsSync(join(checkout, relative)),
+      );
+      if (ran && copied) return;
+      if (Date.now() >= deadline) break;
+      await sleep(500);
+    }
+    throw new Error(
+      `local.worktree-hooks did not run worktree.created hooks for ${checkout}; stopping before Pi starts`,
+    );
   }
 
   function placement(payload: any): Placement {
@@ -145,6 +175,7 @@ export default function (pi: ExtensionAPI) {
       if (!oldPaneId) return textResult("HERDR_PANE_ID is missing; cannot hand off.", true);
 
       const cwd = resolve(ctx.cwd);
+      const requestedPath = params.path ? resolve(params.path.replace(/^@/, "")) : undefined;
       try {
         const current = await herdr(["pane", "get", oldPaneId], signal);
         const oldWorkspaceId: string | undefined = current?.result?.pane?.workspace_id;
@@ -154,17 +185,17 @@ export default function (pi: ExtensionAPI) {
         const repoRoot: string = oldWorkspace?.result?.workspace?.worktree?.repo_root ?? cwd;
         const listed = await herdr(["worktree", "list", "--cwd", repoRoot], signal);
         const worktrees: Worktree[] = listed?.result?.worktrees ?? [];
-        const target = findTarget(worktrees, params.branch, params.path);
+        const target = findTarget(worktrees, params.branch, requestedPath);
         const targetPath = worktreePath(target);
         const returningToMain =
           !!target &&
-          target.is_linked_worktree === false &&
+          target.is_linked_worktree !== true &&
           !!targetPath &&
           samePath(targetPath, repoRoot);
 
         if (targetPath && samePath(targetPath, cwd)) {
           return textResult(
-            `Already in worktree ${cwd}; no handoff needed. Continue the requested work here.`,
+            `Already at ${cwd}; no handoff needed. Continue the requested work here.`,
           );
         }
         if (
@@ -179,6 +210,10 @@ export default function (pi: ExtensionAPI) {
 
         let opened: any;
         let action: "opened" | "created";
+        let createdAt: number | undefined;
+        let createdPath: string | undefined;
+        const leftover = () =>
+          createdPath ? ` The worktree at ${createdPath} was left for manual cleanup.` : "";
         if (target) {
           opened = await herdr(
             [
@@ -196,11 +231,13 @@ export default function (pi: ExtensionAPI) {
         } else {
           const branch = params.branch ?? `pi-worktree-${Date.now().toString(36)}`;
           const path =
-            params.path ??
+            requestedPath ??
             resolve(
               dirname(repoRoot),
               `${basename(repoRoot)}.${branch.replace(/[^a-zA-Z0-9._-]+/g, "-")}`,
             );
+          createdAt = Date.now();
+          createdPath = path;
           opened = await herdr(
             [
               "worktree",
@@ -221,12 +258,37 @@ export default function (pi: ExtensionAPI) {
         }
 
         const { workspaceId, tabId, rootPaneId, worktree } = placement(opened);
-        if (!rootPaneId) throw new Error("Herdr response has no root pane ID");
+        const checkout = worktreePath(worktree) ?? createdPath;
+        if (!rootPaneId) throw new Error(`Herdr response has no root pane ID${leftover()}`);
+        if (action === "created" && !worktreePath(worktree)) {
+          throw new Error(
+            `Herdr did not return worktree metadata; stopping before Pi starts${leftover()}`,
+          );
+        }
+        if (createdAt !== undefined && checkout) {
+          try {
+            await verifyWorktreeHooks(createdAt, repoRoot, checkout);
+          } catch (error) {
+            const message = error instanceof Error ? error.message : String(error);
+            throw new Error(`${message}${leftover()}`);
+          }
+        }
 
         const sessionFile: unknown = current?.result?.pane?.agent_session?.value;
         if (typeof sessionFile !== "string" || sessionFile === "") {
-          throw new Error("Current pane has no agent session file");
+          throw new Error(`Current pane has no agent session file${leftover()}`);
         }
+
+        const clearToken = () =>
+          herdrQuiet([
+            "pane",
+            "report-metadata",
+            rootPaneId,
+            "--source",
+            SOURCE,
+            "--clear-token",
+            TOKEN,
+          ]);
 
         await herdr(
           [
@@ -237,9 +299,42 @@ export default function (pi: ExtensionAPI) {
             SOURCE,
             "--token",
             `${TOKEN}=${oldPaneId}`,
+            "--ttl-ms",
+            "600000",
           ],
           signal,
         );
+
+        let rootBefore: any;
+        try {
+          rootBefore = await herdr(["pane", "get", rootPaneId], signal);
+        } catch (error) {
+          await clearToken();
+          throw error;
+        }
+        const rootSessionBefore: unknown = rootBefore?.result?.pane?.agent_session?.value;
+        const forkStarted = async (): Promise<boolean | undefined> => {
+          try {
+            const after = await herdr(["pane", "get", rootPaneId], undefined, 10000);
+            const session: unknown = after?.result?.pane?.agent_session?.value;
+            return (
+              typeof session === "string" &&
+              session !== "" &&
+              session !== sessionFile &&
+              session !== rootSessionBefore
+            );
+          } catch {
+            return undefined;
+          }
+        };
+        const waitForFork = async (ms: number): Promise<boolean | undefined> => {
+          const until = Date.now() + ms;
+          for (;;) {
+            const started = await forkStarted();
+            if (started === true || Date.now() >= until) return started;
+            await sleep(500);
+          }
+        };
 
         const agent = agentName(
           worktree?.branch ?? params.branch ?? (action === "created" ? "pi-worktree" : "existing"),
@@ -272,20 +367,18 @@ export default function (pi: ExtensionAPI) {
         } catch (error) {
           const message = error instanceof Error ? error.message : String(error);
           const maybeStarted = /timeout|agent_not_ready/i.test(message);
-          const rootAfter = maybeStarted ? await herdrQuiet(["pane", "get", rootPaneId]) : null;
-          const newSession: unknown = rootAfter?.result?.pane?.agent_session?.value;
-          if (typeof newSession !== "string" || newSession === sessionFile) {
-            await herdrQuiet([
-              "pane",
-              "report-metadata",
-              rootPaneId,
-              "--source",
-              SOURCE,
-              "--clear-token",
-              TOKEN,
-            ]);
-            throw error;
+          const started = await waitForFork(maybeStarted ? 10000 : 2000);
+          if (started !== true) {
+            if (started === false) await clearToken();
+            throw new Error(`${message}${leftover()}`);
           }
+        }
+        const started = await waitForFork(10000);
+        if (started !== true) {
+          if (started === false) await clearToken();
+          throw new Error(
+            `Agent start did not yield a forked session in pane ${rootPaneId}${leftover()}`,
+          );
         }
 
         if (returningToMain && oldWorkspaceId) {
@@ -300,7 +393,7 @@ export default function (pi: ExtensionAPI) {
           content: [
             {
               type: "text" as const,
-              text: `${summary} Forked this session into pane ${rootPaneId}; the old pane is being retired.`,
+              text: `${summary} Forked this session into pane ${rootPaneId}; the handoff token lets the new session retire the old pane when applicable.`,
             },
           ],
           details: {
@@ -320,28 +413,52 @@ export default function (pi: ExtensionAPI) {
     },
   });
 
-  async function finishHandoff(newPane: string): Promise<void> {
-    const pane = await herdrQuiet(["pane", "get", newPane]);
+  async function finishHandoff(newPane: string, report: (message: string) => void): Promise<void> {
+    const pane = await herdrQuiet(["pane", "get", newPane], 10000);
     const oldPane = pane?.result?.pane?.tokens?.[TOKEN];
     if (typeof oldPane !== "string" || oldPane === "") return;
 
+    const deadline = Date.now() + 60000;
     let sawWorking = false;
-    for (let attempt = 0; attempt < 80; attempt += 1) {
-      const agent = await herdrQuiet(["agent", "get", oldPane]);
+    let settled = false;
+    let elapsed = 0;
+    while (Date.now() < deadline) {
+      const agent = await herdrQuiet(["agent", "get", oldPane], 10000);
       const state = agent?.result?.agent?.agent_status;
-      if (state === undefined) break;
-      if (state === "working" || state === "blocked") sawWorking = true;
-      if (sawWorking && (state === "idle" || state === "done" || state === "unknown")) break;
+      if (state === "working" || state === "blocked") {
+        sawWorking = true;
+      } else if (
+        (state === "idle" || state === "done" || state === "unknown") &&
+        (sawWorking || elapsed >= 2000)
+      ) {
+        settled = true;
+        break;
+      }
       await sleep(500);
+      elapsed += 500;
     }
 
-    const old = await herdrQuiet(["pane", "get", oldPane]);
+    if (!settled) {
+      report(
+        `Handoff to ${newPane} is unfinished: old pane ${oldPane} did not settle and was left open.`,
+      );
+      return; // Keep the token so a later start can retry before it expires.
+    }
+
+    const old = await herdrQuiet(["pane", "get", oldPane], 10000);
     const workspaceId = old?.result?.pane?.workspace_id;
-    const workspace = workspaceId ? await herdrQuiet(["workspace", "get", workspaceId]) : null;
+    const workspace = workspaceId
+      ? await herdrQuiet(["workspace", "get", workspaceId], 10000)
+      : null;
     const paneCount = workspace?.result?.workspace?.pane_count ?? 0;
     const isAgentPane = typeof old?.result?.pane?.agent === "string";
     if (paneCount > 1 && isAgentPane) {
-      await herdrQuiet(["pane", "close", oldPane]);
+      try {
+        await herdr(["pane", "close", oldPane]);
+      } catch (error) {
+        const message = error instanceof Error ? error.message : String(error);
+        report(`Could not close old pane ${oldPane}: ${message}`);
+      }
     }
 
     await herdrQuiet([
