@@ -21,7 +21,7 @@ paths a decision depends on in its own line.>
 
 - <observable outcome>
   - [ ] <command, or manual step with the expected observation>
-    - <evidence, or failure reason if unmet>
+    - <observed value or unmet reason; omit if the tick is enough>
 
 ## Stop conditions
 

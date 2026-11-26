@@ -25,6 +25,11 @@ upstream behaviour — climb these stages and stop at the first that answers:
 Do not open with an experiment. Say when a stage left the question open and you
 are moving to the next one.
 
+# Asking questions
+
+When you need the user's judgment, ask for the decision itself; do not dictate
+the shape of the answer.
+
 # Comments and prose
 
 - Describe the code and the documents as they are now. Do not explain what used

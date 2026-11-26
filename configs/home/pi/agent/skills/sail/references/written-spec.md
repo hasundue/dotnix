@@ -11,17 +11,20 @@ work; drafts are never committed.
 
 ## Status and blockers
 
-A method carries evidence when met, or its reason when unmet; never tick one
-to look busy, or reword the condition to make it pass. If an unmet condition
-stops the work, set `status: blocked` and put the reason and resume context in
-the blocker section.
+A method carries the observed value that decides its condition, not a
+restatement of it: a count for a count, a state for a state. If the tick already
+says everything, omit the line. An unmet method records the failing value or
+reason instead. Never tick one to look busy, or reword the condition to make it
+pass. Do not label method lines; the count of conditions stays separate from
+the count of checks. If an unmet condition stops the work, set `status: blocked`
+and put the reason and resume context in the blocker section.
 
 If `status: blocked`, read the blocker section first. If `status: stale`, stop
 and ask: the work was dropped.
 
-When reality contradicts the spec, update the design, out-of-scope, or
-acceptance criteria before acting, then ask for re-confirmation. Put why the
-spec moved and what was considered in that commit's body. Do not drift silently.
+In a written spec, update the design, out-of-scope, or acceptance criteria
+before acting, and put why it moved and what was considered in that commit's
+body.
 
 When a stop needs a handoff, set `status: blocked`. The blocker section appears
 only with that status; give it a heading in the spec's language that names the

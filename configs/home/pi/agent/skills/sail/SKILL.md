@@ -26,28 +26,21 @@ before starting; that is a report, not a request for approval.
 Work through the agreed conditions. Use each condition's verification method to
 decide what to run or inspect.
 
-- Record evidence for each condition: the command and its result, or what you
-  observed and where. An already satisfied condition still needs evidence.
-- An unmet condition stays unmet. Never tick it to look busy, or reword it to
-  make it pass.
+- Report only what decides a condition: the observed value, count, or state.
+  If the agreement already says it, add nothing.
+- An unmet condition stays unmet. Do not call it met to look busy, or reword it
+  to make it pass.
 - If the agreement is silent on a local detail, use judgment. Silence is not
   permission to change the agreed outcome.
 
 ## Stop
 
-When reality contradicts the agreement, put the change in front of the user
-before acting.
+Stop when a premise of the agreement no longer holds. Report which premise
+failed and wait for the user's decision.
 
-Stop when:
+If the agreement must change, update it before acting.
 
-- the same failure happens twice -- write the cause and stop;
-- the work needs to touch something outside the agreement -- stop;
-- a genuine trade-off needs a human decision -- stop.
+## Report
 
-When a stop happens, report it and wait for the user's decision.
-
-## When the work is done
-
-Read `references/verification.md`, walk the conditions once more, and report.
-When the user says to merge, follow the repository's merge procedure; if there
-is none, stop and ask.
+Report what changed, what passed with evidence, and what is unmet when the work
+is done.
