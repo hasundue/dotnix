@@ -6,6 +6,7 @@
  * HERDR_ENV=1. AGENTS.md stays free of environment-specific worktree rules.
  */
 
+import { readFileSync } from "node:fs";
 import { resolve, sep } from "node:path";
 
 import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
@@ -17,15 +18,7 @@ const TOKEN = "old_pane_id";
  * Static text: changing it must not depend on the old pane or the request,
  * so Pi can patch a single context-files section instead of the whole prompt.
  */
-const WORKFLOW = `Worktree workflow inside Herdr:
-
-- Create the worktree with \`herdr worktree create --cwd <root> --branch <branch> --base main --path <path> --no-focus\`. Read the workspace, tab, and root pane IDs from the JSON. The worktree.created plugin runs the shared post-start hooks in the new checkout.
-- Do not move the current Pi pane. Read the current session file from the \`agent_session.value\` field of \`herdr pane get "$HERDR_PANE_ID"\`.
-- Start Pi in the returned root pane with \`herdr agent start <name> --kind pi --pane <root_pane_id> -- --fork <session_file> "<user request>"\`. Repeat the user's request as the initial prompt; the fork carries the conversation into a process whose cwd is the worktree.
-- Report the old pane to the new one with \`herdr pane report-metadata "$NEW_PANE_ID" --source herdr:pi-handoff --token old_pane_id="$HERDR_PANE_ID"\`. The new session closes the old pane without a chat instruction.
-- Start subagents with \`pi --name <Role>\` after \`--\` in \`herdr agent start\`, so the role becomes the session name and the terminal title shows it.
-- For cleanup, inspect \`herdr pane list --workspace <id>\`; ask before closing a user window that has a running program. Use \`herdr worktree remove --workspace <id>\` and use \`--force\` only after the user agrees.
-- Keep titles of user-created windows derived from the running program. One Pi pane per window is an agent convention, not an enforced rule.`;
+const WORKFLOW = readFileSync(new URL("./workflow.md", import.meta.url), "utf8");
 
 const sleep = (ms: number) => new Promise<void>((done) => setTimeout(done, ms));
 

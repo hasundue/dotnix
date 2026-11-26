@@ -28,6 +28,8 @@ worktree の場所がワークスペースに表示されず，
 - `local.worktree-hooks` プラグインは `worktree.created` で
   共有 post-start hooks を実行する．
   新しい checkout でも既存の初期化を欠かさないため．
+- 対象の worktree は branch または path から先に解決し，既存なら
+  `herdr worktree open` で開き，無ければ作る．重複を作らないため．
 - 既存の Pi ペインは移動させず，新しい root pane で
   `herdr agent start <name> --kind pi --pane <root_pane_id> -- --fork <current session file> "<initial prompt>"`
   を実行する．フォークなら会話を保ったまま，
@@ -35,11 +37,13 @@ worktree の場所がワークスペースに表示されず，
 
 ### ハンドオフとエージェントコンテキスト
 
-- `configs/home/pi/agent/extensions/herdr-worktree.ts` を追加し，
+- `configs/home/pi/agent/extensions/herdr-worktree/index.ts` を追加し，
   `HERDR_ENV=1` 以外では何もしない．
   Herdr 外のセッションに Herdr 固有の手順を渡さないため．
-- Herdr 内では worktree の手順をエージェントコンテキストに注入する．
-  移動操作をエージェントが自分で実行できるようにするため．
+- Herdr 内では `configs/home/pi/agent/extensions/herdr-worktree/workflow.md` の
+  約束をエージェントコンテキストに注入する．
+  「新しい worktree で作業して」という指示を，確認済みの作成・フォーク・
+  ハンドオフの流れに変換するため．
 - `session_start` で自身のペインから `old_pane_id` トークンを読み，
   対象エージェントの起動が落ち着くまで待ち，
   ワークスペースの最後のペインでもユーザー作成ペインでも
@@ -112,8 +116,18 @@ worktree の場所がワークスペースに表示されず，
     - `wM:p1` がフォーク済みセッションで起動．旧ペイン `wG:pB`
       への閉鎖指示は出していないが，`herdr pane get wG:pB` は
       `pane_not_found` を返した
+- 「新しい worktree で作業して」という指示だけで，コマンド列挙なしに
+  同じフローが始まる
+  - [ ] 手動: activation 後に起動した Herdr 内の Pi に，
+        「新しい worktree で作業して」とだけ伝える．追加の手順指示なしに
+        worktree が作られ，共有 hooks が走り，フォークしたセッションが
+        新しい workspace で作業を続け，旧ペインが閉じる
+- 既存の worktree を指定された場合は，重複を作らずその workspace へ移動する
+  - [ ] 手動: 既存 worktree がある Herdr の Pi に「その worktree で作業して」
+        と伝える．`herdr worktree list` の数が増えず，既存 workspace の
+        root pane でフォークしたセッションが作業を続け，旧ペインが閉じる
 - pi-worktrunk が設定から消え，新しい拡張が Herdr 専用になっている
-  - [x] `rg -n 'HERDR_ENV' configs/home/pi/agent/extensions/herdr-worktree.ts` --
+  - [x] `rg -n 'HERDR_ENV' configs/home/pi/agent/extensions/herdr-worktree/index.ts` --
         ガードがある
   - [x] `rg -n 'pi-worktrunk' configs/home/pi/default.nix .pi/settings.json` --
         出力なし
@@ -148,5 +162,5 @@ worktree の場所がワークスペースに表示されず，
 - 新しいセッションの開始時にハンドオフトークンが欠けていたら，
   旧ペインを開けたまま報告する
 - 必要な変更が `configs/home/pi/agent/AGENTS.md`，
-  `configs/home/pi/agent/extensions/herdr-worktree.ts`，
+  `configs/home/pi/agent/extensions/herdr-worktree/index.ts`，
   `configs/home/pi/default.nix`，`.pi/settings.json` の外に及ぶ場合は停止する
