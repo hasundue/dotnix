@@ -115,45 +115,65 @@ worktree の場所がワークスペースに表示されず，
 
 - `herdr_worktree_move` tool が自然文の依頼で呼ばれ，
   worktree の作成・フォーク・ハンドオフが終わる
-  - [ ] Herdr 内の Pi に「新しい worktree で作業して」とだけ伝える．
+  - [x] Herdr 内の Pi に「新しい worktree で作業して」とだけ伝える．
         tool 呼び出しが記録され，
         `herdr worktree list` に linked worktree が現れ，
         `herdr pane list` の `cwd` と `agent_session` が移動先を指す
-  - [ ] `herdr worktree create` の後，`local.worktree-hooks` プラグインが
+    - 改名前の dev 検証で引数なしの tool 呼び出しを確認．
+      `pi-worktree-mwxc69zh` が linked worktree として現れ，`wQ:p1` の
+      `cwd` と `agent_session` が移動先を指した
+  - [x] `herdr worktree create` の後，`local.worktree-hooks` プラグインが
         新しい checkout で共有 post-start hooks を実行する
-  - [ ] 1 つ目のセッションで，フォーク先がユーザー要求を初期プロンプトとして
+    - `.envrc` と `.pi/settings.json` の copy と，
+      `.pre-commit-config.yaml` の symlink を確認
+  - [x] 1 つ目のセッションで，フォーク先がユーザー要求を初期プロンプトとして
         持ち，旧ペインがチャット指示なしに閉じる
+    - フォーク先の先頭 user message が「新しい worktree で作業して」．
+      旧ペイン `wG:pP` は `pane_not_found` で，チャット指示は出していない
 - tool は既存 worktree を重複なく開き，フォーク先では再ハンドオフしない
-  - [ ] `herdr worktree create --branch existing-check --base main --no-focus`
+  - [x] `herdr worktree create --branch existing-check --base main --no-focus`
         で worktree を用意した後，Pi に
         「`existing-check` の worktree で作業して」と伝える．
         `herdr worktree list` の数が増えず，既存 workspace の
         root pane で作業が続く
-  - [ ] 同じフォーク先の transcript を読み，`herdr_worktree_move` が
+    - `--cwd /home/hasundue/dotnix` を付けて作成．前後とも 3 件で，`wT:p1`
+      でフォークが継続
+  - [x] 同じフォーク先の transcript を読み，`herdr_worktree_move` が
         1 回だけ呼ばれていることを確認する
+    - 旧セッションで 1 回実行し，フォーク先では新規呼び出しなし
 - 旧ペインのトークンが新しいペインで消える
-  - [ ] ハンドオフ後に `herdr pane get <new_pane_id>` を確認し，
+  - [x] ハンドオフ後に `herdr pane get <new_pane_id>` を確認し，
         `tokens.old_pane_id` が無い
+    - `wQ:p1` と main 復帰先の `wK:p1` の token は null
 - pi-worktrunk が設定から消え，新しい拡張が Herdr 専用になっている
   - [x] `rg -n 'HERDR_ENV' configs/home/pi/agent/extensions/herdr-worktree/index.ts` --
         ガードがある
   - [x] `rg -n 'pi-worktrunk' configs/home/pi/default.nix .pi/settings.json` --
         出力なし
   - [x] `configs/home/pi/agent/AGENTS.md` を読む -- worktree ツールの指示なし
-  - [ ] print mode で `HERDR_ENV=1` のとき，
+  - [x] print mode で `HERDR_ENV=1` のとき，
         `herdr_worktree_move` の promptSnippet が表示される
+    - `<tools>` に `herdr_worktree_move: Move the current work between the
+      main checkout and Git worktrees in Herdr` を確認
+  - [x] print mode で `<herdr>` セクションが表示される
+    - `You are running inside Herdr, a terminal multiplexer designed for
+      coding agents, which manages workspaces, tabs, panes, and agent status.`
+      を確認
 - サブエージェントのセッション名が役割名になる
-  - [ ] `herdr agent start reviewer --kind pi --pane <pane_id> -- --name Review`
+  - [x] `herdr agent start reviewer --kind pi --pane <pane_id> -- --name Review`
         で起動し，`herdr agent prompt reviewer "Hi."`
         を送る．`herdr pane list` の terminal title が
         `π - Review - <repo>` になる
+    - terminal title は `π - Review - dotnix`
 - tool は main checkout へ戻り，旧 Herdr workspace を閉じる
-  - [ ] linked worktree の Pi に「main に戻って」と伝える．
+  - [x] linked worktree の Pi に「main に戻って」と伝える．
         `herdr_worktree_move` が `branch: "main"` で呼ばれ，
         main workspace の root pane でセッションが続き，
         旧 worktree workspace が `herdr workspace list` から消える
-  - [ ] `herdr worktree list` には worktree が残り，
+    - `wK:p1` で cwd `/home/hasundue/dotnix` のフォークが起動し，`wZ` は消えた
+  - [x] `herdr worktree list` には worktree が残り，
         ユーザーが `wt remove` を選べる状態になっている
+    - `return-check3` は `open_workspace_id: null` で残存
 
 ## 停止条件
 
