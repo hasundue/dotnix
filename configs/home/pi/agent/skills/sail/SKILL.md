@@ -23,25 +23,15 @@ before starting; that is a report, not a request for approval.
 
 ## Execute
 
-Before changing code, check the branch and working tree. Do not push, rewrite
-history, or discard unrelated work unless the agreement or the user asks.
-
 Work through the agreed conditions. Use each condition's verification method to
 decide what to run or inspect.
 
-- Record what proves a condition: the command and its result, or what you
-  observed and where.
-- If a condition is unmet, leave it unmet with `unmet: <reason>`; never mark it
-  done to look busy, or reword a condition to make it pass.
-- If a condition is already satisfied, record the evidence instead of changing
-  code.
-- Follow the repository's rules for tests, formatting, and commits.
-- If the agreement is silent on a local implementation detail, use judgment.
-  Silence is not permission to change the agreed outcome.
-
-Create or switch branches only when the user asks. If the work is on
-`main`/`master` and the user has said nothing, ask instead of branching
-silently.
+- Record evidence for each condition: the command and its result, or what you
+  observed and where. An already satisfied condition still needs evidence.
+- An unmet condition stays unmet. Never tick it to look busy, or reword it to
+  make it pass.
+- If the agreement is silent on a local detail, use judgment. Silence is not
+  permission to change the agreed outcome.
 
 ## Stop
 
