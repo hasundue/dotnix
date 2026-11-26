@@ -57,10 +57,11 @@ first.
 
 ## Watching instead of polling
 
-`niri msg --json event-stream` emits one JSON object per line (`WindowsChanged`,
-`WindowOpenedOrChanged`, `WindowClosed`, `WindowFocusChanged`, ...). Use it for a
-long-running helper that must react to focus, and polling for a bounded test that
-must record transitions with timestamps.
+`niri msg --json event-stream` emits one JSON object per line
+(`WindowsChanged`, `WindowOpenedOrChanged`, `WindowClosed`,
+`WindowFocusChanged`, ...). Use it for a long-running helper that must react to
+focus, and polling for a bounded test that must record transitions with
+timestamps.
 
 ## Reading the environment
 

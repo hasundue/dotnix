@@ -9,9 +9,9 @@ disable-model-invocation: true
 
 # Nix activation
 
-Choose the command for the requested system or Home Manager activation. Build-only
-commands are documented in [the Nix build skill](../nix-build/SKILL.md) and do not
-activate a configuration.
+Choose the command for the requested system or Home Manager activation.
+Build-only commands are in [the Nix build skill](../nix-build/SKILL.md). They
+do not activate a configuration.
 
 ## NixOS
 
@@ -23,9 +23,9 @@ nix run .#nixos-switch  # Apply permanently
 nix run .#nixos-boot    # Set the boot entry for next reboot
 ```
 
-The user runs them as a normal user: `sudo` is requested only for activation. The
-user may also prefix a command with `sudo` without a second prompt. The agent does
-not request a sudo password or supply non-interactive elevation.
+The user runs them as a normal user: `sudo` is requested only for activation.
+The user may also prefix a command with `sudo` without a second prompt. The
+agent does not request a sudo password or supply non-interactive elevation.
 
 ## Home Manager
 
@@ -55,8 +55,8 @@ instead of `home-switch`. For build-only inspection of such a change, use
 
 After each activation, verify the resulting state as far as possible in this
 environment. For checks that do not need sudo, use `home-switch` subject to the
-package exception above, or a build-only command from the build skill. Do not ask
-for a sudo password or add non-interactive elevation.
+package exception above, or a build-only command from the build skill. Do not
+ask for a sudo password or add non-interactive elevation.
 
 The `nixos-*` activation apps do not use `nom`: their output is raw because the
 status ticker would erase sudo's password prompt. Output handling for the build

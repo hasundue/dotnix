@@ -111,8 +111,8 @@ the note into something it was not.
 ## Filled example
 
 Illustrative: the prose shows the register and the level of detail. Identifiers
-that would point at real things -- the repository, the branch, the linked notes
--- are placeholders.
+that would point at real things -- the repository, the branch, the linked
+notes -- are placeholders.
 
 ```markdown
 ---

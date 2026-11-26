@@ -26,8 +26,9 @@ activation is needed.
 
 The build apps accept passthrough flags such as `--show-trace`. They pipe output
 through `nom` when stdout is a TTY, and skip it when non-TTY for minimal
-output. `NOM_DISABLE=1` forces raw output even in a TTY; use it only for commands
-you run yourself in a TTY. Agent bash calls are non-TTY and already skip `nom`.
-Do not add it to commands you ask the user to run, so they keep `nom`'s output.
+output. `NOM_DISABLE=1` forces raw output even in a TTY; use it only for the
+commands you run yourself in a TTY. Agent bash calls are non-TTY and already
+skip `nom`. Do not add it to commands you ask the user to run, so they keep
+`nom`'s output.
 
 Do not pass `--impure` (see `AGENTS.md`).

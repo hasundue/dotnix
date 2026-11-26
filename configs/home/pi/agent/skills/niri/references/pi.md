@@ -30,10 +30,11 @@ produce on purpose — test the fallback elsewhere.
 
 ## Where Pi reads extensions and skills
 
-`~/.pi/agent/extensions` and `~/.pi/agent/skills` are the discovery points. Where
-those are symlinks into a checkout, an edit is live for the _next_ process, not
-the current one. A running Pi keeps the code it started with: `/reload` rereads
-extensions, skills, templates, and context files; a restart is the alternative.
+`~/.pi/agent/extensions` and `~/.pi/agent/skills` are the discovery points.
+Where those are symlinks into a checkout, an edit is live for the _next_
+process, not the current one. A running Pi keeps the code it started with:
+`/reload` rereads extensions, skills, templates, and context files; a restart
+is the alternative.
 A notification that appears after an edit may simply be the old code still
 running.
 

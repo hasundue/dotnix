@@ -22,10 +22,10 @@ the only way to dismiss something specific.
 
 ## Timeouts
 
-With the shipped config — no global `default-timeout` — the value is **0**, which
-means notifications never expire on their own. Anything that disappears was
-withdrawn by the sending program or dismissed by a helper; the exception is a
-per-app override, written as a section:
+With the shipped config — no global `default-timeout` — the value is **0**,
+which means notifications never expire on their own. Anything that disappears
+was withdrawn by the sending program or dismissed by a helper; the exception is
+a per-app override, written as a section:
 
 ```ini
 [app-name=niri]
@@ -39,8 +39,8 @@ the config, and never about Mako quietly expiring it.
 
 OSC 9 and OSC 777 have no app-name field, so a terminal that forwards them
 supplies the identity instead: `desktop_entry` and `app_icon` carry
-`com.mitchellh.ghostty` while `app_name` stays null. Matching on `app_name` alone
-therefore misses terminal notifications — match `desktop_entry` too.
+`com.mitchellh.ghostty` while `app_name` stays null. Matching on `app_name`
+alone therefore misses terminal notifications — match `desktop_entry` too.
 
 ## Focus-based dismissal
 

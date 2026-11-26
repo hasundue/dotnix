@@ -21,12 +21,12 @@ changed:
 
 1. Inspect the complete staged and unstaged diffs.
 2. If every change is formatting-only and limited to files already intended for
-   the commit, stage those paths explicitly and retry the commit. Let the hooks run
-   again; proceed only when they pass. This routine retry does not need additional
-   user approval.
+   the commit, stage those paths explicitly and retry the commit. Let the hooks
+   run again; proceed only when they pass. This routine retry does not need
+   additional user approval.
 3. If the hook made unexpected or non-formatting changes, another check failed,
-   or unrelated edits could be included, stop and ask before recovery. Do not use
-   `git add -A` for this retry.
+   or unrelated edits could be included, stop and ask before recovery. Do not
+   use `git add -A` for this retry.
 
 ## Merging
 
@@ -149,7 +149,7 @@ already set, so a new branch needs no `-u`.
 Do not rewrite a pushed commit on a working branch, and do not amend it to fold
 in a later fix: add a commit. A squash merge leaves `main` with one opaque diff,
 and the remote branch keeps the last pushed checkpoint sequence as its archive;
-rewriting pushed commits would desynchronize that archive from what was reviewed.
+rewriting pushed commits would desynchronize the reviewed archive.
 For an explicitly authorized change on `main`, add a fix commit. The only
 exception is the approved local reorganization under [Merging](#merging); never
 push its result.
