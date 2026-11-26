@@ -100,6 +100,11 @@
   flag が無いセッションは何もせず，値が既存ペインとして読めない場合だけ
   警告する（`:64`, `:76`, `:387`）．
   `SPEC.md` の設計・受け入れ条件・停止条件も同じ方式に更新済み．
+- **`agent_pane_busy` (追記): main 復帰時に root pane が agent に占有される**
+  SPEC の設計を直し，main 復帰時だけ workspace に新しい tab を作り，その
+  root pane でフォークする（`:274`）．実セッションで `w16:p1` が agent に
+  占有されたまま main 復帰し，`w16:t2` / `w16:p3` でセッションが継続，
+  旧 workspace `w17` は消えた．`agent_pane_busy` は出ていない．
 - **F1 / F3 (追記): main 復帰直後の誤警告と，flag が残ることによる再実行**
   旧 workspace が既に閉じていた場合は警告せず，同じプロセスで
   `session_start` が再度起きても 1 度だけ実行する（`:63`, `:79`, `:394`）．
@@ -163,10 +168,13 @@
 ## 検証
 
 - `nix fmt` 済み，`git diff --check` は clean．
-- トークン方式の修正と SPEC 更新は `aed3b6f` でコミット・push 済み．
-  今回の flag 移行は未コミット．
+- `aed3b6f`，`b85696d`，`d19d257` をコミット・push 済み．
+  今回の main 復帰の tab 化と検証結果の反映は未コミット．
 - `HERDR_ENV=1 pi --no-extensions -e <extension> --help` で
   `--herdr-worktree-handoff <value>` が registered flag として表示されることを
   確認した．
-- Herdr の実セッションでの受け入れ再検証は未実施．
-  SPEC に記録された検証結果は変更していない．
+- Herdr の実セッションで，tool 名を含まない自然文からの tool 呼び出し，
+  worktree 作成と fork，2 ペイン workspace での旧ペイン整理，root pane が
+  agent に占有された状態からの main 復帰を確認した．
+- 未検証: dotnix の post-start ファイルコピー（scratch repo には対象ファイルが
+  無い）と，一般 fork に flag が無いこと（コード上の確認のみ）．

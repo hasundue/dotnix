@@ -264,8 +264,23 @@ export default function (pi: ExtensionAPI) {
           action = "created";
         }
 
-        const { workspaceId, tabId, rootPaneId, worktree } = placement(opened);
+        const placed = placement(opened);
+        const { workspaceId, worktree } = placed;
+        let { tabId, rootPaneId } = placed;
         const checkout = worktreePath(worktree) ?? createdPath;
+        if (returningToMain) {
+          if (!workspaceId) throw new Error(`Herdr response has no workspace ID${leftover()}`);
+          const createdTab = await herdr(
+            ["tab", "create", "--workspace", workspaceId, "--cwd", repoRoot, "--no-focus"],
+            signal,
+          );
+          const tabPlacement = placement(createdTab);
+          tabId = tabPlacement.tabId ?? tabId;
+          rootPaneId = tabPlacement.rootPaneId;
+          if (!rootPaneId) {
+            throw new Error(`Herdr tab create returned no root pane ID${leftover()}`);
+          }
+        }
         if (!rootPaneId) throw new Error(`Herdr response has no root pane ID${leftover()}`);
         if (action === "created" && !worktreePath(worktree)) {
           throw new Error(
@@ -360,7 +375,7 @@ export default function (pi: ExtensionAPI) {
 
         const destination = worktreePath(worktree) ?? targetPath ?? "the worktree";
         const summary = returningToMain
-          ? `Returned to the main checkout at ${destination}. The old Herdr workspace is being closed.`
+          ? `Returned to the main checkout at ${destination} in a new tab. The old Herdr workspace is being closed.`
           : `${action === "created" ? "Created" : "Opened"} worktree at ${destination}.`;
         return {
           content: [

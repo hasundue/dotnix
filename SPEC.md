@@ -139,8 +139,10 @@ worktree の場所がワークスペースに表示されず，
       旧ペイン `wG:pP` は `pane_not_found` で，チャット指示は出していない
 - main 復帰時は workspace に新しい tab が作られ，その root pane で fork が
   起動する
-  - [ ] 既存 root pane が agent に占有されていても `agent_pane_busy` と
+  - [x] 既存 root pane が agent に占有されていても `agent_pane_busy` と
         ならず，新しい tab の root pane でセッションが続くことを確認する
+    - scratch repo で `w16:p1` を agent が占有した状態で main 復帰し，
+      `w16:t2` / `w16:p3` でセッションが継続．旧 workspace `w17` は消えた
 - tool は既存 worktree を重複なく開き，フォーク先では再ハンドオフしない
   - [x] `herdr worktree create --branch existing-check --base main --no-focus`
         で worktree を用意した後，Pi に
