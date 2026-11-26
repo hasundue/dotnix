@@ -155,11 +155,14 @@ worktree の場所がワークスペースに表示されず，
         1 回だけ呼ばれていることを確認する
     - 旧セッションで 1 回実行し，フォーク先では新規呼び出しなし
 - 旧ペイン ID が flag で渡り，一般 fork には flag が無い
-  - [ ] ハンドオフ先の起動引数に `herdr-worktree-handoff` があり，
+  - [x] ハンドオフ先の起動引数に `herdr-worktree-handoff` があり，
         その値が旧ペイン ID であることを確認する
-  - [ ] 一般の `pi --fork` では flag が無く，旧ペインが閉じられないことを
+    - 2 ペイン構成の実セッションで旧ペイン `w11:p2` が実際に閉じたことを
+      もって確認．argv 自体は読んでいない
+  - [x] 一般の `pi --fork` では flag が無く，旧ペインが閉じられないことを
         確認する
-    - 既存の [x] はトークン方式での検証で，flag 方式では再検証が必要
+    - `herdr agent start ... --fork <session>` の argv に flag が無く，
+      元の pane `w19:p3` は残り，`herdr worktree list` も 1 件のまま
 - pi-worktrunk が設定から消え，新しい拡張が Herdr 専用になっている
   - [x] `rg -n 'HERDR_ENV' configs/home/pi/agent/extensions/herdr-worktree/index.ts` --
         ガードがある

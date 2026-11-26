@@ -168,13 +168,21 @@
 ## 検証
 
 - `nix fmt` 済み，`git diff --check` は clean．
-- `aed3b6f`，`b85696d`，`d19d257` をコミット・push 済み．
-  今回の main 復帰の tab 化と検証結果の反映は未コミット．
+- `aed3b6f`，`b85696d`，`d19d257`，`478534e` をコミット・push 済み．
+  今回の受け入れ条件の反映は未コミット．
 - `HERDR_ENV=1 pi --no-extensions -e <extension> --help` で
   `--herdr-worktree-handoff <value>` が registered flag として表示されることを
   確認した．
 - Herdr の実セッションで，tool 名を含まない自然文からの tool 呼び出し，
   worktree 作成と fork，2 ペイン workspace での旧ペイン整理，root pane が
   agent に占有された状態からの main 復帰を確認した．
-- 未検証: dotnix の post-start ファイルコピー（scratch repo には対象ファイルが
-  無い）と，一般 fork に flag が無いこと（コード上の確認のみ）．
+- flag から得た旧ペイン ID は，2 ペイン構成で旧ペイン `w11:p2` が実際に
+  閉じたことをもって確認し，SPEC の受け入れ条件を `[x]` にした．argv 自体は
+  読んでいない．
+- 一般 fork は `herdr agent start ... --fork <session>` で起動し，argv に flag
+  が無いことを確認．元の pane `w19:p3` は残り，worktree list も 1 件のまま
+  だったので SPEC の受け入れ条件を `[x]` にした．
+- post-start hooks は `SPEC.md` の受け入れ条件で既に `[x]`（`.envrc` と
+  `.pi/settings.json` の copy，`.pre-commit-config.yaml` の symlink を確認）．
+  今回の scratch repo には対象ファイルが無く hook は no-op になるため，
+  再検証はしていない．
