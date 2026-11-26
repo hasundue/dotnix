@@ -7,12 +7,14 @@
  */
 
 import { existsSync, realpathSync } from "node:fs";
+import { unlink } from "node:fs/promises";
 import { basename, dirname, join, resolve } from "node:path";
 
 import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
 import { Type } from "typebox";
 
 const HANDOFF_FLAG = "herdr-worktree-handoff";
+const HANDOFF_MESSAGE_TYPE = "herdr-worktree-handoff";
 const HERDR_NOTICE =
   "You are running inside Herdr, a terminal multiplexer designed for coding agents, which manages workspaces, tabs, panes, and agent status.";
 
@@ -59,7 +61,6 @@ export default function (pi: ExtensionAPI) {
   if (process.env.HERDR_ENV !== "1") return;
 
   const oldPaneId = process.env.HERDR_PANE_ID;
-  let userRequest = "";
   let handoffStarted = false;
 
   pi.registerFlag(HANDOFF_FLAG, {
@@ -69,16 +70,23 @@ export default function (pi: ExtensionAPI) {
 
   pi.on("before_agent_start", (event) => {
     event.systemPromptOptions.sections.herdr = HERDR_NOTICE;
-    if (event.messageType === "user" && typeof event.prompt === "string") {
-      userRequest = event.prompt;
-    }
   });
 
   pi.on("session_start", (_event, ctx) => {
     const handoffFrom = pi.getFlag(HANDOFF_FLAG);
     if (handoffStarted || typeof handoffFrom !== "string" || handoffFrom === "") return;
     handoffStarted = true;
-    void finishHandoff(handoffFrom, (message) => ctx.ui.notify(message, "warning"));
+    pi.sendMessage(
+      {
+        customType: HANDOFF_MESSAGE_TYPE,
+        content:
+          "The worktree move completed in this session. Continue the original task here. Do not repeat the worktree move.",
+        display: false,
+        details: {},
+      },
+      { triggerTurn: true, deliverAs: "steer" },
+    );
+    void finishHandoff(handoffFrom, ctx);
   });
 
   async function herdr(args: string[], signal?: AbortSignal, timeout = 180000): Promise<any> {
@@ -329,11 +337,6 @@ export default function (pi: ExtensionAPI) {
         const agent = agentName(
           worktree?.branch ?? params.branch ?? (action === "created" ? "pi-worktree" : "existing"),
         );
-        const prompt =
-          userRequest ||
-          (returningToMain
-            ? "Continue the requested work in the main checkout."
-            : "Continue the requested work in this worktree.");
         try {
           await herdr(
             [
@@ -352,7 +355,6 @@ export default function (pi: ExtensionAPI) {
               "-a",
               "--fork",
               sessionFile,
-              prompt,
             ],
             signal,
           );
@@ -369,13 +371,9 @@ export default function (pi: ExtensionAPI) {
           );
         }
 
-        if (returningToMain && oldWorkspaceId) {
-          await herdrQuiet(["workspace", "close", oldWorkspaceId]);
-        }
-
         const destination = worktreePath(worktree) ?? targetPath ?? "the worktree";
         const summary = returningToMain
-          ? `Returned to the main checkout at ${destination} in a new tab. The old Herdr workspace is being closed.`
+          ? `Returned to the main checkout at ${destination} in a new tab. The old Herdr workspace will be closed by the forked session.`
           : `${action === "created" ? "Created" : "Opened"} worktree at ${destination}.`;
         return {
           content: [
@@ -401,9 +399,14 @@ export default function (pi: ExtensionAPI) {
     },
   });
 
-  async function finishHandoff(oldPane: string, report: (message: string) => void): Promise<void> {
+  async function finishHandoff(oldPane: string, ctx: any): Promise<void> {
+    const report = (message: string) => ctx.ui.notify(message, "warning");
+    let sourceSession: string | undefined;
+    let oldWorkspaceId: string | undefined;
     try {
-      await herdr(["pane", "get", oldPane], undefined, 10000);
+      const old = await herdr(["pane", "get", oldPane], undefined, 10000);
+      sourceSession = old?.result?.pane?.agent_session?.value;
+      oldWorkspaceId = old?.result?.pane?.workspace_id;
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
       const workspaceId = oldPane.split(":")[0];
@@ -442,19 +445,33 @@ export default function (pi: ExtensionAPI) {
       return;
     }
 
-    const old = await herdrQuiet(["pane", "get", oldPane], 10000);
-    const workspaceId = old?.result?.pane?.workspace_id;
-    const workspace = workspaceId
-      ? await herdrQuiet(["workspace", "get", workspaceId], 10000)
-      : null;
-    const paneCount = workspace?.result?.workspace?.pane_count ?? 0;
-    const isAgentPane = typeof old?.result?.pane?.agent === "string";
-    if (paneCount > 1 && isAgentPane) {
+    try {
+      await herdr(["pane", "close", oldPane], undefined, 10000);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      report(`Could not close old pane ${oldPane}: ${message}`);
+    }
+
+    if (typeof sourceSession === "string" && sourceSession !== "") {
       try {
-        await herdr(["pane", "close", oldPane]);
+        await unlink(sourceSession);
       } catch (error) {
         const message = error instanceof Error ? error.message : String(error);
-        report(`Could not close old pane ${oldPane}: ${message}`);
+        report(`Could not remove source session ${sourceSession}: ${message}`);
+      }
+    }
+    if (oldWorkspaceId) {
+      const mainPane = process.env.HERDR_PANE_ID;
+      const current = mainPane ? await herdrQuiet(["pane", "get", mainPane], 10000) : null;
+      const currentWorkspaceId = current?.result?.pane?.workspace_id;
+      const isMainReturn = currentWorkspaceId === oldWorkspaceId;
+      if (isMainReturn) {
+        try {
+          await herdr(["workspace", "close", oldWorkspaceId], undefined, 10000);
+        } catch (error) {
+          const message = error instanceof Error ? error.message : String(error);
+          report(`Could not close old workspace ${oldWorkspaceId}: ${message}`);
+        }
       }
     }
   }
