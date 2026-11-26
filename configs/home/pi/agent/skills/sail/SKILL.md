@@ -2,8 +2,8 @@
 name: sail
 description: >
   Execute the agreement made at a keel gate: work its conditions with evidence,
-  and stop on blockers instead of guessing. Use when a task has been agreed or
-  when the user hands over work to implement.
+  and stop on blockers instead of guessing. Use when the user hands over work
+  to implement.
 ---
 
 # Sail
