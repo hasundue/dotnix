@@ -36,6 +36,11 @@ skill](.agents/skills/git-workflow/SKILL.md). Follow its approval,
 validation, and stop conditions; if the skill is unavailable or a precondition
 is unmet, stop and ask rather than proceeding.
 
+### Task spec
+
+A task spec is `SPEC.md` at the root of the branch or worktree carrying the
+work. A request for `SPEC.md` is a request for a worktree.
+
 ## Validate
 
 Format with `nix fmt`, which uses the flake's formatter without entering a dev
