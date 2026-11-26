@@ -13,23 +13,18 @@ rewrite the problem, or cut a branch unless the agreement or the user asks.
 
 ## Find the agreement
 
-The agreement is what the gate settled: what to build, what not to build, and
-how to verify it. Find it in the session context: a path the user passed, a
-written spec the project or user points to, or the live conversation.
+Find it in the session context: a path the user passed, a written spec the
+project or user points to, or the live conversation. If none is there, or it
+has no way to verify, stop and ask.
 
-A written spec carries its own rules in `references/written-spec.md`; a cold
-session with no agreement in context stops and asks. If the agreement is
-missing, empty, or has no way to verify, stop and ask.
-
-When several choices fit equally, name them and ask which one. If the agreement
-was found rather than handed over, say which one you are taking -- path or gate,
-and title -- before starting; that is a report, not a request for approval.
-
-Then check the branch and working tree so you know what you are changing. Do not
-push, rewrite history, or discard unrelated work unless the agreement or the
-user asks for it.
+If it came from a written spec, read `references/written-spec.md`. If several
+fit, name them and ask. If you found it yourself, say which one you are taking
+before starting; that is a report, not a request for approval.
 
 ## Execute
+
+Before changing code, check the branch and working tree. Do not push, rewrite
+history, or discard unrelated work unless the agreement or the user asks.
 
 Work through the agreed conditions. Use each condition's verification method to
 decide what to run or inspect.
