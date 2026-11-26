@@ -23,13 +23,19 @@ worktree の場所がワークスペースに表示されず，
 - `configs/home/pi/agent/extensions/herdr-worktree/index.ts` を追加し，
   `HERDR_ENV=1` 以外では何もしない．
   Herdr 外のセッションに Herdr 固有の手順を渡さないため．
-- 同じ extension が `herdr_move_to_worktree` tool を登録する．
+- 同じ extension が `herdr_worktree_move` tool を登録する．
   自然文の依頼をモデルがコマンドへ変換せず，tool が手順を持つため．
 - tool は `promptSnippet` と `promptGuidelines` で，worktree の依頼に
   応じて呼ばれることを 1 行だけモデルに伝える．
   長い手順を context に注入しないため．
 - tool は対象を branch または path から解決し，既存なら open，
   無ければ main を base に create する．重複を作らないため．
+  main も worktree list の通常のエントリとして扱い，
+  `branch: "main"` で main checkout へ戻る．
+  direction のような追加引数を持たないため，Worktrunk と同じ対称性になる．
+- tool は現在の workspace メタデータから repo_root を取り，
+  移動先の解決と Herdr コマンドの cwd に使う．
+  `wt merge` で worktree が削除された後も cwd が消えているため．
 - tool は workspace，tab，root pane の ID を得て，旧ペインを動かさず
   その root pane でセッションをフォークする．
   会話と cwd を移動先に保つため．
@@ -37,6 +43,9 @@ worktree の場所がワークスペースに表示されず，
   初期プロンプトとして渡す．要求の再入力をモデルに任せないため．
 - tool は既に target worktree の cwd なら何もしない．
   フォーク先が再ハンドオフしないため．
+- tool は main へのフォーク後，旧 worktree workspace を
+  `herdr workspace close` で閉じる．checkout は残し，
+  `wt` での削除タイミングをユーザーに残すため．
 - `local.worktree-hooks` プラグインは `worktree.created` で
   共有 post-start hooks を実行する．
   新しい checkout でも既存の初期化を欠かさないため．
@@ -64,16 +73,12 @@ worktree の場所がワークスペースに表示されず，
 - 1 ウィンドウ 1 Pi ペインはエージェント側の慣習とし，強制しない．
   ユーザー作成ウィンドウの自由度を残すため．
 
-### クリーンアップと設定の適用
+### クリーンアップ
 
-- クリーンアップでは `herdr pane list --workspace <id>` を確認し，
-  実行中のプログラムがあるユーザーウィンドウを閉じる前に尋ねる．
-  意図しない作業を失わないため．
-- 削除は `herdr worktree remove --workspace <id>` を使い，
+- 明示的な削除は `herdr worktree remove --workspace <id>` を使い，
   `--force` はユーザーが同意した後にだけ使う．
-- store-backed link で提供されているファイルへの変更は
-  `home-switch` で適用する．
-  `.pi/settings.json` はローカルの可変ファイルなので直接編集する．
+- main へ戻る際の workspace 終了は `herdr workspace close` とし，
+  checkout と branch は残す．
 
 ### テスト
 
@@ -87,8 +92,7 @@ worktree の場所がワークスペースに表示されず，
 - herdr-worktree のパスは Extension 自身の `import.meta.url` から取り，
   フォーク先にも同じ `-e` を渡す．これは開発用の分岐で，テスト終了後は
   通常の `herdr agent start ... --fork ... -- "<request>"` に戻す．
-- 開発中の反復はこの起動引数を使い，最終的な受け入れ確認は
-  activation 後の通常起動で行う．
+- 開発中の反復はこの起動引数を使う．
 
 ## 対象外
 
@@ -100,14 +104,16 @@ worktree の場所がワークスペースに表示されず，
 - `workflow.md` のような worktree 手順のコンテキスト注入
 - 1 ウィンドウ 1 Pi ペインの自動強制と，プログラム名からのタイトル自動生成
 - クリーンアップの自動検出と確認 UI
+- 実行中のユーザーペインを閉じる前の確認（今後の課題）
+- `wt merge` 自体の実行
 - `~/vault/fragments/software/herdr-pi-workflow.md` と既存 vault ノートの編集
 
 ## 受け入れ条件
 
-- `herdr_move_to_worktree` tool が自然文の依頼で呼ばれ，
+- `herdr_worktree_move` tool が自然文の依頼で呼ばれ，
   worktree の作成・フォーク・ハンドオフが終わる
-  - [ ] activation 後に起動した Herdr 内の Pi に
-        「新しい worktree で作業して」とだけ伝える．tool 呼び出しが記録され，
+  - [ ] Herdr 内の Pi に「新しい worktree で作業して」とだけ伝える．
+        tool 呼び出しが記録され，
         `herdr worktree list` に linked worktree が現れ，
         `herdr pane list` の `cwd` と `agent_session` が移動先を指す
   - [ ] `herdr worktree create` の後，`local.worktree-hooks` プラグインが
@@ -120,7 +126,7 @@ worktree の場所がワークスペースに表示されず，
         「`existing-check` の worktree で作業して」と伝える．
         `herdr worktree list` の数が増えず，既存 workspace の
         root pane で作業が続く
-  - [ ] 同じフォーク先の transcript を読み，`herdr_move_to_worktree` が
+  - [ ] 同じフォーク先の transcript を読み，`herdr_worktree_move` が
         1 回だけ呼ばれていることを確認する
 - 旧ペインのトークンが新しいペインで消える
   - [ ] ハンドオフ後に `herdr pane get <new_pane_id>` を確認し，
@@ -132,21 +138,19 @@ worktree の場所がワークスペースに表示されず，
         出力なし
   - [x] `configs/home/pi/agent/AGENTS.md` を読む -- worktree ツールの指示なし
   - [ ] print mode で `HERDR_ENV=1` のとき，
-        `herdr_move_to_worktree` の promptSnippet が表示される
+        `herdr_worktree_move` の promptSnippet が表示される
 - サブエージェントのセッション名が役割名になる
   - [ ] `herdr agent start reviewer --kind pi --pane <pane_id> -- --name Review`
         で起動し，`herdr agent prompt reviewer "Hi."`
         を送る．`herdr pane list` の terminal title が
         `π - Review - <repo>` になる
-- worktree のクリーンアップで，ユーザーウィンドウを閉じる前に
-  確認を求める
-  - [ ] worktree ワークスペースで `top` を実行するユーザーペインを作り，
-        Pi に「この worktree を片付けて」と伝える．
-        閉じる前に質問が出て，拒否するとワークスペースが残る
-- 整形と差分チェックを通る
-  - [x] `nix fmt` の後に `git diff --check` -- 出力なし，終了コード 0
-    - `nix fmt` は 2 回とも 0 files changed，`git diff --check` は
-      2 回とも終了コード 0
+- tool は main checkout へ戻り，旧 Herdr workspace を閉じる
+  - [ ] linked worktree の Pi に「main に戻って」と伝える．
+        `herdr_worktree_move` が `branch: "main"` で呼ばれ，
+        main workspace の root pane でセッションが続き，
+        旧 worktree workspace が `herdr workspace list` から消える
+  - [ ] `herdr worktree list` には worktree が残り，
+        ユーザーが `wt remove` を選べる状態になっている
 
 ## 停止条件
 
@@ -154,8 +158,6 @@ worktree の場所がワークスペースに表示されず，
   `worktree.created` プラグインが共有 post-start hooks を
   実行しなかった場合は，新しい worktree で Pi を起動する前に停止し，
   `herdr workspace create` にフォールバックしない
-- ユーザーがクリーンアップの質問に答えない場合は停止し，
-  ワークスペースを残す
 - 新しいセッションの開始時にハンドオフトークンが欠けていたら，
   旧ペインを開けたまま報告する
 - 必要な変更が `configs/home/pi/agent/AGENTS.md`，
