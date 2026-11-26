@@ -2,25 +2,22 @@
 
 Read this when the agreement lives in a written spec.
 
-## Promotion
+## Start
 
-A `draft` spec is normal: the instruction to execute is the go, so promote it
-by updating the status to `agreed` as `../keel/references/spec-authoring.md`
-describes. Do not ask whether it is agreed. Commit the promoted spec with the
-work; drafts are never committed.
+An execution-ready spec is `agreed`. If `status: blocked`, read the blocker
+section first. If `status: stale`, stop and ask: the work was dropped. If
+`status: draft`, stop and ask; it has not passed the gate.
 
-## Status and blockers
+## Checks
 
 A method carries the observed value that decides its condition, not a
 restatement of it: a count for a count, a state for a state. If the tick already
 says everything, omit the line. An unmet method records the failing value or
 reason instead. Never tick one to look busy, or reword the condition to make it
 pass. Do not label method lines; the count of conditions stays separate from
-the count of checks. If an unmet condition stops the work, set `status: blocked`
-and put the reason and resume context in the blocker section.
+the count of checks.
 
-If `status: blocked`, read the blocker section first. If `status: stale`, stop
-and ask: the work was dropped.
+## Changes
 
 In a written spec, update the design, out-of-scope, or acceptance criteria
 before acting, and put why it moved and what was considered in that commit's
@@ -31,22 +28,8 @@ only with that status; give it a heading in the spec's language that names the
 block, and write the context needed to resume. A commit that only adds the
 status and the section needs no body: the spec holds the context. Then ask.
 
-Only on the user's word does a block clear: set `status: agreed` and move the
-context from the blocker section into that commit's body before removing it. If
-the user drops the work, set `status: stale`, move any blocker context into that
-commit's body, and put why the work was dropped there. Do not resume a stale
-spec without the user's word; on resumption, re-confirm it, set the status to
-`agreed`, and carry the context forward.
+A question the spec should answer is a spec defect. Answer it, write the answer
+into the spec, and continue.
 
-## Cold executor
-
-A question from a cold executor is a spec defect. Answer it, write the answer
-into the spec's design, out-of-scope, or acceptance criteria, then continue.
-
-The spec keeps its language for life; reports speak the language of the
-conversation. If the session gives no signal, ask which language to report in.
-There is no Log section: record decisions in conversation and commit messages.
-
-## Handoff
-
-Leave the spec in place after reporting.
+When the user clears a block, drops the work, or resumes a stale spec, read
+`spec-transitions.md`.
