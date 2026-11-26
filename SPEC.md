@@ -12,6 +12,8 @@ Herdr 内の Pi セッションが worktree へ移動しても，Herdr のワー
 
 ## 設計
 
+### worktree の作成と Herdr の配置
+
 - Herdr のみを対応対象とし，worktree の作成と削除は `herdr worktree create` と
   `herdr worktree remove` を使う．Worktrunk の directory directive はセッションを
   切り替えてもプロセスの cwd を変えないため，`configs/home/pi/default.nix` の
@@ -24,6 +26,9 @@ Herdr 内の Pi セッションが worktree へ移動しても，Herdr のワー
 - 既存の Pi ペインは移動させず，新しい root pane で
   `herdr agent start <name> --kind pi --pane <root_pane_id> -- --fork <current session file> "<initial prompt>"`
   を実行する．フォークなら会話を保ったまま，宛先 worktree を cwd として起動できるため．
+
+### ハンドオフとエージェントコンテキスト
+
 - `configs/home/pi/agent/extensions/herdr-worktree.ts` を追加し，`HERDR_ENV=1` 以外では
   何もしない．Herdr 外のセッションに Herdr 固有の手順を渡さないため．
 - Herdr 内では worktree の手順をエージェントコンテキストに注入する．移動操作を
@@ -34,6 +39,9 @@ Herdr 内の Pi セッションが worktree へ移動しても，Herdr のワー
 - 旧ペインはフォーク前にトークンを報告する．新しいセッションが起動時に読めるようにするため．
 - `configs/home/pi/agent/AGENTS.md` には worktree ツールの指示を置かない．
   環境固有の手順を拡張側に集約するため．
+
+### セッション名とボーダーラベル
+
 - `configs/home/pi/agent/extensions/session-namer.ts` は長いセッション名と短い
   ボーダーラベルを別に尋ねる．タイトルとボーダー表示で必要な情報が異なるため．
 - 長い名前は `pi.setSessionName()` に渡し，短いラベルは
@@ -48,6 +56,9 @@ Herdr 内の Pi セッションが worktree へ移動しても，Herdr のワー
   Herdr の既存の挙動を変えないため．
 - 1 ウィンドウ 1 Pi ペインはエージェント側の慣習とし，強制しない．ユーザー作成
   ウィンドウの自由度を残すため．
+
+### クリーンアップと設定の適用
+
 - クリーンアップでは `herdr pane list --workspace <id>` を確認し，実行中のプログラムが
   あるユーザーウィンドウを閉じる前に尋ねる．意図しない作業を失わないため．
 - 削除は `herdr worktree remove --workspace <id>` を使い，`--force` はユーザーが
@@ -73,13 +84,10 @@ Herdr 内の Pi セッションが worktree へ移動しても，Herdr のワー
         同じで `is_linked_worktree: true` になる．Pi ペインの `cwd` がその worktree のパスで，
         `agent_session` がフォーク後のセッションを指す．移動前に決めたタイトルを
         エージェントに尋ね，同じ答えが返る
-    - 未達: この経路はまだ実行していない
   - [ ] 手動: `herdr worktree create` の後，`local.worktree-hooks` プラグインが新しい
         checkout で共有 post-start hooks を実行する
-    - 未達: この経路はまだ実行していない
   - [ ] 手動: 新しい root pane で `--fork <current session>` とユーザーの依頼を初期
         プロンプトにして Pi を起動する．拡張がチャット上の指示なしに旧ペインを閉じる
-    - 未達: この経路はまだ実行していない
 - session-namer が長いセッション名と短いラベルを分けて出し，短いラベルが Herdr の
   ボーダーに表示される
   - [ ] 手動: 同じ Herdr セッションで話題の異なる Pi セッションを 2 つ始める．
@@ -89,8 +97,6 @@ Herdr 内の Pi セッションが worktree へ移動しても，Herdr のワー
     - 長いタイトルと別の 1 語ラベルを確認: `Create herdr-follow-test worktree`/`worktree`，
       `Fix CJK font weight regression`/`review`，`Compare terminal markdown viewers` が
       `compare` と `comparison`
-    - 未達: 2 語のボーダーラベルは観測していない．衝突時のフォールバックは
-      実装済みだが未検証
 - pi-worktrunk が設定から消え，新しい拡張が Herdr 専用になっている
   - [x] `rg -n 'HERDR_ENV' configs/home/pi/agent/extensions/herdr-worktree.ts` -- ガードがある
   - [x] `rg -n 'pi-worktrunk' configs/home/pi/default.nix .pi/settings.json` -- 出力なし
@@ -102,12 +108,10 @@ Herdr 内の Pi セッションが worktree へ移動しても，Herdr のワー
   - [ ] 手動: `herdr agent start reviewer --kind pi --pane <pane_id> -- --name Review` で
         起動する．`herdr pane list` の terminal title が `π - Review - <repo>` になり，
         session-namer が上書きしない
-    - 未達: このケースは開始していない
 - worktree のクリーンアップで，ユーザーウィンドウを閉じる前に確認を求める
   - [ ] 手動: worktree ワークスペースで `top` を実行するユーザーペインを作り，
         クリーンアップを依頼する．閉じる前に質問が出て，拒否すると
         ワークスペースが残る
-    - 未達: このケースは開始していない
 - 整形と差分チェックを通る
   - [x] `nix fmt` の後に `git diff --check` -- 出力なし，終了コード 0
     - `nix fmt` は 2 回とも 0 files changed，`git diff --check` は 2 回とも
