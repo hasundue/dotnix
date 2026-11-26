@@ -41,5 +41,4 @@ There is no Log section: record decisions in conversation and commit messages.
 
 ## Handoff
 
-Leave the spec in place after reporting. The merge reorganization leaves it out
-of `main`; see `merge.md`.
+Leave the spec in place after reporting.

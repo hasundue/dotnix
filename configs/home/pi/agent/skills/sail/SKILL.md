@@ -64,4 +64,5 @@ When a stop happens, report it and wait for the user's decision.
 ## When the work is done
 
 Read `references/verification.md`, walk the conditions once more, and report.
-When the user says to merge, read `references/merge.md`.
+When the user says to merge, follow the repository's merge procedure; if there
+is none, stop and ask.

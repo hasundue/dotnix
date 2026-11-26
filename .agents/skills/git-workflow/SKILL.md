@@ -44,6 +44,11 @@ Do not push the reorganized branch to `origin`, and do not run `git push` or
 `git pull` on the working branch afterward. Then run the approved validation on
 the branch tip and merge.
 
+The task spec is a branch artifact and must not land on `main`: check that
+neither the reorganized commits nor `main` contains it. A spec marked `stale`
+has no outcome for `main`; do not merge that branch. If the user asks anyway,
+stop and ask where the context belongs.
+
 Run the merge with Worktrunk in the source branch's checkout, so the local
 branch tip is what gets merged.
 
