@@ -39,9 +39,12 @@ worktree の場所がワークスペースに表示されず，
 - tool は現在の workspace メタデータから repo_root を取り，
   移動先の解決と Herdr コマンドの cwd に使う．
   `wt merge` で worktree が削除された後も cwd が消えているため．
-- tool は workspace，tab，root pane の ID を得て，旧ペインを動かさず
-  その root pane でセッションをフォークする．
-  会話と cwd を移動先に保つため．
+- tool は `worktree open` / `worktree create` の応答から workspace と
+  root pane の ID を得て，旧ペインを動かさずその root pane でセッションを
+  フォークする．worktree 作成時は空の root pane ができるため．
+- main へ戻るときは worktree メタデータから workspace ID を得て，その
+  workspace に新しい tab を作り，その root pane でセッションをフォークする．
+  既存 root pane が agent に占有されていても起動できるようにするため．
 - tool は `before_agent_start` で保持したユーザー要求を `--fork` の
   初期プロンプトとして渡す．要求の再入力をモデルに任せないため．
 - tool は既に target worktree の cwd なら何もしない．
@@ -134,6 +137,10 @@ worktree の場所がワークスペースに表示されず，
         持ち，旧ペインがチャット指示なしに閉じる
     - フォーク先の先頭 user message が「新しい worktree で作業して」．
       旧ペイン `wG:pP` は `pane_not_found` で，チャット指示は出していない
+- main 復帰時は workspace に新しい tab が作られ，その root pane で fork が
+  起動する
+  - [ ] 既存 root pane が agent に占有されていても `agent_pane_busy` と
+        ならず，新しい tab の root pane でセッションが続くことを確認する
 - tool は既存 worktree を重複なく開き，フォーク先では再ハンドオフしない
   - [x] `herdr worktree create --branch existing-check --base main --no-focus`
         で worktree を用意した後，Pi に
@@ -174,9 +181,10 @@ worktree の場所がワークスペースに表示されず，
 - tool は main checkout へ戻り，旧 Herdr workspace を閉じる
   - [x] linked worktree の Pi に「main に戻って」と伝える．
         `herdr_worktree_move` が `branch: "main"` で呼ばれ，
-        main workspace の root pane でセッションが続き，
+        main workspace に作った新しい tab の root pane でセッションが続き，
         旧 worktree workspace が `herdr workspace list` から消える
     - `wK:p1` で cwd `/home/hasundue/dotnix` のフォークが起動し，`wZ` は消えた
+      のは旧設計の検証で，新設計では再検証が必要
   - [x] `herdr worktree list` には worktree が残り，
         ユーザーが `wt remove` を選べる状態になっている
     - `return-check3` は `open_workspace_id: null` で残存
