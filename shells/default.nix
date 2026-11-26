@@ -5,11 +5,31 @@
 }:
 let
   system = pkgs.stdenv.hostPlatform.system;
+  dprintMarkdown = pkgs.fetchurl {
+    url = "https://plugins.dprint.dev/markdown-0.29.0.wasm";
+    hash = "sha256-cUrqdVXdmDGGG+Rm2osmstkjFtPN5VDvPh9jsx9OowI=";
+  };
   treefmt = treefmt-nix.lib.mkWrapper pkgs {
     projectRootFile = "flake.nix";
     programs = {
+      dprint = {
+        enable = true;
+        includes = [ "*.md" ];
+        settings = {
+          lineWidth = 80;
+          plugins = [ (toString dprintMarkdown) ];
+          markdown = {
+            textWrap = "maintainAndWrap";
+            wrapUnspacedScripts = true;
+            wrapCodeSpans = false;
+          };
+        };
+      };
       nixfmt.enable = true;
-      oxfmt.enable = true;
+      oxfmt = {
+        enable = true;
+        excludes = [ "*.md" ];
+      };
     };
   };
   git-hooks = git-hooks-nix.lib.${system}.run {

@@ -27,13 +27,6 @@ Write every section so it can be read cold -- by a session with none of the
 conversation. No "as discussed" or "the usual place". Name paths, current
 behaviour, decisions and their reasons, and commands.
 
-## Line width
-
-Wrap prose at 80 half-width columns, counting a full-width character as two.
-Keep commands, paths, code identifiers, and links usable; break them only where
-the syntax keeps them copyable. The formatter does not wrap Markdown prose, so
-the writer wraps it.
-
 ## Criteria
 
 - A condition is an observable outcome, not a task. Split it until you can say
