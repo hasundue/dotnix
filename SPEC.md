@@ -259,8 +259,8 @@ worktree の場所がワークスペースに表示されず，
         読んで確認
     - `common.ts` の `HANDOFF_PLUGIN` が `local.worktree-handoff` で，
       `index.ts` がその state dir へ job を書き，同名 plugin の action を invoke
-  - [x] scratch repo の E2E で plugin 分離後も作成・フォーク・ハンドオフが
-        従来どおり動くことを確認
+  - [x] scratch repo の E2E で plugin 分離後の作成・フォーク・ハンドオフが
+        動くことを確認
     - `/tmp/herdr-e2e-plugin` の `w24:p1` から `branch: e2e-split` を呼び，
       `w25:p1` でフォーク．両 repo の `git status` は空で実作業なし．
       `herdr worktree remove --workspace w25` と `herdr workspace close w24`
@@ -290,10 +290,10 @@ worktree の場所がワークスペースに表示されず，
       （`/tmp/align-dest-collapsed.png`）．renderer 単体の実行値も collapsed=""
   - [ ] expand すると JSON の波括弧やツール名が出ず，header の後の 1 行を
         空けてインデントなしの details が出ることを確認
-    - 旧表示は 2 スペースのインデントだった．組込みツールの出力
-      （`edit` の diff）に合わせて，両 pane で空行と非インデントを確認する
+    - 組込みツールの出力（`edit` の diff）と同じく，両 pane で header 後の
+      空行と非インデントを確認する
   - [x] フォーク先 transcript の toolResult が content と structured な
-        details を従来どおり持つことを読んで確認
+        details を持つことを読んで確認
     - execute は無変更で，renderer は表示のみ．最新 E2E で toolResult の
       content 137 文字と details の 8 キー，tool 呼び出し 1 回を確認
   - [x] テスト用 workspace を片付け，フォーカスを戻す
