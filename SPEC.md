@@ -48,6 +48,8 @@ worktree の場所がワークスペースに表示されず，
 - tool は `--fork` に初期プロンプトを渡さない．fork 先は flag を見て
   非表示の continuation message で移動完了を通知し，元の作業を続ける．
   履歴の最後の移動要求にもとづいて再ハンドオフしないため．
+- tool の成功 result は `terminate: true` を返し，移動元で自動の
+  follow-up turn を起こさない．完了表示にするため．
 - tool は既に target worktree の cwd なら何もしない．
   フォーク先が再ハンドオフしないため．
 - main 復帰時に旧 worktree workspace を閉じる処理は fork 先に委ねる．
@@ -63,6 +65,8 @@ worktree の場所がワークスペースに表示されず，
   一般の fork と区別し，Herdr の metadata に依存せず ID を届けるため．
 - `session_start` で flag の値から旧ペイン ID を読み，値が無ければ何もしない．
   一般の fork と通常セッションを巻き込まないため．
+- `agent start` の後，移動先 pane を `herdr agent focus` でフォーカスする．
+  ユーザーが移動を依頼した画面へ追究するため．
 - 旧ペインがまだある間に `herdr pane get` で旧 session file の場所を読み，
   対象エージェントの起動が落ち着くまで待つ．
 - 旧ペインを `herdr pane close` で閉じ，その後で旧 session file を
@@ -128,6 +132,9 @@ worktree の場所がワークスペースに表示されず，
 
 - `herdr_worktree_move` tool が自然文の依頼で呼ばれ，
   worktree の作成・フォーク・ハンドオフが終わる
+  - [ ] tool が成功表示（緑）になり，移動元に余計なターンが無い
+  - [ ] 移動先 pane にフォーカスが移る
+    - 検証はユーザーの Herdr 操作と干渉するため，ユーザーに確認を仰ぐ
   - [x] Herdr 内の Pi に「新しい worktree で作業して」とだけ伝える．
         tool 呼び出しが記録され，
         `herdr worktree list` に linked worktree が現れ，
