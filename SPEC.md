@@ -160,39 +160,36 @@ worktree の場所がワークスペースに表示されず，
 - `herdr_worktree_move` tool が自然文の依頼で呼ばれ，
   worktree の作成・フォーク・ハンドオフが終わる
   - [x] tool が成功表示（緑）になる
-    - plugin job 方式で `herdr_worktree_move` が緑になり，result が表示
-      されたことを Niri スクショで確認
+    - scratch E2E で toolResult が `isError: false` の created summary と
+      `w22:p1` への fork を表示（`2026-11-27T04:58:01.882Z`）
   - [x] 移動元に余計なターンが無い
-    - 移動先 transcript で `USER → herdr_worktree_move → custom continuation
-      → 移動先の応答` の順で，tool の直後に移動元の応答が無いことを確認
+    - フォーク先 transcript が `USER → herdr_worktree_move → custom
+      continuation → 応答` の順で，tool の直後に移動元の応答はなし
   - [x] 移動先 pane にフォーカスが移る
-    - ユーザーが Herdr 上で確認
+    - Niri focused window 2 のタイトルが 13:58:05.871 に移動先 repo へ変化し，
+      Herdr で `w22:p1` が `focused: true`
   - [x] Herdr 内の Pi に「新しい worktree で作業して」とだけ伝える．
         tool 呼び出しが記録され，
         `herdr worktree list` に linked worktree が現れ，
         `herdr pane list` の `cwd` と `agent_session` が移動先を指す
-    - 改名前の dev 検証で引数なしの tool 呼び出しを確認．
-      `pi-worktree-mwxc69zh` が linked worktree として現れ，`wQ:p1` の
-      `cwd` と `agent_session` が移動先を指した
+    - `herdr_worktree_move` の呼び出しは 1 回だけ（引数 `branch:
+      e2e-split-refactor`）．`w22:p1` の cwd と session file が移動先を指す
   - [x] `herdr worktree create` の後，`local.worktree-hooks` プラグインが
         新しい checkout で共有 post-start hooks を実行する
     - `.envrc` と `.pi/settings.json` の copy と，
       `.pre-commit-config.yaml` の symlink を確認
   - [x] フォーク先が非表示 continuation で移動完了を認識し，元の作業を
         続けて再ハンドオフしない
-    - scratch repo の transcript に `customType: herdr-worktree-handoff`,
-      `display: false` の message が記録され，フォーク先は「移動が完了しました」
-      と応答．フォーク先の `herdr_worktree_move` 呼び出しは 0 回
-    - 新しい文言では追加コマンド（`ls` / `read` / `bash`）も出ず，移動だけの
-      依頼なら短い報告のみになることを Niri スクショで確認
+    - scratch transcript に `customType: herdr-worktree-handoff`,
+      `display: false`（04:58:02.864Z）．追加 tool 呼び出しは 0 回で，
+      応答は `The worktree move to branch e2e-split-refactor is done.` のみ
   - [x] 旧ペインがチャット指示なしに閉じる
-    - 旧ペイン `w1A:p1` が消え，別ペイン `w1A:p2` は残った
+    - 旧ペイン `w21:p1` が消え，main checkout に空 pane `w21:p2` が残る
   - [x] 旧 session file が削除され，`herdr agent list` に旧セッションが残らない
-    - `w1A:p1` の `.jsonl` は数秒後に存在せず，`herdr agent list` からも消えた
+    - 旧 `w21:p1` の `.jsonl` は存在せず，`herdr agent list` に旧 session なし
   - [x] main checkout の最後の pane から移動すると，空 tab が作られ，
         旧 pane と旧 session file が消える
-    - `w1G:p1` が閉じ，`w1G:t2` / `w1G:p2` の空 shell が残った．
-      旧 `.jsonl` は消えた
+    - `w21:p1` が閉じ，`w21:p2` の空 shell が残った（上記 E2E）
   - [x] main checkout に別 pane が残っている場合は空 tab を作らず，
         旧 pane と旧 session file だけが消える
     - `w1G:p2` が残る状態で `w1G:p3` から移動し，tab は増えず，
@@ -224,20 +221,36 @@ worktree の場所がワークスペースに表示されず，
         確認する
     - `herdr agent start ... --fork <session>` の argv に flag が無く，
       元の pane `w19:p3` は残り，`herdr worktree list` も 1 件のまま
-- pi-worktrunk が設定から消え，新しい拡張が Herdr 専用になっている
+- pi-worktrunk が消え，Herdr 用の拡張と plugin が分かれている
   - [x] `rg -n 'HERDR_ENV' configs/home/pi/agent/extensions/herdr-worktree/index.ts` --
         ガードがある
   - [x] `rg -n 'pi-worktrunk' configs/home/pi/default.nix .pi/settings.json` --
         出力なし
   - [x] `configs/home/pi/agent/AGENTS.md` を読む -- worktree ツールの指示なし
   - [x] print mode で `HERDR_ENV=1` のとき，
-        `herdr_worktree_move` の promptSnippet が表示される
+        `herdr_worktree_move` の promptSnippet と `<herdr>` が表示される
     - `<tools>` に `herdr_worktree_move: Move the current work between the
-      main checkout and Git worktrees in Herdr` を確認
-  - [x] print mode で `<herdr>` セクションが表示される
-    - `You are running inside Herdr, a terminal multiplexer designed for
-      coding agents, which manages workspaces, tabs, panes, and agent status.`
-      を確認
+      main checkout and Git worktrees in Herdr`，`<herdr>` に Herdr の告知を確認
+  - [x] `index.ts` に tool と `<herdr>` の登録があり，handoff 処理は
+        `handoff.ts` にある
+    - `session_start` と `finishHandoff` は `handoff.ts` にのみ存在
+  - [x] `common.ts` に定数，型，`createHerdr`，`samePath`，`textResult`，
+        `sleep`，`registerHerdrNotice`，`handoffArgs` があり，両 entry が import
+  - [x] `handoffArgs()` が `-e <extension dir>/handoff.ts` を渡し，
+        plugin script が開発モードに関わらず展開する
+    - 実行値は `["--no-extensions","-e",.../herdr-agent-state.ts,"-e",.../handoff.ts]`
+      で，`jq -r '.extraArgs // [] | .[]'` を生成 script で確認
+  - [x] `handoff.ts` 単独の print mode では flag が読め，tool は出ない
+    - `herdr_worktree_move` は 0 回，`<herdr>` は 1 回．
+      `--herdr-worktree-handoff zzzzz:p99` が unknown option にならず exit 0
+  - [ ] `worktree-hooks.nix` が main と一致し，handoff action と script が
+        無いことを読んで確認
+  - [ ] `worktree-handoff.nix` が plugin id `local.worktree-handoff` を宣言し，
+        `configs/home/herdr/default.nix` が import することを `nix eval` で確認
+  - [ ] tool が `local.worktree-handoff` の state dir と action を使うことを
+        読んで確認
+  - [ ] scratch repo の E2E で plugin 分離後も作成・フォーク・ハンドオフが
+        従来どおり動くことを確認
 - サブエージェントのセッション名が役割名になる
   - [x] `herdr agent start reviewer --kind pi --pane <pane_id> -- --name Review`
         で起動し，`herdr agent prompt reviewer "Hi."`
@@ -255,45 +268,6 @@ worktree の場所がワークスペースに表示されず，
         ユーザーが `wt remove` を選べる状態になっている
     - `pi-worktree-mwxppuxx` は `open_workspace_id: null` で残存
 
-- herdr-worktree が常時読み込みと移動先限定に分かれている
-  - [x] `index.ts` に tool と `<herdr>` の登録があり，handoff 処理は
-        `handoff.ts` にあることを読んで確認
-    - `index.ts` に tool 登録と `registerHerdrNotice(pi)` のみ，`session_start`
-      と `finishHandoff` は `handoff.ts` にのみ存在
-  - [x] `common.ts` に定数，型，共有ヘルパーがあり，両 entry から
-        import されていることを読んで確認
-    - `common.ts` が `HANDOFF_*`，`Worktree`，`Placement`，`herdr`，
-      `herdrQuiet`，`samePath`，`textResult`，`sleep`，`registerHerdrNotice`，
-      `handoffArgs` を提供し，両 entry が import
-  - [x] `herdr agent start` の job 引数に `handoff.ts` の `-e` が含まれ，
-        plugin script が開発モードに関わらず渡すことを読んで確認
-    - `handoffArgs()` の実行値は
-      `["--no-extensions","-e",.../herdr-agent-state.ts,"-e",.../herdr-worktree/handoff.ts]`
-      で，開発時だけ `--no-extensions` と herdr-agent-state を追加．
-      生成された script は
-      `jq -r '.extraArgs // [] | .[]'` で引数を読み，`--herdr-worktree-handoff`
-      の前に展開する（`nix eval` で確認）
-  - [x] print mode で `HERDR_ENV=1 pi -p --no-extensions -e
-        ~/.pi/agent/extensions/herdr-agent-state.ts -e
-        configs/home/pi/agent/extensions/herdr-worktree/index.ts` を起動し，
-        `herdr_worktree_move` の promptSnippet と `<herdr>` が出る
-    - `<tools>` に `herdr_worktree_move: Move the current work between the
-      main checkout and Git worktrees in Herdr`，`<rules>` に guideline，
-      `<herdr>` に Herdr の告知を確認
-  - [x] 同じく `handoff.ts` を `-e` に指定した print mode では flag が読め，
-        tool の promptSnippet が出ない
-    - `handoff.ts` 単独の system prompt で `herdr_worktree_move` は 0 回，
-      `<herdr>` は 1 回．`--herdr-worktree-handoff zzzzz:p99` が unknown option
-      にならず exit 0．両 entry を同時に読み込んでも flag 衝突は起きず exit 0
-- Worktree hook と Pi handoff が別 plugin に分かれている
-  - [ ] `worktree-hooks.nix` が main と一致し，handoff action と script が
-        無いことを読んで確認
-  - [ ] `worktree-handoff.nix` が plugin id `local.worktree-handoff` を宣言し，
-        `configs/home/herdr/default.nix` が import することを `nix eval` で確認
-  - [ ] tool が `local.worktree-handoff` の state dir と action を使うことを
-        読んで確認
-  - [ ] scratch repo の E2E で plugin 分離後も作成・フォーク・ハンドオフが
-        従来どおり動くことを確認
 - tool 結果が人には短く，エージェントには情報を保つ
   - [x] TUI で tool 実行後の collapsed row にツール名だけが出て，
         長い summary が出ないことを Niri で確認
@@ -313,27 +287,6 @@ worktree の場所がワークスペースに表示されず，
   - [x] テスト用 workspace を片付け，フォーカスを戻す
     - `herdr workspace close w23` が成功し，workspace は 3 件，
       Niri focused window 2 と Herdr workspace `wG` が一致，通知 0 件
-- リファクタ後に scratch repo で E2E を再実行する
-  - [x] 移動だけを指示したエージェントが tool を呼び，フォークとハンドオフが
-        終わる．実作業はしない
-    - `/tmp/herdr-e2e-split` の `w21:p1` に移動だけを指示する prompt を送り，
-      `herdr_worktree_move` の呼び出しは 1 回だけ．toolResult は
-      `isError: false` で `rootPaneId: w22:p1`，`oldPaneId: w21:p1`
-      （`2026-11-27T04:58:01.882Z`）
-    - フォーク先 transcript は `USER → toolResult → custom_message
-      (herdr-worktree-handoff, display: false, 04:58:02.864Z) → 応答` の順で，
-      `The worktree move to branch e2e-split-refactor is done.` のみ．
-      追加の tool 呼び出しは 0 回
-    - scratch の両 repo は `git status --short` が空で，ファイル変更なし
-  - [x] 移動先 pane にフォーカスが移り，旧ペインと旧 session file が消える
-    - Niri の focused window 2 のタイトルが 13:58:05.871 に
-      `x1carbon: herdr-e2e-split.e2e-split-refactor` へ変化．Herdr では
-      `w22:p1` が `focused: true` で cwd が移動先．旧 `w21:p1` は消え，
-      旧 session file は存在せず，main checkout には空 pane `w21:p2` が残る
-  - [x] テスト用の workspace と worktree を片付け，フォーカスを戻す
-    - `herdr worktree remove --workspace w22` が `forced: false` で成功し，
-      `herdr workspace close w21` が成功．workspace は元の 3 件に戻り，
-      Niri focused window 2 と Herdr workspace `wG` が一致．通知は 0 件
 
 ## 停止条件
 
