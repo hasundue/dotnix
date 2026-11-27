@@ -3,7 +3,7 @@
 ## 対象と結論
 
 - 対象は `main...HEAD` の実装差分と `SPEC.md`．
-- `SPEC.md` の実装として承認できない．高 3 件，中 2 件の修正が必要．
+- `SPEC.md` の実装として承認できない．高 3 件，中 3 件の修正が必要．
 
 ## 再検証
 
@@ -19,10 +19,12 @@ scratch repo の linked worktree から `branch: "main"` を呼び出し，以�
   た．
 
 `herdr pane close` が最後の pane を閉じると Herdr は workspace も閉じるため，
-`isMainReturn` による明示的な `workspace close` が false でもこの受け入れ条件は
-満たされる．
+`isMainReturn` による明示的な `workspace close` が false でも単一 pane の
+受け入れ条件は満たされる．
 
-この検証に限り，旧 worktree workspace を閉じる受け入れ条件は満たされる．
+旧 workspace に別 pane がある場合も検証した．source pane と旧 session file は
+削除されたが，旧 workspace `w2Y` は `w2Y:p2` を残して残存し，linked worktree の
+`open_workspace_id` も `w2Y` のままだった．
 
 ## 指摘
 
@@ -80,6 +82,19 @@ event と checkout を結び付けるか，checkout 固有の完了 marker を�
 `params.path` を `repoRoot` 取得前に `ctx.cwd` から解決している．
 SPEC では `repo_root` を解決基準とし，削除済み cwd でも動作する必要がある．
 `repoRoot` 取得後に `resolve(repoRoot, ...)` へ変更する必要がある．
+
+### 6. 中: multi-pane の main 復帰で旧 workspace が残る
+
+`configs/home/pi/agent/extensions/herdr-worktree/handoff.ts:147`
+
+旧 workspace に別 pane が残っていると，source pane の close 後も workspace は
+自動 close されない．main 復帰では `currentWorkspaceId` と `oldWorkspaceId` が
+異なるため `isMainReturn` は false になり，明示的な `workspace close` も
+スキップされる．scratch E2E では旧 workspace と残った pane がそのまま残った．
+
+main 復帰時は job の `returningToMain` を見て，source pane close 後に旧
+workspace
+を明示的に close する．
 
 ## 検証
 
