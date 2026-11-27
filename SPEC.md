@@ -54,6 +54,10 @@ worktree の場所がワークスペースに表示されず，
   確認のための追加コマンドは安全側の挙動として許容する．
 - tool の成功 result は `terminate: true` を返し，移動元で自動の
   follow-up turn を起こさない．
+- tool は `renderResult` を登録し，折りたたみ時はツール名だけを表示する
+  （失敗時は error の一行）．展開時は既存の result text と details を
+  読めるようにする．toolResult の content と details は変えず，
+  エージェントが使う情報は保持するため．
 - tool は既に target worktree の cwd なら何もしない．
   フォーク先が再ハンドオフしないため．
 - main 復帰時に旧 worktree workspace を閉じる処理は fork 先に委ねる．
@@ -277,6 +281,12 @@ worktree の場所がワークスペースに表示されず，
     - `handoff.ts` 単独の system prompt で `herdr_worktree_move` は 0 回，
       `<herdr>` は 1 回．`--herdr-worktree-handoff zzzzz:p99` が unknown option
       にならず exit 0．両 entry を同時に読み込んでも flag 衝突は起きず exit 0
+- tool 結果が人には短く，エージェントには情報を保つ
+  - [ ] TUI で tool 実行後の collapsed row にツール名だけが出て，
+        長い summary が出ないことを Niri で確認
+  - [ ] expand すると destination と pane ID が読めることを Niri で確認
+  - [ ] フォーク先 transcript の toolResult が content と details を
+        従来どおり持つことを読んで確認
 - リファクタ後に scratch repo で E2E を再実行する
   - [x] 移動だけを指示したエージェントが tool を呼び，フォークとハンドオフが
         終わる．実作業はしない
