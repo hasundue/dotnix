@@ -169,6 +169,8 @@ worktree の場所がワークスペースに表示されず，
     - scratch repo の transcript に `customType: herdr-worktree-handoff`,
       `display: false` の message が記録され，フォーク先は「移動が完了しました」
       と応答．フォーク先の `herdr_worktree_move` 呼び出しは 0 回
+    - 新しい文言では追加コマンド（`ls` / `read` / `bash`）も出ず，移動だけの
+      依頼なら短い報告のみになることを Niri スクショで確認
   - [x] 旧ペインがチャット指示なしに閉じる
     - 旧ペイン `w1A:p1` が消え，別ペイン `w1A:p2` は残った
   - [x] 旧 session file が削除され，`herdr agent list` に旧セッションが残らない
