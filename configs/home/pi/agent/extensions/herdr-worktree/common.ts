@@ -62,7 +62,6 @@ export const renderMoveResult: NonNullable<ToolRenderers["renderResult"]> = (
 
   if (!expanded) return new Text("", 0, 0);
 
-  let display = theme.fg("toolTitle", MOVE_TOOL);
   const details = result.details as MoveDetails | undefined;
   const fields: Array<[string, string | undefined]> = [
     ["destination", details?.destination],
@@ -70,12 +69,13 @@ export const renderMoveResult: NonNullable<ToolRenderers["renderResult"]> = (
     ["old pane", details?.oldPaneId],
     ["action", details?.action],
   ];
+  const lines: string[] = [];
   for (const [label, value] of fields) {
     if (value !== undefined) {
-      display += `\n${theme.fg("muted", `${label}: `)}${theme.fg("toolOutput", value)}`;
+      lines.push(`  ${theme.fg("muted", `${label}: `)}${theme.fg("toolOutput", value)}`);
     }
   }
-  return new Text(display, 0, 0);
+  return new Text(lines.join("\n"), 0, 0);
 };
 
 export const sleep = (ms: number) => new Promise<void>((done) => setTimeout(done, ms));

@@ -285,20 +285,21 @@ worktree の場所がワークスペースに表示されず，
 - tool 結果が移動元と移動先の両方で短く，エージェントには情報を保つ
   - [x] TUI で tool 実行後の collapsed 本文が空で，header のツール名だけが
         出ることを確認
-    - 移動先 `w2A:p1` と移動元 `w2B:p1` の `herdr pane read` で header の
+    - 移動先 `w2D:p1` と移動元 `w2E:p1` の `herdr pane read` で header の
       `herdr_worktree_move branch=...` のみ．本文の二重表示はなし
-      （`/tmp/empty-dest-collapsed.png`）．renderer 単体の実行値も collapsed=""
-  - [ ] expand すると JSON の波括弧やツール名が出ず，destination と pane ID
+      （`/tmp/align-dest-collapsed.png`）．renderer 単体の実行値も collapsed=""
+  - [x] expand すると JSON の波括弧やツール名が出ず，destination と pane ID
         が header の args と同じ 2 スペースで揃うことを確認
-    - 旧表示では本文先頭にツール名があり，`branch` の 2 スペースと他行の
-      インデントが不一致だった．移動元・移動先の両 pane で再確認する
+    - 両 pane で `branch` と `destination` / `pane` / `old pane` / `action`
+      がすべて 2 スペースで揃い，本文先頭にツール名はなし
+      （`/tmp/align-dest-expanded.png`）
   - [x] フォーク先 transcript の toolResult が content と structured な
         details を従来どおり持つことを読んで確認
     - execute は無変更で，renderer は表示のみ．最新 E2E で toolResult の
-      content 140 文字と details の 8 キー，tool 呼び出し 1 回を確認
+      content 137 文字と details の 8 キー，tool 呼び出し 1 回を確認
   - [x] テスト用 workspace を片付け，フォーカスを戻す
-    - `herdr worktree remove --workspace w2A` と
-      `herdr workspace close w29/w2B` が成功．workspace は 3 件，
+    - `herdr worktree remove --workspace w2D` と
+      `herdr workspace close w2C/w2E` が成功．workspace は 3 件，
       Niri focused window 2 と Herdr workspace `wG` が一致，通知 0 件
 
 ## 停止条件
