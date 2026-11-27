@@ -242,7 +242,8 @@ worktree の場所がワークスペースに表示されず，
         `sleep`，`registerHerdrNotice`，`handoffArgs` があり，両 entry が import
   - [x] `handoffArgs()` が `-e <extension dir>/handoff.ts` を渡し，
         plugin script が開発モードに関わらず展開する
-    - 実行値は `["--no-extensions","-e",.../herdr-agent-state.ts,"-e",.../handoff.ts]`
+    - 実行値は
+      `["--no-extensions","-e",.../herdr-agent-state.ts,"-e",.../handoff.ts]`
       で，`jq -r '.extraArgs // [] | .[]'` を生成 script で確認
   - [x] `handoff.ts` 単独の print mode では flag が読め，tool は出ない
     - `herdr_worktree_move` は 0 回，`<herdr>` は 1 回．

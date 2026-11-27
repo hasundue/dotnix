@@ -104,11 +104,7 @@ export function registerHerdrNotice(pi: ExtensionAPI): void {
 }
 
 export function createHerdr(pi: ExtensionAPI) {
-  async function herdr(
-    args: string[],
-    signal?: AbortSignal,
-    timeout = 180000,
-  ): Promise<any> {
+  async function herdr(args: string[], signal?: AbortSignal, timeout = 180000): Promise<any> {
     // `agent start` may wait 120 s for the forked agent to become ready.
     const result = await pi.exec("herdr", args, { signal, timeout });
     if (result.code !== 0) {

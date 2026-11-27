@@ -1,188 +1,81 @@
 # Review: Herdr worktree handoff
 
-## 対象と方法
+## 対象と結論
 
-- レビュー対象は `SPEC.md` の Sail 完了時点．
-  `main...HEAD` の差分のうち `configs/home/pi/default.nix` と新規の
-  `configs/home/pi/agent/extensions/herdr-worktree/index.ts` を渡した．
-  新規ファイルなので差分に全文が含まれる．
-- 2 回の追記では変更後の差分だけを渡し，変更されていないコードは渡していない．
-- モデルは `opencode-go/deepseek-v4.1-flash`，skiff セッションは
-  `herdr-worktree-deepseek-review`．
-- 行番号はすべて `configs/home/pi/agent/extensions/herdr-worktree/index.ts` の
-  現在の作業ツリー版を指す．
+- 対象は `main...HEAD` の実装差分と `SPEC.md`．
+- `SPEC.md` の実装として承認できない．高 4 件，中 2 件の修正が必要．
 
-## 指摘と対応
+## 指摘
 
-### 修正した指摘
+### 1. 高: main 復帰で旧 workspace が閉じない
 
-- **#1 (defect): 起動待ち時間と client timeout の不一致**
-  `herdr agent start` は `--timeout 120000` で待つのに `pi.exec` が 60 秒で切っ
-  ていた．`pi.exec` を 180 秒に延長し，フォークの有無をポーリングして誤判定を
-  防ぐ（`:82`, `:289`, `:303`）．旧ペイン ID の受け渡しは flag に変更したので，
-  トークンの消去や TTL は存在しない．
+`configs/home/pi/agent/extensions/herdr-worktree/handoff.ts:147`
 
-- **#2 (defect): 起動失敗の誤成功判定と，失敗時の main workspace 終了**
-  root pane に既存セッションがあっても，それが新しいセッションと誤判定され，
-  main 復帰時に旧 workspace が閉じられる可能性があった．
-  起動前に root pane のセッション ID を取得し，起動後も別 ID を確認してから
-  旧 workspace を閉じる（`:310`, `:316`, `:380`）．
+main 復帰時，`oldWorkspaceId` は linked worktree の workspace ID，
+`currentWorkspaceId` は main の workspace ID なので，通常は異なる．
+そのため `isMainReturn` は false になり，SPEC の必須 cleanup である
+旧 worktree workspace の close が実行されない．
+逆に同一 ID になった場合は，移動先を含む workspace を閉じる危険もある．
 
-- **#3 (defect): worktree メタデータが無い場合の停止条件が未実装**
-  `worktree create` の応答に worktree が無くても root pane だけ見て進んでいた．
-  作成時に worktree のパスが無ければ Pi 起動前に停止する（`:262`）．
-  stdout が空の場合は `{}` に変換されるため，停止理由は
-  「root pane ID が無い」になるが，起動前の停止自体は行われる．
+`returningToMain` を job で渡すか，旧 workspace と移動先の worktree 種別・
+path から判定する必要がある．
 
-- **#4 (defect): post-start hooks の実行確認が無い**
-  共有 hook が失敗しても Pi を起動していた．
-  `worktree.created` の成功ログと，コピー先の `.envrc` と `.pi/settings.json`
-  を
-  作成した checkout で確認してから起動する（`:99`, `:262`, `:270`）．
-  追記で指摘された global log の取り違えは，コピー先ファイルの確認で塞いだ．
-  この repo では両ファイルが untracked かつ gitignore なので確認は有意で，
-  plugin log の `finished_unix_ms` は hook script の終了後に記録される．
-  plugin log 取得は 10 秒で打ち切る（`:99` 以下）．
+### 2. 高: pane close 失敗後も session file を削除する
 
-- **#5 (defect): 旧ペイン待機が一時エラーで打ち切られ，40 秒で途中閉じしてい
-  た**
-  `agent get` の失敗を `undefined` としてループを抜け，
-  まだ作業中のペインを閉じることがあった．閉じる試行の失敗も握り潰していた．
-  60 秒の期限までポーリングし，落ち着かなければ旧ペインを開けたまま警告する
-  （`:400`, `:416`）．`pane close` の失敗も警告する（`:432`）．
+`configs/home/pi/agent/extensions/herdr-worktree/handoff.ts:129-140`
 
-- **#7 (defect): 相対 path が 2 つの基準で解決されていた**
-  `findTarget` と `worktree create --path` で基準が異なり，
-  既存 worktree を見つけられず別の場所に作る可能性があった．
-  `requestedPath` を一度だけ解決して両方で使う（`:178`, `:240`）．
+`herdr pane close` が失敗しても catch 後に `unlink(sourceSession)` へ進む．
+まだ動いている source session の file を削除し得るため，close 成功時にのみ
+削除し，失敗時は処理を終了する必要がある．
 
-- **#8 (question): main 復帰が optional フィールドの `false` に依存**
-  `is_linked_worktree` が無い場合は復帰と判定されなかった．
-  `!== true` に変更し，パス一致と合わせて判定する（`:192`）．
+### 3. 高: fork の失敗が成功扱いになる
 
-- **#12 (defect): 結果文が実際の挙動より強かった**
-  単一ペイン workspace では旧ペインを閉じないのに「閉じる」と表示し，
-  main の cwd で「worktree にいる」と表示していた．
-  文言を実際の挙動に合わせた（`:203`, `:367`）．
+`configs/home/herdr/worktree-handoff.nix:29-32`\
+`configs/home/pi/agent/extensions/herdr-worktree/index.ts:264-276`
 
-- **#14 (defect): 途中失敗で作った worktree と workspace が通知されない**
-  `worktree create` の後で失敗すると成果物が残るのに通知が無かった．
-  作成パスを保持し，メタデータ不足・hook 失敗・セッション不足・起動失敗の
-  すべてに手動 cleanup needed の文言を付ける（`:215`, `:262`, `:279`,
-  `:380`）．
-  自動削除は SPEC が削除タイミングをユーザーに残すため行わない．
+job を削除した後に `agent start ... || true` を実行し，focus も失敗を無視する．
+そのため plugin action は exit 0 で完了し，tool は fork 失敗を知らずに
+`Forked this session...` と `terminate: true` を返す．
 
-### 追記ラウンドの指摘
+失敗状態の保存・通知，または tool が成功を主張する条件の見直しが必要である．
 
-- **D1 (defect): 成功時に 1 回の `pane get` で誤判定していた**
-  一時エラーや session file の書き込み遅延で誤判定していた．
-  `forkStarted()` は成功・失敗・不明を返し，10 秒ポーリングしてから判定する
-  （`:289`, `:303`, `:341`）．
-- **D2 (defect): トークン報告後，`agent start` 前に例外があるとトークンが残る**
-  flag 方式ではトークン報告自体が無く，旧ペイン ID は起動引数に載るだけなので
-  この状態は発生しない（`:333`）．
-- **#5 (residual): 未決着の旧ペインが無報告だった**
-  `session_start` の ctx 経由で警告を出し，旧ペインを開けたままにする（`:74`,
-  `:441`）．
-  `ctx.ui.notify` の形は installed 版の extension docs の
-  `session_start` 例で確認した．
-- **#4a / #4b (defect): hook ログが別 worktree のものでも通る，期限を超えて待
-  つ**
-  コピー先ファイルの確認を追加し，各 CLI 呼び出しを 10 秒に制限した（`:99`）．
+### 4. 高: `pi-worktrunk` の削除が適用環境に反映しない
 
-### 設計変更で解消した指摘
+`configs/home/pi/default.nix:37`\
+`configs/home/worktrunk/hooks.nix:18-21`
 
-- **#13 (question): トークン欠落時の報告方法**
-  一般の fork を `reason: "fork"` だけで検出すると誤検知になるため，旧ペイン
-  ID を `herdr-worktree-handoff` string flag の値として渡す方式に変更した．
-  installed 版の pi は string flag をサポートし，`pi.getFlag()` は
-  `session_start` で読める（`types.d.ts:1280-1288`）．
-  flag が無いセッションは何もせず，値が既存ペインとして読めない場合だけ
-  警告する（`:64`, `:76`, `:387`）．
-  `SPEC.md` の設計・受け入れ条件・停止条件も同じ方式に更新済み．
-- **`agent_pane_busy` (追記): main 復帰時に root pane が agent に占有される**
-  SPEC の設計を直し，main 復帰時だけ workspace に新しい tab を作り，その
-  root pane でフォークする（`:274`）．実セッションで `w16:p1` が agent に
-  占有されたまま main 復帰し，`w16:t2` / `w16:p3` でセッションが継続，
-  旧 workspace `w17` は消えた．`agent_pane_busy` は出ていない．
-- **F1 / F3 (追記): main 復帰直後の誤警告と，flag が残ることによる再実行**
-  旧 workspace が既に閉じていた場合は警告せず，同じプロセスで
-  `session_start` が再度起きても 1 度だけ実行する（`:63`, `:79`, `:394`）．
-  fork 先に flag を渡すため extension が読み込まれないと起動引数が効かない
-  点は，SPEC の開発用手順が `-e` を渡すことで解消している．
+`mutableSettings = true` では，Nix 側から宣言を削除しても既存の動的
+package entry は残る．現在の `~/.pi/agent/settings.json:31` にも
+`npm:pi-worktrunk` が残っている．
 
-### 棄却した指摘
+さらに primary checkout の `~/dotnix/.pi/settings.json:8-11` は
+`+worktrunk.ts` を有効化しており，新規 worktree で project settings が
+存在しない場合は hook がコピーする．SPEC の削除条件と，新規 worktree での
+無効化を満たしていない．
 
-- **#6 (question): `-a` が SPEC に無い**
-  `pi --help` で `--approve, -a` を確認．fork argv は有効なので変更しない．
-- **#9 (question): `.pi/settings.json` 側の pi-worktrunk 削除が差分に無い**
-  根拠は `configs/home/pi/default.nix` の設定本体で，`packages` から
-  `npm:pi-worktrunk` のエントリが削除されている（diff と現在のファイルで確認）．
-  `.pi/settings.json` は git 管理外の生成・コピー先で，diff には現れない．
-  現在のファイルにも `pi-worktrunk` は無い（`grep -n` で確認）．
-  設定上の有効化は残っていないと判断し，変更しない．
-- **#10 (question): 明示削除の tool が無い**
-  2 つの「削除」を分ける．
+### 5. 中: hook 成功判定が別 worktree の log を拾う
 
-  **自動**: `main` 移動時に旧 worktree workspace を `herdr workspace close`
-  で閉じるだけ．workspace 一覧からは消えるが，checkout と branch は残る
-  （受け入れでは `return-check3` が `open_workspace_id: null` で残存）．
+`configs/home/pi/agent/extensions/herdr-worktree/index.ts:56-66`
 
-  **明示**: checkout 自体の削除は `herdr worktree remove --workspace <id>`
-  で，明示的な手動操作．`--force` はユーザーが同意した後だけ．extension
-  からは呼ばず，tool も登録しない．
+plugin log は global で checkout を識別せず，ファイル存在確認も既存ファイルで
+成立する．別の worktree で同時に成功した hook と，tracked な `.envrc` または
+`.pi/settings.json` の存在で，現在の checkout の hook 未実行を見逃せる．
 
-  したがって SPEC の「明示的な削除」は自動化の対象ではなく，tool が無い
-  ことは欠落ではない．workspace の終了と checkout の削除を同一視した
-  指摘とは読める．SPEC が「どの場面で明示削除するか」を書いていない点は
-  残るが，削除のタイミングをユーザーに残す設計とは矛盾しない．
-- **#11 (question): branch だけ存在して worktree が無い場合**
-  SPEC の「既存なら open」は worktree の存在を指す．branch-only の ref は
-  create 対象であり，herdr のエラーはそのまま返すでよい．
-  なお herdr が既存 branch をどのように扱うかは未確認．
+event と checkout を結び付けるか，checkout 固有の完了 marker を確認する
+必要がある．
 
-- **Q1 / Q2 (追記の question): コピー確認が空振りする，symlink を確認していな
-  い**
-  `.envrc` と `.pi/settings.json` はこの repo で untracked かつ gitignore なので
-  コピー確認は有意．hook script は `set -euo pipefail` で，
-  plugin log は終了後の `finished_unix_ms` を記録するため，
-  成功ログは symlink 処理まで含めた成功を表す．
+### 6. 中: relative path の解決基準が SPEC と異なる
 
-## SPEC の「停止条件」の読み分け
+`configs/home/pi/agent/extensions/herdr-worktree/index.ts:129`
 
-`SPEC.md` の `## 停止条件` には種類の異なる 3 項目が並んでいる．
-
-| 種別         | 項目                                                                             | 意味                                                                  |
-| ------------ | -------------------------------------------------------------------------------- | --------------------------------------------------------------------- |
-| ツールの挙動 | `worktree create` の失敗・メタデータ欠落・hook 未実行                            | Pi を起動せずにエラーを返すべき実行時挙動．受け入れ条件として検証する |
-| ツールの挙動 | 新しいセッション開始時に flag の値が空または不正なら旧ペインを開けたまま報告する | 同上．flag 方式で実装済み                                             |
-| Sail の停止  | 必要な変更が 4 ファイルの外に及ぶ場合                                            | 作業を止めてユーザーの判断を仰ぐ条件                                  |
-
-したがって #13 は Sail を止める条件ではなく，実装すべきランタイム挙動の
-問題で，flag 方式の採用によって実装した．
-
-## 判断が必要な指摘
-
-なし．#13 は flag 方式の採用で解消した．
+`params.path` を `repoRoot` 取得前に `ctx.cwd` から解決している．
+SPEC では `repo_root` を解決基準とし，削除済み cwd でも動作する必要がある．
+`repoRoot` 取得後に `resolve(repoRoot, ...)` へ変更する必要がある．
 
 ## 検証
 
-- `nix fmt` 済み，`git diff --check` は clean．
-- `aed3b6f`，`b85696d`，`d19d257`，`478534e` をコミット・push 済み．
-  今回の受け入れ条件の反映は未コミット．
-- `HERDR_ENV=1 pi --no-extensions -e <extension> --help` で
-  `--herdr-worktree-handoff <value>` が registered flag として表示されることを
-  確認した．
-- Herdr の実セッションで，tool 名を含まない自然文からの tool 呼び出し，
-  worktree 作成と fork，2 ペイン workspace での旧ペイン整理，root pane が
-  agent に占有された状態からの main 復帰を確認した．
-- flag から得た旧ペイン ID は，2 ペイン構成で旧ペイン `w11:p2` が実際に
-  閉じたことをもって確認し，SPEC の受け入れ条件を `[x]` にした．argv 自体は
-  読んでいない．
-- 一般 fork は `herdr agent start ... --fork <session>` で起動し，argv に flag
-  が無いことを確認．元の pane `w19:p3` は残り，worktree list も 1 件のまま
-  だったので SPEC の受け入れ条件を `[x]` にした．
-- post-start hooks は `SPEC.md` の受け入れ条件で既に `[x]`（`.envrc` と
-  `.pi/settings.json` の copy，`.pre-commit-config.yaml` の symlink を確認）．
-  今回の scratch repo には対象ファイルが無く hook は no-op になるため，
-  再検証はしていない．
+- `git diff --check main...HEAD` は clean．
+- 変更した Nix ファイル 3 件の parse は成功．
+- `nix eval` で Pi package 一覧と handoff plugin の登録を確認．
+- `handoff.ts` の `--herdr-worktree-handoff` 登録を確認．
+- Herdr の実セッション E2E は再実行していない．
