@@ -44,7 +44,7 @@ worktree の場所がワークスペースに表示されず，
 - main へ戻るときは worktree メタデータから workspace ID を得て，その
   workspace に新しい tab を作り，その root pane を使う．
   既存 root pane が agent に占有されていても起動できるようにするため．
-- fork と新セッション起動は `local.worktree-hooks` プラグインの action が
+- fork と新セッション起動は `local.worktree-handoff` プラグインの action が
   担当する．tool はプラグインへ依頼して先に result を返すことで，
   旧セッションが toolResult を書き込んでから fork させる．
 - tool は `--fork` に初期プロンプトを渡さない．fork 先は flag を見て
@@ -64,10 +64,13 @@ worktree の場所がワークスペースに表示されず，
 - main 復帰時に旧 worktree workspace を閉じる処理は fork 先に委ねる．
   tool が先に閉じると fork 先が旧 session file の場所を読めなくなるため．
 - `local.worktree-hooks` プラグインは `worktree.created` で
-  共有 post-start hooks を実行する．
-  新しい checkout でも既存の初期化を欠かさないため．
-- 同じプラグインに worktree handoff 用の action を追加する．
-  tool は plugin state dir に job JSON を書いてから action を invoke し，
+  共有 post-start hooks を実行する．新しい checkout でも既存の初期化を
+  欠かさないため．`worktree-hooks.nix` は main の純粋な hook だけの
+  状態に戻す．Worktrunk の共通初期化と Pi 固有の引き継ぎは別の plugin に
+  分けるのが妥当だったため．
+- `configs/home/herdr/worktree-handoff.nix` が `local.worktree-handoff`
+  プラグインを登録し，handoff action と job 実行 script を持つ．
+  tool はその plugin state dir に job JSON を書いてから action を invoke し，
   action は未処理の job を順に読んで `herdr agent start ... --fork` と
   フォーカス移動を実行する．`plugin action invoke` は command の完了を
   待たないため，tool はすぐ result を返せる．
@@ -139,8 +142,8 @@ worktree の場所がワークスペースに表示されず，
 ## 対象外
 
 - 設計に挙げた変更以外の Pi 拡張，Herdr プラグイン，worktree hooks
-  （plugin job 方式のため `configs/home/herdr/worktree-hooks.nix` の変更は
-  設計範囲に含める）
+  （plugin job 方式のため `configs/home/herdr/worktree-handoff.nix` の追加と
+  `configs/home/herdr/worktree-hooks.nix` の main への復元は設計範囲に含める）
 - keel と sail のスキル文書の変更
 - `configs/home/pi/agent/extensions/session-namer.ts` の変更と，
   セッション名・ボーダーラベルの検証
@@ -282,6 +285,15 @@ worktree の場所がワークスペースに表示されず，
     - `handoff.ts` 単独の system prompt で `herdr_worktree_move` は 0 回，
       `<herdr>` は 1 回．`--herdr-worktree-handoff zzzzz:p99` が unknown option
       にならず exit 0．両 entry を同時に読み込んでも flag 衝突は起きず exit 0
+- Worktree hook と Pi handoff が別 plugin に分かれている
+  - [ ] `worktree-hooks.nix` が main と一致し，handoff action と script が
+        無いことを読んで確認
+  - [ ] `worktree-handoff.nix` が plugin id `local.worktree-handoff` を宣言し，
+        `configs/home/herdr/default.nix` が import することを `nix eval` で確認
+  - [ ] tool が `local.worktree-handoff` の state dir と action を使うことを
+        読んで確認
+  - [ ] scratch repo の E2E で plugin 分離後も作成・フォーク・ハンドオフが
+        従来どおり動くことを確認
 - tool 結果が人には短く，エージェントには情報を保つ
   - [x] TUI で tool 実行後の collapsed row にツール名だけが出て，
         長い summary が出ないことを Niri で確認
@@ -335,4 +347,5 @@ worktree の場所がワークスペースに表示されず，
 - 必要な変更が `configs/home/pi/agent/AGENTS.md`，
   `configs/home/pi/agent/extensions/herdr-worktree/index.ts`，`handoff.ts`，
   `common.ts`，`configs/home/pi/default.nix`，`.pi/settings.json`，
-  `configs/home/herdr/worktree-hooks.nix` の外に及ぶ場合は停止する
+  `configs/home/herdr/worktree-hooks.nix`，`configs/home/herdr/worktree-handoff.nix`，
+  `configs/home/herdr/default.nix` の外に及ぶ場合は停止する
