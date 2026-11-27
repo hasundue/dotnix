@@ -12,7 +12,7 @@ import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
 
 export const HANDOFF_FLAG = "herdr-worktree-handoff";
 export const HANDOFF_ACTION = "handoff";
-export const HANDOFF_PLUGIN = "local.worktree-hooks";
+export const HANDOFF_PLUGIN = "local.worktree-handoff";
 export const HANDOFF_MESSAGE_TYPE = "herdr-worktree-handoff";
 export const HERDR_NOTICE =
   "You are running inside Herdr, a terminal multiplexer designed for coding agents, which manages workspaces, tabs, panes, and agent status.";

@@ -160,20 +160,20 @@ worktree の場所がワークスペースに表示されず，
 - `herdr_worktree_move` tool が自然文の依頼で呼ばれ，
   worktree の作成・フォーク・ハンドオフが終わる
   - [x] tool が成功表示（緑）になる
-    - scratch E2E で toolResult が `isError: false` の created summary と
-      `w22:p1` への fork を表示（`2026-11-27T04:58:01.882Z`）
+    - plugin 分離後の scratch E2E で toolResult が `isError: false` の
+      created summary と `w25:p1` への fork を表示（07:29）
   - [x] 移動元に余計なターンが無い
     - フォーク先 transcript が `USER → herdr_worktree_move → custom
       continuation → 応答` の順で，tool の直後に移動元の応答はなし
   - [x] 移動先 pane にフォーカスが移る
-    - Niri focused window 2 のタイトルが 13:58:05.871 に移動先 repo へ変化し，
-      Herdr で `w22:p1` が `focused: true`
+    - Herdr で `w25:p1` が `focused: true`．Niri の前面は Steam のままで，
+      compositor 側の遷移は此次では観測していない
   - [x] Herdr 内の Pi に「新しい worktree で作業して」とだけ伝える．
         tool 呼び出しが記録され，
         `herdr worktree list` に linked worktree が現れ，
         `herdr pane list` の `cwd` と `agent_session` が移動先を指す
     - `herdr_worktree_move` の呼び出しは 1 回だけ（引数 `branch:
-      e2e-split-refactor`）．`w22:p1` の cwd と session file が移動先を指す
+      e2e-split`）．`w25:p1` の cwd と session file が移動先を指す
   - [x] `herdr worktree create` の後，`local.worktree-hooks` プラグインが
         新しい checkout で共有 post-start hooks を実行する
     - `.envrc` と `.pi/settings.json` の copy と，
@@ -181,15 +181,15 @@ worktree の場所がワークスペースに表示されず，
   - [x] フォーク先が非表示 continuation で移動完了を認識し，元の作業を
         続けて再ハンドオフしない
     - scratch transcript に `customType: herdr-worktree-handoff`,
-      `display: false`（04:58:02.864Z）．追加 tool 呼び出しは 0 回で，
-      応答は `The worktree move to branch e2e-split-refactor is done.` のみ
+      `display: false`（07:29:51.472Z）．追加 tool 呼び出しは 0 回で，
+      応答は `Worktree move to branch e2e-split is done.` のみ
   - [x] 旧ペインがチャット指示なしに閉じる
-    - 旧ペイン `w21:p1` が消え，main checkout に空 pane `w21:p2` が残る
+    - 旧ペイン `w24:p1` が消え，main checkout に空 pane `w24:p2` が残る
   - [x] 旧 session file が削除され，`herdr agent list` に旧セッションが残らない
-    - 旧 `w21:p1` の `.jsonl` は存在せず，`herdr agent list` に旧 session なし
+    - 旧 `w24:p1` の `.jsonl` は存在せず，`herdr agent list` に旧 session なし
   - [x] main checkout の最後の pane から移動すると，空 tab が作られ，
         旧 pane と旧 session file が消える
-    - `w21:p1` が閉じ，`w21:p2` の空 shell が残った（上記 E2E）
+    - `w24:p1` が閉じ，`w24:p2` の空 shell が残った（上記 E2E）
   - [x] main checkout に別 pane が残っている場合は空 tab を作らず，
         旧 pane と旧 session file だけが消える
     - `w1G:p2` が残る状態で `w1G:p3` から移動し，tab は増えず，
@@ -243,14 +243,25 @@ worktree の場所がワークスペースに表示されず，
   - [x] `handoff.ts` 単独の print mode では flag が読め，tool は出ない
     - `herdr_worktree_move` は 0 回，`<herdr>` は 1 回．
       `--herdr-worktree-handoff zzzzz:p99` が unknown option にならず exit 0
-  - [ ] `worktree-hooks.nix` が main と一致し，handoff action と script が
+  - [x] `worktree-hooks.nix` が main と一致し，handoff action と script が
         無いことを読んで確認
-  - [ ] `worktree-handoff.nix` が plugin id `local.worktree-handoff` を宣言し，
+    - `git diff --exit-code main -- configs/home/herdr/worktree-hooks.nix` は
+      差分なし．`nix eval` の manifest は `[[events]]` の
+      `on = "worktree.created"` のみ
+  - [x] `worktree-handoff.nix` が plugin id `local.worktree-handoff` を宣言し，
         `configs/home/herdr/default.nix` が import することを `nix eval` で確認
-  - [ ] tool が `local.worktree-handoff` の state dir と action を使うことを
+    - manifest は `id = "local.worktree-handoff"` と `[[actions]]` の
+      `id = "handoff"`．`herdr plugin list` に両 plugin が enabled
+  - [x] tool が `local.worktree-handoff` の state dir と action を使うことを
         読んで確認
-  - [ ] scratch repo の E2E で plugin 分離後も作成・フォーク・ハンドオフが
+    - `common.ts` の `HANDOFF_PLUGIN` が `local.worktree-handoff` で，
+      `index.ts` がその state dir へ job を書き，同名 plugin の action を invoke
+  - [x] scratch repo の E2E で plugin 分離後も作成・フォーク・ハンドオフが
         従来どおり動くことを確認
+    - `/tmp/herdr-e2e-plugin` の `w24:p1` から `branch: e2e-split` を呼び，
+      `w25:p1` でフォーク．両 repo の `git status` は空で実作業なし．
+      `herdr worktree remove --workspace w25` と `herdr workspace close w24`
+      が成功し，focus は `wG` / window 2 に復元，通知 0 件
 - サブエージェントのセッション名が役割名になる
   - [x] `herdr agent start reviewer --kind pi --pane <pane_id> -- --name Review`
         で起動し，`herdr agent prompt reviewer "Hi."`

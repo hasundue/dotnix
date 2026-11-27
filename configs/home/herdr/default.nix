@@ -1,6 +1,9 @@
 { config, pkgs, ... }:
 {
-  imports = [ ./worktree-hooks.nix ];
+  imports = [
+    ./worktree-hooks.nix
+    ./worktree-handoff.nix
+  ];
 
   programs.herdr = {
     enable = true;

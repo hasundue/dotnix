@@ -34,28 +34,6 @@ let
     ${lib.concatStringsSep "\n\n" hooks}
   '';
 
-  # The tool writes one JSON file per handoff into the plugin state dir.
-  # The action consumes jobs in filename order and removes each one before
-  # starting the forked session, so a delayed invoke cannot replay a move.
-  handoffScript = ''
-    set -euo pipefail
-
-    state_dir=''${HERDR_PLUGIN_STATE_DIR:?HERDR_PLUGIN_STATE_DIR is required}
-    shopt -s nullglob
-    for job in "$state_dir"/handoff-*.json; do
-      mv "$job" "$job.running" || continue
-      agent=$(${jq} -er '.agent' "$job.running")
-      pane=$(${jq} -er '.pane' "$job.running")
-      session=$(${jq} -er '.session' "$job.running")
-      old_pane=$(${jq} -er '.oldPane' "$job.running")
-      readarray -t extra < <(${jq} -r '.extraArgs // [] | .[]' "$job.running")
-      rm -f "$job.running"
-      ${herdr} agent start "$agent" --kind pi --pane "$pane" --timeout 120000 -- \
-        "''${extra[@]}" --herdr-worktree-handoff "$old_pane" -a --fork "$session" || true
-      ${herdr} agent focus "$agent" || true
-    done
-  '';
-
   manifest = ''
     id = "${pluginId}"
     name = "Worktree Hooks"
@@ -63,12 +41,6 @@ let
     min_herdr_version = "0.9.0"
     description = "Shared worktree bootstrap hooks generated from Home Manager"
     platforms = [ "linux", "macos" ]
-
-    [[actions]]
-    id = "handoff"
-    title = "Worktree handoff"
-    description = "Start the forked Pi session queued by herdr_worktree_move"
-    command = [ "${bash}", "${pluginDir}/handoff.sh" ]
 
     [[events]]
     on = "worktree.created"
@@ -78,7 +50,6 @@ in
 {
   home.file.".config/herdr/plugins/worktree-hooks/herdr-plugin.toml".text = manifest;
   home.file.".config/herdr/plugins/worktree-hooks/hooks.sh".text = script;
-  home.file.".config/herdr/plugins/worktree-hooks/handoff.sh".text = handoffScript;
 
   home.activation.linkHerdrWorktreeHooks = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
     if [[ -v DRY_RUN ]]; then
