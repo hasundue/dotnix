@@ -369,7 +369,7 @@ worktree の場所がワークスペースに表示されず，
     - `herdr worktree remove --workspace w2P` と
       `herdr workspace close w2N/w2Q` が成功．workspace は 3 件，
       Niri focused window 2 と Herdr workspace `wG` が一致，通知 0 件
-- [ ] merge プロセス開始前の最終確認として，activation と新規 worktree 作成の
+- [x] merge プロセス開始前の最終確認として，activation と新規 worktree 作成の
       前に環境から `pi-worktrunk` を削除する
   - `pi remove npm:pi-worktrunk` で user settings から削除する
   - primary checkout で `pi remove npm:pi-worktrunk -l` を実行する
@@ -378,6 +378,8 @@ worktree の場所がワークスペースに表示されず，
     - `~/dotnix/.pi/settings.json`
     - 現在の worktree の `.pi/settings.json`
   - cleanup 完了前に `home-switch` と新規 `herdr worktree create` を実行しない
+    - user・primary・現在の worktree の settings に `npm:pi-worktrunk` は無く，
+      `pi list` にも表示されないことを確認
 
 ## 停止条件
 

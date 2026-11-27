@@ -4,7 +4,7 @@
 
 - 対象は `main...HEAD` の実装差分と `SPEC.md`．
 - handoff cleanup・queue 失敗報告・hook 相関・relative path の修正と再検証は
-  完了した．残る指摘は merge 前 cleanup 条件 1 件のみ．
+  完了した．merge 前の `pi-worktrunk` cleanup も完了し，残る指摘はない．
 
 ## 実装・再検証
 
@@ -62,23 +62,8 @@
 
 ## 残る指摘
 
-### 1. 高: `pi-worktrunk` の削除が適用環境に反映しない
-
-`configs/home/pi/default.nix:37`\
-`configs/home/worktrunk/hooks.nix:18-21`
-
-`mutableSettings = true` では，Nix 側から宣言を削除しても既存の動的
-package entry は残る．現在の `~/.pi/agent/settings.json:31` にも
-`npm:pi-worktrunk` が残っている．
-
-さらに primary checkout の `~/dotnix/.pi/settings.json:8-11` は
-`+worktrunk.ts` を有効化しており，新規 worktree で project settings が
-存在しない場合は hook がコピーする．SPEC の削除条件と，新規 worktree での
-無効化を満たしていない．
-
-現在の user・primary settings は確認したが，fresh worktree へのコピーは
-再実行していない．SPEC の最終条件として，activation と新規 worktree 作成より
-先に環境から削除することを明記した．
+なし．user・primary checkout・現在の worktree の settings から `pi-worktrunk`
+を削除し，`pi list` にも残っていないことを確認した．
 
 ## 検証
 
