@@ -60,6 +60,14 @@
 - 既存 worktree E2E では worktree 数が増えず，既存 workspace の新規 tab で
   fork が続いた．
 
+### 開発モード判定
+
+- `IS_DEV_EXTENSION` を path 名の部分一致から `HERDR_WORKTREE_DEV=1` の明示的な
+  環境変数判定へ変更した．
+- 未設定時は `handoff.ts` だけ，設定時は `--no-extensions` と
+  `herdr-agent-state.ts` と `handoff.ts` を渡すことを単体テストで確認した．
+- 開発 Pi に環境変数を設定した実 E2E でも，worktree create と fork が継続した．
+
 ## 残る指摘
 
 なし．user・primary checkout・現在の worktree の settings から `pi-worktrunk`

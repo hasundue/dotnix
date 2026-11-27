@@ -22,7 +22,7 @@ export const HANDOFF_MESSAGE =
   "The worktree move is already complete. Do not perform another move. Report that it is done if the move was the request; otherwise continue the remaining task.";
 
 export const EXTENSION_DIR = dirname(fileURLToPath(import.meta.url));
-const IS_DEV_EXTENSION = EXTENSION_DIR.includes("dotnix.herdr-pi-workflow");
+const IS_DEV_EXTENSION = process.env.HERDR_WORKTREE_DEV === "1";
 
 export type Worktree = {
   branch?: string;

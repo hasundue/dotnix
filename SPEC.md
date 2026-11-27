@@ -297,11 +297,12 @@ worktree の場所がワークスペースに表示されず，
     - `session_start` と `finishHandoff` は `handoff.ts` にのみ存在
   - [x] `common.ts` に定数，型，`createHerdr`，`samePath`，`textResult`，
         `sleep`，`registerHerdrNotice`，`handoffArgs` があり，両 entry が import
-  - [ ] `handoffArgs()` が `-e <extension dir>/handoff.ts` を渡し，
+  - [x] `handoffArgs()` が `-e <extension dir>/handoff.ts` を渡し，
         plugin script が開発モードに関わらず展開する
     - `HERDR_WORKTREE_DEV=1` のときは
       `["--no-extensions","-e",.../herdr-agent-state.ts,"-e",.../handoff.ts]`
     - 未設定のときは `["-e",.../handoff.ts]`
+    - 環境変数あり・なしの単体テストと，開発 Pi の実 E2E で確認
   - [x] `handoff.ts` 単独の print mode では flag が読め，tool は出ない
     - `herdr_worktree_move` は 0 回，`<herdr>` は 1 回．
       `--herdr-worktree-handoff zzzzz:p99` が unknown option にならず exit 0
