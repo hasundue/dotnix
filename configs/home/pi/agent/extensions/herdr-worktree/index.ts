@@ -19,6 +19,7 @@ import {
   MOVE_TOOL,
   createHerdr,
   handoffArgs,
+  hookCompletionPath,
   registerHerdrNotice,
   renderMoveResult,
   samePath,
@@ -53,15 +54,19 @@ export default function (pi: ExtensionAPI) {
     const deadline = Date.now() + 30000;
     for (;;) {
       const logs = await herdrQuiet(["plugin", "log", "list"], 10000);
-      const ran = (logs?.result?.logs ?? []).some(
-        (log: any) =>
+      const ran = (logs?.result?.logs ?? []).some((log: any) => {
+        const completedCheckout = hookCompletionPath(log.stdout);
+        return (
           log.plugin_id === "local.worktree-hooks" &&
           log.event === "worktree.created" &&
           log.status === "succeeded" &&
           typeof log.finished_unix_ms === "number" &&
-          log.finished_unix_ms >= since - 1000,
-      );
-      // The log is global; check that this checkout received the copied files.
+          log.finished_unix_ms >= since - 1000 &&
+          typeof completedCheckout === "string" &&
+          samePath(completedCheckout, checkout)
+        );
+      });
+      // Keep the copied-file check as a secondary sanity check.
       const copied = [".envrc", ".pi/settings.json"].every(
         (relative) => !existsSync(join(repoRoot, relative)) || existsSync(join(checkout, relative)),
       );
@@ -89,8 +94,7 @@ export default function (pi: ExtensionAPI) {
 
   function findTarget(worktrees: Worktree[], branch?: string, path?: string): Worktree | undefined {
     if (path) {
-      const wanted = resolve(path.replace(/^@/, ""));
-      return worktrees.find((worktree) => worktree.path && samePath(worktree.path, wanted));
+      return worktrees.find((worktree) => worktree.path && samePath(worktree.path, path));
     }
     if (branch) return worktrees.find((worktree) => worktree.branch === branch);
     return undefined;
@@ -126,7 +130,6 @@ export default function (pi: ExtensionAPI) {
       if (!oldPaneId) return textResult("HERDR_PANE_ID is missing; cannot hand off.", true);
 
       const cwd = resolve(ctx.cwd);
-      const requestedPath = params.path ? resolve(params.path.replace(/^@/, "")) : undefined;
       try {
         const current = await herdr(["pane", "get", oldPaneId], signal);
         const oldWorkspaceId: string | undefined = current?.result?.pane?.workspace_id;
@@ -134,6 +137,9 @@ export default function (pi: ExtensionAPI) {
           ? await herdr(["workspace", "get", oldWorkspaceId], signal)
           : null;
         const repoRoot: string = oldWorkspace?.result?.workspace?.worktree?.repo_root ?? cwd;
+        const requestedPath = params.path
+          ? resolve(repoRoot, params.path.replace(/^@/, ""))
+          : undefined;
         const listed = await herdr(["worktree", "list", "--cwd", repoRoot], signal);
         const worktrees: Worktree[] = listed?.result?.worktrees ?? [];
         const target = findTarget(worktrees, params.branch, requestedPath);

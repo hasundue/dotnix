@@ -208,10 +208,13 @@ worktree の場所がワークスペースに表示されず，
         新しい checkout で共有 post-start hooks を実行する
     - `.envrc` と `.pi/settings.json` の copy と，
       `.pre-commit-config.yaml` の symlink を確認
-  - [ ] hook の完了 marker に作成した checkout path が含まれ，tool がその
+  - [x] hook の完了 marker に作成した checkout path が含まれ，tool がその
         marker を確認してから Pi を起動する
-  - [ ] 別 checkout の成功 log と既存ファイルだけでは hook 成功と判定しない
-    - target の marker が無い場合は Pi を起動せず，worktree を残して報告する
+    - 生成 script の最終行に marker を出力し，`.pi/settings.json` の copy も確認
+      した
+  - [x] 別 checkout の成功 log と既存ファイルだけでは hook 成功と判定しない
+    - tool mock で別 checkout の marker を返すと error になり，plugin action
+      invoke は実行されなかった
   - [x] フォーク先が非表示 continuation で移動完了を認識し，元の作業を
         続けて再ハンドオフしない
     - scratch transcript に `customType: herdr-worktree-handoff`,
@@ -260,10 +263,12 @@ worktree の場所がワークスペースに表示されず，
   - [x] `agent start` が成功した場合は，focus 後に `.running` job を削除する
     - 生成 script の実 E2E で plugin log succeeded と job file なしを確認．
       source pane・session は削除され，destination で fork した
-- [ ] relative path は repo_root を基準に解決し，既存 worktree の検索と
+- [x] relative path は repo_root を基準に解決し，既存 worktree の検索と
       worktree create の両方で同じ絶対 path を使う
-  - cwd がサブディレクトリでも，削除済みでも repo_root から解決する
-  - 既存 worktree を重複作成せず開ける
+  - tool mock で cwd `/repo/sub`，path `worktrees/foo` が
+    `/repo/worktrees/foo` に解決された
+  - 既存 worktree E2E で worktree 数が増えず，既存 workspace の新規 tab で
+    fork が続いた
 - 旧ペイン ID が flag で渡り，一般 fork には flag が無い
   - [x] ハンドオフ先の起動引数に `herdr-worktree-handoff` があり，
         その値が旧ペイン ID であることを確認する
@@ -296,7 +301,7 @@ worktree の場所がワークスペースに表示されず，
   - [x] `handoff.ts` 単独の print mode では flag が読め，tool は出ない
     - `herdr_worktree_move` は 0 回，`<herdr>` は 1 回．
       `--herdr-worktree-handoff zzzzz:p99` が unknown option にならず exit 0
-  - [ ] `worktree-hooks.nix` は shared hooks と完了 marker だけを持ち，
+  - [x] `worktree-hooks.nix` は shared hooks と完了 marker だけを持ち，
         handoff action と script は無い
     - `nix eval` の manifest は `[[events]]` の `on = "worktree.created"`
       のみ，script の最終行が `{event:"worktree.created",worktree:...}` を

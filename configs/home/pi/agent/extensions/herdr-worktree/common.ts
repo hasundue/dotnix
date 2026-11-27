@@ -80,6 +80,21 @@ export function samePath(left: string, right: string): boolean {
   }
 }
 
+export function hookCompletionPath(stdout: unknown): string | undefined {
+  if (typeof stdout !== "string") return undefined;
+  const lines = stdout.trim().split("\n");
+  const line = lines[lines.length - 1];
+  try {
+    const marker = JSON.parse(line);
+    if (marker.event === "worktree.created" && typeof marker.worktree === "string") {
+      return marker.worktree;
+    }
+  } catch {
+    // Hook commands may write non-JSON output before the completion marker.
+  }
+  return undefined;
+}
+
 export function textResult(text: string, isError = false) {
   return { content: [{ type: "text" as const, text }], details: {}, isError };
 }

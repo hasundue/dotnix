@@ -3,8 +3,8 @@
 ## 対象と結論
 
 - 対象は `main...HEAD` の実装差分と `SPEC.md`．
-- handoff cleanup と queue 失敗報告の修正・再検証は完了した．残る指摘は高 1 件，
-  中 2 件．
+- handoff cleanup・queue 失敗報告・hook 相関・relative path の修正と再検証は
+  完了した．残る指摘は merge 前 cleanup 条件 1 件のみ．
 
 ## 実装・再検証
 
@@ -46,6 +46,20 @@
 - renderer 単体テストで collapsed は空，expanded は queue 文 1 行，color は
   `muted` のみだった．
 
+### hook 相関と relative path
+
+- shared hook の成功後に，checkout path を含む JSON marker を stdout の最終行へ
+  出力するようにした．生成 script の実出力と `.pi/settings.json` の copy を確認
+  した．
+- tool は success log の marker path が作成先と一致することを確認する．
+  tool mock で別 checkout の marker を返すと error になり，plugin action invoke
+  は実行されなかった．
+- relative path を repoRoot 取得後に解決し，検索と create で共有するようにした．
+  tool mock で cwd `/repo/sub`，path `worktrees/foo` が `/repo/worktrees/foo` に
+  解決された．
+- 既存 worktree E2E では worktree 数が増えず，既存 workspace の新規 tab で
+  fork が続いた．
+
 ## 残る指摘
 
 ### 1. 高: `pi-worktrunk` の削除が適用環境に反映しない
@@ -63,26 +77,8 @@ package entry は残る．現在の `~/.pi/agent/settings.json:31` にも
 無効化を満たしていない．
 
 現在の user・primary settings は確認したが，fresh worktree へのコピーは
-再実行していない．新規 worktree で `pi-worktrunk` が無効であることを再検証する．
-
-### 2. 中: hook 成功判定が別 worktree の log を拾う
-
-`configs/home/pi/agent/extensions/herdr-worktree/index.ts:56-66`
-
-plugin log は global で checkout を識別せず，ファイル存在確認も既存ファイルで
-成立する．別の worktree で同時に成功した hook と，tracked な `.envrc` または
-`.pi/settings.json` の存在で，現在の checkout の hook 未実行を見逃せる．
-
-event と checkout を結び付けるか，checkout 固有の完了 marker を確認する
-必要がある．
-
-### 3. 中: relative path の解決基準が SPEC と異なる
-
-`configs/home/pi/agent/extensions/herdr-worktree/index.ts:129`
-
-`params.path` を `repoRoot` 取得前に `ctx.cwd` から解決している．
-SPEC では `repo_root` を解決基準とし，削除済み cwd でも動作する必要がある．
-`repoRoot` 取得後に `resolve(repoRoot, ...)` へ変更する必要がある．
+再実行していない．SPEC の最終条件として，activation と新規 worktree 作成より
+先に環境から削除することを明記した．
 
 ## 検証
 
@@ -93,3 +89,5 @@ SPEC では `repo_root` を解決基準とし，削除済み cwd でも動作す
 - close 失敗と metadata 失敗は mock で再検証した．
 - plugin action の成功・失敗 path と renderer は実 E2E または単体テストで再検証
   した．
+- hook marker・別 checkout log の棄却・relative path は実 E2E または単体テストで
+  再検証した．
