@@ -48,8 +48,9 @@ worktree の場所がワークスペースに表示されず，
   担当する．tool はプラグインへ依頼して先に result を返すことで，
   旧セッションが toolResult を書き込んでから fork させる．
 - tool は `--fork` に初期プロンプトを渡さない．fork 先は flag を見て
-  非表示の continuation message で移動完了を通知し，元の作業を続ける．
-  履歴の最後の移動要求にもとづいて再ハンドオフしないため．
+  非表示の continuation message で移動完了を通知する．その文は，移動要求
+  自体は完了済みで繰り返さず，他に未完了の作業が無ければ何もしないことを
+  明示する．履歴の最後の移動要求を再実行させないため．
 - tool の成功 result は `terminate: true` を返し，移動元で自動の
   follow-up turn を起こさない．
 - tool は既に target worktree の cwd なら何もしない．
