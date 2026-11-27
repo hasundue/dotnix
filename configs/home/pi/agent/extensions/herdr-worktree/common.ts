@@ -8,8 +8,10 @@ import { homedir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
-import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
+import type { ExtensionAPI, ToolRenderers } from "@earendil-works/pi-coding-agent";
+import { Text } from "@earendil-works/pi-tui";
 
+export const MOVE_TOOL = "herdr_worktree_move";
 export const HANDOFF_FLAG = "herdr-worktree-handoff";
 export const HANDOFF_ACTION = "handoff";
 export const HANDOFF_PLUGIN = "local.worktree-handoff";
@@ -35,6 +37,45 @@ export type Placement = {
   tabId?: string;
   rootPaneId?: string;
   worktree?: Worktree;
+};
+
+type MoveDetails = {
+  destination?: string;
+  rootPaneId?: string;
+  oldPaneId?: string;
+  action?: string;
+};
+
+export const renderMoveResult: NonNullable<ToolRenderers["renderResult"]> = (
+  result,
+  { expanded, isPartial },
+  theme,
+  _context,
+) => {
+  if (isPartial) return new Text(theme.fg("warning", "Moving..."), 0, 0);
+
+  const firstText = result.content.find((part) => part.type === "text");
+  const message = firstText?.type === "text" ? firstText.text : "";
+  if (result.isError) {
+    return new Text(theme.fg("error", `${MOVE_TOOL}: ${message.split("\n")[0]}`), 0, 0);
+  }
+
+  let display = theme.fg("toolTitle", MOVE_TOOL);
+  if (expanded) {
+    const details = result.details as MoveDetails | undefined;
+    const fields: Array<[string, string | undefined]> = [
+      ["destination", details?.destination],
+      ["pane", details?.rootPaneId],
+      ["old pane", details?.oldPaneId],
+      ["action", details?.action],
+    ];
+    for (const [label, value] of fields) {
+      if (value !== undefined) {
+        display += `\n${theme.fg("muted", `${label}: `)}${theme.fg("toolOutput", value)}`;
+      }
+    }
+  }
+  return new Text(display, 0, 0);
 };
 
 export const sleep = (ms: number) => new Promise<void>((done) => setTimeout(done, ms));

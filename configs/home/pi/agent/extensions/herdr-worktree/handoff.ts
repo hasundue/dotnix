@@ -12,8 +12,10 @@ import {
   HANDOFF_FLAG,
   HANDOFF_MESSAGE,
   HANDOFF_MESSAGE_TYPE,
+  MOVE_TOOL,
   createHerdr,
   registerHerdrNotice,
+  renderMoveResult,
   sleep,
 } from "./common.ts";
 
@@ -24,6 +26,10 @@ export default function (pi: ExtensionAPI) {
   pi.registerFlag(HANDOFF_FLAG, {
     description: "Old Herdr pane ID for a worktree handoff",
     type: "string",
+  });
+  pi.registerToolRenderer((toolName, next) => {
+    if (toolName !== MOVE_TOOL) return next();
+    return next() ?? { renderResult: renderMoveResult };
   });
   const { herdr, herdrQuiet } = createHerdr(pi);
 

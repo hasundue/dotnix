@@ -282,23 +282,25 @@ worktree の場所がワークスペースに表示されず，
     - `pi-worktree-mwxppuxx` は `open_workspace_id: null` で残存
 
 - tool 結果が移動元と移動先の両方で短く，エージェントには情報を保つ
-  - [ ] TUI で tool 実行後の collapsed row にツール名だけが出て，
-        長い summary や JSON が出ないことを Niri で確認
-    - 従来の wrapper 検証は移動元のみで，移動先は `-e handoff.ts` だけのため
-      renderer が無く JSON fallback が出ていた．共有 renderer と resolver で
-      両方の pane を確認する
-  - [ ] expand すると JSON の波括弧ではなくラベル付きの行で destination と
-        pane ID が読めることを Niri で確認
-    - 移動元・移動先の両 pane で `destination` と `pane` を確認し，
-      波括弧が出ないことを確かめる
+  - [x] TUI で tool 実行後の collapsed row にツール名だけが出て，
+        長い summary や JSON が出ないことを確認
+    - 移動先は real E2E の `w27:p1` で `herdr_worktree_move` のみ
+      （`/tmp/render-dest-collapsed.png`）．移動元は共有 renderer を使う
+      wrapper の `w28:p1` で同じ表示を確認
+  - [x] expand すると JSON の波括弧ではなくラベル付きの行で destination と
+        pane ID が読めることを確認
+    - 両 pane の `herdr pane read` で `destination: /tmp/herdr-e2e-render.e2e-render`
+      と `pane: w27:p1`，wrapper 側は `destination: /tmp/e2e-display-check`
+      と `pane: w99:p1` を確認．波括弧なし（expand 後の Niri スクショは
+      別ウィンドウが前面だったため Herdr の pane 出力を証拠にした）
   - [x] フォーク先 transcript の toolResult が content と structured な
         details を従来どおり持つことを読んで確認
-    - `git diff` は import・型・`renderResult` の追加だけで execute は
-      無変更．前回 E2E の transcript で toolResult の content 148 文字と
-      details の 8 キーを確認
+    - execute は無変更で，renderer は表示のみ．最新 E2E で toolResult の
+      content 141 文字と details の 8 キー，tool 呼び出し 1 回を確認
   - [x] テスト用 workspace を片付け，フォーカスを戻す
-    - `herdr workspace close w23` が成功し，workspace は 3 件，
-      Niri focused window 2 と Herdr workspace `wG` が一致，通知 0 件
+    - `herdr worktree remove --workspace w27` と `herdr workspace close w26/w28`
+      が成功．workspace は 3 件，Niri focused window 2 と Herdr workspace
+      `wG` が一致，通知 0 件
 
 ## 停止条件
 

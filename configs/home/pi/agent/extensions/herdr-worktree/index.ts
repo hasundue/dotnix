@@ -11,15 +11,16 @@ import { homedir } from "node:os";
 import { basename, dirname, join, resolve } from "node:path";
 
 import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
-import { Text } from "@earendil-works/pi-tui";
 import { Type } from "typebox";
 
 import {
   HANDOFF_ACTION,
   HANDOFF_PLUGIN,
+  MOVE_TOOL,
   createHerdr,
   handoffArgs,
   registerHerdrNotice,
+  renderMoveResult,
   samePath,
   sleep,
   textResult,
@@ -35,13 +36,6 @@ const moveSchema = Type.Object({
     Type.String({ description: "Worktree path to open or create; generated when omitted" }),
   ),
 });
-
-type MoveDetails = {
-  destination?: string;
-  rootPaneId?: string;
-  oldPaneId?: string;
-  action?: string;
-};
 
 export default function (pi: ExtensionAPI) {
   if (process.env.HERDR_ENV !== "1") return;
@@ -116,7 +110,7 @@ export default function (pi: ExtensionAPI) {
   }
 
   pi.registerTool({
-    name: "herdr_worktree_move",
+    name: MOVE_TOOL,
     label: "Move worktree",
     description:
       "Move this Pi session between the main checkout and Git worktrees in Herdr. Branch and path are optional; omitted values are generated. Use branch 'main' to return to the main checkout.",
@@ -126,36 +120,7 @@ export default function (pi: ExtensionAPI) {
     ],
     parameters: moveSchema,
 
-    renderResult(result, { expanded, isPartial }, theme, _context) {
-      if (isPartial) return new Text(theme.fg("warning", "Moving..."), 0, 0);
-
-      const firstText = result.content.find((part) => part.type === "text");
-      const message = firstText?.type === "text" ? firstText.text : "";
-      if (result.isError) {
-        return new Text(
-          theme.fg("error", `herdr_worktree_move: ${message.split("\n")[0]}`),
-          0,
-          0,
-        );
-      }
-
-      let display = theme.fg("toolTitle", "herdr_worktree_move");
-      if (expanded) {
-        const details = result.details as MoveDetails | undefined;
-        const fields: Array<[string, string | undefined]> = [
-          ["destination", details?.destination],
-          ["pane", details?.rootPaneId],
-          ["old pane", details?.oldPaneId],
-          ["action", details?.action],
-        ];
-        for (const [label, value] of fields) {
-          if (value !== undefined) {
-            display += `\n${theme.fg("muted", `${label}: `)}${theme.fg("toolOutput", value)}`;
-          }
-        }
-      }
-      return new Text(display, 0, 0);
-    },
+    renderResult: renderMoveResult,
 
     async execute(_toolCallId, params, signal, _onUpdate, ctx) {
       if (!oldPaneId) return textResult("HERDR_PANE_ID is missing; cannot hand off.", true);
