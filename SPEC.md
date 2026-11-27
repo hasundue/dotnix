@@ -57,9 +57,10 @@ worktree の場所がワークスペースに表示されず，
 - `common.ts` の `renderMoveResult` を `index.ts` の tool と `handoff.ts` の
   `registerToolRenderer` resolver の両方で使う．移動先は tool を登録しない
   ため，renderer だけを未登録 tool に渡して compact 表示を保つため．
-  折りたたみ時はツール名のみ（失敗時は error の一行），展開時は組込み
-  ツールと同じく details の JSON をそのまま出さず，destination や pane ID
-  をラベル付きの短い行で整形する．details 自体は structured なまま
+  折りたたみ時の本文は空にする（header のツール名で十分）．失敗時は error
+  の一行を残す．展開時は組込みツールと同じく details の JSON をそのまま
+  出さず，destination や pane ID をラベル付きの短い行で整形する．
+  details 自体は structured なまま
   toolResult に残し，エージェントが使う情報は保持するため．
 - tool は既に target worktree の cwd なら何もしない．
   フォーク先が再ハンドオフしないため．
@@ -282,11 +283,11 @@ worktree の場所がワークスペースに表示されず，
     - `pi-worktree-mwxppuxx` は `open_workspace_id: null` で残存
 
 - tool 結果が移動元と移動先の両方で短く，エージェントには情報を保つ
-  - [x] TUI で tool 実行後の collapsed row にツール名だけが出て，
-        長い summary や JSON が出ないことを確認
-    - 移動先は real E2E の `w27:p1` で `herdr_worktree_move` のみ
-      （`/tmp/render-dest-collapsed.png`）．移動元は共有 renderer を使う
-      wrapper の `w28:p1` で同じ表示を確認
+  - [ ] TUI で tool 実行後の collapsed 本文が空で，header のツール名だけが
+        出ることを確認
+    - 旧表示では header と本文の両方に `herdr_worktree_move` が出ていた
+      （`Pictures/Screenshots/Screenshot from 2026-11-27 16-43-37.png`）．
+      共有 renderer を空本文にして移動元・移動先を再確認する
   - [x] expand すると JSON の波括弧ではなくラベル付きの行で destination と
         pane ID が読めることを確認
     - 両 pane の `herdr pane read` で `destination: /tmp/herdr-e2e-render.e2e-render`
