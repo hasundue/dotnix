@@ -20,6 +20,9 @@ main 復帰時，`oldWorkspaceId` は linked worktree の workspace ID，
 `returningToMain` を job で渡すか，旧 workspace と移動先の worktree 種別・
 path から判定する必要がある．
 
+受け入れ条件の `[x]` は過去の手動 E2E 記録で，今回は再実行していない．
+現在のコードでは cleanup 条件が成立しないため，main 復帰の再検証が必要である．
+
 ### 2. 高: pane close 失敗後も session file を削除する
 
 `configs/home/pi/agent/extensions/herdr-worktree/handoff.ts:129-140`
@@ -52,6 +55,9 @@ package entry は残る．現在の `~/.pi/agent/settings.json:31` にも
 `+worktrunk.ts` を有効化しており，新規 worktree で project settings が
 存在しない場合は hook がコピーする．SPEC の削除条件と，新規 worktree での
 無効化を満たしていない．
+
+現在の user・primary settings は確認したが，fresh worktree へのコピーは
+再実行していない．新規 worktree で `pi-worktrunk` が無効であることを再検証する．
 
 ### 5. 中: hook 成功判定が別 worktree の log を拾う
 
