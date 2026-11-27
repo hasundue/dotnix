@@ -55,8 +55,9 @@ worktree の場所がワークスペースに表示されず，
 - tool の成功 result は `terminate: true` を返し，移動元で自動の
   follow-up turn を起こさない．
 - tool は `renderResult` を登録し，折りたたみ時はツール名だけを表示する
-  （失敗時は error の一行）．展開時は既存の result text と details を
-  読めるようにする．toolResult の content と details は変えず，
+  （失敗時は error の一行）．展開時は組込みツールと同じく details の JSON を
+  そのまま出さず，destination や pane ID をラベル付きの短い行で整形して
+  表示する．details 自体は structured なまま toolResult に残し，
   エージェントが使う情報は保持するため．
 - tool は既に target worktree の cwd なら何もしない．
   フォーク先が再ハンドオフしないため．
@@ -284,9 +285,10 @@ worktree の場所がワークスペースに表示されず，
 - tool 結果が人には短く，エージェントには情報を保つ
   - [ ] TUI で tool 実行後の collapsed row にツール名だけが出て，
         長い summary が出ないことを Niri で確認
-  - [ ] expand すると destination と pane ID が読めることを Niri で確認
-  - [ ] フォーク先 transcript の toolResult が content と details を
-        従来どおり持つことを読んで確認
+  - [ ] expand すると JSON の波括弧ではなくラベル付きの行で destination と
+        pane ID が読めることを Niri で確認
+  - [ ] フォーク先 transcript の toolResult が content と structured な
+        details を従来どおり持つことを読んで確認
 - リファクタ後に scratch repo で E2E を再実行する
   - [x] 移動だけを指示したエージェントが tool を呼び，フォークとハンドオフが
         終わる．実作業はしない
