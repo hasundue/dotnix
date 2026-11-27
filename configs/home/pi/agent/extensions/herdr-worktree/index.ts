@@ -7,13 +7,28 @@
  */
 
 import { existsSync, realpathSync } from "node:fs";
-import { unlink } from "node:fs/promises";
+import { mkdir, unlink, writeFile } from "node:fs/promises";
+import { homedir } from "node:os";
 import { basename, dirname, join, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
 
 import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
 import { Type } from "typebox";
 
 const HANDOFF_FLAG = "herdr-worktree-handoff";
+const HANDOFF_ACTION = "handoff";
+const HANDOFF_PLUGIN = "local.worktree-hooks";
+const EXTENSION_DIR = dirname(fileURLToPath(import.meta.url));
+const DEV_EXTENSIONS = EXTENSION_DIR.includes("dotnix.herdr-pi-workflow")
+  ? [
+      "--no-extensions",
+      "-e",
+      join(homedir(), ".pi/agent/extensions/herdr-agent-state.ts"),
+      "-e",
+      join(EXTENSION_DIR, "index.ts"),
+    ]
+  : [];
+const MOVE_TOOL = "herdr_worktree_move";
 const HANDOFF_MESSAGE_TYPE = "herdr-worktree-handoff";
 const HERDR_NOTICE =
   "You are running inside Herdr, a terminal multiplexer designed for coding agents, which manages workspaces, tabs, panes, and agent status.";
@@ -309,68 +324,30 @@ export default function (pi: ExtensionAPI) {
           throw new Error(`Current pane has no agent session file${leftover()}`);
         }
 
-        const rootBefore = await herdr(["pane", "get", rootPaneId], signal);
-        const rootSessionBefore: unknown = rootBefore?.result?.pane?.agent_session?.value;
-        const forkStarted = async (): Promise<boolean | undefined> => {
-          try {
-            const after = await herdr(["pane", "get", rootPaneId], undefined, 10000);
-            const session: unknown = after?.result?.pane?.agent_session?.value;
-            return (
-              typeof session === "string" &&
-              session !== "" &&
-              session !== sessionFile &&
-              session !== rootSessionBefore
-            );
-          } catch {
-            return undefined;
-          }
-        };
-        const waitForFork = async (ms: number): Promise<boolean | undefined> => {
-          const until = Date.now() + ms;
-          for (;;) {
-            const started = await forkStarted();
-            if (started === true || Date.now() >= until) return started;
-            await sleep(500);
-          }
-        };
-
         const agent = agentName(
           worktree?.branch ?? params.branch ?? (action === "created" ? "pi-worktree" : "existing"),
         );
+        const stateDir = join(homedir(), ".local/state/herdr/plugins", HANDOFF_PLUGIN);
+        await mkdir(stateDir, { recursive: true });
+        const job = {
+          agent,
+          pane: rootPaneId,
+          session: sessionFile,
+          oldPane: oldPaneId,
+          dev: DEV_EXTENSIONS.length > 0,
+          devArgs: DEV_EXTENSIONS,
+        };
+        const jobPath = join(stateDir, `handoff-${Date.now()}-${agent}.json`);
+        await writeFile(jobPath, JSON.stringify(job));
         try {
           await herdr(
-            [
-              "agent",
-              "start",
-              agent,
-              "--kind",
-              "pi",
-              "--pane",
-              rootPaneId,
-              "--timeout",
-              "120000",
-              "--",
-              `--${HANDOFF_FLAG}`,
-              oldPaneId,
-              "-a",
-              "--fork",
-              sessionFile,
-            ],
+            ["plugin", "action", "invoke", HANDOFF_ACTION, "--plugin", HANDOFF_PLUGIN],
             signal,
           );
         } catch (error) {
-          const message = error instanceof Error ? error.message : String(error);
-          const maybeStarted = /timeout|agent_not_ready/i.test(message);
-          const started = await waitForFork(maybeStarted ? 10000 : 2000);
-          if (started !== true) throw new Error(`${message}${leftover()}`);
+          await unlink(jobPath).catch(() => undefined);
+          throw error;
         }
-        const started = await waitForFork(10000);
-        if (started !== true) {
-          throw new Error(
-            `Agent start did not yield a forked session in pane ${rootPaneId}${leftover()}`,
-          );
-        }
-        await herdrQuiet(["agent", "focus", agent], 10000);
 
         const destination = worktreePath(worktree) ?? targetPath ?? "the worktree";
         const summary = returningToMain

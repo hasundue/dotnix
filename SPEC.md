@@ -143,8 +143,9 @@ worktree の場所がワークスペースに表示されず，
 
 - `herdr_worktree_move` tool が自然文の依頼で呼ばれ，
   worktree の作成・フォーク・ハンドオフが終わる
-  - [ ] tool が成功表示（緑）になる
-    - プラグインが fork を遅らせる方式を実装してから Niri スクショで検証する
+  - [x] tool が成功表示（緑）になる
+    - plugin job 方式で `herdr_worktree_move` が緑になり，result が表示
+      されたことを Niri スクショで確認
   - [x] 移動元に余計なターンが無い
     - 移動先 transcript で `USER → herdr_worktree_move → custom continuation
       → 移動先の応答` の順で，tool の直後に移動元の応答が無いことを確認
