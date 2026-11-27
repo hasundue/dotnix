@@ -60,7 +60,8 @@ worktree の場所がワークスペースに表示されず，
   折りたたみ時も展開時も本文にツール名を出さない（header に出るため）．
   失敗時は error の一行を残す．展開時は header の後に 1 行空けて，
   `Moved to <destination> in pane <rootPaneId> from <oldPaneId>.` の一文を
-  出す．JSON やラベル付きの複数行は出さない．details 自体は structured な
+  引数表示と同じ `muted` スタイルで出す．JSON やラベル付きの複数行は出さない．
+  details 自体は structured な
   まま toolResult に残し，エージェントが使う情報は保持するため．
 - tool は既に target worktree の cwd なら何もしない．
   フォーク先が再ハンドオフしないため．
@@ -288,13 +289,10 @@ worktree の場所がワークスペースに表示されず，
     - 移動先 `w2K:p1` と移動元 `w2M:p1` の `herdr pane read` で header の
       `herdr_worktree_move branch=...` のみ（`sentence-dest-collapsed.png`）．
       renderer 単体の実行値も collapsed=""
-  - [x] expand すると JSON やツール名が出ず，header の後の 1 行を空えて
+  - [ ] expand すると JSON やツール名が出ず，header の後の 1 行を空えて
         `Moved to <destination> in pane <rootPaneId> from <oldPaneId>.` の
-        一文が出ることを確認
-    - 移動先は `Moved to /tmp/herdr-e2e-sentence.sentence in pane w2K:p1
-      from w2J:p1.`，移動元は `Moved to /tmp/e2e-display-check in pane
-      w99:p1 from w98:p1.`（`sentence-dest-expanded.png`，
-      `sentence-source-expanded.png`）
+        一文が `branch:` と同じ `muted` スタイルで出ることを確認
+    - 移動元・移動先の両 pane で文面，空行，スタイルを確認する
   - [x] フォーク先 transcript の toolResult が content と structured な
         details を持つことを読んで確認
     - execute は無変更で，renderer は表示のみ．最新 E2E で toolResult の
