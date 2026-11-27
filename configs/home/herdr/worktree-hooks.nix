@@ -48,11 +48,7 @@ let
       pane=$(${jq} -er '.pane' "$job.running")
       session=$(${jq} -er '.session' "$job.running")
       old_pane=$(${jq} -er '.oldPane' "$job.running")
-      if [[ $(${jq} -r '.dev // false' "$job.running") == true ]]; then
-        readarray -t extra < <(${jq} -r '.devArgs[]' "$job.running")
-      else
-        extra=()
-      fi
+      readarray -t extra < <(${jq} -r '.extraArgs // [] | .[]' "$job.running")
       rm -f "$job.running"
       ${herdr} agent start "$agent" --kind pi --pane "$pane" --timeout 120000 -- \
         "''${extra[@]}" --herdr-worktree-handoff "$old_pane" -a --fork "$session" || true

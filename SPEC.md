@@ -66,12 +66,19 @@ worktree の場所がワークスペースに表示されず，
   action は未処理の job を順に読んで `herdr agent start ... --fork` と
   フォーカス移動を実行する．`plugin action invoke` は command の完了を
   待たないため，tool はすぐ result を返せる．
+- herdr-worktree は常に読み込む `index.ts` と，移動先だけが `-e` で
+  読み込む `handoff.ts` に分ける．移動先の後始末はフォーク先だけが持つため．
+- 両方が使う定数，型，Herdr コマンド実行，`<herdr>` の登録は `common.ts`
+  に置いて import する．同じ手順を一箇所に保つため．
+- tool は job JSON に `-e <extension dir>/handoff.ts` を入れ，plugin action
+  は常にその引数を `herdr agent start` に渡す．installed 版の移動先にも
+  handoff entry を読み込ませるため．
 
 ### ハンドオフ
 
-- tool は `herdr-worktree-handoff` の string flag を登録し，フォーク先の
-  起動引数に旧ペイン ID を値として渡す．
-  一般の fork と区別し，Herdr の metadata に依存せず ID を届けるため．
+- tool は `herdr-worktree-handoff` の string flag に旧ペイン ID を値として
+  渡し，flag の登録は `handoff.ts` が行う．flag が必要なのはフォーク先だけ
+  で，2 つの extension が同じ flag を登録すると Pi が衝突を報告するため．
 - `session_start` で flag の値から旧ペイン ID を読み，値が無ければ何もしない．
   一般の fork と通常セッションを巻き込まないため．
 - fork 先は toolResult の修復を行わない．tool が先に完了するため，
@@ -119,10 +126,9 @@ worktree の場所がワークスペースに表示されず，
   `configs/home/pi/agent/extensions/herdr-worktree/index.ts` だけを指定する．
   installed 版との二重登録を避けるため．
 - herdr-worktree のパスは Extension 自身の `import.meta.url` から取り，
-  プラグインの action が起動する Pi にも同じ `-e` を渡す．
-  これは開発用の分岐で，テスト終了後は通常の
-  `herdr agent start ... -- --herdr-worktree-handoff <old_pane_id> -a --fork <session>`
-  に戻す．
+  プラグインの action が起動する Pi には `handoff.ts` の `-e` を渡す．
+  開発中は `--no-extensions` と herdr-agent-state の `-e` も渡し，
+  installed 版では `handoff.ts` だけを渡す．
 - 開発中の反復はこの起動引数を使う．
 
 ## 対象外
@@ -241,6 +247,37 @@ worktree の場所がワークスペースに表示されず，
         ユーザーが `wt remove` を選べる状態になっている
     - `pi-worktree-mwxppuxx` は `open_workspace_id: null` で残存
 
+- herdr-worktree が常時読み込みと移動先限定に分かれている
+  - [x] `index.ts` に tool と `<herdr>` の登録があり，handoff 処理は
+        `handoff.ts` にあることを読んで確認
+    - `index.ts` に tool 登録と `registerHerdrNotice(pi)` のみ，`session_start`
+      と `finishHandoff` は `handoff.ts` にのみ存在
+  - [x] `common.ts` に定数，型，共有ヘルパーがあり，両 entry から
+        import されていることを読んで確認
+    - `common.ts` が `HANDOFF_*`，`Worktree`，`Placement`，`herdr`，
+      `herdrQuiet`，`samePath`，`textResult`，`sleep`，`registerHerdrNotice`，
+      `handoffArgs` を提供し，両 entry が import
+  - [x] `herdr agent start` の job 引数に `handoff.ts` の `-e` が含まれ，
+        plugin script が開発モードに関わらず渡すことを読んで確認
+    - `handoffArgs()` の実行値は
+      `["--no-extensions","-e",.../herdr-agent-state.ts,"-e",.../herdr-worktree/handoff.ts]`
+      で，開発時だけ `--no-extensions` と herdr-agent-state を追加．
+      生成された script は
+      `jq -r '.extraArgs // [] | .[]'` で引数を読み，`--herdr-worktree-handoff`
+      の前に展開する（`nix eval` で確認）
+  - [x] print mode で `HERDR_ENV=1 pi -p --no-extensions -e
+        ~/.pi/agent/extensions/herdr-agent-state.ts -e
+        configs/home/pi/agent/extensions/herdr-worktree/index.ts` を起動し，
+        `herdr_worktree_move` の promptSnippet と `<herdr>` が出る
+    - `<tools>` に `herdr_worktree_move: Move the current work between the
+      main checkout and Git worktrees in Herdr`，`<rules>` に guideline，
+      `<herdr>` に Herdr の告知を確認
+  - [x] 同じく `handoff.ts` を `-e` に指定した print mode では flag が読め，
+        tool の promptSnippet が出ない
+    - `handoff.ts` 単独の system prompt で `herdr_worktree_move` は 0 回，
+      `<herdr>` は 1 回．`--herdr-worktree-handoff zzzzz:p99` が unknown option
+      にならず exit 0．両 entry を同時に読み込んでも flag 衝突は起きず exit 0
+
 ## 停止条件
 
 - `herdr worktree create` が 2 回失敗する，worktree メタデータが返らない，
@@ -251,6 +288,6 @@ worktree の場所がワークスペースに表示されず，
   ペイン ID として読めない場合は，旧ペインを開けたまま報告する．
   flag が無い一般 fork は対象外とする
 - 必要な変更が `configs/home/pi/agent/AGENTS.md`，
-  `configs/home/pi/agent/extensions/herdr-worktree/index.ts`，
-  `configs/home/pi/default.nix`，`.pi/settings.json`，
+  `configs/home/pi/agent/extensions/herdr-worktree/index.ts`，`handoff.ts`，
+  `common.ts`，`configs/home/pi/default.nix`，`.pi/settings.json`，
   `configs/home/herdr/worktree-hooks.nix` の外に及ぶ場合は停止する
