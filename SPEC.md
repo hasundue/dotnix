@@ -58,9 +58,9 @@ worktree の場所がワークスペースに表示されず，
   `registerToolRenderer` resolver の両方で使う．移動先は tool を登録しない
   ため，renderer だけを未登録 tool に渡して compact 表示を保つため．
   折りたたみ時も展開時も本文にツール名を出さない（header に出るため）．
-  失敗時は error の一行を残す．展開時は組込みツールの出力と同じく，
-  header の後に 1 行空けて，インデントなしのラベル付き行で destination や
-  pane ID を整形する．JSON はそのまま出さない．details 自体は structured な
+  失敗時は error の一行を残す．展開時は header の後に 1 行空けて，
+  `Moved to <destination> in pane <rootPaneId> from <oldPaneId>.` の一文を
+  出す．JSON やラベル付きの複数行は出さない．details 自体は structured な
   まま toolResult に残し，エージェントが使う情報は保持するため．
 - tool は既に target worktree の cwd なら何もしない．
   フォーク先が再ハンドオフしないため．
@@ -288,11 +288,10 @@ worktree の場所がワークスペースに表示されず，
     - 移動先 `w2G:p1` と移動元 `w2H:p1` の `herdr pane read` で header の
       `herdr_worktree_move branch=...` のみ（`spacing-dest-collapsed.png`）．
       renderer 単体の実行値も collapsed=""
-  - [x] expand すると JSON の波括弧やツール名が出ず，header の後の 1 行を
-        空けてインデントなしの details が出ることを確認
-    - 両 pane で `branch` の後に空行があり，`destination` / `pane` /
-      `old pane` / `action` がインデントなし（`spacing-dest-expanded.png`，
-      `spacing-source-expanded.png`）
+  - [ ] expand すると JSON やツール名が出ず，header の後の 1 行を空えて
+        `Moved to <destination> in pane <rootPaneId> from <oldPaneId>.` の
+        一文が出ることを確認
+    - 移動元・移動先の両 pane で文面と空行を確認する
   - [x] フォーク先 transcript の toolResult が content と structured な
         details を持つことを読んで確認
     - execute は無変更で，renderer は表示のみ．最新 E2E で toolResult の
