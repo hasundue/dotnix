@@ -37,7 +37,8 @@ worktree の場所がワークスペースに表示されず，
   `branch: "main"` で main checkout へ戻る．
   direction のような追加引数を持たないため，Worktrunk と同じ対称性になる．
 - tool は現在の workspace メタデータから repo_root を取り，
-  移動先の解決と Herdr コマンドの cwd に使う．
+  移動先の解決と Herdr コマンドの cwd に使う．relative path は repo_root を
+  基準に一度だけ解決し，既存 worktree の検索と作成で共有する．
   `wt merge` で worktree が削除された後も cwd が消えているため．
 - tool は `worktree open` / `worktree create` の応答から workspace と
   root pane の ID を得る．worktree 作成時は空の root pane ができるため．
@@ -76,9 +77,11 @@ worktree の場所がワークスペースに表示されず，
   workspace に含まれる worktree metadata を使う．
 - `local.worktree-hooks` プラグインは `worktree.created` で
   共有 post-start hooks を実行する．新しい checkout でも既存の初期化を
-  欠かさないため．`worktree-hooks.nix` は main の純粋な hook だけの
-  状態に戻す．Worktrunk の共通初期化と Pi 固有の引き継ぎは別の plugin に
-  分けるのが妥当だったため．
+  欠かさないため．`worktree-hooks.nix` は shared hooks と構造化された完了
+  marker だけを持ち，Pi 固有の引き継ぎは別の plugin に分ける．
+  marker は全 hook の成功後に stdout の最終行として JSON を出力し，
+  tool は plugin log の marker に含まれる worktree path が作成先と
+  一致することを確認する．timestamp とファイル存在だけでは判定しない．
 - `configs/home/herdr/worktree-handoff.nix` が `local.worktree-handoff`
   プラグインを登録し，handoff action と job 実行 script を持つ．
   tool はその plugin state dir に job JSON を書いてから action を invoke し，
@@ -167,7 +170,7 @@ worktree の場所がワークスペースに表示されず，
 
 - 設計に挙げた変更以外の Pi 拡張，Herdr プラグイン，worktree hooks
   （plugin job 方式のため `configs/home/herdr/worktree-handoff.nix` の追加と
-  `configs/home/herdr/worktree-hooks.nix` の main への復元は設計範囲に含める）
+  `configs/home/herdr/worktree-hooks.nix` の完了 marker は設計範囲に含める）
 - keel と sail のスキル文書の変更
 - `configs/home/pi/agent/extensions/session-namer.ts` の変更と，
   セッション名・ボーダーラベルの検証
@@ -205,6 +208,10 @@ worktree の場所がワークスペースに表示されず，
         新しい checkout で共有 post-start hooks を実行する
     - `.envrc` と `.pi/settings.json` の copy と，
       `.pre-commit-config.yaml` の symlink を確認
+  - [ ] hook の完了 marker に作成した checkout path が含まれ，tool がその
+        marker を確認してから Pi を起動する
+  - [ ] 別 checkout の成功 log と既存ファイルだけでは hook 成功と判定しない
+    - target の marker が無い場合は Pi を起動せず，worktree を残して報告する
   - [x] フォーク先が非表示 continuation で移動完了を認識し，元の作業を
         続けて再ハンドオフしない
     - scratch transcript に `customType: herdr-worktree-handoff`,
@@ -253,6 +260,10 @@ worktree の場所がワークスペースに表示されず，
   - [x] `agent start` が成功した場合は，focus 後に `.running` job を削除する
     - 生成 script の実 E2E で plugin log succeeded と job file なしを確認．
       source pane・session は削除され，destination で fork した
+- [ ] relative path は repo_root を基準に解決し，既存 worktree の検索と
+      worktree create の両方で同じ絶対 path を使う
+  - cwd がサブディレクトリでも，削除済みでも repo_root から解決する
+  - 既存 worktree を重複作成せず開ける
 - 旧ペイン ID が flag で渡り，一般 fork には flag が無い
   - [x] ハンドオフ先の起動引数に `herdr-worktree-handoff` があり，
         その値が旧ペイン ID であることを確認する
@@ -285,11 +296,11 @@ worktree の場所がワークスペースに表示されず，
   - [x] `handoff.ts` 単独の print mode では flag が読め，tool は出ない
     - `herdr_worktree_move` は 0 回，`<herdr>` は 1 回．
       `--herdr-worktree-handoff zzzzz:p99` が unknown option にならず exit 0
-  - [x] `worktree-hooks.nix` が main と一致し，handoff action と script が
-        無いことを読んで確認
-    - `git diff --exit-code main -- configs/home/herdr/worktree-hooks.nix` は
-      差分なし．`nix eval` の manifest は `[[events]]` の
-      `on = "worktree.created"` のみ
+  - [ ] `worktree-hooks.nix` は shared hooks と完了 marker だけを持ち，
+        handoff action と script は無い
+    - `nix eval` の manifest は `[[events]]` の `on = "worktree.created"`
+      のみ，script の最終行が `{event:"worktree.created",worktree:...}` を
+      出力する
   - [x] `worktree-handoff.nix` が plugin id `local.worktree-handoff` を宣言し，
         `configs/home/herdr/default.nix` が import することを `nix eval` で確認
     - manifest は `id = "local.worktree-handoff"` と `[[actions]]` の
@@ -353,6 +364,15 @@ worktree の場所がワークスペースに表示されず，
     - `herdr worktree remove --workspace w2P` と
       `herdr workspace close w2N/w2Q` が成功．workspace は 3 件，
       Niri focused window 2 と Herdr workspace `wG` が一致，通知 0 件
+- [ ] merge プロセス開始前の最終確認として，activation と新規 worktree 作成の
+      前に環境から `pi-worktrunk` を削除する
+  - `pi remove npm:pi-worktrunk` で user settings から削除する
+  - primary checkout で `pi remove npm:pi-worktrunk -l` を実行する
+  - 次の settings に `npm:pi-worktrunk` が残らない
+    - `~/.pi/agent/settings.json`
+    - `~/dotnix/.pi/settings.json`
+    - 現在の worktree の `.pi/settings.json`
+  - cleanup 完了前に `home-switch` と新規 `herdr worktree create` を実行しない
 
 ## 停止条件
 
