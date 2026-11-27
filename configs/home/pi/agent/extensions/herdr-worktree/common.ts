@@ -72,10 +72,10 @@ export const renderMoveResult: NonNullable<ToolRenderers["renderResult"]> = (
   const lines: string[] = [];
   for (const [label, value] of fields) {
     if (value !== undefined) {
-      lines.push(`  ${theme.fg("muted", `${label}: `)}${theme.fg("toolOutput", value)}`);
+      lines.push(`${theme.fg("muted", `${label}: `)}${theme.fg("toolOutput", value)}`);
     }
   }
-  return new Text(lines.join("\n"), 0, 0);
+  return new Text(`\n${lines.join("\n")}`, 0, 0);
 };
 
 export const sleep = (ms: number) => new Promise<void>((done) => setTimeout(done, ms));
