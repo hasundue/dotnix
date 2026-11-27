@@ -57,11 +57,11 @@ worktree の場所がワークスペースに表示されず，
 - `common.ts` の `renderMoveResult` を `index.ts` の tool と `handoff.ts` の
   `registerToolRenderer` resolver の両方で使う．移動先は tool を登録しない
   ため，renderer だけを未登録 tool に渡して compact 表示を保つため．
-  折りたたみ時の本文は空にする（header のツール名で十分）．失敗時は error
-  の一行を残す．展開時は組込みツールと同じく details の JSON をそのまま
-  出さず，destination や pane ID をラベル付きの短い行で整形する．
-  details 自体は structured なまま
-  toolResult に残し，エージェントが使う情報は保持するため．
+  折りたたみ時も展開時も本文にツール名を出さない（header に出るため）．
+  失敗時は error の一行を残す．展開時は組込みツールと同じく details の
+  JSON をそのまま出さず，destination や pane ID を header の args と同じ
+  2 スペースで揃えたラベル付き行で整形する．details 自体は structured な
+  まま toolResult に残し，エージェントが使う情報は保持するため．
 - tool は既に target worktree の cwd なら何もしない．
   フォーク先が再ハンドオフしないため．
 - main 復帰時に旧 worktree workspace を閉じる処理は fork 先に委ねる．
@@ -288,11 +288,10 @@ worktree の場所がワークスペースに表示されず，
     - 移動先 `w2A:p1` と移動元 `w2B:p1` の `herdr pane read` で header の
       `herdr_worktree_move branch=...` のみ．本文の二重表示はなし
       （`/tmp/empty-dest-collapsed.png`）．renderer 単体の実行値も collapsed=""
-  - [x] expand すると JSON の波括弧ではなくラベル付きの行で destination と
-        pane ID が読めることを確認
-    - 移動先は `destination: /tmp/herdr-e2e-empty.empty-body` と
-      `pane: w2A:p1`，移動元は `destination: /tmp/e2e-display-check` と
-      `pane: w99:p1`．波括弧なし
+  - [ ] expand すると JSON の波括弧やツール名が出ず，destination と pane ID
+        が header の args と同じ 2 スペースで揃うことを確認
+    - 旧表示では本文先頭にツール名があり，`branch` の 2 スペースと他行の
+      インデントが不一致だった．移動元・移動先の両 pane で再確認する
   - [x] フォーク先 transcript の toolResult が content と structured な
         details を従来どおり持つことを読んで確認
     - execute は無変更で，renderer は表示のみ．最新 E2E で toolResult の
