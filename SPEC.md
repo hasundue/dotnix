@@ -277,6 +277,27 @@ worktree の場所がワークスペースに表示されず，
     - `handoff.ts` 単独の system prompt で `herdr_worktree_move` は 0 回，
       `<herdr>` は 1 回．`--herdr-worktree-handoff zzzzz:p99` が unknown option
       にならず exit 0．両 entry を同時に読み込んでも flag 衝突は起きず exit 0
+- リファクタ後に scratch repo で E2E を再実行する
+  - [x] 移動だけを指示したエージェントが tool を呼び，フォークとハンドオフが
+        終わる．実作業はしない
+    - `/tmp/herdr-e2e-split` の `w21:p1` に移動だけを指示する prompt を送り，
+      `herdr_worktree_move` の呼び出しは 1 回だけ．toolResult は
+      `isError: false` で `rootPaneId: w22:p1`，`oldPaneId: w21:p1`
+      （`2026-11-27T04:58:01.882Z`）
+    - フォーク先 transcript は `USER → toolResult → custom_message
+      (herdr-worktree-handoff, display: false, 04:58:02.864Z) → 応答` の順で，
+      `The worktree move to branch e2e-split-refactor is done.` のみ．
+      追加の tool 呼び出しは 0 回
+    - scratch の両 repo は `git status --short` が空で，ファイル変更なし
+  - [x] 移動先 pane にフォーカスが移り，旧ペインと旧 session file が消える
+    - Niri の focused window 2 のタイトルが 13:58:05.871 に
+      `x1carbon: herdr-e2e-split.e2e-split-refactor` へ変化．Herdr では
+      `w22:p1` が `focused: true` で cwd が移動先．旧 `w21:p1` は消え，
+      旧 session file は存在せず，main checkout には空 pane `w21:p2` が残る
+  - [x] テスト用の workspace と worktree を片付け，フォーカスを戻す
+    - `herdr worktree remove --workspace w22` が `forced: false` で成功し，
+      `herdr workspace close w21` が成功．workspace は元の 3 件に戻り，
+      Niri focused window 2 と Herdr workspace `wG` が一致．通知は 0 件
 
 ## 停止条件
 
