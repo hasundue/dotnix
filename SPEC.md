@@ -54,11 +54,13 @@ worktree の場所がワークスペースに表示されず，
   確認のための追加コマンドは安全側の挙動として許容する．
 - tool の成功 result は `terminate: true` を返し，移動元で自動の
   follow-up turn を起こさない．
-- tool は `renderResult` を登録し，折りたたみ時はツール名だけを表示する
-  （失敗時は error の一行）．展開時は組込みツールと同じく details の JSON を
-  そのまま出さず，destination や pane ID をラベル付きの短い行で整形して
-  表示する．details 自体は structured なまま toolResult に残し，
-  エージェントが使う情報は保持するため．
+- `common.ts` の `renderMoveResult` を `index.ts` の tool と `handoff.ts` の
+  `registerToolRenderer` resolver の両方で使う．移動先は tool を登録しない
+  ため，renderer だけを未登録 tool に渡して compact 表示を保つため．
+  折りたたみ時はツール名のみ（失敗時は error の一行），展開時は組込み
+  ツールと同じく details の JSON をそのまま出さず，destination や pane ID
+  をラベル付きの短い行で整形する．details 自体は structured なまま
+  toolResult に残し，エージェントが使う情報は保持するため．
 - tool は既に target worktree の cwd なら何もしない．
   フォーク先が再ハンドオフしないため．
 - main 復帰時に旧 worktree workspace を閉じる処理は fork 先に委ねる．
@@ -279,17 +281,16 @@ worktree の場所がワークスペースに表示されず，
         ユーザーが `wt remove` を選べる状態になっている
     - `pi-worktree-mwxppuxx` は `open_workspace_id: null` で残存
 
-- tool 結果が人には短く，エージェントには情報を保つ
-  - [x] TUI で tool 実行後の collapsed row にツール名だけが出て，
-        長い summary が出ないことを Niri で確認
-    - 実物の `renderResult` だけを流用し `execute` を fake にした wrapper で
-      確認．`/tmp/display-collapsed.png` の result row は
-      `herdr_worktree_move` のみで，created summary は出ていない
-  - [x] expand すると JSON の波括弧ではなくラベル付きの行で destination と
+- tool 結果が移動元と移動先の両方で短く，エージェントには情報を保つ
+  - [ ] TUI で tool 実行後の collapsed row にツール名だけが出て，
+        長い summary や JSON が出ないことを Niri で確認
+    - 従来の wrapper 検証は移動元のみで，移動先は `-e handoff.ts` だけのため
+      renderer が無く JSON fallback が出ていた．共有 renderer と resolver で
+      両方の pane を確認する
+  - [ ] expand すると JSON の波括弧ではなくラベル付きの行で destination と
         pane ID が読めることを Niri で確認
-    - `/tmp/display-expanded.png` に `destination: /tmp/e2e-display-check`，
-      `pane: w99:p1`，`old pane: w98:p1`，`action: created` と表示され，
-      `Tool output: expanded` が状態を示す．波括弧はなし
+    - 移動元・移動先の両 pane で `destination` と `pane` を確認し，
+      波括弧が出ないことを確かめる
   - [x] フォーク先 transcript の toolResult が content と structured な
         details を従来どおり持つことを読んで確認
     - `git diff` は import・型・`renderResult` の追加だけで execute は
