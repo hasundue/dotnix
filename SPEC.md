@@ -67,6 +67,8 @@ worktree の場所がワークスペースに表示されず，
   フォーク先が再ハンドオフしないため．
 - main 復帰時に旧 worktree workspace を閉じる処理は fork 先に委ねる．
   tool が先に閉じると fork 先が旧 session file の場所を読めなくなるため．
+  main 復帰の判定には job や handoff flag を増やさず，移動元と移動先の
+  workspace に含まれる worktree metadata を使う．
 - `local.worktree-hooks` プラグインは `worktree.created` で
   共有 post-start hooks を実行する．新しい checkout でも既存の初期化を
   欠かさないため．`worktree-hooks.nix` は main の純粋な hook だけの
@@ -99,15 +101,24 @@ worktree の場所がワークスペースに表示されず，
   ユーザーが移動先の画面に移れるようにするため．
 - 旧ペインがまだある間に旧 session file の場所を読み，
   対象エージェントの起動が落ち着くまで待つ．
-- 旧ペインを `herdr pane close` で閉じ，その後で旧 session file を
-  削除する．セッションファイルが乱立しないようにするため．
+- 旧ペインを `herdr pane close` で閉じ，成功した場合だけ旧 session file を
+  削除する．セッションファイルが乱立しないようにするため．失敗時は
+  session file と workspace を残し，警告を報告する．
 - 旧 workspace が main checkout で，旧ペインがその workspace の最後の
   pane 場合，先に空の tab を作る．worktree group の最後の pane を閉じる
   と Herdr が確認を要求するため．
 - 旧 workspace に別の pane が残っている場合は tab を作らず，旧ペインだけ
   を閉じる．
-- main 復帰では旧ペインを閉じた後，旧 worktree workspace を
-  `herdr workspace close` で閉じる．checkout と branch は残す．
+- main 復帰かどうかは workspace ID の比較ではなく，移動元 workspace が
+  linked worktree で，移動先 workspace が同じ repo root の main checkout
+  であることで判定する．
+- main 復帰では旧ペインを閉じた後，旧 worktree workspace が残っていれば
+  `herdr workspace close` で閉じる．最後の pane close 時に Herdr が workspace
+  を自動 close していた場合は skip する．checkout と branch は残す．
+- main 復帰で旧 workspace に別 pane が残っている場合も，明示的な
+  workspace close で workspace と残った pane を閉じる．実行中のユーザー
+  pane を閉じる前の確認 UI は対象外とする．
+- main から worktree への移動では main workspace を閉じない．
 - `configs/home/pi/agent/AGENTS.md` には worktree ツールの指示を置かない．
   環境固有の手順を tool に集約するため．
 
@@ -283,6 +294,15 @@ worktree の場所がワークスペースに表示されず，
   - [x] `herdr worktree list` には worktree が残り，
         ユーザーが `wt remove` を選べる状態になっている
     - `pi-worktree-mwxppuxx` は `open_workspace_id: null` で残存
+  - [ ] 旧 worktree workspace に別 pane が残っている状態で main に戻ると，
+        source pane と旧 session file が削除され，旧 workspace と残った pane
+        も閉じて，main の新規 tab で fork が続く
+    - `herdr workspace list` に旧 workspace が無く，`herdr worktree list` の
+      linked worktree は `open_workspace_id: null` で残る
+  - [ ] source pane の close が失敗した場合は，旧 pane・旧 session file・
+        旧 workspace を残し，警告を報告する
+    - close 失敗後に session file が削除されず，後続の workspace close も
+      実行されない
 
 - tool 結果が移動元と移動先の両方で短く，エージェントには情報を保つ
   - [x] TUI で tool 実行後の collapsed 本文が空で，header のツール名だけが
@@ -313,6 +333,8 @@ worktree の場所がワークスペースに表示されず，
 - 新しいセッションの開始時にハンドオフ flag の値が空，または既存の
   ペイン ID として読めない場合は，旧ペインを開けたまま報告する．
   flag が無い一般 fork は対象外とする
+- main 復帰の判定に必要な移動先 worktree metadata を取得できない場合は，
+  旧 workspace を閉じずに報告する．
 - 必要な変更が `configs/home/pi/agent/AGENTS.md`，
   `configs/home/pi/agent/extensions/herdr-worktree/index.ts`，`handoff.ts`，
   `common.ts`，`configs/home/pi/default.nix`，`.pi/settings.json`，
