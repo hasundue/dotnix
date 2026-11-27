@@ -65,8 +65,13 @@ worktree の場所がワークスペースに表示されず，
   一般の fork と通常セッションを巻き込まないため．
 - 旧ペインがまだある間に `herdr pane get` で旧 session file の場所を読み，
   対象エージェントの起動が落ち着くまで待つ．
-- 旧ペインを必ず `herdr pane close` で閉じ，その後で旧 session file を
+- 旧ペインを `herdr pane close` で閉じ，その後で旧 session file を
   削除する．セッションファイルが乱立しないようにするため．
+- 旧 workspace が main checkout で，旧ペインがその workspace の最後の
+  pane 場合，先に空の tab を作る．worktree group の最後の pane を閉じる
+  と Herdr が確認を要求するため．
+- 旧 workspace に別の pane が残っている場合は tab を作らず，旧ペインだけ
+  を閉じる．
 - main 復帰では旧ペインを閉じた後，旧 worktree workspace を
   `herdr workspace close` で閉じる．checkout と branch は残す．
 - `configs/home/pi/agent/AGENTS.md` には worktree ツールの指示を置かない．
@@ -143,6 +148,10 @@ worktree の場所がワークスペースに表示されず，
     - 旧ペイン `w1A:p1` が消え，別ペイン `w1A:p2` は残った
   - [x] 旧 session file が削除され，`herdr agent list` に旧セッションが残らない
     - `w1A:p1` の `.jsonl` は数秒後に存在せず，`herdr agent list` からも消えた
+  - [ ] main checkout の最後の pane から移動すると，空 tab が作られ，
+        旧 pane と旧 session file が消える
+  - [ ] main checkout に別 pane が残っている場合は空 tab を作らず，
+        旧 pane と旧 session file だけが消える
 - main 復帰時は workspace に新しい tab が作られ，その root pane で fork が
   起動する
   - [x] 既存 root pane が agent に占有されていても `agent_pane_busy` と
