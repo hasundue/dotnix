@@ -134,17 +134,21 @@ worktree の場所がワークスペースに表示されず，
         新しい checkout で共有 post-start hooks を実行する
     - `.envrc` と `.pi/settings.json` の copy と，
       `.pre-commit-config.yaml` の symlink を確認
-  - [ ] フォーク先が非表示 continuation で移動完了を認識し，元の作業を
+  - [x] フォーク先が非表示 continuation で移動完了を認識し，元の作業を
         続けて再ハンドオフしない
+    - scratch repo の transcript に `customType: herdr-worktree-handoff`,
+      `display: false` の message が記録され，フォーク先は「移動が完了しました」
+      と応答．フォーク先の `herdr_worktree_move` 呼び出しは 0 回
   - [x] 旧ペインがチャット指示なしに閉じる
-    - 旧ペイン `wG:pP` は `pane_not_found` で，チャット指示は出していない
-  - [ ] 旧 session file が削除され，`herdr agent list` に旧セッションが残らない
+    - 旧ペイン `w1A:p1` が消え，別ペイン `w1A:p2` は残った
+  - [x] 旧 session file が削除され，`herdr agent list` に旧セッションが残らない
+    - `w1A:p1` の `.jsonl` は数秒後に存在せず，`herdr agent list` からも消えた
 - main 復帰時は workspace に新しい tab が作られ，その root pane で fork が
   起動する
   - [x] 既存 root pane が agent に占有されていても `agent_pane_busy` と
         ならず，新しい tab の root pane でセッションが続くことを確認する
-    - scratch repo で `w16:p1` を agent が占有した状態で main 復帰し，
-      `w16:t2` / `w16:p3` でセッションが継続．旧 workspace `w17` は消えた
+    - `w1A:t1` を agent が占有した状態で main 復帰し，`w1A:t2` / `w1A:p4`
+      でセッションが継続．旧 workspace `w1C` は消えた
 - tool は既存 worktree を重複なく開き，フォーク先では再ハンドオフしない
   - [x] `herdr worktree create --branch existing-check --base main --no-focus`
         で worktree を用意した後，Pi に
@@ -156,6 +160,7 @@ worktree の場所がワークスペースに表示されず，
   - [x] 同じフォーク先の transcript を読み，`herdr_worktree_move` が
         1 回だけ呼ばれていることを確認する
     - 旧セッションで 1 回実行し，フォーク先では新規呼び出しなし
+      （`w1B:p1` の transcript で確認）
 - 旧ペイン ID が flag で渡り，一般 fork には flag が無い
   - [x] ハンドオフ先の起動引数に `herdr-worktree-handoff` があり，
         その値が旧ペイン ID であることを確認する
@@ -190,11 +195,11 @@ worktree の場所がワークスペースに表示されず，
         `herdr_worktree_move` が `branch: "main"` で呼ばれ，
         main workspace に作った新しい tab の root pane でセッションが続き，
         旧 worktree workspace が `herdr workspace list` から消える
-    - `wK:p1` で cwd `/home/hasundue/dotnix` のフォークが起動し，`wZ` は消えた
-      のは旧設計の検証で，新設計では再検証が必要
+    - `w1A:t2` / `w1A:p4` で cwd `/tmp/herdr-handoff-final` のフォークが
+      起動し，旧 workspace `w1C` は消えた
   - [x] `herdr worktree list` には worktree が残り，
         ユーザーが `wt remove` を選べる状態になっている
-    - `return-check3` は `open_workspace_id: null` で残存
+    - `pi-worktree-mwxppuxx` は `open_workspace_id: null` で残存
 
 ## 停止条件
 
