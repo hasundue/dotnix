@@ -43,7 +43,6 @@ type MoveDetails = {
   destination?: string;
   rootPaneId?: string;
   oldPaneId?: string;
-  action?: string;
 };
 
 export const renderMoveResult: NonNullable<ToolRenderers["renderResult"]> = (
@@ -63,19 +62,10 @@ export const renderMoveResult: NonNullable<ToolRenderers["renderResult"]> = (
   if (!expanded) return new Text("", 0, 0);
 
   const details = result.details as MoveDetails | undefined;
-  const fields: Array<[string, string | undefined]> = [
-    ["destination", details?.destination],
-    ["pane", details?.rootPaneId],
-    ["old pane", details?.oldPaneId],
-    ["action", details?.action],
-  ];
-  const lines: string[] = [];
-  for (const [label, value] of fields) {
-    if (value !== undefined) {
-      lines.push(`${theme.fg("muted", `${label}: `)}${theme.fg("toolOutput", value)}`);
-    }
-  }
-  return new Text(`\n${lines.join("\n")}`, 0, 0);
+  const destination = details?.destination ?? "the worktree";
+  const pane = details?.rootPaneId ?? "unknown";
+  const from = details?.oldPaneId ?? "unknown";
+  return new Text(`\nMoved to ${destination} in pane ${pane} from ${from}.`, 0, 0);
 };
 
 export const sleep = (ms: number) => new Promise<void>((done) => setTimeout(done, ms));
