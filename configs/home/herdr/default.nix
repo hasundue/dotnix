@@ -16,6 +16,7 @@
       theme.name = "kanagawa";
       # Send agent state notifications through the outer terminal.
       ui.toast.delivery = "terminal";
+      experimental.pane_history = true;
     };
   };
 
