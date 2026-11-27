@@ -32,6 +32,9 @@ let
     cd "$WT_WORKTREE"
 
     ${lib.concatStringsSep "\n\n" hooks}
+
+    ${jq} -nc --arg worktree "$WT_WORKTREE" \
+      '{event:"worktree.created",worktree:$worktree}'
   '';
 
   manifest = ''
