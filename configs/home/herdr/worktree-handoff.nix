@@ -12,8 +12,8 @@ let
   herdr = lib.getExe pkgs.herdr;
 
   # The tool writes one JSON file per handoff into this plugin's state dir.
-  # The action consumes jobs in filename order and removes each one before
-  # starting the forked session, so a delayed invoke cannot replay a move.
+  # The action consumes jobs in filename order and keeps each job as .running
+  # until agent start succeeds. Failed jobs become .failed and are not replayed.
   handoffScript = ''
     set -euo pipefail
 
@@ -26,10 +26,23 @@ let
       session=$(${jq} -er '.session' "$job.running")
       old_pane=$(${jq} -er '.oldPane' "$job.running")
       readarray -t extra < <(${jq} -r '.extraArgs // [] | .[]' "$job.running")
-      rm -f "$job.running"
-      ${herdr} agent start "$agent" --kind pi --pane "$pane" --timeout 120000 -- \
-        "''${extra[@]}" --herdr-worktree-handoff "$old_pane" -a --fork "$session" || true
-      ${herdr} agent focus "$agent" || true
+      if output=$(${herdr} agent start "$agent" --kind pi --pane "$pane" --timeout 120000 -- \
+        "''${extra[@]}" --herdr-worktree-handoff "$old_pane" -a --fork "$session" 2>&1); then
+        if ! focus_output=$(${herdr} agent focus "$agent" 2>&1); then
+          ${herdr} notification show "Worktree handoff focus failed" \
+            --body "$focus_output" || true
+        fi
+        rm -f "$job.running"
+      else
+        status=$?
+        printf '%s\n' "$output" > "$job.error"
+        mv "$job.running" "$job.failed"
+        ${herdr} notification show "Worktree handoff failed" \
+          --body "Could not start $agent in $pane: $output" || true
+        ${herdr} workspace focus "''${old_pane%%:*}" || true
+        printf '%s\n' "$output" >&2
+        exit "$status"
+      fi
     done
   '';
 

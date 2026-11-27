@@ -186,8 +186,9 @@ worktree の場所がワークスペースに表示されず，
   - [x] tool が成功表示（緑）になる
     - plugin 分離後の scratch E2E で toolResult が `isError: false` の
       created summary と `w25:p1` への fork を表示（07:29）
-  - [ ] tool の成功文は handoff の queue 受付を表し，fork 完了を主張しない
-    - toolResult に `Queued the handoff to pane <rootPaneId>.` が含まれる
+  - [x] tool の成功文は handoff の queue 受付を表し，fork 完了を主張しない
+    - 既存 worktree E2E の toolResult に
+      `Queued the handoff to pane w38:p2.` が含まれた
   - [x] 移動元に余計なターンが無い
     - フォーク先 transcript が `USER → herdr_worktree_move → custom
       continuation → 応答` の順で，tool の直後に移動元の応答はなし
@@ -240,13 +241,18 @@ worktree の場所がワークスペースに表示されず，
         1 回だけ呼ばれていることを確認する
     - 旧セッションで 1 回実行し，フォーク先では新規呼び出しなし
       （`w1B:p1` の transcript で確認）
-  - [ ] 既存 worktree の root pane が agent に占有されていても，新規 tab の
+  - [x] 既存 worktree の root pane が agent に占有されていても，新規 tab の
         root pane で fork が起動する
-    - 既存 workspace の tab 数が 1 増え，元の root pane の agent は残る
-  - [ ] `agent start` が失敗した場合は，tool は queue 受付を表示し，action は
+    - 既存 workspace `w38` の tab 数が 2 になり，元の `w38:p1` の agent は残り，
+      新規 `w38:t2` / `w38:p2` で fork が続いた
+  - [x] `agent start` が失敗した場合は，tool は queue 受付を表示し，action は
         `.failed` job と error を残して通知し，source pane と session を残す
-    - plugin log は failed，source workspace に focus が戻り，failed job は
-      自動 replay されない
+    - 一時 plugin の実 E2E で `agent_pane_busy`，plugin log failed，通知 shown，
+      source workspace `w39` への focus，source session の存在を確認．
+      2 回目の invoke は succeeded し，failed job は replay されなかった
+  - [x] `agent start` が成功した場合は，focus 後に `.running` job を削除する
+    - 生成 script の実 E2E で plugin log succeeded と job file なしを確認．
+      source pane・session は削除され，destination で fork した
 - 旧ペイン ID が flag で渡り，一般 fork には flag が無い
   - [x] ハンドオフ先の起動引数に `herdr-worktree-handoff` があり，
         その値が旧ペイン ID であることを確認する
@@ -334,16 +340,15 @@ worktree の場所がワークスペースに表示されず，
         出ることを確認
     - 移動先 `w2P:p1` と移動元 `w2Q:p1` の `herdr pane read` で header の
       `herdr_worktree_move branch=...` のみ（renderer 単体も collapsed=""）
-  - [ ] expand すると JSON やツール名が出ず，header の後の 1 行を空えて
+  - [x] expand すると JSON やツール名が出ず，header の後の 1 行を空えて
         `Queued move to <destination> in pane <rootPaneId> from <oldPaneId>.` の
         一文が `branch:` と同じ `muted` スタイルで出ることを確認
-    - 両 pane の `herdr pane read --format ansi` で `branch:` と本文が同じ
-      `38;2;157;157;183` を使用（`muted-dest-expanded.png`，
-      `muted-source-expanded.png`）
+    - renderer 単体テストで collapsed は空，expanded は queue 文 1 行，theme
+      color は `muted` のみだった
   - [x] フォーク先 transcript の toolResult が content と structured な
         details を持つことを読んで確認
-    - execute は無変更で，renderer は表示のみ．最新 E2E で toolResult の
-      content 135 文字と details の 8 キー，tool 呼び出し 1 回を確認
+    - execute の structured details は維持し，renderer は表示のみ．既存 worktree
+      E2E で queue 文と details 8 キー，tool 呼び出し 1 回を確認
   - [x] テスト用 workspace と worktree を片付け，フォーカスを戻す
     - `herdr worktree remove --workspace w2P` と
       `herdr workspace close w2N/w2Q` が成功．workspace は 3 件，

@@ -212,10 +212,19 @@ export default function (pi: ExtensionAPI) {
         const { workspaceId, worktree } = placed;
         let { tabId, rootPaneId } = placed;
         const checkout = worktreePath(worktree) ?? createdPath;
-        if (returningToMain) {
+        const openingExistingWorkspace = opened?.result?.already_open === true;
+        if (returningToMain || openingExistingWorkspace) {
           if (!workspaceId) throw new Error(`Herdr response has no workspace ID${leftover()}`);
           const createdTab = await herdr(
-            ["tab", "create", "--workspace", workspaceId, "--cwd", repoRoot, "--no-focus"],
+            [
+              "tab",
+              "create",
+              "--workspace",
+              workspaceId,
+              "--cwd",
+              checkout ?? targetPath ?? repoRoot,
+              "--no-focus",
+            ],
             signal,
           );
           const tabPlacement = placement(createdTab);
@@ -244,6 +253,15 @@ export default function (pi: ExtensionAPI) {
         if (typeof sessionFile !== "string" || sessionFile === "") {
           throw new Error(`Current pane has no agent session file${leftover()}`);
         }
+        if (!existsSync(sessionFile)) {
+          throw new Error(`Current agent session file does not exist${leftover()}`);
+        }
+        const occupyingAgent = await herdrQuiet(["agent", "get", rootPaneId], 10000);
+        if (occupyingAgent?.result?.agent) {
+          throw new Error(
+            `Destination pane ${rootPaneId} is occupied by agent ${occupyingAgent.result.agent.name ?? occupyingAgent.result.agent.agent}; handoff was not queued${leftover()}`,
+          );
+        }
 
         const agent = agentName(
           worktree?.branch ?? params.branch ?? (action === "created" ? "pi-worktree" : "existing"),
@@ -271,13 +289,13 @@ export default function (pi: ExtensionAPI) {
 
         const destination = worktreePath(worktree) ?? targetPath ?? "the worktree";
         const summary = returningToMain
-          ? `Returned to the main checkout at ${destination} in a new tab. The old Herdr workspace will be closed by the forked session.`
+          ? `Prepared a new tab in the main checkout at ${destination}. The old Herdr workspace will be closed by the forked session.`
           : `${action === "created" ? "Created" : "Opened"} worktree at ${destination}.`;
         return {
           content: [
             {
               type: "text" as const,
-              text: `${summary} Forked this session into pane ${rootPaneId}; the old pane ID was passed to the forked session.`,
+              text: `${summary} Queued the handoff to pane ${rootPaneId}.`,
             },
           ],
           details: {

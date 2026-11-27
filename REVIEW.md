@@ -3,7 +3,8 @@
 ## 対象と結論
 
 - 対象は `main...HEAD` の実装差分と `SPEC.md`．
-- handoff cleanup の修正と再検証は完了した．残る指摘は高 2 件，中 2 件．
+- handoff cleanup と queue 失敗報告の修正・再検証は完了した．残る指摘は高 1 件，
+  中 2 件．
 
 ## 実装・再検証
 
@@ -26,20 +27,28 @@
 - mock で移動先 `workspace get` を失敗させ，旧 session file の存在，警告の出力，
   pane close と workspace close が実行されないことを確認した．
 
+### 既存 worktree と queue 失敗報告
+
+- 既存 workspace が開いている worktree へ移動する場合は，新規 tab と root pane
+  を作るようにした．fresh workspace と worktree create は元の root pane を使う．
+- 既存 root pane `w38:p1` を Pi で占有した E2E では，tab 数が 2 になり，元の
+  agent は残り，新規 `w38:t2` / `w38:p2` で fork が続いた．
+- tool の成功文を queue 受付に変更し，source session file の存在と destination
+  pane の agent 占有を queue 前に確認するようにした．E2E toolResult は
+  `Queued the handoff to pane w38:p2.` だった．
+- plugin action は job を `agent start` 成功まで `.running` で保持し，失敗時は
+  `.failed` と error を残すようにした．
+- 一時 plugin の失敗 E2E では，`agent_pane_busy` と plugin log failed を確認．
+  通知は shown，source workspace `w39` に focus，source session は残った．
+  2 回目の invoke は succeeded し，failed job は replay されなかった．
+- 生成 script の成功 E2E では，plugin log succeeded と job file なしを確認．
+  source pane・session は削除され，destination で fork した．
+- renderer 単体テストで collapsed は空，expanded は queue 文 1 行，color は
+  `muted` のみだった．
+
 ## 残る指摘
 
-### 1. 高: fork の失敗が成功扱いになる
-
-`configs/home/herdr/worktree-handoff.nix:29-32`\
-`configs/home/pi/agent/extensions/herdr-worktree/index.ts:264-276`
-
-job を削除した後に `agent start ... || true` を実行し，focus も失敗を無視する．
-そのため plugin action は exit 0 で完了し，tool は fork 失敗を知らずに
-`Forked this session...` と `terminate: true` を返す．
-
-失敗状態の保存・通知，または tool が成功を主張する条件の見直しが必要である．
-
-### 2. 高: `pi-worktrunk` の削除が適用環境に反映しない
+### 1. 高: `pi-worktrunk` の削除が適用環境に反映しない
 
 `configs/home/pi/default.nix:37`\
 `configs/home/worktrunk/hooks.nix:18-21`
@@ -56,7 +65,7 @@ package entry は残る．現在の `~/.pi/agent/settings.json:31` にも
 現在の user・primary settings は確認したが，fresh worktree へのコピーは
 再実行していない．新規 worktree で `pi-worktrunk` が無効であることを再検証する．
 
-### 3. 中: hook 成功判定が別 worktree の log を拾う
+### 2. 中: hook 成功判定が別 worktree の log を拾う
 
 `configs/home/pi/agent/extensions/herdr-worktree/index.ts:56-66`
 
@@ -67,7 +76,7 @@ plugin log は global で checkout を識別せず，ファイル存在確認も
 event と checkout を結び付けるか，checkout 固有の完了 marker を確認する
 必要がある．
 
-### 4. 中: relative path の解決基準が SPEC と異なる
+### 3. 中: relative path の解決基準が SPEC と異なる
 
 `configs/home/pi/agent/extensions/herdr-worktree/index.ts:129`
 
@@ -79,5 +88,8 @@ SPEC では `repo_root` を解決基準とし，削除済み cwd でも動作す
 
 - `nix fmt` と `git diff --check` は clean．
 - `handoff.ts` の `--herdr-worktree-handoff` 登録を確認．
-- single-pane，multi-pane，main → worktree の実セッション E2E を再実行した．
+- single-pane，multi-pane，main → worktree，既存 worktree の実セッション E2E を
+  再実行した．
 - close 失敗と metadata 失敗は mock で再検証した．
+- plugin action の成功・失敗 path と renderer は実 E2E または単体テストで再検証
+  した．

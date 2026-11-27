@@ -65,7 +65,7 @@ export const renderMoveResult: NonNullable<ToolRenderers["renderResult"]> = (
   const destination = details?.destination ?? "the worktree";
   const pane = details?.rootPaneId ?? "unknown";
   const from = details?.oldPaneId ?? "unknown";
-  const sentence = `Moved to ${destination} in pane ${pane} from ${from}.`;
+  const sentence = `Queued move to ${destination} in pane ${pane} from ${from}.`;
   return new Text(`\n${theme.fg("muted", sentence)}`, 0, 0);
 };
 
