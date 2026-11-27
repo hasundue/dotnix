@@ -95,7 +95,7 @@ export default function (pi: ExtensionAPI) {
       {
         customType: HANDOFF_MESSAGE_TYPE,
         content:
-          "The worktree move completed in this session. Continue the original task here. Do not repeat the worktree move.",
+          "The worktree move is already complete. Do not perform another move. Report that it is done if the move was the request; otherwise continue the remaining task.",
         display: false,
         details: {},
       },
