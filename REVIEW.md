@@ -18,6 +18,10 @@ scratch repo の linked worktree から `branch: "main"` を呼び出し，以�
 - 旧 pane と旧 session file は削除され，linked worktree は checkout として残っ
   た．
 
+`herdr pane close` が最後の pane を閉じると Herdr は workspace も閉じるため，
+`isMainReturn` による明示的な `workspace close` が false でもこの受け入れ条件は
+満たされる．
+
 この検証に限り，旧 worktree workspace を閉じる受け入れ条件は満たされる．
 
 ## 指摘
