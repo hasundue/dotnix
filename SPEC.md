@@ -148,10 +148,14 @@ worktree の場所がワークスペースに表示されず，
     - 旧ペイン `w1A:p1` が消え，別ペイン `w1A:p2` は残った
   - [x] 旧 session file が削除され，`herdr agent list` に旧セッションが残らない
     - `w1A:p1` の `.jsonl` は数秒後に存在せず，`herdr agent list` からも消えた
-  - [ ] main checkout の最後の pane から移動すると，空 tab が作られ，
+  - [x] main checkout の最後の pane から移動すると，空 tab が作られ，
         旧 pane と旧 session file が消える
-  - [ ] main checkout に別 pane が残っている場合は空 tab を作らず，
+    - `w1G:p1` が閉じ，`w1G:t2` / `w1G:p2` の空 shell が残った．
+      旧 `.jsonl` は消えた
+  - [x] main checkout に別 pane が残っている場合は空 tab を作らず，
         旧 pane と旧 session file だけが消える
+    - `w1G:p2` が残る状態で `w1G:p3` から移動し，tab は増えず，
+      `panes 1 / tabs 1` を維持．旧 `.jsonl` は消えた
 - main 復帰時は workspace に新しい tab が作られ，その root pane で fork が
   起動する
   - [x] 既存 root pane が agent に占有されていても `agent_pane_busy` と
