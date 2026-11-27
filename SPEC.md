@@ -99,6 +99,8 @@ worktree の場所がワークスペースに表示されず，
 - tool は job JSON に `-e <extension dir>/handoff.ts` を入れ，plugin action
   は常にその引数を `herdr agent start` に渡す．installed 版の移動先にも
   handoff entry を読み込ませるため．
+- 開発モードは path 名ではなく `HERDR_WORKTREE_DEV=1` の明示的な環境変数で
+  判定する．未設定の installed 版では `handoff.ts` だけを渡す．
 
 ### ハンドオフ
 
@@ -160,6 +162,8 @@ worktree の場所がワークスペースに表示されず，
   `~/.pi/agent/extensions/herdr-agent-state.ts` と
   `configs/home/pi/agent/extensions/herdr-worktree/index.ts` だけを指定する．
   installed 版との二重登録を避けるため．
+- 開発時は Pi 起動前に source pane の shell で `export HERDR_WORKTREE_DEV=1`
+  を実行する．path 名による判定は使わない．
 - herdr-worktree のパスは Extension 自身の `import.meta.url` から取り，
   プラグインの action が起動する Pi には `handoff.ts` の `-e` を渡す．
   開発中は `--no-extensions` と herdr-agent-state の `-e` も渡し，
@@ -293,11 +297,11 @@ worktree の場所がワークスペースに表示されず，
     - `session_start` と `finishHandoff` は `handoff.ts` にのみ存在
   - [x] `common.ts` に定数，型，`createHerdr`，`samePath`，`textResult`，
         `sleep`，`registerHerdrNotice`，`handoffArgs` があり，両 entry が import
-  - [x] `handoffArgs()` が `-e <extension dir>/handoff.ts` を渡し，
+  - [ ] `handoffArgs()` が `-e <extension dir>/handoff.ts` を渡し，
         plugin script が開発モードに関わらず展開する
-    - 実行値は
+    - `HERDR_WORKTREE_DEV=1` のときは
       `["--no-extensions","-e",.../herdr-agent-state.ts,"-e",.../handoff.ts]`
-      で，`jq -r '.extraArgs // [] | .[]'` を生成 script で確認
+    - 未設定のときは `["-e",.../handoff.ts]`
   - [x] `handoff.ts` 単独の print mode では flag が読め，tool は出ない
     - `herdr_worktree_move` は 0 回，`<herdr>` は 1 回．
       `--herdr-worktree-handoff zzzzz:p99` が unknown option にならず exit 0
