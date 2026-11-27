@@ -65,8 +65,13 @@ worktree の場所がワークスペースに表示されず，
   一般の fork と区別し，Herdr の metadata に依存せず ID を届けるため．
 - `session_start` で flag の値から旧ペイン ID を読み，値が無ければ何もしない．
   一般の fork と通常セッションを巻き込まないため．
+- fork 先は起動時に，コピーされた `herdr_worktree_move` の toolCall に
+  対する toolResult を自分の session に追加する．
+  `agent start` が fork する時点では旧セッションがまだ toolResult を書いて
+  おらず，コピーされた tool 行が未完了として残るため．
+  continuation の前に追加する．
 - `agent start` の後，移動先 pane を `herdr agent focus` でフォーカスする．
-  ユーザーが移動を依頼した画面へ追究するため．
+  ユーザーが移動先の画面に移れるようにするため．
 - 旧ペインがまだある間に `herdr pane get` で旧 session file の場所を読み，
   対象エージェントの起動が落ち着くまで待つ．
 - 旧ペインを `herdr pane close` で閉じ，その後で旧 session file を
@@ -133,12 +138,13 @@ worktree の場所がワークスペースに表示されず，
 - `herdr_worktree_move` tool が自然文の依頼で呼ばれ，
   worktree の作成・フォーク・ハンドオフが終わる
   - [ ] tool が成功表示（緑）になる
-    - ユーザーの画面確認が必要
+    - `terminate: true` では解消せず．fork 先で toolResult を追加する
+      方式を実装してから検証する
   - [x] 移動元に余計なターンが無い
     - 移動先 transcript で `USER → herdr_worktree_move → custom continuation
       → 移動先の応答` の順で，tool の直後に移動元の応答が無いことを確認
-  - [ ] 移動先 pane にフォーカスが移る
-    - 検証はユーザーの Herdr 操作と干渉するため，ユーザーに確認を仰ぐ
+  - [x] 移動先 pane にフォーカスが移る
+    - ユーザーが Herdr 上で確認
   - [x] Herdr 内の Pi に「新しい worktree で作業して」とだけ伝える．
         tool 呼び出しが記録され，
         `herdr worktree list` に linked worktree が現れ，
