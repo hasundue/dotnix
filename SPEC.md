@@ -60,9 +60,10 @@ worktree の場所がワークスペースに表示されず，
   共有 post-start hooks を実行する．
   新しい checkout でも既存の初期化を欠かさないため．
 - 同じプラグインに worktree handoff 用の action を追加する．
-  action は tool から渡された引数で `herdr agent start ... --fork` と
-  フォーカス移動を実行する．invoke が完了を待つ場合は command 側で
-  ワーカーを切り離し，tool を待たせない．
+  tool は plugin state dir に job JSON を書いてから action を invoke し，
+  action は未処理の job を順に読んで `herdr agent start ... --fork` と
+  フォーカス移動を実行する．`plugin action invoke` は command の完了を
+  待たないため，tool はすぐ result を返せる．
 
 ### ハンドオフ
 
@@ -125,6 +126,8 @@ worktree の場所がワークスペースに表示されず，
 ## 対象外
 
 - 設計に挙げた変更以外の Pi 拡張，Herdr プラグイン，worktree hooks
+  （plugin job 方式のため `configs/home/herdr/worktree-hooks.nix` の変更は
+  設計範囲に含める）
 - keel と sail のスキル文書の変更
 - `configs/home/pi/agent/extensions/session-namer.ts` の変更と，
   セッション名・ボーダーラベルの検証
@@ -244,4 +247,5 @@ worktree の場所がワークスペースに表示されず，
   flag が無い一般 fork は対象外とする
 - 必要な変更が `configs/home/pi/agent/AGENTS.md`，
   `configs/home/pi/agent/extensions/herdr-worktree/index.ts`，
-  `configs/home/pi/default.nix`，`.pi/settings.json` の外に及ぶ場合は停止する
+  `configs/home/pi/default.nix`，`.pi/settings.json`，
+  `configs/home/herdr/worktree-hooks.nix` の外に及ぶ場合は停止する
