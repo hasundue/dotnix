@@ -286,21 +286,22 @@ worktree の場所がワークスペースに表示されず，
 - tool 結果が移動元と移動先の両方で短く，エージェントには情報を保つ
   - [x] TUI で tool 実行後の collapsed 本文が空で，header のツール名だけが
         出ることを確認
-    - 移動先 `w2K:p1` と移動元 `w2M:p1` の `herdr pane read` で header の
-      `herdr_worktree_move branch=...` のみ（`sentence-dest-collapsed.png`）．
-      renderer 単体の実行値も collapsed=""
-  - [ ] expand すると JSON やツール名が出ず，header の後の 1 行を空えて
+    - 移動先 `w2P:p1` と移動元 `w2Q:p1` の `herdr pane read` で header の
+      `herdr_worktree_move branch=...` のみ（renderer 単体も collapsed=""）
+  - [x] expand すると JSON やツール名が出ず，header の後の 1 行を空えて
         `Moved to <destination> in pane <rootPaneId> from <oldPaneId>.` の
         一文が `branch:` と同じ `muted` スタイルで出ることを確認
-    - 移動元・移動先の両 pane で文面，空行，スタイルを確認する
+    - 両 pane の `herdr pane read --format ansi` で `branch:` と本文が同じ
+      `38;2;157;157;183` を使用（`muted-dest-expanded.png`，
+      `muted-source-expanded.png`）
   - [x] フォーク先 transcript の toolResult が content と structured な
         details を持つことを読んで確認
     - execute は無変更で，renderer は表示のみ．最新 E2E で toolResult の
-      content 141 文字と details の 8 キー，tool 呼び出し 1 回を確認
-  - [x] テスト用 pane と worktree を残し，移動先 pane を focus したままにする
-    - `w2J:p2`，`w2K:p1`，`w2M:p1` と worktree
-      `/tmp/herdr-e2e-sentence.sentence` を残す．Niri focused window 2 と
-      Herdr workspace `w2K` が一致，通知 0 件
+      content 135 文字と details の 8 キー，tool 呼び出し 1 回を確認
+  - [x] テスト用 workspace と worktree を片付け，フォーカスを戻す
+    - `herdr worktree remove --workspace w2P` と
+      `herdr workspace close w2N/w2Q` が成功．workspace は 3 件，
+      Niri focused window 2 と Herdr workspace `wG` が一致，通知 0 件
 
 ## 停止条件
 

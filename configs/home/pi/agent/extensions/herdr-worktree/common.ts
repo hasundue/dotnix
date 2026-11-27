@@ -65,7 +65,8 @@ export const renderMoveResult: NonNullable<ToolRenderers["renderResult"]> = (
   const destination = details?.destination ?? "the worktree";
   const pane = details?.rootPaneId ?? "unknown";
   const from = details?.oldPaneId ?? "unknown";
-  return new Text(`\nMoved to ${destination} in pane ${pane} from ${from}.`, 0, 0);
+  const sentence = `Moved to ${destination} in pane ${pane} from ${from}.`;
+  return new Text(`\n${theme.fg("muted", sentence)}`, 0, 0);
 };
 
 export const sleep = (ms: number) => new Promise<void>((done) => setTimeout(done, ms));
