@@ -283,12 +283,24 @@ worktree の場所がワークスペースに表示されず，
       `<herdr>` は 1 回．`--herdr-worktree-handoff zzzzz:p99` が unknown option
       にならず exit 0．両 entry を同時に読み込んでも flag 衝突は起きず exit 0
 - tool 結果が人には短く，エージェントには情報を保つ
-  - [ ] TUI で tool 実行後の collapsed row にツール名だけが出て，
+  - [x] TUI で tool 実行後の collapsed row にツール名だけが出て，
         長い summary が出ないことを Niri で確認
-  - [ ] expand すると JSON の波括弧ではなくラベル付きの行で destination と
+    - 実物の `renderResult` だけを流用し `execute` を fake にした wrapper で
+      確認．`/tmp/display-collapsed.png` の result row は
+      `herdr_worktree_move` のみで，created summary は出ていない
+  - [x] expand すると JSON の波括弧ではなくラベル付きの行で destination と
         pane ID が読めることを Niri で確認
-  - [ ] フォーク先 transcript の toolResult が content と structured な
+    - `/tmp/display-expanded.png` に `destination: /tmp/e2e-display-check`，
+      `pane: w99:p1`，`old pane: w98:p1`，`action: created` と表示され，
+      `Tool output: expanded` が状態を示す．波括弧はなし
+  - [x] フォーク先 transcript の toolResult が content と structured な
         details を従来どおり持つことを読んで確認
+    - `git diff` は import・型・`renderResult` の追加だけで execute は
+      無変更．前回 E2E の transcript で toolResult の content 148 文字と
+      details の 8 キーを確認
+  - [x] テスト用 workspace を片付け，フォーカスを戻す
+    - `herdr workspace close w23` が成功し，workspace は 3 件，
+      Niri focused window 2 と Herdr workspace `wG` が一致，通知 0 件
 - リファクタ後に scratch repo で E2E を再実行する
   - [x] 移動だけを指示したエージェントが tool を呼び，フォークとハンドオフが
         終わる．実作業はしない
