@@ -40,16 +40,18 @@ worktree の場所がワークスペースに表示されず，
   移動先の解決と Herdr コマンドの cwd に使う．
   `wt merge` で worktree が削除された後も cwd が消えているため．
 - tool は `worktree open` / `worktree create` の応答から workspace と
-  root pane の ID を得て，旧ペインを動かさずその root pane でセッションを
-  フォークする．worktree 作成時は空の root pane ができるため．
+  root pane の ID を得る．worktree 作成時は空の root pane ができるため．
 - main へ戻るときは worktree メタデータから workspace ID を得て，その
-  workspace に新しい tab を作り，その root pane でセッションをフォークする．
+  workspace に新しい tab を作り，その root pane を使う．
   既存 root pane が agent に占有されていても起動できるようにするため．
+- fork と新セッション起動は `local.worktree-hooks` プラグインの action が
+  担当する．tool はプラグインへ依頼して先に result を返すことで，
+  旧セッションが toolResult を書き込んでから fork させる．
 - tool は `--fork` に初期プロンプトを渡さない．fork 先は flag を見て
   非表示の continuation message で移動完了を通知し，元の作業を続ける．
   履歴の最後の移動要求にもとづいて再ハンドオフしないため．
 - tool の成功 result は `terminate: true` を返し，移動元で自動の
-  follow-up turn を起こさない．完了表示にするため．
+  follow-up turn を起こさない．
 - tool は既に target worktree の cwd なら何もしない．
   フォーク先が再ハンドオフしないため．
 - main 復帰時に旧 worktree workspace を閉じる処理は fork 先に委ねる．
@@ -57,6 +59,10 @@ worktree の場所がワークスペースに表示されず，
 - `local.worktree-hooks` プラグインは `worktree.created` で
   共有 post-start hooks を実行する．
   新しい checkout でも既存の初期化を欠かさないため．
+- 同じプラグインに worktree handoff 用の action を追加する．
+  action は tool から渡された引数で `herdr agent start ... --fork` と
+  フォーカス移動を実行する．invoke が完了を待つ場合は command 側で
+  ワーカーを切り離し，tool を待たせない．
 
 ### ハンドオフ
 
@@ -65,14 +71,11 @@ worktree の場所がワークスペースに表示されず，
   一般の fork と区別し，Herdr の metadata に依存せず ID を届けるため．
 - `session_start` で flag の値から旧ペイン ID を読み，値が無ければ何もしない．
   一般の fork と通常セッションを巻き込まないため．
-- fork 先は起動時に，コピーされた `herdr_worktree_move` の toolCall に
-  対する toolResult を自分の session に追加する．
-  `agent start` が fork する時点では旧セッションがまだ toolResult を書いて
-  おらず，コピーされた tool 行が未完了として残るため．
-  continuation の前に追加する．
+- fork 先は toolResult の修復を行わない．tool が先に完了するため，
+  コピーされた session には toolResult が含まれている．
 - `agent start` の後，移動先 pane を `herdr agent focus` でフォーカスする．
   ユーザーが移動先の画面に移れるようにするため．
-- 旧ペインがまだある間に `herdr pane get` で旧 session file の場所を読み，
+- 旧ペインがまだある間に旧 session file の場所を読み，
   対象エージェントの起動が落ち着くまで待つ．
 - 旧ペインを `herdr pane close` で閉じ，その後で旧 session file を
   削除する．セッションファイルが乱立しないようにするため．
@@ -113,9 +116,9 @@ worktree の場所がワークスペースに表示されず，
   `configs/home/pi/agent/extensions/herdr-worktree/index.ts` だけを指定する．
   installed 版との二重登録を避けるため．
 - herdr-worktree のパスは Extension 自身の `import.meta.url` から取り，
-  フォーク先にも同じ `-e` を渡す．これは開発用の分岐で，テスト終了後は
-  通常の
-  `herdr agent start ... -- --herdr-worktree-handoff <old_pane_id> -a --fork <session> "<request>"`
+  プラグインの action が起動する Pi にも同じ `-e` を渡す．
+  これは開発用の分岐で，テスト終了後は通常の
+  `herdr agent start ... -- --herdr-worktree-handoff <old_pane_id> -a --fork <session>`
   に戻す．
 - 開発中の反復はこの起動引数を使う．
 
@@ -138,8 +141,7 @@ worktree の場所がワークスペースに表示されず，
 - `herdr_worktree_move` tool が自然文の依頼で呼ばれ，
   worktree の作成・フォーク・ハンドオフが終わる
   - [ ] tool が成功表示（緑）になる
-    - `terminate: true` では解消せず．fork 先で toolResult を追加する
-      方式を実装してから検証する
+    - プラグインが fork を遅らせる方式を実装してから Niri スクショで検証する
   - [x] 移動元に余計なターンが無い
     - 移動先 transcript で `USER → herdr_worktree_move → custom continuation
       → 移動先の応答` の順で，tool の直後に移動元の応答が無いことを確認
