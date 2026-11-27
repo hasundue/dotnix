@@ -41,12 +41,17 @@ worktree の場所がワークスペースに表示されず，
   `wt merge` で worktree が削除された後も cwd が消えているため．
 - tool は `worktree open` / `worktree create` の応答から workspace と
   root pane の ID を得る．worktree 作成時は空の root pane ができるため．
-- main へ戻るときは worktree メタデータから workspace ID を得て，その
-  workspace に新しい tab を作り，その root pane を使う．
-  既存 root pane が agent に占有されていても起動できるようにするため．
+- 既存 workspace がすでに開いている場合，または main へ戻る場合は，その
+  workspace に新しい tab を作り，その root pane を使う．既存 root pane が
+  agent に占有されていても起動できるようにするため．新規 workspace を
+  作った場合と worktree create の場合は，fresh な root pane をそのまま使う．
 - fork と新セッション起動は `local.worktree-handoff` プラグインの action が
   担当する．tool はプラグインへ依頼して先に result を返すことで，
   旧セッションが toolResult を書き込んでから fork させる．
+- tool は queue 前に source session file の存在と，destination pane に
+  agent が占有されていないことを確認する．
+- tool の成功 result は handoff の queue 受付を意味し，`Queued the handoff
+  to pane <rootPaneId>.` と表示する．fork の完了は保証しない．
 - tool は `--fork` に初期プロンプトを渡さない．fork 先は flag を見て
   非表示の continuation message で移動完了を通知する．その文は，移動は
   完了済みで別の移動操作をせず，移動だけが依頼なら完了を報告し，
@@ -59,7 +64,7 @@ worktree の場所がワークスペースに表示されず，
   ため，renderer だけを未登録 tool に渡して compact 表示を保つため．
   折りたたみ時も展開時も本文にツール名を出さない（header に出るため）．
   失敗時は error の一行を残す．展開時は header の後に 1 行空けて，
-  `Moved to <destination> in pane <rootPaneId> from <oldPaneId>.` の一文を
+  `Queued move to <destination> in pane <rootPaneId> from <oldPaneId>.` の一文を
   引数表示と同じ `muted` スタイルで出す．JSON やラベル付きの複数行は出さない．
   details 自体は structured な
   まま toolResult に残し，エージェントが使う情報は保持するため．
@@ -80,6 +85,10 @@ worktree の場所がワークスペースに表示されず，
   action は未処理の job を順に読んで `herdr agent start ... --fork` と
   フォーカス移動を実行する．`plugin action invoke` は command の完了を
   待たないため，tool はすぐ result を返せる．
+  job は `agent start` が成功するまで `.running` として保持し，成功後に
+  削除する．失敗時は `.failed` と error を残し，Herdr notification で
+  報告して source workspace へ focus し，action は nonzero で終了する．
+  失敗した job は自動 replay しない．focus だけの失敗は警告に留める．
 - herdr-worktree は常に読み込む `index.ts` と，移動先だけが `-e` で
   読み込む `handoff.ts` に分ける．移動先の後始末はフォーク先だけが持つため．
 - 両方が使う定数，型，Herdr コマンド実行，`<herdr>` の登録は `common.ts`
@@ -177,6 +186,8 @@ worktree の場所がワークスペースに表示されず，
   - [x] tool が成功表示（緑）になる
     - plugin 分離後の scratch E2E で toolResult が `isError: false` の
       created summary と `w25:p1` への fork を表示（07:29）
+  - [ ] tool の成功文は handoff の queue 受付を表し，fork 完了を主張しない
+    - toolResult に `Queued the handoff to pane <rootPaneId>.` が含まれる
   - [x] 移動元に余計なターンが無い
     - フォーク先 transcript が `USER → herdr_worktree_move → custom
       continuation → 応答` の順で，tool の直後に移動元の応答はなし
@@ -229,6 +240,13 @@ worktree の場所がワークスペースに表示されず，
         1 回だけ呼ばれていることを確認する
     - 旧セッションで 1 回実行し，フォーク先では新規呼び出しなし
       （`w1B:p1` の transcript で確認）
+  - [ ] 既存 worktree の root pane が agent に占有されていても，新規 tab の
+        root pane で fork が起動する
+    - 既存 workspace の tab 数が 1 増え，元の root pane の agent は残る
+  - [ ] `agent start` が失敗した場合は，tool は queue 受付を表示し，action は
+        `.failed` job と error を残して通知し，source pane と session を残す
+    - plugin log は failed，source workspace に focus が戻り，failed job は
+      自動 replay されない
 - 旧ペイン ID が flag で渡り，一般 fork には flag が無い
   - [x] ハンドオフ先の起動引数に `herdr-worktree-handoff` があり，
         その値が旧ペイン ID であることを確認する
@@ -316,8 +334,8 @@ worktree の場所がワークスペースに表示されず，
         出ることを確認
     - 移動先 `w2P:p1` と移動元 `w2Q:p1` の `herdr pane read` で header の
       `herdr_worktree_move branch=...` のみ（renderer 単体も collapsed=""）
-  - [x] expand すると JSON やツール名が出ず，header の後の 1 行を空えて
-        `Moved to <destination> in pane <rootPaneId> from <oldPaneId>.` の
+  - [ ] expand すると JSON やツール名が出ず，header の後の 1 行を空えて
+        `Queued move to <destination> in pane <rootPaneId> from <oldPaneId>.` の
         一文が `branch:` と同じ `muted` スタイルで出ることを確認
     - 両 pane の `herdr pane read --format ansi` で `branch:` と本文が同じ
       `38;2;157;157;183` を使用（`muted-dest-expanded.png`，
