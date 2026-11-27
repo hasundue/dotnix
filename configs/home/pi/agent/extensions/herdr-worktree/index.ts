@@ -370,6 +370,7 @@ export default function (pi: ExtensionAPI) {
             `Agent start did not yield a forked session in pane ${rootPaneId}${leftover()}`,
           );
         }
+        await herdrQuiet(["agent", "focus", agent], 10000);
 
         const destination = worktreePath(worktree) ?? targetPath ?? "the worktree";
         const summary = returningToMain
@@ -392,6 +393,7 @@ export default function (pi: ExtensionAPI) {
             action,
             returningToMain,
           },
+          terminate: true,
         };
       } catch (error) {
         return textResult(error instanceof Error ? error.message : String(error), true);

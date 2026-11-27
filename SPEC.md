@@ -132,7 +132,11 @@ worktree の場所がワークスペースに表示されず，
 
 - `herdr_worktree_move` tool が自然文の依頼で呼ばれ，
   worktree の作成・フォーク・ハンドオフが終わる
-  - [ ] tool が成功表示（緑）になり，移動元に余計なターンが無い
+  - [ ] tool が成功表示（緑）になる
+    - ユーザーの画面確認が必要
+  - [x] 移動元に余計なターンが無い
+    - 移動先 transcript で `USER → herdr_worktree_move → custom continuation
+      → 移動先の応答` の順で，tool の直後に移動元の応答が無いことを確認
   - [ ] 移動先 pane にフォーカスが移る
     - 検証はユーザーの Herdr 操作と干渉するため，ユーザーに確認を仰ぐ
   - [x] Herdr 内の Pi に「新しい worktree で作業して」とだけ伝える．
