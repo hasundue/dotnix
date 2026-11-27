@@ -16,6 +16,7 @@ import {
   createHerdr,
   registerHerdrNotice,
   renderMoveResult,
+  samePath,
   sleep,
 } from "./common.ts";
 
@@ -74,6 +75,45 @@ export default function (pi: ExtensionAPI) {
       return;
     }
 
+    const destinationPaneId = process.env.HERDR_PANE_ID;
+    if (!destinationPaneId) {
+      report("Handoff destination pane ID is missing; the source pane was left open.");
+      return;
+    }
+
+    let destinationWorkspace: any;
+    try {
+      const destinationPane = await herdr(["pane", "get", destinationPaneId], undefined, 10000);
+      const destinationWorkspaceId: string | undefined =
+        destinationPane?.result?.pane?.workspace_id;
+      if (!destinationWorkspaceId) throw new Error("Herdr response has no workspace ID");
+      destinationWorkspace = await herdr(
+        ["workspace", "get", destinationWorkspaceId],
+        undefined,
+        10000,
+      );
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      report(`Handoff destination metadata is unavailable: ${message}`);
+      return;
+    }
+
+    const oldWorktree = oldWorkspace?.result?.workspace?.worktree;
+    const destinationWorktree = destinationWorkspace?.result?.workspace?.worktree;
+    if (
+      !oldWorktree ||
+      !destinationWorktree ||
+      typeof oldWorktree.repo_root !== "string" ||
+      typeof destinationWorktree.checkout_path !== "string"
+    ) {
+      report("Handoff worktree metadata is incomplete; the source pane was left open.");
+      return;
+    }
+    const isMainReturn =
+      oldWorktree.is_linked_worktree === true &&
+      destinationWorktree.is_linked_worktree === false &&
+      samePath(oldWorktree.repo_root, destinationWorktree.checkout_path);
+
     const deadline = Date.now() + 60000;
     let sawWorking = false;
     let settled = false;
@@ -130,6 +170,7 @@ export default function (pi: ExtensionAPI) {
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
       report(`Could not close old pane ${oldPane}: ${message}`);
+      return;
     }
 
     if (typeof sourceSession === "string" && sourceSession !== "") {
@@ -140,12 +181,20 @@ export default function (pi: ExtensionAPI) {
         report(`Could not remove source session ${sourceSession}: ${message}`);
       }
     }
-    if (oldWorkspaceId) {
-      const mainPane = process.env.HERDR_PANE_ID;
-      const current = mainPane ? await herdrQuiet(["pane", "get", mainPane], 10000) : null;
-      const currentWorkspaceId = current?.result?.pane?.workspace_id;
-      const isMainReturn = currentWorkspaceId === oldWorkspaceId;
-      if (isMainReturn) {
+    if (isMainReturn && oldWorkspaceId) {
+      let workspaceStillOpen = false;
+      try {
+        const listed = await herdr(["workspace", "list"], undefined, 10000);
+        workspaceStillOpen = (listed?.result?.workspaces ?? []).some(
+          (workspace: any) => workspace.workspace_id === oldWorkspaceId,
+        );
+      } catch (error) {
+        const message = error instanceof Error ? error.message : String(error);
+        report(`Could not inspect old workspace ${oldWorkspaceId}: ${message}`);
+        return;
+      }
+
+      if (workspaceStillOpen) {
         try {
           await herdr(["workspace", "close", oldWorkspaceId], undefined, 10000);
         } catch (error) {

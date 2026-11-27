@@ -204,7 +204,9 @@ worktree の場所がワークスペースに表示されず，
     - 旧 `w24:p1` の `.jsonl` は存在せず，`herdr agent list` に旧 session なし
   - [x] main checkout の最後の pane から移動すると，空 tab が作られ，
         旧 pane と旧 session file が消える
-    - `w24:p1` が閉じ，`w24:p2` の空 shell が残った（上記 E2E）
+    - `w24:p1` が閉じ，`w24:p2` の空 shell が残った（上記 E2E）．
+      再検証では `w35:p1` が閉じ，main の `w35:p2` と linked の `w36:p1`
+      を確認した
   - [x] main checkout に別 pane が残っている場合は空 tab を作らず，
         旧 pane と旧 session file だけが消える
     - `w1G:p2` が残る状態で `w1G:p3` から移動し，tab は増えず，
@@ -294,15 +296,20 @@ worktree の場所がワークスペースに表示されず，
   - [x] `herdr worktree list` には worktree が残り，
         ユーザーが `wt remove` を選べる状態になっている
     - `pi-worktree-mwxppuxx` は `open_workspace_id: null` で残存
-  - [ ] 旧 worktree workspace に別 pane が残っている状態で main に戻ると，
+  - [x] 旧 worktree workspace に別 pane が残っている状態で main に戻ると，
         source pane と旧 session file が削除され，旧 workspace と残った pane
         も閉じて，main の新規 tab で fork が続く
-    - `herdr workspace list` に旧 workspace が無く，`herdr worktree list` の
-      linked worktree は `open_workspace_id: null` で残る
-  - [ ] source pane の close が失敗した場合は，旧 pane・旧 session file・
+    - 旧 workspace `w33` は消え，main の `w32:t2` / `w32:p2` で fork が続いた．
+      旧 session file は存在せず，linked worktree は `open_workspace_id: null`
+      で残った
+  - [x] source pane の close が失敗した場合は，旧 pane・旧 session file・
         旧 workspace を残し，警告を報告する
-    - close 失敗後に session file が削除されず，後続の workspace close も
-      実行されない
+    - mock で `pane close` を失敗させ，source session file の存在，警告の
+      出力，後続の `workspace list` / `workspace close` が無いことを確認
+  - [x] main 復帰の判定に必要な移動先 worktree metadata を取得できない場合は，
+        旧 workspace を閉じずに報告する
+    - mock で `workspace get` を失敗させ，source session file の存在と警告の
+      出力を確認し，pane close と workspace close は実行されなかった
 
 - tool 結果が移動元と移動先の両方で短く，エージェントには情報を保つ
   - [x] TUI で tool 実行後の collapsed 本文が空で，header のツール名だけが
