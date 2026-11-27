@@ -60,19 +60,19 @@ export const renderMoveResult: NonNullable<ToolRenderers["renderResult"]> = (
     return new Text(theme.fg("error", `${MOVE_TOOL}: ${message.split("\n")[0]}`), 0, 0);
   }
 
+  if (!expanded) return new Text("", 0, 0);
+
   let display = theme.fg("toolTitle", MOVE_TOOL);
-  if (expanded) {
-    const details = result.details as MoveDetails | undefined;
-    const fields: Array<[string, string | undefined]> = [
-      ["destination", details?.destination],
-      ["pane", details?.rootPaneId],
-      ["old pane", details?.oldPaneId],
-      ["action", details?.action],
-    ];
-    for (const [label, value] of fields) {
-      if (value !== undefined) {
-        display += `\n${theme.fg("muted", `${label}: `)}${theme.fg("toolOutput", value)}`;
-      }
+  const details = result.details as MoveDetails | undefined;
+  const fields: Array<[string, string | undefined]> = [
+    ["destination", details?.destination],
+    ["pane", details?.rootPaneId],
+    ["old pane", details?.oldPaneId],
+    ["action", details?.action],
+  ];
+  for (const [label, value] of fields) {
+    if (value !== undefined) {
+      display += `\n${theme.fg("muted", `${label}: `)}${theme.fg("toolOutput", value)}`;
     }
   }
   return new Text(display, 0, 0);
