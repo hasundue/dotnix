@@ -3,27 +3,26 @@
 ## 対象と結論
 
 - 対象は `main...HEAD` の実装差分と `SPEC.md`．
-- `SPEC.md` の実装として承認できない．高 4 件，中 2 件の修正が必要．
+- `SPEC.md` の実装として承認できない．高 3 件，中 2 件の修正が必要．
+
+## 再検証
+
+### main 復帰の cleanup
+
+scratch repo の linked worktree から `branch: "main"` を呼び出し，以下を確認し
+た．
+
+- 旧 linked workspace `w2S` が閉じた．
+- main workspace に新規 tab `w2R:t2` と root pane `w2R:p2` が作られ，fork が続い
+  た．
+- 旧 pane と旧 session file は削除され，linked worktree は checkout として残っ
+  た．
+
+この検証に限り，旧 worktree workspace を閉じる受け入れ条件は満たされる．
 
 ## 指摘
 
-### 1. 高: main 復帰で旧 workspace が閉じない
-
-`configs/home/pi/agent/extensions/herdr-worktree/handoff.ts:147`
-
-main 復帰時，`oldWorkspaceId` は linked worktree の workspace ID，
-`currentWorkspaceId` は main の workspace ID なので，通常は異なる．
-そのため `isMainReturn` は false になり，SPEC の必須 cleanup である
-旧 worktree workspace の close が実行されない．
-逆に同一 ID になった場合は，移動先を含む workspace を閉じる危険もある．
-
-`returningToMain` を job で渡すか，旧 workspace と移動先の worktree 種別・
-path から判定する必要がある．
-
-受け入れ条件の `[x]` は過去の手動 E2E 記録で，今回は再実行していない．
-現在のコードでは cleanup 条件が成立しないため，main 復帰の再検証が必要である．
-
-### 2. 高: pane close 失敗後も session file を削除する
+### 1. 高: pane close 失敗後も session file を削除する
 
 `configs/home/pi/agent/extensions/herdr-worktree/handoff.ts:129-140`
 
@@ -31,7 +30,7 @@ path から判定する必要がある．
 まだ動いている source session の file を削除し得るため，close 成功時にのみ
 削除し，失敗時は処理を終了する必要がある．
 
-### 3. 高: fork の失敗が成功扱いになる
+### 2. 高: fork の失敗が成功扱いになる
 
 `configs/home/herdr/worktree-handoff.nix:29-32`\
 `configs/home/pi/agent/extensions/herdr-worktree/index.ts:264-276`
@@ -42,7 +41,7 @@ job を削除した後に `agent start ... || true` を実行し，focus も失�
 
 失敗状態の保存・通知，または tool が成功を主張する条件の見直しが必要である．
 
-### 4. 高: `pi-worktrunk` の削除が適用環境に反映しない
+### 3. 高: `pi-worktrunk` の削除が適用環境に反映しない
 
 `configs/home/pi/default.nix:37`\
 `configs/home/worktrunk/hooks.nix:18-21`
@@ -59,7 +58,7 @@ package entry は残る．現在の `~/.pi/agent/settings.json:31` にも
 現在の user・primary settings は確認したが，fresh worktree へのコピーは
 再実行していない．新規 worktree で `pi-worktrunk` が無効であることを再検証する．
 
-### 5. 中: hook 成功判定が別 worktree の log を拾う
+### 4. 中: hook 成功判定が別 worktree の log を拾う
 
 `configs/home/pi/agent/extensions/herdr-worktree/index.ts:56-66`
 
@@ -70,7 +69,7 @@ plugin log は global で checkout を識別せず，ファイル存在確認も
 event と checkout を結び付けるか，checkout 固有の完了 marker を確認する
 必要がある．
 
-### 6. 中: relative path の解決基準が SPEC と異なる
+### 5. 中: relative path の解決基準が SPEC と異なる
 
 `configs/home/pi/agent/extensions/herdr-worktree/index.ts:129`
 
@@ -84,4 +83,4 @@ SPEC では `repo_root` を解決基準とし，削除済み cwd でも動作す
 - 変更した Nix ファイル 3 件の parse は成功．
 - `nix eval` で Pi package 一覧と handoff plugin の登録を確認．
 - `handoff.ts` の `--herdr-worktree-handoff` 登録を確認．
-- Herdr の実セッション E2E は再実行していない．
+- main 復帰以外の Herdr 実セッション E2E は再実行していない．
