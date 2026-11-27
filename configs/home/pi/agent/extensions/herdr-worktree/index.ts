@@ -403,10 +403,14 @@ export default function (pi: ExtensionAPI) {
     const report = (message: string) => ctx.ui.notify(message, "warning");
     let sourceSession: string | undefined;
     let oldWorkspaceId: string | undefined;
+    let oldWorkspace: any;
     try {
       const old = await herdr(["pane", "get", oldPane], undefined, 10000);
       sourceSession = old?.result?.pane?.agent_session?.value;
       oldWorkspaceId = old?.result?.pane?.workspace_id;
+      oldWorkspace = oldWorkspaceId
+        ? await herdr(["workspace", "get", oldWorkspaceId], undefined, 10000)
+        : null;
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
       const workspaceId = oldPane.split(":")[0];
@@ -443,6 +447,30 @@ export default function (pi: ExtensionAPI) {
         `Handoff from ${oldPane} is unfinished: the old pane did not settle and was left open.`,
       );
       return;
+    }
+
+    const isMainCheckout = oldWorkspace?.result?.workspace?.worktree?.is_linked_worktree === false;
+    const paneCount = oldWorkspace?.result?.workspace?.pane_count ?? 0;
+    if (isMainCheckout && paneCount <= 1) {
+      try {
+        await herdr(
+          [
+            "tab",
+            "create",
+            "--workspace",
+            oldWorkspaceId!,
+            "--cwd",
+            oldWorkspace.result.workspace.worktree.checkout_path,
+            "--no-focus",
+          ],
+          undefined,
+          10000,
+        );
+      } catch (error) {
+        const message = error instanceof Error ? error.message : String(error);
+        report(`Could not create a replacement tab in ${oldWorkspaceId}: ${message}`);
+        return;
+      }
     }
 
     try {
