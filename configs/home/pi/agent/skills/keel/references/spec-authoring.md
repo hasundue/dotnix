@@ -55,7 +55,6 @@ check. A scope change after approval edits the body and returns `status` to
 ## Version control
 
 Whether the spec is committed, and when, follows the project's convention unless
-the user or the agreement says otherwise. When it is committed, the spec's
-history is the body of the commit that carries it, and the spec drops the reason
-a change moved and any context a blocked spec carried. When it is not, the spec
-is its own history and keeps them.
+the user says otherwise. When it is committed, the commit that carries the spec
+holds the reason a change moved and any blocker context in its body, and the
+spec drops them. When it is not, the spec keeps neither.
