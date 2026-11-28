@@ -47,8 +47,12 @@ the branch tip and merge.
 The task spec is a branch artifact and must not land on `main`: check that
 neither the reorganized commits nor `main` contains it.
 
-Run the merge with Worktrunk in the source branch's checkout, so the local
-branch tip is what gets merged.
+Before the merge, return to the primary `main` checkout: in Herdr, call
+`herdr_worktree_move` with `branch: "main"` and continue after the handoff.
+Run the merge with Worktrunk from `main`, naming the source branch
+(`wt merge --branch <branch>`), so the local branch tip is what gets merged and
+the source worktree can be removed without displacing the session. Do not merge
+from the worktree being removed.
 
 Keep the source remote branch after a merge as a checkpoint archive; do not
 delete it. Rebased commits are never pushed, so the archive is not the merged
