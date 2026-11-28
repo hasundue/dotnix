@@ -46,9 +46,6 @@ in
           source = "npm:pi-gpui";
           extensions = [ ];
         }
-        # Replaces the built-in grep/find; the mode is set globally in
-        # agent/pi-fff.json.
-        "npm:@ff-labs/pi-fff"
       ];
       defaultTools = [
         "+grep"
@@ -138,7 +135,6 @@ in
     ".pi/agent/AGENTS.md".source = ./agent/AGENTS.md;
     ".pi/agent/APPEND_SYSTEM.md".source = ./agent/APPEND_SYSTEM.md;
     ".pi/agent/models.json".source = ./agent/models.json;
-    ".pi/agent/pi-fff.json".source = ./agent/pi-fff.json;
     ".pi/agent/mcp.json".source = ./agent/mcp.json;
     ".pi/agent/keybindings.json".source = ./agent/keybindings.json;
     ".pi/agent/prompts".source = ./agent/prompts;
