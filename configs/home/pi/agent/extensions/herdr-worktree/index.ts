@@ -31,7 +31,10 @@ import {
 
 const moveSchema = Type.Object({
   branch: Type.Optional(
-    Type.String({ description: "Branch to open or create; generated when omitted" }),
+    Type.String({
+      description:
+        "Branch to open or create; 'main' returns to the primary checkout; generated when omitted",
+    }),
   ),
   path: Type.Optional(
     Type.String({ description: "Worktree path to open or create; generated when omitted" }),
@@ -116,12 +119,9 @@ export default function (pi: ExtensionAPI) {
   pi.registerTool({
     name: MOVE_TOOL,
     label: "Move worktree",
-    description:
-      "Move this Pi session between the main checkout and Git worktrees in Herdr. Branch and path are optional; omitted values are generated. Use branch 'main' to return to the main checkout.",
-    promptSnippet: "Move the current work between the main checkout and Git worktrees in Herdr",
-    promptGuidelines: [
-      "Use herdr_worktree_move for worktree requests in Herdr, with no arguments when no branch or path was named and branch 'main' when returning to main.",
-    ],
+    description: "Move this Pi session between the main checkout and Git worktrees in Herdr.",
+    promptSnippet: "Create or switch to a Git worktree in Herdr, or return to main",
+    promptGuidelines: ["Use herdr_worktree_move for worktree requests in Herdr."],
     parameters: moveSchema,
 
     renderResult: renderMoveResult,
