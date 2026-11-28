@@ -117,10 +117,10 @@ export default function (pi: ExtensionAPI) {
     name: MOVE_TOOL,
     label: "Move worktree",
     description:
-      "Move this Pi session between the main checkout and Git worktrees in Herdr. Branch and path are optional; omitted values are generated. Use branch 'main' to return to the main checkout.",
+      "Move this Pi session between the main checkout and Git worktrees in Herdr. Use branch 'main' to return to the main checkout.",
     promptSnippet: "Move the current work between the main checkout and Git worktrees in Herdr",
     promptGuidelines: [
-      "Use herdr_worktree_move for worktree requests in Herdr, with no arguments when no branch or path was named and branch 'main' when returning to main.",
+      "Use herdr_worktree_move for worktree requests in Herdr, with branch 'main' when returning to main.",
     ],
     parameters: moveSchema,
 
