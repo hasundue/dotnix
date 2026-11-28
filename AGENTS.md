@@ -23,6 +23,9 @@ Make code changes in a linked worktree, not in the primary checkout at
 `git checkout -b`; create the worktree with Worktrunk. Name new worktrees after
 the task.
 
+Move the session into the worktree with `herdr_worktree_move` and work there;
+do not edit worktree files by absolute path from the primary checkout.
+
 When the current directory is already a worktree such as `~/dotnix.<branch>`,
 keep working there and do not nest another one.
 
