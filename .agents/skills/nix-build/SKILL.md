@@ -19,10 +19,10 @@ nix run .#home-build   # Home Manager only; leaves ./result-home
 
 Use `nixos-build` for changes under `configs/hosts/`, `configs/nixos/`, or the
 flake itself, and `home-build` for standalone Home Manager config-file changes.
-A change that touches packages needs `nixos-build` instead; the reason is in the
-Home Manager section of [the Nix activation skill](../nix-activation/SKILL.md).
-Neither command activates a configuration; hand activation off to the user, or
-follow the activation skill if explicitly instructed to run it.
+A change that touches packages needs `nixos-build` instead: standalone Home
+Manager installs packages into its own profile, while the NixOS module uses the
+per-user system profile. Neither command activates a configuration; activation
+is normally run by the user.
 
 The build apps accept passthrough flags such as `--show-trace`. They pipe output
 through `nom` when stdout is a TTY, and skip it when non-TTY for minimal
