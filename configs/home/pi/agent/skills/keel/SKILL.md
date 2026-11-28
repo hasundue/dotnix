@@ -45,5 +45,7 @@ back -- the ask itself may be broken.
 ## Spec
 
 A large task carries its agreement in a written spec, in the language of the
-session that wrote it. Its name and location come from the project or the user.
-Follow `references/spec-authoring.md` for how to draft and promote it.
+session that wrote it. Its name, location, and git handling follow the project's
+convention unless the user says otherwise; read that convention rather than
+asking, and ask only when it is silent. Follow `references/spec-authoring.md`
+for how to draft and promote it.
