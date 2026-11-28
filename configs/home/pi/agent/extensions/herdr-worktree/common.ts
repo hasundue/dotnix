@@ -12,9 +12,10 @@ import type { ExtensionAPI, ToolRenderers } from "@earendil-works/pi-coding-agen
 import { Text } from "@earendil-works/pi-tui";
 
 export const MOVE_TOOL = "herdr_worktree_move";
-export const HANDOFF_FLAG = "herdr-worktree-handoff";
 export const HANDOFF_ACTION = "handoff";
 export const HANDOFF_PLUGIN = "local.worktree-handoff";
+export const HANDOFF_METADATA_TYPE = "herdr-worktree-handoff.metadata";
+export const HANDOFF_DONE_TYPE = "herdr-worktree-handoff.done";
 export const HANDOFF_MESSAGE_TYPE = "herdr-worktree-handoff";
 export const HERDR_NOTICE =
   "You are running inside Herdr, a terminal multiplexer designed for coding agents, which manages workspaces, tabs, panes, and agent status.";
@@ -38,6 +39,46 @@ export type Placement = {
   rootPaneId?: string;
   worktree?: Worktree;
 };
+
+export type HandoffMetadata = {
+  handoffId: string;
+  sourcePaneId: string;
+  destinationPaneId: string;
+};
+
+export type HandoffDone = {
+  handoffId: string;
+};
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null;
+}
+
+export function isHandoffMetadata(value: unknown): value is HandoffMetadata {
+  return (
+    isRecord(value) &&
+    typeof value.handoffId === "string" &&
+    typeof value.sourcePaneId === "string" &&
+    typeof value.destinationPaneId === "string"
+  );
+}
+
+export function isHandoffDone(value: unknown): value is HandoffDone {
+  return isRecord(value) && typeof value.handoffId === "string";
+}
+
+export function customEntryData<T>(
+  entries: readonly unknown[],
+  customType: string,
+  guard: (value: unknown) => value is T,
+): T[] {
+  const found: T[] = [];
+  for (const entry of entries) {
+    if (!isRecord(entry) || entry.type !== "custom" || entry.customType !== customType) continue;
+    if (guard(entry.data)) found.push(entry.data);
+  }
+  return found;
+}
 
 type MoveDetails = {
   destination?: string;

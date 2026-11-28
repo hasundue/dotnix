@@ -1,8 +1,8 @@
 /**
  * Herdr worktree handoff — loaded only in the forked destination via `-e`.
- * It reads the old pane ID from the handoff flag, focuses this pane at session
- * start when that pane still has focus, and closes the source pane and session
- * after the forked agent has settled.
+ * It reads handoff metadata from the forked session, focuses this pane at
+ * session start when that pane still has focus, and closes the source pane
+ * and session after the forked agent has settled.
  */
 
 import { unlink } from "node:fs/promises";
@@ -10,11 +10,15 @@ import { unlink } from "node:fs/promises";
 import type { ExtensionAPI, ExtensionContext } from "@earendil-works/pi-coding-agent";
 
 import {
-  HANDOFF_FLAG,
+  HANDOFF_DONE_TYPE,
   HANDOFF_MESSAGE,
   HANDOFF_MESSAGE_TYPE,
+  HANDOFF_METADATA_TYPE,
   MOVE_TOOL,
   createHerdr,
+  customEntryData,
+  isHandoffDone,
+  isHandoffMetadata,
   registerHerdrNotice,
   renderMoveResult,
   samePath,
@@ -25,10 +29,6 @@ export default function (pi: ExtensionAPI) {
   if (process.env.HERDR_ENV !== "1") return;
 
   registerHerdrNotice(pi);
-  pi.registerFlag(HANDOFF_FLAG, {
-    description: "Old Herdr pane ID for a worktree handoff",
-    type: "string",
-  });
   pi.registerToolRenderer((toolName, next) => {
     if (toolName !== MOVE_TOOL) return next();
     return next() ?? { renderResult: renderMoveResult };
@@ -37,13 +37,33 @@ export default function (pi: ExtensionAPI) {
 
   let handoffStarted = false;
 
-  pi.on("session_start", async (_event, ctx) => {
-    const handoffFrom = pi.getFlag(HANDOFF_FLAG);
-    if (handoffStarted || typeof handoffFrom !== "string" || handoffFrom === "") return;
+  pi.on("session_start", async (event, ctx) => {
+    if (event.reason !== "startup" || handoffStarted) return;
+    const destinationPaneId = process.env.HERDR_PANE_ID;
+    if (!destinationPaneId) return;
+
+    const entries = ctx.sessionManager.getBranch();
+    const done = new Set(
+      customEntryData(entries, HANDOFF_DONE_TYPE, isHandoffDone).map((entry) => entry.handoffId),
+    );
+    const pending = customEntryData(entries, HANDOFF_METADATA_TYPE, isHandoffMetadata).filter(
+      (entry) => entry.destinationPaneId === destinationPaneId && !done.has(entry.handoffId),
+    );
+    if (pending.length === 0) return;
+    if (pending.length > 1) {
+      ctx.ui.notify(
+        `Multiple handoffs target pane ${destinationPaneId}; none was processed.`,
+        "warning",
+      );
+      return;
+    }
+
     handoffStarted = true;
+    const { handoffId, sourcePaneId } = pending[0];
+    pi.appendEntry(HANDOFF_DONE_TYPE, { handoffId });
     // Keep this non-blocking so Herdr's own session_start handlers can register the pane.
     // Cleanup starts after the focus attempt settles.
-    void focusDestination(handoffFrom, ctx).finally(() => void finishHandoff(handoffFrom, ctx));
+    void focusDestination(sourcePaneId, ctx).finally(() => void finishHandoff(sourcePaneId, ctx));
     pi.sendMessage(
       {
         customType: HANDOFF_MESSAGE_TYPE,
@@ -55,7 +75,7 @@ export default function (pi: ExtensionAPI) {
     );
   });
 
-  async function focusDestination(oldPane: string, ctx: ExtensionContext): Promise<void> {
+  async function focusDestination(sourcePaneId: string, ctx: ExtensionContext): Promise<void> {
     const pane = process.env.HERDR_PANE_ID;
     if (!pane) {
       ctx.ui.notify("Handoff destination pane ID is missing; focus was not moved.", "warning");
@@ -65,11 +85,14 @@ export default function (pi: ExtensionAPI) {
     const expired = () => Date.now() >= deadline;
     const remaining = () => Math.max(1, deadline - Date.now());
     const fail = (message: string) =>
-      ctx.ui.notify(`Could not hand off focus from ${oldPane} to ${pane}: ${message}`, "warning");
+      ctx.ui.notify(
+        `Could not hand off focus from ${sourcePaneId} to ${pane}: ${message}`,
+        "warning",
+      );
     for (;;) {
       if (expired()) return fail("timed out");
       try {
-        const source = await herdr(["pane", "get", oldPane], undefined, remaining());
+        const source = await herdr(["pane", "get", sourcePaneId], undefined, remaining());
         const focused = source?.result?.pane?.focused;
         if (focused === false) return;
         if (focused !== true) {
@@ -87,13 +110,13 @@ export default function (pi: ExtensionAPI) {
     }
   }
 
-  async function finishHandoff(oldPane: string, ctx: ExtensionContext): Promise<void> {
+  async function finishHandoff(sourcePaneId: string, ctx: ExtensionContext): Promise<void> {
     const report = (message: string) => ctx.ui.notify(message, "warning");
     let sourceSession: string | undefined;
     let oldWorkspaceId: string | undefined;
     let oldWorkspace: any;
     try {
-      const old = await herdr(["pane", "get", oldPane], undefined, 10000);
+      const old = await herdr(["pane", "get", sourcePaneId], undefined, 10000);
       sourceSession = old?.result?.pane?.agent_session?.value;
       oldWorkspaceId = old?.result?.pane?.workspace_id;
       oldWorkspace = oldWorkspaceId
@@ -101,12 +124,12 @@ export default function (pi: ExtensionAPI) {
         : null;
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
-      const workspaceId = oldPane.split(":")[0];
+      const workspaceId = sourcePaneId.split(":")[0];
       const workspaces = await herdrQuiet(["workspace", "list"]);
       const stillOpen = (workspaces?.result?.workspaces ?? []).some(
         (workspace: any) => workspace.workspace_id === workspaceId,
       );
-      if (stillOpen) report(`Handoff source pane ${oldPane} is unavailable: ${message}`);
+      if (stillOpen) report(`Handoff source pane ${sourcePaneId} is unavailable: ${message}`);
       return;
     }
 
@@ -154,7 +177,7 @@ export default function (pi: ExtensionAPI) {
     let settled = false;
     let elapsed = 0;
     while (Date.now() < deadline) {
-      const agent = await herdrQuiet(["agent", "get", oldPane], 10000);
+      const agent = await herdrQuiet(["agent", "get", sourcePaneId], 10000);
       const state = agent?.result?.agent?.agent_status;
       if (state === "working" || state === "blocked") {
         sawWorking = true;
@@ -171,7 +194,7 @@ export default function (pi: ExtensionAPI) {
 
     if (!settled) {
       report(
-        `Handoff from ${oldPane} is unfinished: the old pane did not settle and was left open.`,
+        `Handoff from ${sourcePaneId} is unfinished: the old pane did not settle and was left open.`,
       );
       return;
     }
@@ -201,10 +224,10 @@ export default function (pi: ExtensionAPI) {
     }
 
     try {
-      await herdr(["pane", "close", oldPane], undefined, 10000);
+      await herdr(["pane", "close", sourcePaneId], undefined, 10000);
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
-      report(`Could not close old pane ${oldPane}: ${message}`);
+      report(`Could not close old pane ${sourcePaneId}: ${message}`);
       return;
     }
 

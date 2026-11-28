@@ -5,6 +5,7 @@
  * Herdr receive no Herdr-specific instructions.
  */
 
+import { randomUUID } from "node:crypto";
 import { existsSync } from "node:fs";
 import { mkdir, unlink, writeFile } from "node:fs/promises";
 import { homedir } from "node:os";
@@ -15,6 +16,8 @@ import { Type } from "typebox";
 
 import {
   HANDOFF_ACTION,
+  HANDOFF_DONE_TYPE,
+  HANDOFF_METADATA_TYPE,
   HANDOFF_PLUGIN,
   MOVE_TOOL,
   createHerdr,
@@ -283,12 +286,20 @@ export default function (pi: ExtensionAPI) {
         };
         const jobPath = join(stateDir, `handoff-${Date.now()}-${agent}.json`);
         await writeFile(jobPath, JSON.stringify(job));
+        // The destination forks this session, so metadata must be on disk before agent start.
+        const handoffId = randomUUID();
+        pi.appendEntry(HANDOFF_METADATA_TYPE, {
+          handoffId,
+          sourcePaneId: oldPaneId,
+          destinationPaneId: rootPaneId,
+        });
         try {
           await herdr(
             ["plugin", "action", "invoke", HANDOFF_ACTION, "--plugin", HANDOFF_PLUGIN],
             signal,
           );
         } catch (error) {
+          pi.appendEntry(HANDOFF_DONE_TYPE, { handoffId });
           await unlink(jobPath).catch(() => undefined);
           throw error;
         }
