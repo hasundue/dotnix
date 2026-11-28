@@ -8,9 +8,6 @@ description: >
 
 # Sail
 
-`keel` makes the agreement; `sail` carries it out. Do not reopen the interview,
-rewrite the problem, or cut a branch unless the agreement or the user asks.
-
 ## Find the agreement
 
 Find it in the session context: a path the user passed, a written spec the
