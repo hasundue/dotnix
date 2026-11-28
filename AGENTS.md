@@ -94,13 +94,13 @@ pinned tree answers exactly for the revision being built.
 
 ## Build and Apply
 
-For build-only validation, read and follow the
-[Nix build skill](.agents/skills/nix-build/SKILL.md). A change under
-`configs/home/` only can usually be checked with `home-switch`, which builds and
-activates without sudo; it is an activation command.
+For validation, read and follow the
+[Nix build skill](.agents/skills/nix-build/SKILL.md). These commands leave the
+running system and user profile unchanged.
 
-Before running any activation command (`home-switch`, `nixos-test`,
-`nixos-switch`, or `nixos-boot`), read and follow the
+Activation commands (`home-switch`, `nixos-test`, `nixos-switch`, and
+`nixos-boot`) are normally run by the user. The agent does not run them unless
+the user explicitly instructs an activation; in that case read and follow the
 [Nix activation skill](.agents/skills/nix-activation/SKILL.md). The user runs
-commands that need sudo; verify the result afterwards and do not ask for a sudo
-password or add non-interactive elevation.
+commands that need sudo; do not ask for a sudo password or add non-interactive
+elevation. Verify the result after any activation.
