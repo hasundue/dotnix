@@ -5,9 +5,8 @@ wrote it. Its name and location come from project convention or the user.
 
 ## Frontmatter
 
-Keys stay English. `status` is `draft` before approval, `agreed` after it,
-`blocked` while the work waits on a decision, and `stale` when it will not land.
-A stale spec has nothing for `main`. A dropped draft is deleted uncommitted.
+Keys stay English. `status` is `draft` before approval, `agreed` after it, and
+`blocked` while the work waits on a decision.
 
 ## Templates
 
@@ -52,3 +51,11 @@ commands that check them.
 Approval is a status change from `draft` to `agreed`. There is no independent
 check. A scope change after approval edits the body and returns `status` to
 `draft` until it is approved again.
+
+## Version control
+
+Whether the spec is committed, and when, follows the project's convention unless
+the user or the agreement says otherwise. When it is committed, the spec's
+history is the body of the commit that carries it, and the spec drops the reason
+a change moved and any context a blocked spec carried. When it is not, the spec
+is its own history and keeps them.
