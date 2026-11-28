@@ -20,7 +20,8 @@ checkout unless asked.
 
 Make code changes in a linked worktree, not in the primary checkout at
 `~/dotnix`. Do not create a branch in place there with `git switch -c` or
-`git checkout -b`; create the worktree with Worktrunk.
+`git checkout -b`; create the worktree with Worktrunk. Name new worktrees after
+the task.
 
 When the current directory is already a worktree such as `~/dotnix.<branch>`,
 keep working there and do not nest another one.
