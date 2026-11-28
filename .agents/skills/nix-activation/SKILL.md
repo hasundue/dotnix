@@ -1,17 +1,19 @@
 ---
 name: nix-activation
 description: >
-  Apply NixOS and Home Manager configurations using this repository's activation
-  commands. Use when asked to test, switch, boot, or activate a configuration;
-  not for build-only validation.
+  Hand off NixOS and Home Manager activation to the user, or run it only when
+  explicitly instructed. Use when activation is needed; not for build-only
+  validation.
 disable-model-invocation: true
 ---
 
 # Nix activation
 
-Choose the command for the requested system or Home Manager activation.
-Build-only commands are in [the Nix build skill](../nix-build/SKILL.md). They
-do not activate a configuration.
+The agent does not run activation commands by default. Tell the user which
+command to run; run one yourself only when the user explicitly instructs an
+activation. Build-only commands are in
+[the Nix build skill](../nix-build/SKILL.md). They do not activate a
+configuration.
 
 ## NixOS
 
@@ -24,8 +26,9 @@ nix run .#nixos-boot    # Set the boot entry for next reboot
 ```
 
 The user runs them as a normal user: `sudo` is requested only for activation.
-The user may also prefix a command with `sudo` without a second prompt. The
-agent does not request a sudo password or supply non-interactive elevation.
+The user may also prefix a command with `sudo` without a second prompt. Never
+request a sudo password or add non-interactive elevation, including when
+explicitly instructed to run one.
 
 ## Home Manager
 
@@ -53,10 +56,11 @@ instead of `home-switch`. For build-only inspection of such a change, use
 
 ## Verification
 
-After each activation, verify the resulting state as far as possible in this
-environment. For checks that do not need sudo, use `home-switch` subject to the
-package exception above, or a build-only command from the build skill. Do not
-ask for a sudo password or add non-interactive elevation.
+After each activation, verify the resulting state as far as possible without
+another activation: use a build-only command from the build skill or `nix eval`.
+If the user explicitly asks for another activation to check the result, follow
+the same rules above. Do not ask for a sudo password or add non-interactive
+elevation.
 
 The `nixos-*` activation apps do not use `nom`: their output is raw because the
 status ticker would erase sudo's password prompt. Output handling for the build
