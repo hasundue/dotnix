@@ -116,8 +116,7 @@ export default function (pi: ExtensionAPI) {
   pi.registerTool({
     name: MOVE_TOOL,
     label: "Move worktree",
-    description:
-      "Move this Pi session between the main checkout and Git worktrees in Herdr. Use branch 'main' to return to the main checkout.",
+    description: "Move this Pi session between the main checkout and Git worktrees in Herdr.",
     promptSnippet: "Move the current work between the main checkout and Git worktrees in Herdr",
     promptGuidelines: [
       "Use herdr_worktree_move for worktree requests in Herdr, with branch 'main' when returning to main.",
