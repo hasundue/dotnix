@@ -42,7 +42,8 @@ status: agreed
   の指示は既存の `HANDOFF_MESSAGE` を `sendMessage` で送る．
 - cleanup の前と pane を閉じる直前の 2 回，source pane が今も moving 元 session
   を指していることを，fork された session header の `parentSession` と照合する．
-  照合できない場合は pane も session も触らない．
+  照合できた時点の session と workspace を cleanup の対象に固定し，照合できない
+  場合は pane も session も触らない．
 - `placement()` の `rootPaneId` は Herdr レスポンス名として残し，metadata 側の
   フィールド名は `destinationPaneId` を使う．source 側は `sourcePaneId` を使う．
 

@@ -127,42 +127,27 @@ export default function (pi: ExtensionAPI) {
 
   async function finishHandoff(sourcePaneId: string, ctx: ExtensionContext): Promise<void> {
     const report = (message: string) => ctx.ui.notify(message, "warning");
-    let sourceSession: string | undefined;
-    let oldWorkspaceId: string | undefined;
-    let oldWorkspace: any;
-    try {
-      const old = await herdr(["pane", "get", sourcePaneId], undefined, 10000);
-      sourceSession = old?.result?.pane?.agent_session?.value;
-      oldWorkspaceId = old?.result?.pane?.workspace_id;
-      oldWorkspace = oldWorkspaceId
-        ? await herdr(["workspace", "get", oldWorkspaceId], undefined, 10000)
-        : null;
-    } catch (error) {
-      const message = error instanceof Error ? error.message : String(error);
-      const workspaceId = sourcePaneId.split(":")[0];
-      const workspaces = await herdrQuiet(["workspace", "list"]);
-      const stillOpen = (workspaces?.result?.workspaces ?? []).some(
-        (workspace: any) => workspace.workspace_id === workspaceId,
-      );
-      if (stillOpen) report(`Handoff source pane ${sourcePaneId} is unavailable: ${message}`);
-      return;
-    }
-
     const expectedSession = ctx.sessionManager.getHeader()?.parentSession;
-    const sourceMatches = async (): Promise<boolean> => {
+    let verifiedSource: { session: string; workspaceId?: string; workspace: any } | undefined;
+    const verifySource = async (): Promise<boolean> => {
       if (!expectedSession) return false;
       const current = await herdrQuiet(["pane", "get", sourcePaneId], 10000);
-      const currentSession = current?.result?.pane?.agent_session?.value;
-      return (
-        typeof currentSession === "string" &&
-        currentSession !== "" &&
-        samePath(currentSession, expectedSession)
-      );
+      const session = current?.result?.pane?.agent_session?.value;
+      if (typeof session !== "string" || session === "" || !samePath(session, expectedSession)) {
+        return false;
+      }
+      const workspaceId: string | undefined = current?.result?.pane?.workspace_id;
+      const workspace = workspaceId
+        ? await herdrQuiet(["workspace", "get", workspaceId], 10000)
+        : null;
+      verifiedSource = { session, workspaceId, workspace };
+      return true;
     };
-    if (!sourceSession || !(await sourceMatches())) {
+    if (!(await verifySource())) {
       report("Handoff source session identity is unclear; the source pane was left open.");
       return;
     }
+    const initialSource = verifiedSource;
 
     const destinationPaneId = process.env.HERDR_PANE_ID;
     if (!destinationPaneId) {
@@ -187,7 +172,7 @@ export default function (pi: ExtensionAPI) {
       return;
     }
 
-    const oldWorktree = oldWorkspace?.result?.workspace?.worktree;
+    const oldWorktree = initialSource?.workspace?.result?.workspace?.worktree;
     const destinationWorktree = destinationWorkspace?.result?.workspace?.worktree;
     if (
       !oldWorktree ||
@@ -230,18 +215,24 @@ export default function (pi: ExtensionAPI) {
       return;
     }
 
-    const isMainCheckout = oldWorkspace?.result?.workspace?.worktree?.is_linked_worktree === false;
-    const paneCount = oldWorkspace?.result?.workspace?.pane_count ?? 0;
-    if (isMainCheckout && paneCount <= 1) {
+    const isMainCheckout =
+      initialSource?.workspace?.result?.workspace?.worktree?.is_linked_worktree === false;
+    const paneCount = initialSource?.workspace?.result?.workspace?.pane_count ?? 0;
+    if (!(await verifySource())) {
+      report("Handoff source pane changed before cleanup; the pane was left open.");
+      return;
+    }
+    const finalSource = verifiedSource!;
+    if (isMainCheckout && paneCount <= 1 && finalSource.workspaceId && finalSource.workspace) {
       try {
         await herdr(
           [
             "tab",
             "create",
             "--workspace",
-            oldWorkspaceId!,
+            finalSource.workspaceId,
             "--cwd",
-            oldWorkspace.result.workspace.worktree.checkout_path,
+            finalSource.workspace.result.workspace.worktree.checkout_path,
             "--no-focus",
           ],
           undefined,
@@ -249,15 +240,11 @@ export default function (pi: ExtensionAPI) {
         );
       } catch (error) {
         const message = error instanceof Error ? error.message : String(error);
-        report(`Could not create a replacement tab in ${oldWorkspaceId}: ${message}`);
+        report(`Could not create a replacement tab in ${finalSource.workspaceId}: ${message}`);
         return;
       }
     }
 
-    if (!(await sourceMatches())) {
-      report("Handoff source pane changed before cleanup; the pane was left open.");
-      return;
-    }
     try {
       await herdr(["pane", "close", sourcePaneId], undefined, 10000);
     } catch (error) {
@@ -266,33 +253,31 @@ export default function (pi: ExtensionAPI) {
       return;
     }
 
-    if (typeof sourceSession === "string" && sourceSession !== "") {
-      try {
-        await unlink(sourceSession);
-      } catch (error) {
-        const message = error instanceof Error ? error.message : String(error);
-        report(`Could not remove source session ${sourceSession}: ${message}`);
-      }
+    try {
+      await unlink(finalSource.session);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      report(`Could not remove source session ${finalSource.session}: ${message}`);
     }
-    if (isMainReturn && oldWorkspaceId) {
+    if (isMainReturn && finalSource.workspaceId) {
       let workspaceStillOpen = false;
       try {
         const listed = await herdr(["workspace", "list"], undefined, 10000);
         workspaceStillOpen = (listed?.result?.workspaces ?? []).some(
-          (workspace: any) => workspace.workspace_id === oldWorkspaceId,
+          (workspace: any) => workspace.workspace_id === finalSource.workspaceId,
         );
       } catch (error) {
         const message = error instanceof Error ? error.message : String(error);
-        report(`Could not inspect old workspace ${oldWorkspaceId}: ${message}`);
+        report(`Could not inspect old workspace ${finalSource.workspaceId}: ${message}`);
         return;
       }
 
       if (workspaceStillOpen) {
         try {
-          await herdr(["workspace", "close", oldWorkspaceId], undefined, 10000);
+          await herdr(["workspace", "close", finalSource.workspaceId], undefined, 10000);
         } catch (error) {
           const message = error instanceof Error ? error.message : String(error);
-          report(`Could not close old workspace ${oldWorkspaceId}: ${message}`);
+          report(`Could not close old workspace ${finalSource.workspaceId}: ${message}`);
         }
       }
     }
