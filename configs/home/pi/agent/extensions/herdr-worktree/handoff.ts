@@ -149,7 +149,17 @@ export default function (pi: ExtensionAPI) {
     }
 
     const expectedSession = ctx.sessionManager.getHeader()?.parentSession;
-    if (!expectedSession || !sourceSession || !samePath(sourceSession, expectedSession)) {
+    const sourceMatches = async (): Promise<boolean> => {
+      if (!expectedSession) return false;
+      const current = await herdrQuiet(["pane", "get", sourcePaneId], 10000);
+      const currentSession = current?.result?.pane?.agent_session?.value;
+      return (
+        typeof currentSession === "string" &&
+        currentSession !== "" &&
+        samePath(currentSession, expectedSession)
+      );
+    };
+    if (!sourceSession || !(await sourceMatches())) {
       report("Handoff source session identity is unclear; the source pane was left open.");
       return;
     }
@@ -244,6 +254,10 @@ export default function (pi: ExtensionAPI) {
       }
     }
 
+    if (!(await sourceMatches())) {
+      report("Handoff source pane changed before cleanup; the pane was left open.");
+      return;
+    }
     try {
       await herdr(["pane", "close", sourcePaneId], undefined, 10000);
     } catch (error) {

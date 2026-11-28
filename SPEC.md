@@ -25,7 +25,8 @@ status: agreed
 - `configs/home/pi/agent/extensions/herdr-worktree/index.ts` は plugin action の
   起動前に，移動元セッションへ `handoffId`，`sourcePaneId`，`destinationPaneId`
   の custom entry を書く．移動先が `--fork` で受け取るには起動前の書き込みが必要
-  なため．metadata は job ファイルより先に置き，job の作成や action が失敗した
+  なため．metadata は job ファイルより先に置き，job は一時名に書いてから
+  consumer が見る名前へ atomically rename する．job の作成や action が失敗した
   場合は同じ `handoffId` を done にして job を取り消す．
 - `configs/home/pi/agent/extensions/herdr-worktree/handoff.ts` は
   `session_start` を `reason === "startup"` に限定し，`HERDR_PANE_ID` と
@@ -39,9 +40,9 @@ status: agreed
   め．
 - metadata と done は `custom` entry にして LLM コンテキストに乗せない．モデルへ
   の指示は既存の `HANDOFF_MESSAGE` を `sendMessage` で送る．
-- cleanup の前に，source pane が今も moving 元 session を指していることを，fork
-  された session header の `parentSession` と照合する．照合できない場合は pane
-  も session も触らない．
+- cleanup の前と pane を閉じる直前の 2 回，source pane が今も moving 元 session
+  を指していることを，fork された session header の `parentSession` と照合する．
+  照合できない場合は pane も session も触らない．
 - `placement()` の `rootPaneId` は Herdr レスポンス名として残し，metadata 側の
   フィールド名は `destinationPaneId` を使う．source 側は `sourcePaneId` を使う．
 

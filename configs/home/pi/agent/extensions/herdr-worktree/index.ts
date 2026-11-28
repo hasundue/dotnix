@@ -7,7 +7,7 @@
 
 import { randomUUID } from "node:crypto";
 import { existsSync } from "node:fs";
-import { mkdir, unlink, writeFile } from "node:fs/promises";
+import { mkdir, rename, unlink, writeFile } from "node:fs/promises";
 import { homedir } from "node:os";
 import { basename, dirname, join, resolve } from "node:path";
 
@@ -292,20 +292,29 @@ export default function (pi: ExtensionAPI) {
           sourcePaneId: oldPaneId,
           destinationPaneId: rootPaneId,
         });
-        const jobPath = join(stateDir, `handoff-${Date.now()}-${agent}.json`);
+        const stamp = Date.now();
+        const jobPath = join(stateDir, `handoff-${stamp}-${agent}.json`);
+        const tmpPath = join(stateDir, `.handoff-${stamp}-${agent}.tmp`);
         try {
-          await writeFile(jobPath, JSON.stringify(job));
+          await writeFile(tmpPath, JSON.stringify(job));
+          await rename(tmpPath, jobPath);
           await herdr(
             ["plugin", "action", "invoke", HANDOFF_ACTION, "--plugin", HANDOFF_PLUGIN],
             signal,
           );
         } catch (error) {
+          let failure: unknown = error;
           try {
             pi.appendEntry(HANDOFF_DONE_TYPE, { handoffId });
+          } catch (doneError) {
+            const original = error instanceof Error ? error.message : String(error);
+            const detail = doneError instanceof Error ? doneError.message : String(doneError);
+            failure = new Error(`${original}; also failed to mark handoff done: ${detail}`);
           } finally {
             await unlink(jobPath).catch(() => undefined);
+            await unlink(tmpPath).catch(() => undefined);
           }
-          throw error;
+          throw failure;
         }
 
         const destination = worktreePath(worktree) ?? targetPath ?? "the worktree";
