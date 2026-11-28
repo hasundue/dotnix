@@ -1,14 +1,14 @@
 ---
 name: sail
 description: >
-  Execute the agreement made at a keel gate: work its conditions with evidence,
-  and stop on blockers instead of guessing. Use when the user hands over work
-  to implement.
+  Execute the agreement made at a `keel` gate: work its conditions with
+  evidence, and stop on blockers instead of guessing. Use when the user hands
+  over work to implement.
 ---
 
 # Sail
 
-Keel makes the agreement; sail carries it out. Do not reopen the interview,
+`keel` makes the agreement; `sail` carries it out. Do not reopen the interview,
 rewrite the problem, or cut a branch unless the agreement or the user asks.
 
 ## Find the agreement
@@ -36,7 +36,8 @@ decide what to run or inspect.
 Stop when a premise of the agreement no longer holds. Report which premise
 failed and wait for the user's decision.
 
-If the agreement must change, update it before acting.
+If the agreement must change, it goes back through the gate: reopen the
+interview with `keel` instead of editing the spec and carrying on in one step.
 
 ## Report
 
