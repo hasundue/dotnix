@@ -28,7 +28,7 @@ let
       old_pane=$(${jq} -er '.oldPane' "$job.running")
       readarray -t extra < <(${jq} -r '.extraArgs // [] | .[]' "$job.running")
       if output=$(${herdr} agent start "$agent" --kind pi --pane "$pane" --timeout 120000 -- \
-        "''${extra[@]}" --herdr-worktree-handoff "$old_pane" -a --fork "$session" 2>&1); then
+        "''${extra[@]}" -a --fork "$session" 2>&1); then
         rm -f "$job.running"
       else
         status=$?

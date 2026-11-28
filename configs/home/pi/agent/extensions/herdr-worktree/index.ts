@@ -5,8 +5,9 @@
  * Herdr receive no Herdr-specific instructions.
  */
 
+import { randomUUID } from "node:crypto";
 import { existsSync } from "node:fs";
-import { mkdir, unlink, writeFile } from "node:fs/promises";
+import { mkdir, rename, unlink, writeFile } from "node:fs/promises";
 import { homedir } from "node:os";
 import { basename, dirname, join, resolve } from "node:path";
 
@@ -15,6 +16,8 @@ import { Type } from "typebox";
 
 import {
   HANDOFF_ACTION,
+  HANDOFF_DONE_TYPE,
+  HANDOFF_METADATA_TYPE,
   HANDOFF_PLUGIN,
   MOVE_TOOL,
   createHerdr,
@@ -281,16 +284,37 @@ export default function (pi: ExtensionAPI) {
           oldPane: oldPaneId,
           extraArgs: handoffArgs(),
         };
-        const jobPath = join(stateDir, `handoff-${Date.now()}-${agent}.json`);
-        await writeFile(jobPath, JSON.stringify(job));
+        // The destination forks this session, so metadata must be on disk before the job
+        // becomes visible to the plugin action.
+        const handoffId = randomUUID();
+        pi.appendEntry(HANDOFF_METADATA_TYPE, {
+          handoffId,
+          sourcePaneId: oldPaneId,
+          destinationPaneId: rootPaneId,
+        });
+        const stamp = Date.now();
+        const jobPath = join(stateDir, `handoff-${stamp}-${agent}.json`);
+        const tmpPath = join(stateDir, `.handoff-${stamp}-${agent}.tmp`);
         try {
+          await writeFile(tmpPath, JSON.stringify(job));
+          await rename(tmpPath, jobPath);
           await herdr(
             ["plugin", "action", "invoke", HANDOFF_ACTION, "--plugin", HANDOFF_PLUGIN],
             signal,
           );
         } catch (error) {
-          await unlink(jobPath).catch(() => undefined);
-          throw error;
+          let failure: unknown = error;
+          try {
+            pi.appendEntry(HANDOFF_DONE_TYPE, { handoffId });
+          } catch (doneError) {
+            const original = error instanceof Error ? error.message : String(error);
+            const detail = doneError instanceof Error ? doneError.message : String(doneError);
+            failure = new Error(`${original}; also failed to mark handoff done: ${detail}`);
+          } finally {
+            await unlink(jobPath).catch(() => undefined);
+            await unlink(tmpPath).catch(() => undefined);
+          }
+          throw failure;
         }
 
         const destination = worktreePath(worktree) ?? targetPath ?? "the worktree";

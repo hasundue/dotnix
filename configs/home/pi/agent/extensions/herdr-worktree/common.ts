@@ -12,9 +12,10 @@ import type { ExtensionAPI, ToolRenderers } from "@earendil-works/pi-coding-agen
 import { Text } from "@earendil-works/pi-tui";
 
 export const MOVE_TOOL = "herdr_worktree_move";
-export const HANDOFF_FLAG = "herdr-worktree-handoff";
 export const HANDOFF_ACTION = "handoff";
 export const HANDOFF_PLUGIN = "local.worktree-handoff";
+export const HANDOFF_METADATA_TYPE = "herdr-worktree-handoff.metadata";
+export const HANDOFF_DONE_TYPE = "herdr-worktree-handoff.done";
 export const HANDOFF_MESSAGE_TYPE = "herdr-worktree-handoff";
 export const HERDR_NOTICE =
   "You are running inside Herdr, a terminal multiplexer designed for coding agents, which manages workspaces, tabs, panes, and agent status.";
@@ -38,6 +39,58 @@ export type Placement = {
   rootPaneId?: string;
   worktree?: Worktree;
 };
+
+export type HandoffMetadata = {
+  handoffId: string;
+  sourcePaneId: string;
+  destinationPaneId: string;
+};
+
+export type HandoffDone = {
+  handoffId: string;
+};
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null;
+}
+
+function isNonEmptyString(value: unknown): value is string {
+  return typeof value === "string" && value.length > 0;
+}
+
+export function isHandoffMetadata(value: unknown): value is HandoffMetadata {
+  return (
+    isRecord(value) &&
+    isNonEmptyString(value.handoffId) &&
+    isNonEmptyString(value.sourcePaneId) &&
+    isNonEmptyString(value.destinationPaneId)
+  );
+}
+
+export function isHandoffDone(value: unknown): value is HandoffDone {
+  return isRecord(value) && isNonEmptyString(value.handoffId);
+}
+
+export function handoffTargetsPane(value: unknown, destinationPaneId: string): boolean {
+  return isRecord(value) && value.destinationPaneId === destinationPaneId;
+}
+
+export function customEntryValues(entries: readonly unknown[], customType: string): unknown[] {
+  const found: unknown[] = [];
+  for (const entry of entries) {
+    if (!isRecord(entry) || entry.type !== "custom" || entry.customType !== customType) continue;
+    found.push(entry.data);
+  }
+  return found;
+}
+
+export function customEntryData<T>(
+  entries: readonly unknown[],
+  customType: string,
+  guard: (value: unknown) => value is T,
+): T[] {
+  return customEntryValues(entries, customType).filter(guard);
+}
 
 type MoveDetails = {
   destination?: string;
