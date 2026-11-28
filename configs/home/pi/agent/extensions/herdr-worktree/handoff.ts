@@ -1,7 +1,8 @@
 /**
  * Herdr worktree handoff — loaded only in the forked destination via `-e`.
- * It reads the old pane ID from the handoff flag and closes the source pane
- * and session after the forked agent has settled.
+ * It reads the old pane ID from the handoff flag, focuses this pane at session
+ * start when that pane still has focus, and closes the source pane and session
+ * after the forked agent has settled.
  */
 
 import { unlink } from "node:fs/promises";
@@ -36,10 +37,12 @@ export default function (pi: ExtensionAPI) {
 
   let handoffStarted = false;
 
-  pi.on("session_start", (_event, ctx) => {
+  pi.on("session_start", async (_event, ctx) => {
     const handoffFrom = pi.getFlag(HANDOFF_FLAG);
     if (handoffStarted || typeof handoffFrom !== "string" || handoffFrom === "") return;
     handoffStarted = true;
+    // Keep this non-blocking so Herdr's own session_start handlers can register the pane.
+    void focusDestination(handoffFrom, ctx);
     pi.sendMessage(
       {
         customType: HANDOFF_MESSAGE_TYPE,
@@ -51,6 +54,30 @@ export default function (pi: ExtensionAPI) {
     );
     void finishHandoff(handoffFrom, ctx);
   });
+
+  async function focusDestination(oldPane: string, ctx: ExtensionContext): Promise<void> {
+    const pane = process.env.HERDR_PANE_ID;
+    if (!pane) {
+      ctx.ui.notify("Handoff destination pane ID is missing; focus was not moved.", "warning");
+      return;
+    }
+    const deadline = Date.now() + 5000;
+    for (;;) {
+      const source = await herdrQuiet(["pane", "get", oldPane], 2000);
+      if (source?.result?.pane?.focused !== true) return;
+      try {
+        await herdr(["agent", "focus", pane], undefined, 2000);
+        return;
+      } catch (error) {
+        if (Date.now() >= deadline) {
+          const message = error instanceof Error ? error.message : String(error);
+          ctx.ui.notify(`Could not focus handoff destination ${pane}: ${message}`, "warning");
+          return;
+        }
+        await sleep(100);
+      }
+    }
+  }
 
   async function finishHandoff(oldPane: string, ctx: ExtensionContext): Promise<void> {
     const report = (message: string) => ctx.ui.notify(message, "warning");

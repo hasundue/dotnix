@@ -28,10 +28,6 @@ let
       readarray -t extra < <(${jq} -r '.extraArgs // [] | .[]' "$job.running")
       if output=$(${herdr} agent start "$agent" --kind pi --pane "$pane" --timeout 120000 -- \
         "''${extra[@]}" --herdr-worktree-handoff "$old_pane" -a --fork "$session" 2>&1); then
-        if ! focus_output=$(${herdr} agent focus "$agent" 2>&1); then
-          ${herdr} notification show "Worktree handoff focus failed" \
-            --body "$focus_output" || true
-        fi
         rm -f "$job.running"
       else
         status=$?
