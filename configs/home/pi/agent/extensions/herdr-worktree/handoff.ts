@@ -128,7 +128,7 @@ export default function (pi: ExtensionAPI) {
   async function finishHandoff(sourcePaneId: string, ctx: ExtensionContext): Promise<void> {
     const report = (message: string) => ctx.ui.notify(message, "warning");
     const expectedSession = ctx.sessionManager.getHeader()?.parentSession;
-    let verifiedSource: { session: string; workspaceId?: string; workspace: any } | undefined;
+    let verifiedSource: { session: string; workspaceId: string; workspace: any } | undefined;
     const verifySource = async (): Promise<boolean> => {
       if (!expectedSession) return false;
       const current = await herdrQuiet(["pane", "get", sourcePaneId], 10000);
@@ -137,9 +137,9 @@ export default function (pi: ExtensionAPI) {
         return false;
       }
       const workspaceId: string | undefined = current?.result?.pane?.workspace_id;
-      const workspace = workspaceId
-        ? await herdrQuiet(["workspace", "get", workspaceId], 10000)
-        : null;
+      if (!workspaceId) return false;
+      const workspace = await herdrQuiet(["workspace", "get", workspaceId], 10000);
+      if (!workspace?.result?.workspace) return false;
       verifiedSource = { session, workspaceId, workspace };
       return true;
     };
@@ -222,17 +222,17 @@ export default function (pi: ExtensionAPI) {
       report("Handoff source pane changed before cleanup; the pane was left open.");
       return;
     }
-    const finalSource = verifiedSource!;
-    if (isMainCheckout && paneCount <= 1 && finalSource.workspaceId && finalSource.workspace) {
+    const tabSource = verifiedSource!;
+    if (isMainCheckout && paneCount <= 1) {
       try {
         await herdr(
           [
             "tab",
             "create",
             "--workspace",
-            finalSource.workspaceId,
+            tabSource.workspaceId,
             "--cwd",
-            finalSource.workspace.result.workspace.worktree.checkout_path,
+            tabSource.workspace.result.workspace.worktree.checkout_path,
             "--no-focus",
           ],
           undefined,
@@ -240,11 +240,16 @@ export default function (pi: ExtensionAPI) {
         );
       } catch (error) {
         const message = error instanceof Error ? error.message : String(error);
-        report(`Could not create a replacement tab in ${finalSource.workspaceId}: ${message}`);
+        report(`Could not create a replacement tab in ${tabSource.workspaceId}: ${message}`);
         return;
       }
     }
 
+    if (!(await verifySource())) {
+      report("Handoff source pane changed before cleanup; the pane was left open.");
+      return;
+    }
+    const finalSource = verifiedSource!;
     try {
       await herdr(["pane", "close", sourcePaneId], undefined, 10000);
     } catch (error) {

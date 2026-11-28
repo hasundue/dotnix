@@ -40,10 +40,13 @@ status: agreed
   め．
 - metadata と done は `custom` entry にして LLM コンテキストに乗せない．モデルへ
   の指示は既存の `HANDOFF_MESSAGE` を `sendMessage` で送る．
-- cleanup の前と pane を閉じる直前の 2 回，source pane が今も moving 元 session
-  を指していることを，fork された session header の `parentSession` と照合する．
-  照合できた時点の session と workspace を cleanup の対象に固定し，照合できない
-  場合は pane も session も触らない．
+- cleanup は source pane が今も moving 元 session を指していることを，fork され
+  た session header の `parentSession` と照合する．照合できた session と
+  workspace
+  の snapshot だけを cleanup の対象にする．main checkout の replacement tab 作成
+  後
+  にもう一度照合し，その直後に pane を閉じる．workspace が読めない場合は cleanup
+  を行わない．
 - `placement()` の `rootPaneId` は Herdr レスポンス名として残し，metadata 側の
   フィールド名は `destinationPaneId` を使う．source 側は `sourcePaneId` を使う．
 
