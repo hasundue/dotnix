@@ -35,8 +35,8 @@ send several questions in one message.
 
 Find facts yourself; ask the user only for decisions. Across the interview,
 cover what success looks like, the binding constraint, and what is explicitly
-**not** being built. When an answer approves without naming a choice, turn it
-into one concrete option.
+**not** being built. When an answer approves without naming a choice, offer one
+concrete option.
 
 Stop when every decision still available would leave the agreement as it
 stands. If rounds pass without your understanding improving, say so and step
