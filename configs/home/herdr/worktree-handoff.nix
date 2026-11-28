@@ -10,6 +10,7 @@ let
   bash = lib.getExe pkgs.bash;
   jq = lib.getExe pkgs.jq;
   herdr = lib.getExe pkgs.herdr;
+  timeout = lib.getExe' pkgs.coreutils "timeout";
 
   # The tool writes one JSON file per handoff into this plugin's state dir.
   # The action consumes jobs in filename order and keeps each job as .running
@@ -28,10 +29,6 @@ let
       readarray -t extra < <(${jq} -r '.extraArgs // [] | .[]' "$job.running")
       if output=$(${herdr} agent start "$agent" --kind pi --pane "$pane" --timeout 120000 -- \
         "''${extra[@]}" --herdr-worktree-handoff "$old_pane" -a --fork "$session" 2>&1); then
-        if ! focus_output=$(${herdr} agent focus "$agent" 2>&1); then
-          ${herdr} notification show "Worktree handoff focus failed" \
-            --body "$focus_output" || true
-        fi
         rm -f "$job.running"
       else
         status=$?
@@ -39,7 +36,11 @@ let
         mv "$job.running" "$job.failed"
         ${herdr} notification show "Worktree handoff failed" \
           --body "Could not start $agent in $pane: $output" || true
-        ${herdr} workspace focus "''${old_pane%%:*}" || true
+        if source_focused=$(${timeout} 2s ${herdr} pane get "$old_pane" 2>/dev/null | ${jq} -er '.result.pane.focused == true' 2>/dev/null); then
+          if [[ "$source_focused" == "true" ]]; then
+            ${herdr} workspace focus "''${old_pane%%:*}" || true
+          fi
+        fi
         printf '%s\n' "$output" >&2
         exit "$status"
       fi
