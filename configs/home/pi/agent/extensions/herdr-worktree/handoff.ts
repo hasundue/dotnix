@@ -42,7 +42,8 @@ export default function (pi: ExtensionAPI) {
     if (handoffStarted || typeof handoffFrom !== "string" || handoffFrom === "") return;
     handoffStarted = true;
     // Keep this non-blocking so Herdr's own session_start handlers can register the pane.
-    void focusDestination(handoffFrom, ctx);
+    // Cleanup starts after the focus attempt settles.
+    void focusDestination(handoffFrom, ctx).finally(() => void finishHandoff(handoffFrom, ctx));
     pi.sendMessage(
       {
         customType: HANDOFF_MESSAGE_TYPE,
@@ -52,7 +53,6 @@ export default function (pi: ExtensionAPI) {
       },
       { triggerTurn: true, deliverAs: "steer" },
     );
-    void finishHandoff(handoffFrom, ctx);
   });
 
   async function focusDestination(oldPane: string, ctx: ExtensionContext): Promise<void> {
@@ -62,18 +62,26 @@ export default function (pi: ExtensionAPI) {
       return;
     }
     const deadline = Date.now() + 5000;
+    const expired = () => Date.now() >= deadline;
+    const remaining = () => Math.max(1, deadline - Date.now());
+    const fail = (message: string) =>
+      ctx.ui.notify(`Could not hand off focus from ${oldPane} to ${pane}: ${message}`, "warning");
     for (;;) {
-      const source = await herdrQuiet(["pane", "get", oldPane], 2000);
-      if (source?.result?.pane?.focused !== true) return;
+      if (expired()) return fail("timed out");
       try {
-        await herdr(["agent", "focus", pane], undefined, 2000);
+        const source = await herdr(["pane", "get", oldPane], undefined, remaining());
+        const focused = source?.result?.pane?.focused;
+        if (focused === false) return;
+        if (focused !== true) {
+          if (expired()) return fail("source focus state missing");
+          await sleep(100);
+          continue;
+        }
+        if (expired()) return fail("timed out");
+        await herdr(["agent", "focus", pane], undefined, remaining());
         return;
       } catch (error) {
-        if (Date.now() >= deadline) {
-          const message = error instanceof Error ? error.message : String(error);
-          ctx.ui.notify(`Could not focus handoff destination ${pane}: ${message}`, "warning");
-          return;
-        }
+        if (expired()) return fail(error instanceof Error ? error.message : String(error));
         await sleep(100);
       }
     }
