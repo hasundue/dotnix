@@ -129,22 +129,26 @@ export default function (pi: ExtensionAPI) {
     const report = (message: string) => ctx.ui.notify(message, "warning");
     const expectedSession = ctx.sessionManager.getHeader()?.parentSession;
     let verifiedSource: { session: string; workspaceId: string; workspace: any } | undefined;
-    const verifySource = async (): Promise<boolean> => {
-      if (!expectedSession) return false;
+    const verifySource = async (): Promise<string | undefined> => {
+      if (!expectedSession) return "the forked session has no parent session";
       const current = await herdrQuiet(["pane", "get", sourcePaneId], 10000);
       const session = current?.result?.pane?.agent_session?.value;
-      if (typeof session !== "string" || session === "" || !samePath(session, expectedSession)) {
-        return false;
+      if (typeof session !== "string" || session === "") {
+        return `pane ${sourcePaneId} has no Herdr session reference`;
+      }
+      if (!samePath(session, expectedSession)) {
+        return `pane ${sourcePaneId} no longer runs the forked session`;
       }
       const workspaceId: string | undefined = current?.result?.pane?.workspace_id;
-      if (!workspaceId) return false;
+      if (!workspaceId) return `pane ${sourcePaneId} has no workspace ID`;
       const workspace = await herdrQuiet(["workspace", "get", workspaceId], 10000);
-      if (!workspace?.result?.workspace) return false;
+      if (!workspace?.result?.workspace) return `workspace ${workspaceId} is unavailable`;
       verifiedSource = { session, workspaceId, workspace };
-      return true;
+      return undefined;
     };
-    if (!(await verifySource())) {
-      report("Handoff source session identity is unclear; the source pane was left open.");
+    const initialFailure = await verifySource();
+    if (initialFailure) {
+      report(`Handoff source is unverified (${initialFailure}); the source pane was left open.`);
       return;
     }
     const initialSource = verifiedSource;
@@ -218,8 +222,9 @@ export default function (pi: ExtensionAPI) {
     const isMainCheckout =
       initialSource?.workspace?.result?.workspace?.worktree?.is_linked_worktree === false;
     const paneCount = initialSource?.workspace?.result?.workspace?.pane_count ?? 0;
-    if (!(await verifySource())) {
-      report("Handoff source pane changed before cleanup; the pane was left open.");
+    const changed = await verifySource();
+    if (changed) {
+      report(`Handoff source changed before cleanup (${changed}); the pane was left open.`);
       return;
     }
     const tabSource = verifiedSource!;
@@ -245,8 +250,9 @@ export default function (pi: ExtensionAPI) {
       }
     }
 
-    if (!(await verifySource())) {
-      report("Handoff source pane changed before cleanup; the pane was left open.");
+    const finalChanged = await verifySource();
+    if (finalChanged) {
+      report(`Handoff source changed before cleanup (${finalChanged}); the pane was left open.`);
       return;
     }
     const finalSource = verifiedSource!;

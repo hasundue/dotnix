@@ -122,7 +122,8 @@ export default function (pi: ExtensionAPI) {
   pi.registerTool({
     name: MOVE_TOOL,
     label: "Move worktree",
-    description: "Move this Pi session between the main checkout and Git worktrees in Herdr.",
+    description:
+      "Move this Pi session between the main checkout and Git worktrees in Herdr. The calling turn ends and the forked session continues there.",
     promptSnippet: "Create or switch to a Git worktree in Herdr, or return to main",
     promptGuidelines: ["Use herdr_worktree_move for worktree requests in Herdr."],
     parameters: moveSchema,
@@ -135,6 +136,19 @@ export default function (pi: ExtensionAPI) {
       const cwd = resolve(ctx.cwd);
       try {
         const current = await herdr(["pane", "get", oldPaneId], signal);
+        // Herdr drops a pane's session reference when another agent takes over the pane,
+        // so the running Pi session is the authority for the fork source. Refuse before
+        // creating a worktree when Herdr can no longer identify this pane.
+        const sessionFile = ctx.sessionManager.getSessionFile();
+        if (!current?.result?.pane?.agent_session) {
+          throw new Error(
+            "This pane has no Herdr session reference, for example after a suspended Pi was replaced here. Quit Pi with ctrl+d, start it again in this pane, and retry the move.",
+          );
+        }
+        if (!sessionFile) throw new Error("This Pi session has no session file to hand off.");
+        if (!existsSync(sessionFile)) {
+          throw new Error(`The Pi session file ${sessionFile} does not exist.`);
+        }
         const oldWorkspaceId: string | undefined = current?.result?.pane?.workspace_id;
         const oldWorkspace = oldWorkspaceId
           ? await herdr(["workspace", "get", oldWorkspaceId], signal)
@@ -258,13 +272,6 @@ export default function (pi: ExtensionAPI) {
           }
         }
 
-        const sessionFile: unknown = current?.result?.pane?.agent_session?.value;
-        if (typeof sessionFile !== "string" || sessionFile === "") {
-          throw new Error(`Current pane has no agent session file${leftover()}`);
-        }
-        if (!existsSync(sessionFile)) {
-          throw new Error(`Current agent session file does not exist${leftover()}`);
-        }
         const occupyingAgent = await herdrQuiet(["agent", "get", rootPaneId], 10000);
         if (occupyingAgent?.result?.agent) {
           throw new Error(
