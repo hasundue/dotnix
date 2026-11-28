@@ -26,8 +26,8 @@ description: >
 Treat what is still undecided as a graph of dependencies. A decision can be put
 to the user only once the decisions it depends on are settled. From those
 available now, pick the one whose answer decides the most downstream work and
-ask a single question about it. Frame it around your guess so the user can
-correct it with one word.
+ask a single question about it. Say how you would answer it yourself and where
+that answer could be wrong.
 
 Wait for the answer, then update which decisions are available. A decision that
 depends on an open one stays back; do not ask it with a guessed premise. Do not
