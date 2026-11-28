@@ -5,9 +5,9 @@ wrote it. Its name and location come from project convention or the user.
 
 ## Frontmatter
 
-Keys stay English. `status` is `draft` before approval, `agreed` after it, and
-`stale` when the work will not land. A stale spec has nothing for `main`. A
-dropped draft is deleted uncommitted. There is no language field.
+Keys stay English. `status` is `draft` before approval, `agreed` after it,
+`blocked` while the work waits on a decision, and `stale` when it will not land.
+A stale spec has nothing for `main`. A dropped draft is deleted uncommitted.
 
 ## Templates
 
@@ -30,10 +30,8 @@ that is half of misalignment.
 Stop conditions are task-specific and end the work early; omit the section when
 there are none.
 
-Write every section so it can be read cold -- by a session with none of the
-conversation. No "as discussed" or "the usual place", and restate what the user
-wants rather than quoting them. Name paths, current behaviour, decisions and
-their reasons, and commands.
+Name the paths, the current behaviour, the decisions with their reasons, and the
+commands that check them.
 
 ## Criteria
 
@@ -46,6 +44,8 @@ their reasons, and commands.
   unmet reason four spaces beneath those.
 - The out-of-scope section uses plain `-` items, so `[ ]` keeps a single
   meaning.
+- A criterion the change makes obsolete is replaced; the criteria describe the
+  spec as it stands.
 
 ## Approval
 
