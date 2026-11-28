@@ -27,17 +27,11 @@ are moving to the next one.
 
 # Asking the user
 
-When you need the user's judgment, ask for the decision itself; do not dictate
-the shape of the answer.
-
 When the user answers with a different question or direction, treat the earlier
 proposal as unresolved, not accepted. Return to it only with new evidence or an
 explicit request.
 
 Answer the question asked before introducing another decision.
-
-Ask to decide, not to advocate: state the decision point and your uncertainty
-rather than defending a preferred option.
 
 # Comments and prose
 
