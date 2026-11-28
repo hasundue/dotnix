@@ -11,8 +11,8 @@ description: >
 
 ## Gate
 
-- Do not implement, scaffold, or open a file in the turn that opens the gate.
-  Hand control back and let the user move first. Do not put the spec to a vote.
+- Do not implement, scaffold, or create or edit a file in the turn that opens
+  the gate. Hand control back and let the user move first.
 - Judge the size during the interview. A small task ends at a gate in
   conversation: confirm what to build, what not to build, and how to verify it,
   then get approval before touching code. No spec, note, or file to commit.
@@ -26,8 +26,8 @@ description: >
 Treat what is still undecided as a graph of dependencies. A decision can be put
 to the user only once the decisions it depends on are settled. From those
 available now, pick the one whose answer decides the most downstream work and
-ask a single question about it. Frame it around your guess so the user can
-correct it with one word.
+ask a single question about it. Attach the answer you would choose; a concrete
+answer is easier to reject than an open question.
 
 Wait for the answer, then update which decisions are available. A decision that
 depends on an open one stays back; do not ask it with a guessed premise. Do not
@@ -35,13 +35,12 @@ send several questions in one message.
 
 Find facts yourself; ask the user only for decisions. Across the interview,
 cover what success looks like, the binding constraint, and what is explicitly
-**not** being built. When an answer earns approval but names no choice, strip
-the label and offer one concrete option.
+**not** being built. When an answer approves without naming a choice, offer one
+concrete option.
 
-Stop when there is no available decision left to put to the user and you can
-predict the user's reaction to the next three questions you would ask. If
-rounds pass without your understanding improving, say so and step back -- the
-ask itself may be broken.
+Stop when every decision still available would leave the agreement as it
+stands. If rounds pass without your understanding improving, say so and step
+back -- the ask itself may be broken.
 
 ## Spec
 
