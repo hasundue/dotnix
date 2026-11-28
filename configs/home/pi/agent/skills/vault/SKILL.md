@@ -90,9 +90,6 @@ tags: []
 ---
 ```
 
-`tags` stays empty unless the tag already exists in the vault; check with
-`rg --no-filename '^tags:' . | sort -u`.
-
 Shape follows the note's language. `references/templates.md` holds the heading
 sets for Japanese and English, and the shapes for capture and research notes.
 
@@ -148,7 +145,7 @@ should have existed. A fragment belongs in `ditty`, a written-up answer here.
 - Creating a note without searching first
 - A second note for a topic that already has one
 - Editing a note that does not carry `author: pi`
-- Inventing a top-level directory or tag
+- Inventing a top-level directory
 - Pasting a transcript into the vault, or leaving tool output in it
 - Rewriting existing prose instead of appending
 - A paraphrase inside quotation marks
