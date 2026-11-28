@@ -54,17 +54,34 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null;
 }
 
+function isNonEmptyString(value: unknown): value is string {
+  return typeof value === "string" && value.length > 0;
+}
+
 export function isHandoffMetadata(value: unknown): value is HandoffMetadata {
   return (
     isRecord(value) &&
-    typeof value.handoffId === "string" &&
-    typeof value.sourcePaneId === "string" &&
-    typeof value.destinationPaneId === "string"
+    isNonEmptyString(value.handoffId) &&
+    isNonEmptyString(value.sourcePaneId) &&
+    isNonEmptyString(value.destinationPaneId)
   );
 }
 
 export function isHandoffDone(value: unknown): value is HandoffDone {
-  return isRecord(value) && typeof value.handoffId === "string";
+  return isRecord(value) && isNonEmptyString(value.handoffId);
+}
+
+export function handoffTargetsPane(value: unknown, destinationPaneId: string): boolean {
+  return isRecord(value) && value.destinationPaneId === destinationPaneId;
+}
+
+export function customEntryValues(entries: readonly unknown[], customType: string): unknown[] {
+  const found: unknown[] = [];
+  for (const entry of entries) {
+    if (!isRecord(entry) || entry.type !== "custom" || entry.customType !== customType) continue;
+    found.push(entry.data);
+  }
+  return found;
 }
 
 export function customEntryData<T>(
@@ -72,12 +89,7 @@ export function customEntryData<T>(
   customType: string,
   guard: (value: unknown) => value is T,
 ): T[] {
-  const found: T[] = [];
-  for (const entry of entries) {
-    if (!isRecord(entry) || entry.type !== "custom" || entry.customType !== customType) continue;
-    if (guard(entry.data)) found.push(entry.data);
-  }
-  return found;
+  return customEntryValues(entries, customType).filter(guard);
 }
 
 type MoveDetails = {

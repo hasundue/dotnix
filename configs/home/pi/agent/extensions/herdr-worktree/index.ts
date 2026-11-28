@@ -284,23 +284,27 @@ export default function (pi: ExtensionAPI) {
           oldPane: oldPaneId,
           extraArgs: handoffArgs(),
         };
-        const jobPath = join(stateDir, `handoff-${Date.now()}-${agent}.json`);
-        await writeFile(jobPath, JSON.stringify(job));
-        // The destination forks this session, so metadata must be on disk before agent start.
+        // The destination forks this session, so metadata must be on disk before the job
+        // becomes visible to the plugin action.
         const handoffId = randomUUID();
         pi.appendEntry(HANDOFF_METADATA_TYPE, {
           handoffId,
           sourcePaneId: oldPaneId,
           destinationPaneId: rootPaneId,
         });
+        const jobPath = join(stateDir, `handoff-${Date.now()}-${agent}.json`);
         try {
+          await writeFile(jobPath, JSON.stringify(job));
           await herdr(
             ["plugin", "action", "invoke", HANDOFF_ACTION, "--plugin", HANDOFF_PLUGIN],
             signal,
           );
         } catch (error) {
-          pi.appendEntry(HANDOFF_DONE_TYPE, { handoffId });
-          await unlink(jobPath).catch(() => undefined);
+          try {
+            pi.appendEntry(HANDOFF_DONE_TYPE, { handoffId });
+          } finally {
+            await unlink(jobPath).catch(() => undefined);
+          }
           throw error;
         }
 

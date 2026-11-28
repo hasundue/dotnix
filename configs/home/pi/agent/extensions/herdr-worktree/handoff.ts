@@ -17,6 +17,8 @@ import {
   MOVE_TOOL,
   createHerdr,
   customEntryData,
+  customEntryValues,
+  handoffTargetsPane,
   isHandoffDone,
   isHandoffMetadata,
   registerHerdrNotice,
@@ -43,12 +45,25 @@ export default function (pi: ExtensionAPI) {
     if (!destinationPaneId) return;
 
     const entries = ctx.sessionManager.getBranch();
+    const metadataValues = customEntryValues(entries, HANDOFF_METADATA_TYPE);
+    const malformed = metadataValues.filter(
+      (value) => !isHandoffMetadata(value) && handoffTargetsPane(value, destinationPaneId),
+    );
+    if (malformed.length > 0) {
+      ctx.ui.notify(
+        `Malformed handoff metadata targets pane ${destinationPaneId}; none was processed.`,
+        "warning",
+      );
+      return;
+    }
     const done = new Set(
       customEntryData(entries, HANDOFF_DONE_TYPE, isHandoffDone).map((entry) => entry.handoffId),
     );
-    const pending = customEntryData(entries, HANDOFF_METADATA_TYPE, isHandoffMetadata).filter(
-      (entry) => entry.destinationPaneId === destinationPaneId && !done.has(entry.handoffId),
-    );
+    const pending = metadataValues
+      .filter(isHandoffMetadata)
+      .filter(
+        (entry) => entry.destinationPaneId === destinationPaneId && !done.has(entry.handoffId),
+      );
     if (pending.length === 0) return;
     if (pending.length > 1) {
       ctx.ui.notify(
@@ -130,6 +145,12 @@ export default function (pi: ExtensionAPI) {
         (workspace: any) => workspace.workspace_id === workspaceId,
       );
       if (stillOpen) report(`Handoff source pane ${sourcePaneId} is unavailable: ${message}`);
+      return;
+    }
+
+    const expectedSession = ctx.sessionManager.getHeader()?.parentSession;
+    if (!expectedSession || !sourceSession || !samePath(sourceSession, expectedSession)) {
+      report("Handoff source session identity is unclear; the source pane was left open.");
       return;
     }
 

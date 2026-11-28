@@ -25,18 +25,23 @@ status: agreed
 - `configs/home/pi/agent/extensions/herdr-worktree/index.ts` は plugin action の
   起動前に，移動元セッションへ `handoffId`，`sourcePaneId`，`destinationPaneId`
   の custom entry を書く．移動先が `--fork` で受け取るには起動前の書き込みが必要
-  なため．
+  なため．metadata は job ファイルより先に置き，job の作成や action が失敗した
+  場合は同じ `handoffId` を done にして job を取り消す．
 - `configs/home/pi/agent/extensions/herdr-worktree/handoff.ts` は
   `session_start` を `reason === "startup"` に限定し，`HERDR_PANE_ID` と
   `destinationPaneId` が一致し，対応する done が無い metadata がちょうど 1 つの
   場合だけ処理する．
 - 未処理 metadata が自分の pane 向けに複数なら，どれも選ばず警告して
   `HANDOFF_MESSAGE` の `triggerTurn` を送らない．誤った pane の cleanup を避ける
-  ため．
+  ため．壊れた metadata が同じ pane 向けにある場合も処理しない．ID は非空文字列
+  だけを有効とし，空文字や壊れた record は候補として扱わない．
 - done は処理開始時に同じ `handoffId` で書く．途中で落ちた場合の再実行を防ぐた
   め．
 - metadata と done は `custom` entry にして LLM コンテキストに乗せない．モデルへ
   の指示は既存の `HANDOFF_MESSAGE` を `sendMessage` で送る．
+- cleanup の前に，source pane が今も moving 元 session を指していることを，fork
+  された session header の `parentSession` と照合する．照合できない場合は pane
+  も session も触らない．
 - `placement()` の `rootPaneId` は Herdr レスポンス名として残し，metadata 側の
   フィールド名は `destinationPaneId` を使う．source 側は `sourcePaneId` を使う．
 
@@ -71,7 +76,9 @@ status: agreed
     - 実施: `wR:p2` から `handoff-smoke` へ move し，移動先 `w0:p1` は
       `focused: true`．Niri の focused-window title は
       `x1carbon: dotnix.handoff-smoke`．source pane は `pane_not_found`，
-      source session file は削除済み．
+      source session file は削除済み．別途 `wR:p3` から
+      `handoff-smoke-verify` へ move した際は，移動先 header の `parentSession`
+      が source session と一致し，warning なしで cleanup された．
   - [x] そのセッションに同じ `handoffId` の done entry が 1 つだけあること．
     - 実施: `032c8916-6f70-4636-a5bf-8594590d519f` の done entry は 1 件．
 - 複数移動でも古い metadata を再処理しない．
@@ -81,15 +88,18 @@ status: agreed
       `ebf7fea3-c05f-42ba-b729-c07ad87c9e10` の done は 1 件，1 回目の
       `032c8916-6f70-4636-a5bf-8594590d519f` の done は 0 件．focus は
       22:25:42 に `x1carbon: dotnix.handoff-smoke-2` へ移り，1 回目の source
-      pane
-      `wR:p2` は再処理されず，2 回目の source pane `w0:p1` だけ cleanup された．
+      pane `wR:p2` は再処理されず，2 回目の source pane `w0:p1` だけ cleanup
+      された．別途 RPC で `test:p1` 向けに done 済み `old-handoff` と未処理
+      `new-handoff` を置き，`new-handoff` だけが処理されることも確認した．
 - pane 向けの未処理 metadata が複数なら fail-closed になる．
   - [x] 2 つの metadata を同じ `destinationPaneId` で入れたセッションを起動し，
         警告が出て，`triggerTurn` も cleanup も起きないこと．
     - 実施: RPC で `test:p1` 向けの未処理 metadata を 2 件入れたところ，警告
       `Multiple handoffs target pane test:p1; none was processed.` が 1 件．
       done entry は 0，handoff の `custom_message` と cleanup notification も 0
-      件．
+      件．空文字の ID を含む metadata では
+      `Malformed handoff metadata targets pane test:p1; none was processed.`
+      が 1 件で，done と `custom_message` は 0 件だった．
 - 静的検証が通る．
   - [x] `nix fmt` と `nix run .#home-build` が成功すること．
     - 実施: `nix fmt` は 1 ファイルを整形して終了，`nix run .#home-build` と
