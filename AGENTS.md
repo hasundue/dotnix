@@ -25,11 +25,6 @@ Make code changes in a linked worktree, not in the primary checkout at
 When the current directory is already a worktree such as `~/dotnix.<branch>`,
 keep working there and do not nest another one.
 
-Before merging a worktree, return to the primary `main` checkout first: in
-Herdr, call `herdr_worktree_move` with `branch: "main"` and continue from the
-forked session. Merge the source branch from `main`, not from the worktree
-being removed.
-
 A dirty `main` is acceptable. Do not commit or push to `main` from that state:
 a mistake would then only be fixable destructively.
 
